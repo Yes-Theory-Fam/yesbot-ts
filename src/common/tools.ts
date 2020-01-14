@@ -1,5 +1,6 @@
 import fs from 'fs';
 import { resolve } from 'dns';
+import Discord, { TextChannel } from 'discord.js';
 class Tools {
 
 
@@ -12,6 +13,16 @@ class Tools {
         fs.readFile(`./src/collections/${filename}.json`, 'utf-8', (err, data) => {
             return JSON.parse(data);
         });
+    }
+
+    static async getMessageById(id:string, guild:Discord.Guild, pChannel:TextChannel) {
+
+        //? Return [Message, Channel]
+
+        const channel: TextChannel = <TextChannel>guild.channels.find((c) => c.id == pChannel.id)
+        return [channel.messages.find(m => m.id === id), channel]
+
+
     }
 }
 
