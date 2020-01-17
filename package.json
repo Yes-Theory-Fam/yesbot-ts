@@ -4,14 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node-dev --respawn src/index.ts"
+    "start": "ts-node-dev --respawn src/index.ts",
+    "deploy:prod": "rsync -avzhe 'ssh -i ~/.ssh/ytf.pem' --progress ./* ubuntu@yestheoryfam.com:/home/ubuntu/yesbot2"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.19.0",
-    "discord.js": "^11.5.1",
+    "discord.js": "github:discordjs/discord.js",
     "fs": "0.0.1-security",
+    "path": "^0.12.7",
     "ts-node": "^8.5.4",
     "typescript": "^3.7.4"
   },

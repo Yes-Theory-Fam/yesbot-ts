@@ -1,3 +1,5 @@
+'use strict';
+
 class ActionsManager {
   constructor(client) {
     this.client = client;
@@ -14,22 +16,22 @@ class ActionsManager {
     this.register(require('./ChannelUpdate'));
     this.register(require('./GuildDelete'));
     this.register(require('./GuildUpdate'));
-    this.register(require('./GuildMemberGet'));
     this.register(require('./GuildMemberRemove'));
     this.register(require('./GuildBanRemove'));
     this.register(require('./GuildRoleCreate'));
     this.register(require('./GuildRoleDelete'));
     this.register(require('./GuildRoleUpdate'));
-    this.register(require('./UserGet'));
+    this.register(require('./PresenceUpdate'));
     this.register(require('./UserUpdate'));
-    this.register(require('./UserNoteUpdate'));
-    this.register(require('./GuildSync'));
+    this.register(require('./VoiceStateUpdate'));
     this.register(require('./GuildEmojiCreate'));
     this.register(require('./GuildEmojiDelete'));
     this.register(require('./GuildEmojiUpdate'));
     this.register(require('./GuildEmojisUpdate'));
     this.register(require('./GuildRolesPositionUpdate'));
     this.register(require('./GuildChannelsPositionUpdate'));
+    this.register(require('./GuildIntegrationsUpdate'));
+    this.register(require('./WebhooksUpdate'));
   }
 
   register(Action) {

@@ -1,5 +1,5 @@
 import  Discord from 'discord.js';
-import {Someone, ReactRole} from '../programs/';
+import { Someone, ReactRole, StateRoleFinder } from '../programs/';
 import bot from "../index"
 
 class Message {
@@ -18,6 +18,8 @@ class Message {
     routeMessage() {
         if(this.message.content.startsWith("@someone")) Someone(this.message);
         if (this.message.content.startsWith("!roles")) ReactRole(this.message);
+        if (this.message.content.startsWith("!state")) StateRoleFinder(this.message);
+        if (this.message.content == "test") this.message.channel.send("@someone online")
     }
 
 

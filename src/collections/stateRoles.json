@@ -1,0 +1,202 @@
+[
+    {
+        "state": "NewYork",
+        "role": "I'm from the USA (North East)"
+    },
+    {
+        "state": "Maine",
+        "role": "I'm from the USA (North East)"
+    },
+    {
+        "state": "Massachusetts",
+        "role": "I'm from the USA (North East)"
+    },
+    {
+        "state": "RhodeIsland",
+        "role": "I'm from the USA (North East)"
+    },
+    {
+        "state": "Connecticut",
+        "role": "I'm from the USA (North East)"
+    },
+    {
+        "state": "NewHampshire",
+        "role": "I'm from the USA (North East)"
+    },
+    {
+        "state": "Vermont",
+        "role": "I'm from the USA (North East)"
+    },
+    {
+        "state": "Pennsylvania",
+        "role": "I'm from the USA (North East)"
+    },
+    {
+        "state": "NewJersey",
+        "role": "I'm from the USA (North East)"
+    },
+    {
+        "state": "Delaware",
+        "role": "I'm from the USA (North East)"
+    },
+    {
+        "state": "Maryland",
+        "role": "I'm from the USA (North East)"
+    },
+    {
+        "state": "Ohio",
+        "role": "I'm from the USA (Midwest)"
+    },
+    {
+        "state": "Indiana",
+        "role": "I'm from the USA (Midwest)"
+    },
+    {
+        "state": "Michigan",
+        "role": "I'm from the USA (Midwest)"
+    },
+    {
+        "state": "Illinois",
+        "role": "I'm from the USA (Midwest)"
+    },
+    {
+        "state": "Missouri",
+        "role": "I'm from the USA (Midwest)"
+    },
+    {
+        "state": "Wisconsin",
+        "role": "I'm from the USA (Midwest)"
+    },
+    {
+        "state": "Minnesota",
+        "role": "I'm from the USA (Midwest)"
+    },
+    {
+        "state": "Iowa",
+        "role": "I'm from the USA (Midwest)"
+    },
+    {
+        "state": "Kansas",
+        "role": "I'm from the USA (Midwest)"
+    },
+    {
+        "state": "Nebraska",
+        "role": "I'm from the USA (Midwest)"
+    },
+    {
+        "state": "SouthDakota",
+        "role": "I'm from the USA (Midwest)"
+    },
+    {
+        "state": "NorthDakota",
+        "role": "I'm from the USA (Midwest)"
+    },
+    {
+        "state": "WestVirginia",
+        "role": "I'm from the USA (Southeast)"
+    },
+    {
+        "state": "Virginia",
+        "role": "I'm from the USA (Southeast)"
+    },
+    {
+        "state": "Kentucky",
+        "role": "I'm from the USA (Southeast)"
+    },
+    {
+        "state": "Tennessee",
+        "role": "I'm from the USA (Southeast)"
+    },
+    {
+        "state": "NorthCarolina",
+        "role": "I'm from the USA (Southeast)"
+    },
+    {
+        "state": "SouthCarolina",
+        "role": "I'm from the USA (Southeast)"
+    },
+    {
+        "state": "Georgia",
+        "role": "I'm from the USA (Southeast)"
+    },
+    {
+        "state": "Alabama",
+        "role": "I'm from the USA (Southeast)"
+    },
+    {
+        "state": "Mississippi",
+        "role": "I'm from the USA (Southeast)"
+    },
+    {
+        "state": "Arkansas",
+        "role": "I'm from the USA (Southeast)"
+    },
+    {
+        "state": "Louisiana",
+        "role": "I'm from the USA (Southeast)"
+    },
+    {
+        "state": "Florida",
+        "role": "I'm from the USA (Southeast)"
+    },
+    {
+        "state": "Texas",
+        "role": "I'm from the USA (Southwest)"
+    },
+    {
+        "state": "Oklahoma",
+        "role": "I'm from the USA (Southwest)"
+    },
+    {
+        "state": "New Mexico",
+        "role": "I'm from the USA (Southwest)"
+    },
+    {
+        "state": "Arizona",
+        "role": "I'm from the USA (Southwest)"
+    },
+    {
+        "state": "California",
+        "role": "I'm from the USA (West)"
+    },
+    {
+        "state": "Colorado",
+        "role": "I'm from the USA (West)"
+    },
+    {
+        "state": "Wyoming",
+        "role": "I'm from the USA (West)"
+    },
+    {
+        "state": "Montana",
+        "role": "I'm from the USA (West)"
+    },
+    {
+        "state": "Idaho",
+        "role": "I'm from the USA (West)"
+    },
+    {
+        "state": "Washington",
+        "role": "I'm from the USA (West)"
+    },
+    {
+        "state": "Oregon",
+        "role": "I'm from the USA (West)"
+    },
+    {
+        "state": "Utah",
+        "role": "I'm from the USA (West)"
+    },
+    {
+        "state": "Nevada",
+        "role": "I'm from the USA (West)"
+    },
+    {
+        "state": "Alaska",
+        "role": "I'm from the USA (West)"
+    },
+    {
+        "state": "Hawaii",
+        "role": "I'm from the USA (West)"
+    }
+]

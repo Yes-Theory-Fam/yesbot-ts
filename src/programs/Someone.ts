@@ -7,9 +7,13 @@ const QUESTION_LINK: string = 'https://spreadsheets.google.com/feeds/cells/1DO5y
 
 async function Someone(message: Discord.Message) {
 
+    const allow = await isAllowed(message.author);
+    if (!allow) {
+        message.reply("you have already used this command today!")
+        return;
+    }
     const args = Tools.getArgs(message.content)
     const arg = args[1]
-    let messageSent = false;
 
     if (arg && arg != "online") message.channel.send(`Unknown argument "${arg}". Did you mean "online"?`)
     else {
@@ -17,11 +21,7 @@ async function Someone(message: Discord.Message) {
         const target = await getTarget(arg, message);
         const question = await getQuestion();
         if (target === undefined) message.reply("There were no available users to ping! This is embarrassing. How could this have happened? There's so many people on here that statistically this message should never even show up. Oh well. Congratulations, I guess. Check your dm's for an exclusive free shipping discount on too easy merch.")
-        else message.channel.send(`${author}: Hey ${target}! ${question}`).then(() => messageSent = true)
-    }
-
-    if (messageSent) {
-        updateLastMessage(message)
+        else message.channel.send(`${author.toString()}: Hey ${target.toString()}! ${question}`).then((sentMsg) => updateLastMessage(message))
     }
 }
 
@@ -31,36 +31,49 @@ async function updateLastMessage(message: Discord.Message) {
         "time": new Date().toString().slice(0, 15),
         "id": message.author.id
     }
+    let someoneUsers = await Tools.resolveFile("someoneUsers");
+    someoneUsers = someoneUsers || [];
+    const thisUser:any = someoneUsers.find((u:any) => u.id == object.id);
+    if(thisUser) thisUser.time = object.time;
+    else someoneUsers.push(object);
+    await Tools.writeFile("someoneUsers", someoneUsers);
+    return true;
+}
 
-    var exists = false;
-    fs.readFile('./src/collections/users.json', 'utf-8', function (err, data) {
-        var users = JSON.parse(data)
-        users.forEach((element:any) => {
-            if (element.id == object.id) {
-                exists = true;
-                element.time = object.time
-            }
-        });
-        if (!exists) {
-            users.push(object)
-        }
-        fs.writeFile('./src/collections/users.json', JSON.stringify(users), ()=>{})
+async function isAllowed(user:Discord.User) {
+    let someoneUsers = await Tools.resolveFile("someoneUsers");
+    
+    someoneUsers.forEach((element:any) => {
+        console.log(element.id);
+        
     });
+    
+    const thisUser: any = someoneUsers.find((u: any) => u.id == user.id);
+    console.log(new Date().toString().slice(0, 15))
+    console.log(thisUser)
+    if (thisUser && thisUser.time == new Date().toString().slice(0, 15)) return false;
+    else return true;
 }
 
 async function getTarget(arg: string, message: Discord.Message) {
-
-    const sdRole = message.guild.roles.find("name", "Seek Discomfort");
-    let target = sdRole.members.random().user;
-    let targetFound = false;
-    if (arg) {
-        for (let count = 0; count < 100; count++) {
-            if (target.presence.status !== "online") target = sdRole.members.random().user;
-            else targetFound = true;
-            if (targetFound) return target;
+    if(message) {
+        const sdRole = message.guild.roles.find(r => r.name == "Seek Discomfort");
+        if(!sdRole) {
+            message.channel.send("There is no Seek Discomfort role in this server!");
+            return;
         }
+        let target = sdRole.members.random().user;
+        let targetFound = false;
+        if (arg) {
+            for (let count = 0; count < 100; count++) {
+                if (target.presence.status !== "online") target = sdRole.members.random().user;
+                else targetFound = true;
+                if (targetFound) return target;
+            }
+        }
+        else return target;
     }
-    else return target;
+
 }
 
 async function getQuestion() {
