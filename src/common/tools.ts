@@ -28,7 +28,10 @@ class Tools {
     static async updateFile(filename:string, data:any) {
         fs.readFile(`./src/collections/${filename}.json`, 'utf-8', (err, string) => {
             let existingArray = JSON.parse(string);
+
+            
             existingArray.push(data)
+            
             fs.writeFile(`./src/collections/${filename}.json`, JSON.stringify(existingArray), () => {
                 return true;
             });
@@ -45,12 +48,14 @@ class Tools {
     static async getMessageById(messageId:Snowflake, guild:Discord.Guild, channelId:string) {
 
         //? Return [Message, Channel]
-        console.log(channelId);
-        
-        const channel: TextChannel = <TextChannel>guild.channels.find((c) => c.id == channelId)
-        console.log(channel)
-        const message = await channel.messages.fetch(messageId)
-        return [message, channel]
+        try {
+            const channel: TextChannel = <TextChannel>guild.channels.find((c) => c.id == channelId)
+            const message = await channel.messages.fetch(messageId)
+            return [message, channel]
+        } catch (error) {
+            return [null,null]
+        }
+
 
 
     }

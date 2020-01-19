@@ -1,5 +1,6 @@
 import Discord from 'discord.js';
 import Tools from '../common/tools';
+import { MODERATOR_ROLE_NAME } from '../const';
 
 
 export default async function StateRoleFinder(pMessage: Discord.Message) {
@@ -15,7 +16,7 @@ export default async function StateRoleFinder(pMessage: Discord.Message) {
     }
     const stateRoles = await Tools.resolveFile("stateRoles");
     let found = false;
-    let supportRole = pMessage.guild.roles.find(r => r.name == "Support")
+    let supportRole = pMessage.guild.roles.find(r => r.name == MODERATOR_ROLE_NAME)
     if (pMessage.member.roles.has(supportRole.id)) {
         stateRoles.forEach((stateRole: any) => {
             const { state, role } = stateRole;

@@ -1,20 +1,28 @@
 import Discord, {Snowflake, TextChannel} from 'discord.js';
 import Tools from '../common/tools';
+import { MODERATOR_ROLE_NAME } from '../const';
 
 
 export default async function ReactRole(pMessage: Discord.Message) {
 
     //! This comes to us in the format of "!roles [add|list] [messageId] [emoji] [roleId] [channelId]"
     //! So first we need to establish if it is add or list
+    const isSupport = pMessage.member.roles.has(pMessage.guild.roles.find(r => r.name == MODERATOR_ROLE_NAME).id)
+    if(!isSupport) return;
+
     const args = <string[]>pMessage.content.split(" ");
     args.shift();
     const [action, messageId, reaction, roleId, channelId] = args
-    console.log([action, messageId, reaction, roleId, channelId]);
-    
-    console.log(channelId);
-    
+    if(!action || !(["add","list","delete"].includes(action))){
+        pMessage.reply(`Incorrect syntax, please use the following: \`!roles add|list|delete\``);
+        return;
+    }
     switch (action) {
         case "add":
+            if(!messageId || !reaction || !roleId || !channelId || !pMessage) {
+                pMessage.reply(`Incorrect syntax, please use the following: \`!roles add messageId reaction roleId channelId\``);
+                 return;
+            }
             addReactRoleObject(messageId, reaction, roleId, channelId, pMessage);
             break;
         case "list":
@@ -30,6 +38,10 @@ export default async function ReactRole(pMessage: Discord.Message) {
 }
 
 async function addReactRoleObject(messageId: Snowflake, reaction: string, roleId: Snowflake, channelId: Snowflake, pMessage: Discord.Message) {
+    
+    if(roleId.startsWith("<")) roleId = roleId.substring(3,21)
+    console.log(roleId);
+
     let [message, channel] = await Tools.getMessageById(messageId, pMessage.guild, channelId)
     let role = await Tools.getRoleById(roleId, pMessage.guild);
     message = <Discord.Message>message;
@@ -54,6 +66,9 @@ async function addReactRoleObject(messageId: Snowflake, reaction: string, roleId
         }
 
 
+    }
+    else {
+        pMessage.reply("I couldn't find that message, please check the parameters of your \`!roles add\` and try again.")
     }
 }
 

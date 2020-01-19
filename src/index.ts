@@ -1,9 +1,11 @@
 import * as Discord from 'discord.js';
 import { Message, Raw, ReactionAdd, ReactionRemove, Ready } from './events';
+import { BOT_PROD_TOKEN, BOT_DEV_TOKEN } from './const';
 
 const bot = new Discord.Client({ partials: ['REACTION', 'MESSAGE']});
 
-bot.login();
+if(process.platform == "linux") bot.login(BOT_PROD_TOKEN);
+else bot.login(BOT_DEV_TOKEN);
 
 //! ================= EVENT HANDLERS ====================
 bot.on("channelCreate", (channel: Discord.Channel) => null);

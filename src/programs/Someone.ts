@@ -12,6 +12,12 @@ async function Someone(message: Discord.Message) {
         message.reply("you have already used this command today!")
         return;
     }
+
+    const hasSeekDiscomfort = message.member.roles.has(message.guild.roles.find(r => r.name == "Seek Discomfort").id);
+    if(!hasSeekDiscomfort) {
+        message.reply("You need the Seek Discomfort role for that! You can get one by writing a detailed bio of yourself in introductions.")
+        return;
+    }
     const args = Tools.getArgs(message.content)
     const arg = args[1]
 
@@ -43,14 +49,8 @@ async function updateLastMessage(message: Discord.Message) {
 async function isAllowed(user:Discord.User) {
     let someoneUsers = await Tools.resolveFile("someoneUsers");
     
-    someoneUsers.forEach((element:any) => {
-        console.log(element.id);
-        
-    });
     
     const thisUser: any = someoneUsers.find((u: any) => u.id == user.id);
-    console.log(new Date().toString().slice(0, 15))
-    console.log(thisUser)
     if (thisUser && thisUser.time == new Date().toString().slice(0, 15)) return false;
     else return true;
 }
@@ -66,7 +66,7 @@ async function getTarget(arg: string, message: Discord.Message) {
         let targetFound = false;
         if (arg) {
             for (let count = 0; count < 100; count++) {
-                if (target.presence.status !== "online") target = sdRole.members.random().user;
+                if (target.presence.status !== "online" || target.id == message.author.id) target = sdRole.members.random().user;
                 else targetFound = true;
                 if (targetFound) return target;
             }
