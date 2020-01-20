@@ -1,5 +1,5 @@
 import  Discord from 'discord.js';
-import { Someone, ReactRole, StateRoleFinder, Ticket } from '../programs/';
+import { Someone, ReactRole, StateRoleFinder, Ticket, Deadchat } from '../programs/';
 import bot from "../index"
 
 class Message {
@@ -21,7 +21,8 @@ class Message {
         if (this.message.content.startsWith("!state")) StateRoleFinder(this.message);
         if (this.message.content.startsWith("!fiyesta")) Ticket(this.message, "fiyesta");
         if (this.message.content.startsWith("!shoutout")) Ticket(this.message, "shoutout");
-        if (this.message.content == "test") this.message.channel.send("@someone online")
+        if (this.message.content.startsWith("!deadchat")) Deadchat(this.message);
+        if (this.message.content == "F") this.message.react("🇫");
     }
 
 

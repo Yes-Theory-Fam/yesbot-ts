@@ -40,7 +40,6 @@ export default async function ReactRole(pMessage: Discord.Message) {
 async function addReactRoleObject(messageId: Snowflake, reaction: string, roleId: Snowflake, channelId: Snowflake, pMessage: Discord.Message) {
     
     if(roleId.startsWith("<")) roleId = roleId.substring(3,21)
-    console.log(roleId);
 
     let [message, channel] = await Tools.getMessageById(messageId, pMessage.guild, channelId)
     let role = await Tools.getRoleById(roleId, pMessage.guild);

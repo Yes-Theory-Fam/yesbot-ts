@@ -1,5 +1,5 @@
 import * as Discord from 'discord.js';
-import { Message, Raw, ReactionAdd, ReactionRemove, Ready } from './events';
+import { Message, Raw, ReactionAdd, ReactionRemove, Ready, MemberJoin } from './events';
 import { BOT_PROD_TOKEN, BOT_DEV_TOKEN } from './const';
 
 const bot = new Discord.Client({ partials: ['REACTION', 'MESSAGE']});
@@ -22,7 +22,7 @@ bot.on("guildBanAdd", (guild: Discord.Guild, user: Discord.User) => null);
 bot.on("guildBanRemove", (guild: Discord.Guild, user: Discord.User) => null);
 bot.on("guildCreate", (guild: Discord.Guild) => null);
 bot.on("guildDelete", (guild: Discord.Guild) => null);
-bot.on("guildMemberAdd", (member: Discord.GuildMember) => null);
+bot.on("guildMemberAdd", (member: Discord.GuildMember) => new MemberJoin(member));
 bot.on("guildMemberAvailable", (member: Discord.GuildMember) => null);
 bot.on("guildMemberRemove", (member: Discord.GuildMember) => null);
 bot.on("guildMembersChunk", (members: Discord.GuildMember[], guild: Discord.Guild) => null);
