@@ -62,7 +62,7 @@ async function getTarget(arg: string, message: Discord.Message) {
             message.channel.send("There is no Seek Discomfort role in this server!");
             return;
         }
-        let target = sdRole.members.random().user;
+        let target = sdRole.members.filter(lastMessageInLastTwoMonths).random().user;
         let targetFound = false;
         if (arg) {
             for (let count = 0; count < 100; count++) {
@@ -74,6 +74,15 @@ async function getTarget(arg: string, message: Discord.Message) {
         else return target;
     }
 
+}
+
+function lastMessageInLastTwoMonths(member: Discord.GuildMember) {
+    const today = new Date();
+    const twoMonthsAgoStamp = today.setMonth(today.getMonth() - 2);
+
+    const lastMessageDate = member.lastMessage.createdTimestamp;
+
+    return lastMessageDate >= twoMonthsAgoStamp;
 }
 
 async function getQuestion() {
