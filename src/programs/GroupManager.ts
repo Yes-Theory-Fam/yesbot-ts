@@ -16,6 +16,7 @@ export default async function GroupManager(pMessage: Discord.Message, commandInd
     const content = pMessage.content.slice(commandIndex)
 
     if(pMessage.cleanContent.startsWith("!group")) {
+        
         const args = <string[]>pMessage.content.split(" ");
         args.shift();
         const [action, requestName] = args
@@ -31,6 +32,7 @@ export default async function GroupManager(pMessage: Discord.Message, commandInd
         switch (action) {
 
             case "join":
+                
                 joinGroup(groups, requestName, user);
                 break;
 
@@ -39,7 +41,7 @@ export default async function GroupManager(pMessage: Discord.Message, commandInd
                 break;
 
             case "leave":
-
+                leaveGroup(groups, requestName, user);
                 break;
 
             case "search":
@@ -132,6 +134,8 @@ groups.forEach((group: any) => {
 
 const joinGroup = async (groups:DiscordGroup[], requestedGroupName:string, member:GuildMember) => {
     groups.forEach((group: DiscordGroup) => {
+        console.log(groups);
+        
         if(group.name === requestedGroupName) {
             if(!group.members.includes(member.id)) {
                 group.members.push(member.id)
@@ -145,4 +149,25 @@ const joinGroup = async (groups:DiscordGroup[], requestedGroupName:string, membe
         }
     })
 }
+
+const leaveGroup = async (groups:DiscordGroup[], requestedGroupName:string, member:GuildMember) => {
+    let success: boolean = false;
+    groups.forEach((group: DiscordGroup) => {
+        if(group.name === requestedGroupName) {
+            const groupPosition = group.members.indexOf(member.id)
+            if(groupPosition > 0) {
+                console.log(group);
+                
+                group.members.splice(groupPosition)
+                console.log(groups);
+                
+                Tools.writeFile("groupManager", groups)
+                success = true;
+            }
+        }
+    })
+    message.react(success?"👍":"👎");
+    if(!success) message.reply("You are not in that group!")
+}
+
 
