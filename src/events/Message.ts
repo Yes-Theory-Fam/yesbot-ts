@@ -1,7 +1,6 @@
 import  Discord, { TextChannel } from 'discord.js';
-import { Someone, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, InitialiseTestEnvironment } from '../programs/';
+import { Someone, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, InitialiseTestEnvironment, Unassigned } from '../programs/';
 import bot from "../index"
-import Unassigned from '../programs/Unassigned';
 
 class Message {
     message: Discord.Message;
