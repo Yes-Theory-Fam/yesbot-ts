@@ -1,6 +1,7 @@
 import  Discord, { TextChannel } from 'discord.js';
 import { Someone, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, InitialiseTestEnvironment } from '../programs/';
 import bot from "../index"
+import Unassigned from '../programs/Unassigned';
 
 class Message {
     message: Discord.Message;
@@ -35,6 +36,7 @@ class Message {
         if (this.message.content.startsWith("!fiyesta")) Ticket(this.message, "fiyesta");
         if (this.message.content.startsWith("!shoutout")) Ticket(this.message, "shoutout");
         if (this.message.content.startsWith("!deadchat")) Deadchat(this.message);
+        if (this.message.content.startsWith("!unassigned")) Unassigned(this.message);
         if (this.message.content == "F") this.message.react("🇫");
         if (this.message.content.toLowerCase() == "i love u yesbot" || this.message.content.toLowerCase() == "i love you yesbot" || this.message.content.toLowerCase() == "yesbot i love you ") {
             this.message.reply("I love you too! (Although I'm not entirely sure what love is but this experience I'm feeling is probably some iteration of love.)")
