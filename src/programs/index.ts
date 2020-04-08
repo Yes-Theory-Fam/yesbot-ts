@@ -6,5 +6,6 @@ import Someone from "./Someone";
 import WhereAreYouFromManager from "./WhereAreYouFromManager"
 import GroupManager from "./GroupManager";
 import InitialiseTestEnvironment from './InitialiseTestEnvironment';
+import Unassigned from './Unassigned';
 
-export { Someone, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, InitialiseTestEnvironment}; 
+export { Someone, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, InitialiseTestEnvironment, Unassigned }; 
