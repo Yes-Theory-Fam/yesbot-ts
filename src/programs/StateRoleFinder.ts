@@ -21,6 +21,7 @@ export default async function StateRoleFinder(pMessage: Discord.Message) {
         stateRoles.forEach((stateRole: any) => {
             const { state, role } = stateRole;
                 if (state.toLowerCase() === stateRequest.toLowerCase()) {
+                    pMessage.delete();
                     pMessage.reply(role)
                     found = true;
                 }

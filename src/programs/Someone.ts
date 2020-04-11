@@ -6,22 +6,25 @@ import * as fs from 'fs';
 const QUESTION_LINK: string = 'https://spreadsheets.google.com/feeds/cells/1J7DlkcWzhcm9CXiWCB-dQloCqIHjVpupyvMqBPlJ7Mk/1/public/full?alt=json'
 
 
-async function Someone(message: Discord.Message,commandIndex:number) {
+async function Someone(message: Discord.Message) {
     
     const allow = await isAllowed(message.author);
+
     if (!allow) {
         message.reply("you have already used this command today!")
         return;
     }
 
     const hasSeekDiscomfort = message.member.roles.has(message.guild.roles.find(r => r.name == "Seek Discomfort").id);
+    
     if(!hasSeekDiscomfort) {
         message.reply("You need the Seek Discomfort role for that! You can get one by writing a detailed bio of yourself in <#616616321089798145>.")
         return;
     }
-    const content = message.content.slice(commandIndex)
-        const args = Tools.getArgs(message.content)
-        const arg = args[1]
+
+
+    const words = Tools.stringToWords(message.content)
+    const arg = words[1]
 
     if (arg && arg != "online") message.channel.send(`Unknown argument "${arg}". Did you mean "online"?`)
     else {
@@ -31,6 +34,7 @@ async function Someone(message: Discord.Message,commandIndex:number) {
         if (target === undefined) message.reply("There were no available users to ping! This is embarrassing. How could this have happened? There's so many people on here that statistically this message should never even show up. Oh well. Congratulations, I guess. Check your dm's for an exclusive free shipping discount on too easy merch.")
         else {
             message.delete();
+            updateLastMessage(message)
             sendMessage(member, target, question, message.channel as TextChannel)
         }
     }

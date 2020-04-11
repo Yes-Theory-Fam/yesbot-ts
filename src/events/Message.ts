@@ -1,6 +1,8 @@
 import  Discord, { TextChannel } from 'discord.js';
-import { Someone, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, InitialiseTestEnvironment } from '../programs/';
+import { Someone, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, InitialiseTestEnvironment, Unassigned, ProfileManager } from '../programs/';
 import bot from "../index"
+import ExportManager from '../programs/ExportManager';
+import {USA_IMAGE_URL, CANADA_IMAGE_URL, UK_IMAGE_URL, AUSTRALIA_IMAGE_URL} from '../const'
 
 class Message {
     message: Discord.Message;
@@ -13,39 +15,74 @@ class Message {
         this.routeMessage();
     }
     routeMessage() {
-        console.log(this.message.cleanContent);
         
-        let words = this.message.content.split(" ")
-        if(this.message.content === "create") InitialiseTestEnvironment(this.bot);
-        let channel = <Discord.TextChannel>this.message.channel;
-        if(channel.name == "where-are-you-from") {
-            WhereAreYouFromManager(this.message)
+        const words = this.message.content.split(" ")
+        const firstWord = words[0];
+        const channel = <Discord.TextChannel>this.message.channel;
+
+        switch (channel.name) {
+
+            case "where-are-you-from":
+            case "welcome-chat":
+                if (firstWord == "!usa") this.SendMap('usa');
+                if (firstWord == "!canada") this.SendMap('canada');
+                if (firstWord == "!australia") this.SendMap('australia');
+                if (firstWord == "!uk") this.SendMap('uk');;
+                WhereAreYouFromManager(this.message)
+                if(firstWord === "!state") StateRoleFinder(this.message);
+                break;
+
+            case "chat":
+            case "chat-too":
+               
+                if(firstWord === "@someone") Someone(this.message);
+                if(firstWord === "!deadchat") Deadchat(this.message);
+                if(words.includes("@group")) GroupManager(this.message, this.message.content.indexOf("@"))
+                break;
+
+            case "permanent-testing":
+
+                if (firstWord === "!roles") ReactRole(this.message);
+                if(firstWord === "!export") ExportManager(this.message);
+                if(firstWord === "!unassigned") Unassigned(this.message);
+                if(firstWord === "!group") GroupManager(this.message, 0);
+                if(firstWord === "!profile") ProfileManager(this.message, 0);
+                break;
+
+            case "bot-commands":
+
+                if(firstWord === "!group") GroupManager(this.message, 0);
+                if(firstWord === "!profile") ProfileManager(this.message, 0);
+                if(firstWord === "!fiyesta") Ticket(this.message, "fiyesta");
+                if(firstWord === "!shoutout") Ticket(this.message, "shoutout");
+                break;
+
+            case "coding":
+                if(firstWord === "!resources") this.resources("coding");
+                break;
+
+            case "polls":
+
+                this.message.react('🇦').then(() => this.message.react('🅱️'))
+                break;
+
+            case "feature-requests":
+
+                this.message.react('👍').then(() => this.message.react('👎'));
+                break;
+
+            default:
+                if (firstWord === "F") this.message.react("🇫");
+                if (["i love u yesbot", "i love you yesbot", "yesbot i love you "].includes(this.message.content.toLowerCase())) this.sendLove();
+                if (this.message.content.toLowerCase().startsWith("yesbot") && this.message.content.toLowerCase().endsWith('?')) this.randomReply();
+                break;
+            }
         }
-        if(words.includes("@someone")) {
-            const commandIndex = this.message.content.indexOf("@")
-                Someone(this.message, commandIndex);
-        }
-        if(words.includes("@group")) {
-            const commandIndex = this.message.content.indexOf("@")
-                GroupManager(this.message, commandIndex);
-        }
-        if (this.message.content.startsWith("!roles")) ReactRole(this.message);
-        if (this.message.content.startsWith("!group")) GroupManager(this.message, 0);
-        if (this.message.content.startsWith("!state")) StateRoleFinder(this.message);
-        if (this.message.content.startsWith("!fiyesta")) Ticket(this.message, "fiyesta");
-        if (this.message.content.startsWith("!shoutout")) Ticket(this.message, "shoutout");
-        if (this.message.content.startsWith("!deadchat")) Deadchat(this.message);
-        if (this.message.content == "F") this.message.react("🇫");
-        if (this.message.content.toLowerCase() == "i love u yesbot" || this.message.content.toLowerCase() == "i love you yesbot" || this.message.content.toLowerCase() == "yesbot i love you ") {
-            this.message.reply("I love you too! (Although I'm not entirely sure what love is but this experience I'm feeling is probably some iteration of love.)")
-            this.message.react("😍");
-        }
-        if (this.message.content.toLowerCase().startsWith("yesbot") && this.message.content.toLowerCase().endsWith('?')) {
-            let replies = ["yes.", "probably.", "doubtful.", "i'm afraid I don't know that one", "absolutely not.", "not a chance.", "definitely.", "very very very unlikely"];
-            this.message.reply(replies[Math.floor(Math.random()*replies.length)])
-        }
-        if (this.message.content == "!resources") {
-            this.channelSpecificMessage(`
+
+    resources = (channel:string) =>{
+    switch (channel) {
+        case "coding":
+            this.message.channel.send(`
 
             Our own lovely Michel has written a guide tailored for this group that in his own words "gives you a good guess of what awaits you". You can find that here: https://gist.github.com/geisterfurz007/473abe140d3504bc018255597201431e
 
@@ -55,31 +92,26 @@ class Message {
                          - MDN's JavaScript guide: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Introduction>
                          - You Don't Know JS (free book series): <https://github.com/getify/You-Dont-Know-JS>
                          - Javascript reference/docs: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference>
-            `, "coding");
-        }
-        else {
-            let discordChannel = this.message.channel as Discord.TextChannel;
-            if(discordChannel.name === 'polls' || discordChannel.name === 'elections') {
-                this.message.react('🇦').then(() => {
-                    this.message.react('🅱️');
-                })
-            }
-            if(discordChannel.name === 'feature-requests' || discordChannel.name === 'quit-moaning') {
-                this.message.react('👍').then(() => {
-                    this.message.react('👎');
-                })
-            }
-        }
+            `)
+            break;
+    
+        default:
+            break;
     }
+}
 
-
-    channelSpecificMessage(body:string, plainChannelName:string) {
-        let discordChannel = this.message.channel as Discord.TextChannel;
-        if(plainChannelName === discordChannel.name) {
-            this.message.channel.send(body)
-        }
-    }
-
-
+randomReply() {
+    let replies = ["yes.", "probably.", "doubtful.", "i'm afraid I don't know that one", "absolutely not.", "not a chance.", "definitely.", "very very very unlikely"];
+    this.message.reply(replies[Math.floor(Math.random()*replies.length)])
+}
+sendLove() {
+    this.message.reply("I love you too! (Although I'm not entirely sure what love is but this experience I'm feeling is probably some iteration of love.)")
+    this.message.react("😍");
+}
+SendMap(country:string) {
+    this.message.delete();
+    const image = new Discord.MessageAttachment(country === 'usa' ? USA_IMAGE_URL : country === 'canada' ? CANADA_IMAGE_URL : country === 'australia' ? AUSTRALIA_IMAGE_URL : UK_IMAGE_URL) 
+    this.message.channel.send(image)
+}
 }
 export default Message;
