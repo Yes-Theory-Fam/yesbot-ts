@@ -1,4 +1,4 @@
-import Discord, { Snowflake, User, Channel, Guild, TextChannel, Emoji, GuildCreateChannelOptions } from 'discord.js';
+import Discord, { Snowflake, User, Channel, Guild, TextChannel, Emoji, GuildCreateChannelOptions, PartialUser } from 'discord.js';
 import bot from "../index"
 import Tools from '../common/tools';
 import AdventureGame from "../programs/AdventureGame"
@@ -14,10 +14,10 @@ class ReactionAdd {
     guild: Guild;
     pureEmoji: any
 
-    constructor(messageReaction: Discord.MessageReaction, user: User) {
+    constructor(messageReaction: Discord.MessageReaction, user: User | PartialUser) {
         Tools.resolveFile("reactRoleObjects")
         this.bot = bot;
-        this.user = user;
+        this.user = <User>user;
         this.messageId = messageReaction.message.id;
         this.reaction = messageReaction.emoji.name;
         this.pureEmoji = messageReaction.emoji.toString()
