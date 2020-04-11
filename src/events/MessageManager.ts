@@ -1,10 +1,10 @@
 import  Discord, { TextChannel } from 'discord.js';
-import { Someone, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, InitialiseTestEnvironment, Unassigned, ProfileManager } from '../programs/';
+import { Someone, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, InitialiseTestEnvironment, Unassigned, ProfileManager } from '../programs';
 import bot from "../index"
 import ExportManager from '../programs/ExportManager';
 import {USA_IMAGE_URL, CANADA_IMAGE_URL, UK_IMAGE_URL, AUSTRALIA_IMAGE_URL} from '../const'
 
-class Message {
+class MessageManager {
     message: Discord.Message;
     author: Discord.User;
     bot: Discord.Client;
@@ -114,4 +114,4 @@ SendMap(country:string) {
     this.message.channel.send(image)
 }
 }
-export default Message;
+export default MessageManager;
