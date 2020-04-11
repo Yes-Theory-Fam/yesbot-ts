@@ -1,4 +1,4 @@
-import {Client, Channel, Emoji, Guild, GuildMember, PartialGuildMember, Message, User, PartialUser, Collection, Role, TextChannel, Snowflake, MessageReaction,} from 'discord.js';
+import {Client, Channel, Emoji, Guild, GuildMember, PartialGuildMember, Message, User, PartialUser, Collection, Role, TextChannel, Snowflake, MessageReaction, Speaking, PartialMessage, Presence, VoiceState,} from 'discord.js';
 import { MessageManager, Raw, ReactionAdd, ReactionRemove, Ready, MemberJoin, GuildMemberUpdate } from './events';
 import { BOT_PROD_TOKEN, BOT_DEV_TOKEN } from './const';
 
@@ -27,19 +27,19 @@ bot.on("guildMemberAdd", (member: GuildMember | PartialGuildMember) => new Membe
 bot.on("guildMemberAvailable", (member: GuildMember | PartialGuildMember) => null);
 bot.on("guildMemberRemove", (member: GuildMember | PartialGuildMember) => null);
 bot.on("guildMembersChunk", (members: Collection<string, GuildMember | PartialGuildMember>, guild: Guild) => null);
-bot.on("guildMemberSpeaking", (member: GuildMember | PartialGuildMember, speaking: boolean) => null);
+bot.on("guildMemberSpeaking", (member: GuildMember | PartialGuildMember, speaking:  Readonly<Speaking>) => null);
 bot.on("guildMemberUpdate", (oldMember: GuildMember | PartialGuildMember, newMember: GuildMember | PartialGuildMember) => new GuildMemberUpdate(oldMember, newMember));
 bot.on("guildUnavailable", (guild: Guild) => null);
 bot.on("guildUpdate", (oldGuild: Guild, newGuild: Guild) => null);
 bot.on("guildIntegrationsUpdate", (guild: Guild) => null);
 bot.on("message", (msg: Message) => new MessageManager(msg));
 bot.on("messageDelete", (message: Message) => null);
-bot.on("messageDeleteBulk", (messages: Collection<Snowflake, Message>) => null);
-bot.on("messageReactionAdd", (messageReaction: MessageReaction, user: User) => new ReactionAdd(messageReaction, user));
-bot.on("messageReactionRemove", (messageReaction: MessageReaction, user: User) => new ReactionRemove(messageReaction, user));
-bot.on("messageReactionRemoveAll", (message: Message) => null);
+bot.on("messageDeleteBulk", (messages: Collection<string, Message>) => null);
+bot.on("messageReactionAdd", (messageReaction: MessageReaction, user: User | PartialUser) => new ReactionAdd(messageReaction, user));
+bot.on("messageReactionRemove", (messageReaction: MessageReaction, user: User | PartialUser) => new ReactionRemove(messageReaction, user));
+bot.on("messageReactionRemoveAll", (message: Message | PartialMessage) => null);
 bot.on("messageUpdate", (oldMessage: Message, newMessage: Message) => null);
-bot.on("presenceUpdate", (oldMember: GuildMember, newMember: GuildMember) => null);
+bot.on("presenceUpdate", (oldMember: Presence, newMember: Presence) => null);
 bot.on("raw",(event:any) => new Raw(event));
 bot.on("ready", () => new Ready());
 bot.on("roleCreate", (role: Role) => null);
@@ -47,8 +47,8 @@ bot.on("roleDelete", (role: Role) => null);
 bot.on("roleUpdate", (oldRole: Role, newRole: Role) => null);
 bot.on("typingStart", (channel: Channel, user: User) => null);
 bot.on("typingStop", (channel: Channel, user: User) => null);
-bot.on("userUpdate", (oldUser: User, newUser: User) => null);
-bot.on("voiceStateUpdate", (oldMember: GuildMember, newMember: GuildMember) => null);
+bot.on("userUpdate", (oldUser: User | PartialUser, newUser: User | PartialUser) => null);
+bot.on("voiceStateUpdate", (oldMember: VoiceState, newMember: VoiceState) => null);
 bot.on("warn",  (info: string) => null);
 bot.on("webhookUpdate", (channel: TextChannel) => null);
 //! ================= /EVENT HANDLERS ===================
