@@ -4,7 +4,7 @@ import Tools from '../common/tools';
 
 export default async function Deadchat(pMessage: Discord.Message) {
 
-    const isDead = ((Date.now() - await (await pMessage.channel.messages.fetch({ limit: 2 })).array()[1].createdTimestamp) > 1800000) || pMessage.guild.name != "Yes Theory Fam";
+    const isDead = ((Date.now() - await (await pMessage.channel.messages.fetch({ limit: 2 })).array()[1].createdTimestamp) > 1800000) //|| pMessage.guild.name != "Yes Theory Fam";
     const isChat = ["chat","chat-too"].includes((pMessage.channel as TextChannel).name)
     if(!isChat) {
         pMessage.delete();

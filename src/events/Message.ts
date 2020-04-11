@@ -30,13 +30,14 @@ class Message {
                 if (firstWord == "!uk") this.SendMap('uk');;
                 WhereAreYouFromManager(this.message)
                 if(firstWord === "!state") StateRoleFinder(this.message);
+                break;
 
             case "chat":
             case "chat-too":
-
+               
                 if(firstWord === "@someone") Someone(this.message);
+                if(firstWord === "!deadchat") Deadchat(this.message);
                 if(words.includes("@group")) GroupManager(this.message, this.message.content.indexOf("@"))
-                if (this.message.content.startsWith("!deadchat")) Deadchat(this.message);
                 break;
 
             case "permanent-testing":
@@ -44,6 +45,8 @@ class Message {
                 if (firstWord === "!roles") ReactRole(this.message);
                 if(firstWord === "!export") ExportManager(this.message);
                 if(firstWord === "!unassigned") Unassigned(this.message);
+                if(firstWord === "!group") GroupManager(this.message, 0);
+                if(firstWord === "!profile") ProfileManager(this.message, 0);
                 break;
 
             case "bot-commands":

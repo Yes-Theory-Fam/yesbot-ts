@@ -88,15 +88,22 @@ export default async function GroupManager(pMessage: Discord.Message, commandInd
     }
 
     const deleteGroup = (groups: DiscordGroup[], requestedGroupName: string = "") => {
+        
         if(!requestedGroupName) {
             message.react("👎")
             return;
         }
             let exists = false;
     
-            groups.forEach((group: any) => {
-                if (group.name == requestedGroupName) {
-                    groups.splice(groups.indexOf(group))
+            groups.forEach((group: DiscordGroup) => {
+                if (group.name.toLowerCase() == requestedGroupName.toLowerCase()) {
+                    group.members.forEach(async (member) => {
+                        let localUserData = await Tools.getUserData(<string>member)
+                        localUserData.groups.splice(localUserData.groups.indexOf(<string>group.name), 1)
+                        Tools.updateUserData(localUserData)
+                    })
+
+                    groups.splice(groups.indexOf(group), 1)
                     exists = true;
                 }
             })
@@ -145,7 +152,7 @@ const createGroup = async (groups: DiscordGroup[], requestedGroupName: string, m
     let exists = false;
     
     groups.forEach((group: any) => {
-        if (group.name == requestedGroupName) {
+        if (group.name.toLowerCase() == requestedGroupName.toLowerCase()) {
             message.reply("That group already exists!")
             exists = true;
         }
@@ -173,7 +180,7 @@ const joinGroup = async (groups: DiscordGroup[], requestedGroupName: string, mem
     let localUserData = await Tools.getUserData(member.user.id)
     
     groups.forEach((group: DiscordGroup) => {
-        if (group.name.toLowerCase() === requestedGroupName) {
+        if (group.name.toLowerCase() === requestedGroupName.toLowerCase()) {
             foundGroup = true;
             
             localUserData.groups.push(<string>group.name)
@@ -198,15 +205,15 @@ const leaveGroup = async (groups: DiscordGroup[], requestedGroupName: string, me
     let localUserData = await Tools.getUserData(member.user.id)
             let success: boolean = false;
             groups.forEach((group: DiscordGroup) => {
-                if (group.name.toLowerCase() === requestedGroupName) {
-                    localUserData.groups.splice(localUserData.groups.indexOf(<string>group.name))
+                if (group.name.toLowerCase() === requestedGroupName.toLowerCase()) {
+                    localUserData.groups.splice(localUserData.groups.indexOf(<string>group.name), 1)
                     Tools.updateUserData(localUserData)
                     const groupPosition = group.members.indexOf(member.id)
 
                     if (groupPosition > -1) {
 
 
-                        group.members.splice(groupPosition)
+                        group.members.splice(groupPosition, 1)
 
 
                         Tools.writeFile("groupManager", groups)
