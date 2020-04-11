@@ -1,23 +1,27 @@
 import Discord, { OverwriteResolvable, SnowflakeUtil, TextChannel, GuildMember, User } from 'discord.js';
 import Tools from '../common/tools';
-import { ENGINEER_ROLE_NAME, COORDINATOR_ROLE_NAME } from '../const';
+import { ENGINEER_ROLE_NAME, COORDINATOR_ROLE_NAME, MODERATOR_ROLE_NAME } from '../const';
 
 
 
 export default async function Ticket(pMessage: Discord.Message, type:string) {
+    const guild_name = pMessage.guild.name;
     
     const TICKET_LOG_CHANNEL = `${type}-logs`;
 
-    const FIYESTA_CATEGORY_ID = pMessage.guild.name == "Yes Theory Fam" ? "668016641090781194" : "668435952623943680"
-    const SHOUTOUT_CATEGORY_ID = pMessage.guild.name == "Yes Theory Fam" ? "668016826810105876":"668435954670895114";
+    const FIYESTA_CATEGORY_ID = guild_name == "Yes Theory Fam" ? "668016641090781194" : "668435952623943680"
+    const SHOUTOUT_CATEGORY_ID = guild_name == "Yes Theory Fam" ? "668016826810105876":"668435954670895114";
+    const CONTEST_CATEGORY_ID = guild_name == "Yes Theory Fam" ? "not done":"695317780198719500";
 
     const ENGINEER_ROLE_ID = '667747778201649172';
     const COORDINATOR_ROLE_ID = '667747782202884117';
+    const SUPPORT_ROLE_ID = '695317778504089609';
 
     let moderatorRoleName: string;
     let categoryId: string;
     let moderatorRoleId: string;
     let ticketMessage: string;
+    
     
 
     switch (type) {
@@ -33,10 +37,16 @@ export default async function Ticket(pMessage: Discord.Message, type:string) {
             moderatorRoleId = COORDINATOR_ROLE_ID;
             ticketMessage = `Hi ${pMessage.member.toString()}, please list the details of your shoutout below.`
             break;
-
+        case "contest":
+            categoryId = CONTEST_CATEGORY_ID;
+            moderatorRoleName = MODERATOR_ROLE_NAME;
+            moderatorRoleId = SUPPORT_ROLE_ID;
+            ticketMessage = `Hi ${pMessage.member.toString()}, please list the details of your contest below.`
         default:
-            break;
+        break;
     }
+
+    const moderatorRole = pMessage.guild.roles.find(r => r.name == moderatorRoleName)
 
     //! This comes to us in the format of "![fiyesta|shoutout] [close|logs]?"
     const args = pMessage.cleanContent.split(" ")
@@ -89,7 +99,6 @@ export default async function Ticket(pMessage: Discord.Message, type:string) {
                     id: moderatorRoleId,
                     allow: ['VIEW_CHANNEL']
                 }
-
             ],
             parent:categoryId
         }
@@ -101,6 +110,8 @@ export default async function Ticket(pMessage: Discord.Message, type:string) {
             return;
         }
         else {
+
+            
             const ticketChannel = await pMessage.guild.channels.create(channelName,channelOptions);
 
             ticketChannel.send(`${ticketMessage} A ${supportRole.toString()} will be with you as soon as possible.`)

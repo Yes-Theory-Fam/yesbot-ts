@@ -1,6 +1,11 @@
 import fs, { exists } from 'fs';
 import { resolve } from 'dns';
 import Discord, { TextChannel, Snowflake } from 'discord.js';
+
+interface LocalUser {
+    id:string,
+    groups:string[]
+}
 class Tools {
 
     wheels = 4;
@@ -8,6 +13,10 @@ class Tools {
     static getArgs(message:string) {
         const args = message.split(" ");
         return args;
+    }
+
+    static stringToWords(inputStr:string): Array<string> {
+        return <string[]>inputStr.split(" ");
     }
 
     static async resolveFile(filename: string): Promise<Object[]> {
@@ -23,6 +32,31 @@ class Tools {
             }
 
         })
+    }
+
+    static async getUserData(id:string): Promise<LocalUser> {
+        const users:LocalUser[] = await <LocalUser[]><unknown>this.resolveFile("userStore")
+        const localUser = users.find(user => user.id === id);
+        if(!localUser) {
+            users.push({"id":id,"groups":[]})
+            await this.writeFile("userStore", users)
+            return {"id":id,"groups":[]}
+        }
+        return localUser
+    }
+
+    static async updateUserData(user:LocalUser) {
+        let users:LocalUser[] = await <LocalUser[]><unknown>this.resolveFile("userStore")
+        users.forEach((storedUser, index, array) => {
+            if(user.id === storedUser.id) {
+                array[index] = user
+            }
+        })
+        console.log(user);
+        console.log(users);
+        
+        
+        await this.writeFile("userStore", users)
     }
 
     static async writeFile(filename: string, data:any) {
