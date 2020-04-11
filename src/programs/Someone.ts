@@ -7,18 +7,25 @@ const QUESTION_LINK: string = 'https://spreadsheets.google.com/feeds/cells/1J7Dl
 
 
 async function Someone(message: Discord.Message) {
-    
+    message.delete();
     const allow = await isAllowed(message.author);
 
     if (!allow) {
-        message.reply("you have already used this command today!")
+        const deniedMessage = await message.reply("you have already used this command today!")
+        setTimeout(() => {
+            deniedMessage.delete();
+        }, 3000);
         return;
     }
 
     const hasSeekDiscomfort = message.member.roles.has(message.guild.roles.find(r => r.name == "Seek Discomfort").id);
     
     if(!hasSeekDiscomfort) {
-        message.reply("You need the Seek Discomfort role for that! You can get one by writing a detailed bio of yourself in <#616616321089798145>.")
+        const deniedMessage = await message.reply("You need the Seek Discomfort role for that! You can get one by writing a detailed bio of yourself in <#616616321089798145>.")
+        setTimeout(() => {
+            deniedMessage.delete();
+        }, 3000);
+        
         return;
     }
 
@@ -33,7 +40,7 @@ async function Someone(message: Discord.Message) {
         const question = await getQuestion();
         if (target === undefined) message.reply("There were no available users to ping! This is embarrassing. How could this have happened? There's so many people on here that statistically this message should never even show up. Oh well. Congratulations, I guess. Check your dm's for an exclusive free shipping discount on too easy merch.")
         else {
-            message.delete();
+            
             updateLastMessage(message)
             sendMessage(member, target, question, message.channel as TextChannel)
         }
