@@ -60,7 +60,6 @@ const getProfileEmbed = async (member:GuildMember, message: Message): Promise<Me
     }
     let localUserData = await Tools.getUserData(member.user.id)
     let groupString: string = '';
-    console.log(localUserData);
     
     localUserData.groups.forEach(group => groupString = groupString+group+", ")
     groupString = groupString.substring(0, groupString.length - 2);

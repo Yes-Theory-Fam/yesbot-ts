@@ -52,8 +52,6 @@ class Tools {
                 array[index] = user
             }
         })
-        console.log(user);
-        console.log(users);
         
         
         await this.writeFile("userStore", users)

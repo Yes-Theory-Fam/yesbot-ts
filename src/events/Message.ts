@@ -2,6 +2,7 @@ import  Discord, { TextChannel } from 'discord.js';
 import { Someone, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, InitialiseTestEnvironment, Unassigned, ProfileManager } from '../programs/';
 import bot from "../index"
 import ExportManager from '../programs/ExportManager';
+import {USA_IMAGE_URL, CANADA_IMAGE_URL, UK_IMAGE_URL, AUSTRALIA_IMAGE_URL} from '../const'
 
 class Message {
     message: Discord.Message;
@@ -22,7 +23,11 @@ class Message {
         switch (channel.name) {
 
             case "where-are-you-from":
-
+            case "welcome-chat":
+                if (firstWord == "!usa") this.SendMap('usa');
+                if (firstWord == "!canada") this.SendMap('canada');
+                if (firstWord == "!australia") this.SendMap('australia');
+                if (firstWord == "!uk") this.SendMap('uk');;
                 WhereAreYouFromManager(this.message)
                 if(firstWord === "!state") StateRoleFinder(this.message);
 
@@ -99,6 +104,11 @@ randomReply() {
 sendLove() {
     this.message.reply("I love you too! (Although I'm not entirely sure what love is but this experience I'm feeling is probably some iteration of love.)")
     this.message.react("😍");
+}
+SendMap(country:string) {
+    this.message.delete();
+    const image = new Discord.MessageAttachment(country === 'usa' ? USA_IMAGE_URL : country === 'canada' ? CANADA_IMAGE_URL : country === 'australia' ? AUSTRALIA_IMAGE_URL : UK_IMAGE_URL) 
+    this.message.channel.send(image)
 }
 }
 export default Message;
