@@ -24,7 +24,6 @@ class Tools {
         return new Promise((resolve, reject) =>{
             try {
                 fs.readFile(`./src/collections/${filename}.json`, 'utf-8', (err, data) => {
-                    console.log(filename)
                     resolve(JSON.parse(data))
             });
             } catch (error) {

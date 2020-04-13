@@ -2,10 +2,10 @@ import Discord, { TextChannel, User, Channel } from 'discord.js';
 import Tools from '../common/tools';
 import { EASTER_EVENT } from '../const';
 
-const EGG_DELAY_SECONDS = 1200;
+const EGG_DELAY_SECONDS = 37*60;
 
-let eggcount = 0;
-let totalCount = 25;
+let eggcount = 2;
+let totalCount = 32;
 
 
 export default async function EasterEvent(msg: Discord.Message) {
@@ -56,6 +56,7 @@ export default async function EasterEvent(msg: Discord.Message) {
 
 (function loop() {
     var rand = Math.round(Math.random() * EGG_DELAY_SECONDS * 1000);
+    console.log(rand)
     setTimeout(() =>{
             if(EASTER_EVENT) sendEgg();
             loop();  
@@ -67,7 +68,7 @@ export default async function EasterEvent(msg: Discord.Message) {
 
         }
 
-const isBot = (reaction: any, user: User) => {
+const isBot = (reaction:Object, user: User) => {
     return !user.bot
 }
 
