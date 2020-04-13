@@ -1,13 +1,14 @@
-import  Discord, { TextChannel } from 'discord.js';
-import { Someone, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, InitialiseTestEnvironment, Unassigned, ProfileManager } from '../programs/';
+import  Discord, { TextChannel, User } from 'discord.js';
+import { Someone, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, InitialiseTestEnvironment, Unassigned, ProfileManager, EasterEvent } from '../programs/';
 import bot from "../index"
 import ExportManager from '../programs/ExportManager';
-import {USA_IMAGE_URL, CANADA_IMAGE_URL, UK_IMAGE_URL, AUSTRALIA_IMAGE_URL} from '../const'
+import {USA_IMAGE_URL, CANADA_IMAGE_URL, UK_IMAGE_URL, AUSTRALIA_IMAGE_URL, EASTER_EVENT} from '../const'
 
 class Message {
     message: Discord.Message;
     author: Discord.User;
     bot: Discord.Client;
+
     constructor(msg: Discord.Message) {
         this.message = msg;
         this.author = msg.author;
@@ -19,6 +20,11 @@ class Message {
         const words = this.message.content.split(" ")
         const firstWord = words[0];
         const channel = <Discord.TextChannel>this.message.channel;
+
+        if(firstWord === "!easterEventStart") {
+            this.message.reply("The Easter Event has begun. Please keep watch over the relevant event channel and this channel for further updates.")
+            if(EASTER_EVENT) EasterEvent(this.message);
+        }
 
         switch (channel.name) {
 
@@ -70,13 +76,13 @@ class Message {
 
                 this.message.react('👍').then(() => this.message.react('👎'));
                 break;
-
-            default:
-                if (firstWord === "F") this.message.react("🇫");
-                if (["i love u yesbot", "i love you yesbot", "yesbot i love you "].includes(this.message.content.toLowerCase())) this.sendLove();
-                if (this.message.content.toLowerCase().startsWith("yesbot") && this.message.content.toLowerCase().endsWith('?')) this.randomReply();
-                break;
             }
+
+            if (firstWord === "F") this.message.react("🇫");
+            if (["i love u yesbot", "i love you yesbot", "yesbot i love you "].includes(this.message.content.toLowerCase())) this.sendLove();
+            if (this.message.content.toLowerCase().startsWith("yesbot") && this.message.content.toLowerCase().endsWith('?')) this.randomReply();
+            
+
         }
 
     resources = (channel:string) =>{
