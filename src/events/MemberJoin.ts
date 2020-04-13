@@ -1,4 +1,4 @@
-import Discord, { GuildMember, TextChannel } from 'discord.js';
+import Discord, { GuildMember, TextChannel, PartialGuildMember } from 'discord.js';
 import bot from "../index"
 
 class MemberJoin {
@@ -6,7 +6,7 @@ class MemberJoin {
 
     bot: Discord.Client;
 
-    constructor(member: GuildMember) {
+    constructor(member: GuildMember | PartialGuildMember) {
         this.bot = bot;
         const welcomeChannel = member.guild.channels.find(c => c.name == "where-are-you-from") as TextChannel;
         let messages = [`Welcome to the Yes Theory Fam Discord Server ${member.toString()}! What's your name? If you drop where you're from into this chat, you'll be granted full access to all the different channels :heart: You can go over <#450102410262609943> while you wait. In the meantime you can go say hi to a couple of our friends in <#689589205755625641>! :grin:`,

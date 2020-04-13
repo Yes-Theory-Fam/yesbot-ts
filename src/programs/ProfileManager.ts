@@ -19,12 +19,9 @@ export default async function ProfileManager(pMessage: Discord.Message, commandI
         words.shift();
         const [requestedProfileUser] = words
 
-        if (!requestedProfileUser) {
-            pMessage.reply(`Incorrect syntax, please use the following: \`!profile <@219502124709445633`);
-            return;
-        }
         
-        const requestedUser = pMessage.mentions.users.first()
+        let requestedUser = pMessage.mentions.users.first()
+        if(!requestedUser) requestedUser = pMessage.member.user;
         const requestedMember = pMessage.guild.members.find(m => m.user === requestedUser)
 
         if(!requestedMember) {
@@ -45,6 +42,13 @@ interface Birthday {
 const getProfileEmbed = async (member:GuildMember, message: Message): Promise<MessageEmbed> => {
     const profileEmbed = new MessageEmbed();
     const countryRole = member.roles.find(r => r.name.includes("I'm from"))
+    let countryString = ''
+    member.roles.forEach(role => {
+        
+        if(role.name.includes("I'm from")) {
+            countryString = countryString + role.name + "\n";
+        }
+    })
     const yesEmoji = member.guild.emojis.find(e => e.name == "yes_yf")
     const birthdays:Birthday[] = <Birthday[]><unknown>await Tools.resolveFile("birthdayMembers");
     let birthdayString = 'Unknown'
@@ -67,9 +71,9 @@ const getProfileEmbed = async (member:GuildMember, message: Message): Promise<Me
     const joinDate = member.joinedAt.toDateString()
     profileEmbed.setThumbnail(member.user.avatarURL())
     profileEmbed.setTitle(yesEmoji.toString() +" "+ member.user.username+"#"+member.user.discriminator)
-    profileEmbed.setColor(countryRole.color)
+    profileEmbed.setColor(member.roles.color.color)
     profileEmbed.addField("Hi! My name is:", member.displayName, true)
-    profileEmbed.addField("Where I'm from:", countryRole.name, true)
+    profileEmbed.addField("Where I'm from:", countryString, true)
     profileEmbed.addBlankField()
     profileEmbed.addField("Joined on:", joinDate, true);
     profileEmbed.addField("Birthday:", birthdayString, true);

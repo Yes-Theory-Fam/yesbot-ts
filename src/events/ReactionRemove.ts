@@ -1,4 +1,4 @@
-import Discord, { Snowflake, User, Channel, Guild, TextChannel } from 'discord.js';
+import Discord, { Snowflake, User, Channel, Guild, TextChannel, PartialUser } from 'discord.js';
 import bot from "../index"
 import Tools from '../common/tools';
 
@@ -12,10 +12,10 @@ class ReactionRemove {
     channel: TextChannel;
     guild: Guild;
 
-    constructor(messageReaction: Discord.MessageReaction, user: User) {
+    constructor(messageReaction: Discord.MessageReaction, user: User | PartialUser) {
         Tools.resolveFile("reactRoleObjects")
         this.bot = bot;
-        this.user = user;
+        this.user = <User>user;
         this.messageId = messageReaction.message.id;
         this.reaction = messageReaction.emoji.name;
         this.channel = <TextChannel>messageReaction.message.channel;

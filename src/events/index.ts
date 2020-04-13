@@ -1,9 +1,8 @@
-import Message from './Message';
-import Raw from './Raw';
+import MessageManager from './MessageManager';
 import ReactionAdd from './ReactionAdd'
 import ReactionRemove from './ReactionRemove';
 import Ready from './Ready';
 import MemberJoin from './MemberJoin';
 import GuildMemberUpdate from './GuildMemberUpdate';
 
-export { Message, Raw, ReactionAdd, ReactionRemove, Ready, MemberJoin, GuildMemberUpdate };
+export { MessageManager, ReactionAdd, ReactionRemove, Ready, MemberJoin, GuildMemberUpdate };
