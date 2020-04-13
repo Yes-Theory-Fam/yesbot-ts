@@ -2,10 +2,10 @@ import Discord, { TextChannel, User, Channel } from 'discord.js';
 import Tools from '../common/tools';
 import { EASTER_EVENT } from '../const';
 
-const EGG_DELAY_SECONDS = 3600;
+const EGG_DELAY_SECONDS = 1200;
 
 let eggcount = 0;
-let totalCount = 0;
+let totalCount = 25;
 
 
 export default async function EasterEvent(msg: Discord.Message) {
@@ -49,7 +49,7 @@ export default async function EasterEvent(msg: Discord.Message) {
                     randomMessage.delete();
                     eventChat.send(`An egg was left out for too long! Better try harder next time!`)
                 } 
-            }, 15000)
+            }, 3000)
         
 
     }

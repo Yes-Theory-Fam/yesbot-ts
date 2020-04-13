@@ -62,11 +62,18 @@ const getProfileEmbed = async (member:GuildMember, message: Message): Promise<Me
         message.reply("That user isn't registered here!")
         return null
     }
-    let localUserData = await Tools.getUserData(member.user.id)
+
     let groupString: string = '';
-    
-    localUserData.groups.forEach(group => groupString = groupString+group+", ")
+
+    const groups = <DiscordGroup[]>await Tools.resolveFile("groupManager")
+    groups.forEach(group => {
+        if(group.members.find(m => m === member.id)) {
+            groupString = groupString+group.name+", "
+        }
+    })
     groupString = groupString.substring(0, groupString.length - 2);
+    
+    
 
     const joinDate = member.joinedAt.toDateString()
     profileEmbed.setThumbnail(member.user.avatarURL())
