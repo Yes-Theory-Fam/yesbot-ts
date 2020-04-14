@@ -16,14 +16,14 @@ export default async function EasterEvent(msg: Discord.Message) {
         const channelArray: Channel[] = []
 
         enabledChannels.forEach(channelName => {
-            channelArray.push(msg.guild.channels.find(c => c.name === channelName))
+            channelArray.push(msg.guild.channels.cache.find(c => c.name === channelName))
         })
 
         const randomChannel = <TextChannel>channelArray[Math.floor(Math.random() * enabledChannels.length)]
         const randomMessage = await randomChannel.send(getEggMessage());
-        const modChat = <TextChannel>msg.guild.channels.find(c => c.name === "moderation")
-        const eventChat = <TextChannel>msg.guild.channels.find(c => c.name === "easter-epidemic")
-        const modRole = msg.guild.roles.find(r => r.name === "Support")
+        const modChat = <TextChannel>msg.guild.channels.cache.find(c => c.name === "moderation")
+        const eventChat = <TextChannel>msg.guild.channels.cache.find(c => c.name === "easter-epidemic")
+        const modRole = msg.guild.roles.cache.find(r => r.name === "Support")
 
         let messageAlive = true;
         randomMessage.react("🥚")
@@ -33,7 +33,7 @@ export default async function EasterEvent(msg: Discord.Message) {
             messageAlive = false;
             randomMessage.delete();
             const reaction = collected.first();
-            const member = collected.first().users.array()[1];
+            const member = collected.first().users.cache.array()[1];
             switch (reaction.emoji.toString()) {
                 case "🥚":
                     eventChat.send(`<@${member}> found an egg! Only ${5-eggcount} left to unlock the next emote!`)

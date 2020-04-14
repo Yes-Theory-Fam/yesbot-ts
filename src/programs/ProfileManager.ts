@@ -22,7 +22,7 @@ export default async function ProfileManager(pMessage: Discord.Message, commandI
         
         let requestedUser = pMessage.mentions.users.first()
         if(!requestedUser) requestedUser = pMessage.member.user;
-        const requestedMember = pMessage.guild.members.find(m => m.user === requestedUser)
+        const requestedMember = pMessage.guild.members.cache.find(m => m.user === requestedUser)
 
         if(!requestedMember) {
             pMessage.reply("I couldn't find that member in this server!");
@@ -41,15 +41,15 @@ interface Birthday {
 
 const getProfileEmbed = async (member:GuildMember, message: Message): Promise<MessageEmbed> => {
     const profileEmbed = new MessageEmbed();
-    const countryRole = member.roles.find(r => r.name.includes("I'm from"))
+    const countryRole = member.roles.cache.find(r => r.name.includes("I'm from"))
     let countryString = ''
-    member.roles.forEach(role => {
+    member.roles.cache.forEach(role => {
         
         if(role.name.includes("I'm from")) {
             countryString = countryString + role.name + "\n";
         }
     })
-    const yesEmoji = member.guild.emojis.find(e => e.name == "yes_yf")
+    const yesEmoji = member.guild.emojis.cache.find(e => e.name == "yes_yf")
     const birthdays:Birthday[] = <Birthday[]><unknown>await Tools.resolveFile("birthdayMembers");
     let birthdayString = 'Unknown'
     birthdays.forEach((birthday:Birthday) => {
@@ -81,7 +81,7 @@ const getProfileEmbed = async (member:GuildMember, message: Message): Promise<Me
     profileEmbed.setColor(member.roles.color.color)
     profileEmbed.addField("Hi! My name is:", member.displayName, true)
     profileEmbed.addField("Where I'm from:", countryString, true)
-    profileEmbed.addBlankField()
+    profileEmbed.addField('\u200b', '\u200b')
     profileEmbed.addField("Joined on:", joinDate, true);
     profileEmbed.addField("Birthday:", birthdayString, true);
     profileEmbed.addField("Groups:", groupString || "None", true);

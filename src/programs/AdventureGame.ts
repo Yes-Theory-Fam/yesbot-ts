@@ -10,11 +10,11 @@ export default async function AdventureGame(user: User, guild: Guild, bot: Clien
 
     const channelName = `game-session-${user.username}`.replace(/\s+/g, '-').toLowerCase();
     const channelOptions = createChannelOptions(user, bot, guild)
-    const attemptedFindChannel = guild.channels.find(c => c.name == channelName);
-    const playingRole = guild.roles.find(r => r.name.toLowerCase().includes("playing"))
-    const guildMember = guild.members.find(m => m.id === user.id)
+    const attemptedFindChannel = guild.channels.cache.find(c => c.name == channelName);
+    const playingRole = guild.roles.cache.find(r => r.name.toLowerCase().includes("playing"))
+    const guildMember = guild.members.cache.find(m => m.id === user.id)
 
-    if(guildMember.roles.has("I lost the game :(") || guildMember.roles.has("Lodiestan! 🏳️") || guildMember.roles.has("The Doravolution! 🏴")) {
+    if(guildMember.roles.cache.has("I lost the game :(") || guildMember.roles.cache.has("Lodiestan! 🏳️") || guildMember.roles.cache.has("The Doravolution! 🏴")) {
         return;
     }
 
@@ -29,7 +29,7 @@ export default async function AdventureGame(user: User, guild: Guild, bot: Clien
     channel.send(`<@${user.id}>`)
     guildMember.roles.add(playingRole);
 
-    guild.roles.find(r => r.name.toLowerCase() === "playing")
+    guild.roles.cache.find(r => r.name.toLowerCase() === "playing")
     const firstMessage = await channel.send(intro);
      firstMessage.react("🧗").then(reaction => firstMessage.react("🧘"))
             
@@ -121,7 +121,7 @@ const dora = async (channel:TextChannel) => {
             const reaction = collected.first();
             switch (reaction.emoji.toString()) {
                 case "⏰":
-                    const user = reaction.users.array()[1];
+                    const user = reaction.users.cache.array()[1];
                     doraWin(channel, user)
                     break;
                 case "🤫":
@@ -143,9 +143,9 @@ const userDied = async (channel:TextChannel) => {
     }, { max: 1, time: 6000000, errors: ['time'] })
         .then(collected => {
             const reaction = collected.first();
-            const user = reaction.users.array()[1];
-            const role = channel.guild.roles.find(r => r.name == "I lost the game :(")
-            const m = channel.guild.members.find(m => m.id == user.id)
+            const user = reaction.users.cache.array()[1];
+            const role = channel.guild.roles.cache.find(r => r.name == "I lost the game :(")
+            const m = channel.guild.members.cache.find(m => m.id == user.id)
             m.roles.add(role);
             removePlaying(m);
             channel.delete("Finished the game");
@@ -153,7 +153,7 @@ const userDied = async (channel:TextChannel) => {
         })
 }
 const removePlaying = (m:GuildMember) => {
-    const role = m.guild.roles.find(r => r.name.toLowerCase().includes("playing"));
+    const role = m.guild.roles.cache.find(r => r.name.toLowerCase().includes("playing"));
     m.roles.remove(role);
 }
 
@@ -195,13 +195,13 @@ const lodeWin = async (channel:TextChannel) => {
     }, { max: 1, time: 6000000, errors: ['time'] })
         .then(collected => {
             const reaction = collected.first();
-            const user = reaction.users.array()[1];
-            const role = channel.guild.roles.find(r => r.id == "694614416553017435")
-            const m = channel.guild.members.find(m => m.id == user.id)
+            const user = reaction.users.cache.array()[1];
+            const role = channel.guild.roles.cache.find(r => r.id == "694614416553017435")
+            const m = channel.guild.members.cache.find(m => m.id == user.id)
             m.roles.add(role)
             removePlaying(m);
             channel.delete("Finished the game");
-            const winnerchannel = <TextChannel>channel.guild.channels.find(c => c.name.toLowerCase() === "lodiestan-plotting")
+            const winnerchannel = <TextChannel>channel.guild.channels.cache.find(c => c.name.toLowerCase() === "lodiestan-plotting")
             winnerchannel.send(`<@${user.id}> has joined our ranks!`)
         })
 }
@@ -214,9 +214,9 @@ const lodeLose = async (channel:TextChannel) => {
     }, { max: 1, time: 6000000, errors: ['time'] })
         .then(collected => {
             const reaction = collected.first();
-            const user = reaction.users.array()[1];
-            const role = channel.guild.roles.find(r => r.name == "I lost the game :(")
-            const m = channel.guild.members.find(m => m.id == user.id)
+            const user = reaction.users.cache.array()[1];
+            const role = channel.guild.roles.cache.find(r => r.name == "I lost the game :(")
+            const m = channel.guild.members.cache.find(m => m.id == user.id)
             m.roles.add(role)
             removePlaying(m);
             channel.delete("Finished the game");
@@ -236,13 +236,13 @@ firstMessage.awaitReactions((reaction: any, user: User) => {
 }, { max: 1, time: 6000000, errors: ['time'] })
     .then(collected => {
         const reaction = collected.first();
-        const user = reaction.users.array()[1];
-        const role = channel.guild.roles.find(r => r.id == "694666400765182002")
-        const m = channel.guild.members.find(m => m.id == user.id)
+        const user = reaction.users.cache.array()[1];
+        const role = channel.guild.roles.cache.find(r => r.id == "694666400765182002")
+        const m = channel.guild.members.cache.find(m => m.id == user.id)
         m.roles.add(role)
         removePlaying(m);
         channel.delete("Finished the game");
-        const winnerchannel = <TextChannel>channel.guild.channels.find(c => c.name.toLowerCase() === "doravolution-plotting")
+        const winnerchannel = <TextChannel>channel.guild.channels.cache.find(c => c.name.toLowerCase() === "doravolution-plotting")
             winnerchannel.send(`<@${user.id}> has joined our ranks!`)
 
     })
@@ -257,9 +257,9 @@ const doraLose = async (channel:TextChannel) => {
     }, { max: 1, time: 6000000, errors: ['time'] })
         .then(collected => {
             const reaction = collected.first();
-            const user = reaction.users.array()[1];
-            const role = channel.guild.roles.find(r => r.name == "I lost the game :(")
-            const m = channel.guild.members.find(m => m.id == user.id)
+            const user = reaction.users.cache.array()[1];
+            const role = channel.guild.roles.cache.find(r => r.name == "I lost the game :(")
+            const m = channel.guild.members.cache.find(m => m.id == user.id)
             m.roles.add(role)
             removePlaying(m);
             channel.delete("Finished the game");

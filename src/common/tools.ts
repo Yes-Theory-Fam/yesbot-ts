@@ -87,7 +87,7 @@ class Tools {
 
         //? Return [Message, Channel]
         try {
-            const channel: TextChannel = <TextChannel>guild.channels.find((c) => c.id == channelId)
+            const channel: TextChannel = <TextChannel>guild.channels.cache.find((c) => c.id == channelId)
             const message = await channel.messages.fetch(messageId)
             return [message, channel]
         } catch (error) {
@@ -99,7 +99,7 @@ class Tools {
     }
 
     static async getRoleById(roleId: Snowflake, guild:Discord.Guild) {
-        return guild.roles.find((r) => r.id == roleId)
+        return guild.roles.cache.find((r) => r.id == roleId)
     }
 }
 

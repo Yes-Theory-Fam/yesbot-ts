@@ -7,7 +7,7 @@ export default async function ReactRole(pMessage: Discord.Message) {
 
     //! This comes to us in the format of "!roles [add|list] [messageId] [emoji] [roleId] [channelId]"
     //! So first we need to establish if it is add or list
-    const isSupport = pMessage.member.roles.has(pMessage.guild.roles.find(r => r.name == MODERATOR_ROLE_NAME).id)
+    const isSupport = pMessage.member.roles.cache.has(pMessage.guild.roles.cache.find(r => r.name == MODERATOR_ROLE_NAME).id)
     if(!isSupport) return;
 
     const args = <string[]>pMessage.content.split(" ");
@@ -56,7 +56,7 @@ async function addReactRoleObject(messageId: Snowflake, reaction: string, roleId
             const successEmbed = new Discord.MessageEmbed()
                 .setColor('#ff6063')
                 .setTitle('Reaction role successfully added.')
-                .addBlankField()
+                .addField('\u200b', '\u200b')
                 .addField('Target Message:', message.cleanContent, true)
                 .addField('Target Channel:', channel, true)
                 .addField('Necessary Reaction:', reaction, true)
@@ -81,7 +81,7 @@ async function listReactRoleObjects(pMessage: Discord.Message) {
     let returnString = "**List of available role reactions**:\n\n";
     try {
         await Promise.all(reactRoleObjects.map(async (i: any) => {
-            let role = guild.roles.find(r => r.id == i.roleId);
+            let role = guild.roles.cache.find(r => r.id == i.roleId);
             let [message, channel] = await Tools.getMessageById(i.messageId, guild, i.channelId)
             message = <Discord.Message>message;
             returnString += `__**${index}:**__\n**Message**: ${message.cleanContent}\n`

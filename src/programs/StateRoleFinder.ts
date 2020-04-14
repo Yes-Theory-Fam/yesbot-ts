@@ -16,8 +16,8 @@ export default async function StateRoleFinder(pMessage: Discord.Message) {
     }
     const stateRoles = await Tools.resolveFile("stateRoles");
     let found = false;
-    let supportRole = pMessage.guild.roles.find(r => r.name == MODERATOR_ROLE_NAME)
-    if (pMessage.member.roles.has(supportRole.id)) {
+    let supportRole = pMessage.guild.roles.cache.find(r => r.name == MODERATOR_ROLE_NAME)
+    if (pMessage.member.roles.cache.has(supportRole.id)) {
         stateRoles.forEach((stateRole: any) => {
             const { state, role } = stateRole;
                 if (state.toLowerCase() === stateRequest.toLowerCase()) {
