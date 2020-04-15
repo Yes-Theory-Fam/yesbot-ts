@@ -46,7 +46,7 @@ export default async function Ticket(pMessage: Discord.Message, type:string) {
         break;
     }
 
-    const moderatorRole = pMessage.guild.roles.find(r => r.name == moderatorRoleName)
+    const moderatorRole = pMessage.guild.roles.cache.find(r => r.name == moderatorRoleName)
 
     //! This comes to us in the format of "![fiyesta|shoutout] [close|logs]?"
     const args = pMessage.cleanContent.split(" ")
@@ -57,12 +57,12 @@ export default async function Ticket(pMessage: Discord.Message, type:string) {
     const isForceClose = pMessage.cleanContent.split(" ")[1] == "forceclose";
     
     const isClose = pMessage.cleanContent.split(" ")[1] == "close";
-    const supportRole = pMessage.guild.roles.find(r => r.name == moderatorRoleName);
+    const supportRole = pMessage.guild.roles.cache.find(r => r.name == moderatorRoleName);
 
     if (isClose) {
         const ticketChannel = <Discord.TextChannel>pMessage.channel;
         if (ticketChannel.name.startsWith(type)) {
-            if (pMessage.member.roles.has(supportRole.id)) createCloseMessage(ticketChannel, pMessage.author, TICKET_LOG_CHANNEL)
+            if (pMessage.member.roles.cache.has(supportRole.id)) createCloseMessage(ticketChannel, pMessage.author, TICKET_LOG_CHANNEL)
         }
         return;
     }
@@ -70,7 +70,7 @@ export default async function Ticket(pMessage: Discord.Message, type:string) {
     if(isForceClose){
         const ticketChannel = <Discord.TextChannel>pMessage.channel;
         if(ticketChannel.name.startsWith(type)) {
-            if(pMessage.member.roles.has(supportRole.id)) closeTicket(ticketChannel, pMessage.author, TICKET_LOG_CHANNEL)
+            if(pMessage.member.roles.cache.has(supportRole.id)) closeTicket(ticketChannel, pMessage.author, TICKET_LOG_CHANNEL)
         }
     }
 
@@ -103,7 +103,7 @@ export default async function Ticket(pMessage: Discord.Message, type:string) {
             parent:categoryId
         }
         channelName = channelName.replace(/\s+/g, '-').toLowerCase();
-        if(pMessage.guild.channels.find(c => c.name == channelName)) {
+        if(pMessage.guild.channels.cache.find(c => c.name == channelName)) {
             pMessage.author.createDM().then(channel => {
                 channel.send("You already have a ticket open, please close that one first before opening another.")
             })
@@ -126,7 +126,7 @@ export default async function Ticket(pMessage: Discord.Message, type:string) {
 async function closeTicket(c: Discord.TextChannel, m: Discord.User,lc:string) {
 
     const text = await createOutput(c,m);
-    const logChannel = <TextChannel>c.guild.channels.find(c => c.name.startsWith(lc))
+    const logChannel = <TextChannel>c.guild.channels.cache.find(c => c.name.startsWith(lc))
     logChannel.send(text, {split:true})
     c.delete("Closed Ticket");
 }
@@ -159,7 +159,7 @@ async function createCloseMessage(c: TextChannel, m: User, TICKET_LOG_CHANNEL:st
     }, { max: 1, time: 60000, errors: ['time'] })
         .then(collected => {
             const reaction = collected.first();
-            const user = reaction.users.array()[1];
+            const user = reaction.users.cache.array()[1];
 
             if (reaction.emoji.name === '✅') {
                 message.reply('you reacted with a ✅ up.');

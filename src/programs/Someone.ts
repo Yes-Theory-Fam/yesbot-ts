@@ -18,7 +18,7 @@ async function Someone(message: Discord.Message) {
         return;
     }
 
-    const hasSeekDiscomfort = message.member.roles.has(message.guild.roles.find(r => r.name == "Seek Discomfort").id);
+    const hasSeekDiscomfort = message.member.roles.cache.has(message.guild.roles.cache.find(r => r.name == "Seek Discomfort").id);
     
     if(!hasSeekDiscomfort) {
         const deniedMessage = await message.reply("You need the Seek Discomfort role for that! You can get one by writing a detailed bio of yourself in <#616616321089798145>.")
@@ -79,7 +79,7 @@ async function isAllowed(user:Discord.User) {
 
 async function getTarget(arg: string, message: Discord.Message) {
     if(message) {
-        const sdRole = message.guild.roles.find(r => r.name == "Seek Discomfort");
+        const sdRole = message.guild.roles.cache.find(r => r.name == "Seek Discomfort");
         if(!sdRole) {
             message.channel.send("There is no Seek Discomfort role in this server!");
             return;

@@ -22,7 +22,7 @@ export default async function ExportManager(message: Discord.Message) {
 
 
     const member = message.member;
-    const moderator = !!member.roles.some(r=>r.name === MODERATOR_ROLE_NAME);
+    const moderator = !!member.roles.cache.some(r=>r.name === MODERATOR_ROLE_NAME);
     
     switch (toExportType) {
 
@@ -35,7 +35,7 @@ export default async function ExportManager(message: Discord.Message) {
 
 const exportRole = (toExport:string, guild:Guild, message: Discord.Message) => {
     // toExport = toExport.match()
-    const foundRole = guild.roles.find(role => role.name.toLowerCase() === toExport.toLowerCase())
+    const foundRole = guild.roles.cache.find(role => role.name.toLowerCase() === toExport.toLowerCase())
     if(!foundRole) {
         message.channel.send(`No roles found for "${toExport}". Export like !export role "study group french"`)
     }
