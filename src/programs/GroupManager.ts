@@ -71,7 +71,7 @@ export default async function GroupManager(pMessage: Discord.Message, commandInd
         const groups = await Tools.resolveFile("groupManager");
         groups.forEach((group: any) => {
 
-            if (group.name.toLowerCase() == requestName) {
+            if (group.name.toLowerCase() == requestName.toLowerCase()) {
                 foundGroup = true;
                 let writeLine: string = "**@" + group.name + "**:"
                 group.members.forEach((member: string) => {
