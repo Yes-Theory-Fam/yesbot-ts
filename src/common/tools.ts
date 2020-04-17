@@ -8,15 +8,21 @@ interface LocalUser {
 }
 class Tools {
 
-    wheels = 4;
+    static isProd(): boolean {
+        return (process.platform === "linux");
+    }
 
-    static getArgs(message:string) {
-        const args = message.split(" ");
-        return args;
+    static paramsToArgs(params:string) {
+        return params.split(" ");
     }
 
     static stringToWords(inputStr:string): Array<string> {
         return <string[]>inputStr.split(" ");
+    }
+
+    static getYesGuild(bot: Discord.Client) {
+        const guild = bot.guilds.find(g => g.name === "Test Theory Fam");
+        return guild;
     }
 
     static async resolveFile(filename: string): Promise<Object[]> {

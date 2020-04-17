@@ -8,6 +8,7 @@ class Ready {
 
     constructor() {
         this.bot = bot;
+        
         console.log(`${bot.user.tag} - Online`)
     }
 

@@ -27,8 +27,8 @@ class ReactionRemove {
         const reactRoleObjects = await Tools.resolveFile("reactRoleObjects");
         reactRoleObjects.forEach((element: any) => {
             if (this.messageId === element.messageId && this.reaction === element.reaction) {
-                const guildMember = this.guild.members.cache.find(m => m.id == this.user.id);
-                const roleToAdd = this.guild.roles.cache.find(r => r.id == element.roleId);
+                const guildMember = this.guild.members.find(m => m.id == this.user.id);
+                const roleToAdd = this.guild.roles.find(r => r.id == element.roleId);
                 guildMember.roles.remove(roleToAdd);
             }
         });

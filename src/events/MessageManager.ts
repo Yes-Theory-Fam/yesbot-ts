@@ -111,6 +111,8 @@ randomReply() {
     this.message.reply(replies[Math.floor(Math.random()*replies.length)])
 }
 sendLove() {
+    console.log(this.message.member);
+    
     this.message.reply("I love you too! (Although I'm not entirely sure what love is but this experience I'm feeling is probably some iteration of love.)")
     this.message.react("😍");
 }
