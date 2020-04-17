@@ -1,11 +1,10 @@
 import {Client, Channel, Emoji, Guild, GuildMember, PartialGuildMember, Message, User, PartialUser, Collection, Role, TextChannel, Snowflake, MessageReaction, Speaking, PartialMessage, Presence, VoiceState,} from 'discord.js';
 import { MessageManager, ReactionAdd, ReactionRemove, Ready, MemberJoin, GuildMemberUpdate } from './events';
-import { BOT_PROD_TOKEN, BOT_DEV_TOKEN } from './const';
+import { BOT_TOKEN } from './const';
 
 
 const bot = new Client({ partials: ['REACTION', 'MESSAGE']});
-if(process.platform == "linux") bot.login(BOT_PROD_TOKEN);
-else bot.login(BOT_DEV_TOKEN);
+bot.login(BOT_TOKEN);
 
 //! ================= EVENT HANDLERS ====================
 bot.on("channelCreate", (channelType:Channel) => null);
