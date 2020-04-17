@@ -31,7 +31,7 @@ export default async function GroupManager(pMessage: Discord.Message, commandInd
 
         const groups = await <DiscordGroup[]><unknown>Tools.resolveFile("groupManager");
         const user = pMessage.member;
-        const moderator = !!pMessage.member.roles.cache.has(pMessage.guild.roles.cache.find(r => r.name === MODERATOR_ROLE_NAME).id);
+        const moderator = !!pMessage.member.roles.has(pMessage.guild.roles.find(r => r.name === MODERATOR_ROLE_NAME).id);
 
         switch (action) {
 

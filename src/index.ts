@@ -49,4 +49,5 @@ bot.on("voiceStateUpdate", (oldMember: VoiceState, newMember: VoiceState) => nul
 bot.on("warn",  (info: string) => null);
 bot.on("webhookUpdate", (channel: TextChannel) => null);
 //! ================= /EVENT HANDLERS ===================
+
 export default bot;

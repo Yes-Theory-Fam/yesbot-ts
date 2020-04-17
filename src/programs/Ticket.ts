@@ -46,7 +46,7 @@ export default async function Ticket(pMessage: Discord.Message, type:string) {
         break;
     }
 
-    const moderatorRole = pMessage.guild.roles.cache.find(r => r.name == moderatorRoleName)
+    const moderatorRole = pMessage.guild.roles.find(r => r.name == moderatorRoleName)
 
     //! This comes to us in the format of "![fiyesta|shoutout] [close|logs]?"
     const args = pMessage.cleanContent.split(" ")
@@ -126,7 +126,7 @@ export default async function Ticket(pMessage: Discord.Message, type:string) {
 async function closeTicket(c: Discord.TextChannel, m: Discord.User,lc:string) {
 
     const text = await createOutput(c,m);
-    const logChannel = <TextChannel>c.guild.channels.cache.find(c => c.name.startsWith(lc))
+    const logChannel = <TextChannel>c.guild.channels.find(c => c.name.startsWith(lc))
     logChannel.send(text, {split:true})
     c.delete("Closed Ticket");
 }

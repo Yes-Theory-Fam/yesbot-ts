@@ -21,7 +21,7 @@ class Tools {
     }
 
     static getYesGuild(bot: Discord.Client) {
-        const guild = bot.guilds.find(g => g.name === "Test Theory Fam");
+        const guild = bot.guilds.find(g => g.name === process.env.PROD_GUILD_NAME);
         return guild;
     }
 
