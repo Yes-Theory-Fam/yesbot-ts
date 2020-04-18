@@ -36,24 +36,24 @@ export default async function GroupManager(message: Discord.Message, isConfig: b
         switch (action) {
 
             case "join":
-                joinGroup(groups, requestName, user);
+                joinGroup(message, groups, requestName, user);
                 break;
 
             case "create":
-                if(moderator) createGroup(groups, requestName, user, description);
+                if(moderator) createGroup(message, groups, requestName, user, description);
                 else message.reply("You do not have permission to use this command.")
                 break;
 
             case "leave":
-                leaveGroup(groups, requestName, user);
+                leaveGroup(message, groups, requestName, user);
                 break;
 
             case "search":
-                searchGroup(groups, requestName);
+                searchGroup(message, groups, requestName);
                 break;
 
             case "delete":
-                if(moderator) deleteGroup(groups, requestName);
+                if(moderator) deleteGroup(message, groups, requestName);
                 else message.reply("You do not have permission to use this command.")
                 break;
 
@@ -89,7 +89,7 @@ export default async function GroupManager(message: Discord.Message, isConfig: b
 
 }
 
-const deleteGroup = (groups: DiscordGroup[], requestedGroupName: string = "") => {
+const deleteGroup = (message:Discord.Message, groups: DiscordGroup[], requestedGroupName: string = "") => {
 
     if (!requestedGroupName) {
         message.react("👎")
@@ -121,7 +121,7 @@ const deleteGroup = (groups: DiscordGroup[], requestedGroupName: string = "") =>
 }
 
 
-const searchGroup = (groups: DiscordGroup[], requestedGroupName: string = "") => {
+const searchGroup = (message:Discord.Message, groups: DiscordGroup[], requestedGroupName: string = "") => {
     const groupsPerPage = 4;
     const pages: Array<MessageEmbed> = [];
     groups = orderGroupsBy(groups)
@@ -194,7 +194,7 @@ const orderGroupsBy = (object: Array<DiscordGroup>): DiscordGroup[] => {
     return object;
 }
 
-const createGroup = async (groups: DiscordGroup[], requestedGroupName: string, member: GuildMember, description: String) => {
+const createGroup = async (message:Discord.Message, groups: DiscordGroup[], requestedGroupName: string, member: GuildMember, description: String) => {
     if (!requestedGroupName) {
         message.react("👎")
         return;
@@ -227,7 +227,7 @@ const createGroup = async (groups: DiscordGroup[], requestedGroupName: string, m
     }
 }
 
-const joinGroup = async (groups: DiscordGroup[], requestedGroupName: string, member: GuildMember) => {
+const joinGroup = async (message:Discord.Message, groups: DiscordGroup[], requestedGroupName: string, member: GuildMember) => {
     let foundGroup = false;
     let localUserData = await Tools.getUserData(member.user.id)
 
@@ -253,7 +253,7 @@ const joinGroup = async (groups: DiscordGroup[], requestedGroupName: string, mem
     }
 }
 
-const leaveGroup = async (groups: DiscordGroup[], requestedGroupName: string, member: GuildMember) => {
+const leaveGroup = async (message:Discord.Message, groups: DiscordGroup[], requestedGroupName: string, member: GuildMember) => {
     let localUserData = await Tools.getUserData(member.user.id)
     let success: boolean = false;
     groups.forEach((group: DiscordGroup) => {

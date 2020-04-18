@@ -3,6 +3,7 @@ import { Someone, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromM
 import bot from "../index"
 import ExportManager from '../programs/ExportManager';
 import {USA_IMAGE_URL, CANADA_IMAGE_URL, UK_IMAGE_URL, AUSTRALIA_IMAGE_URL, EASTER_EVENT} from '../const'
+import Tools from '../common/tools';
 
 class MessageManager {
     message: Discord.Message;
@@ -75,8 +76,10 @@ class MessageManager {
             case "gaming":
                 if(words.includes("@group")) GroupManager(this.message, false)
                 break;
-        }
 
+            }
+            
+            if (firstWord === "!vote") this.addVote()
             if (firstWord === "F") this.message.react("🇫");
             if (["i love u yesbot", "i love you yesbot", "yesbot i love you "].includes(this.message.content.toLowerCase())) this.sendLove();
             if (this.message.content.toLowerCase().startsWith("yesbot") && this.message.content.toLowerCase().endsWith('?')) this.randomReply();
@@ -103,6 +106,15 @@ class MessageManager {
         default:
             break;
     }
+}
+
+addVote = async () => {
+   const words = Tools.stringToWords(this.message.content)
+   words.shift();
+   const messageId = words[0];
+   const messageToVote = await this.message.channel.messages.resolve(messageId);
+   if(!messageToVote) this.message.react("👎")
+   else this.message.delete().then(() => messageToVote.react("👍")).then(() => messageToVote.react("👎"));
 }
 
 randomReply() {

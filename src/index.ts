@@ -1,6 +1,6 @@
 import {Client, Channel, Emoji, Guild, GuildMember, PartialGuildMember, Message, User, PartialUser, Collection, Role, TextChannel, Snowflake, MessageReaction, Speaking, PartialMessage, Presence, VoiceState,} from 'discord.js';
 import { MessageManager, ReactionAdd, ReactionRemove, Ready, MemberJoin, GuildMemberUpdate } from './events';
-import { BOT_TOKEN } from './const';
+import { BOT_TOKEN, GUILD_ID, OUTPUT_CHANNEL_ID } from './const';
 
 
 const bot = new Client({ partials: ['REACTION', 'MESSAGE']});
@@ -39,7 +39,7 @@ bot.on("messageReactionRemove", (messageReaction: MessageReaction, user: User | 
 bot.on("messageReactionRemoveAll", (message: Message | PartialMessage) => null);
 bot.on("messageUpdate", (oldMessage: Message | PartialMessage, newMessage: Message | PartialMessage) => null);
 bot.on("presenceUpdate", (oldMember: Presence, newMember: Presence) => null);
-bot.on("ready", () => new Ready());
+bot.on("ready", () => new Ready(bot));
 bot.on("roleCreate", (role: Role) => null);
 bot.on("roleDelete", (role: Role) => null);
 bot.on("roleUpdate", (oldRole: Role, newRole: Role) => null);
@@ -48,5 +48,10 @@ bot.on("voiceStateUpdate", (oldMember: VoiceState, newMember: VoiceState) => nul
 bot.on("warn",  (info: string) => null);
 bot.on("webhookUpdate", (channel: TextChannel) => null);
 //! ================= /EVENT HANDLERS ===================
+process.on("beforeExit", () => {
+   const guild = bot.guilds.resolve(GUILD_ID)
+   const outputChannel = <TextChannel>guild.channels.resolve(OUTPUT_CHANNEL_ID)
+   outputChannel.send(`Looks like I'm about to die. Please check in this channel to ensure I restart ok.`)
+})
 
 export default bot;
