@@ -21,11 +21,6 @@ class MessageManager {
         const firstWord = words[0];
         const channel = <Discord.TextChannel>this.message.channel;
 
-        if(firstWord === "!easterEventStart") {
-            this.message.reply("The Easter Event has begun. Please keep watch over the relevant event channel and this channel for further updates.")
-            if(EASTER_EVENT) EasterEvent(this.message);
-        }
-
         switch (channel.name) {
 
             case "where-are-you-from":
@@ -43,7 +38,7 @@ class MessageManager {
                
                 if(firstWord === "@someone") Someone(this.message);
                 if(firstWord === "!deadchat") Deadchat(this.message);
-                if(words.includes("@group")) GroupManager(this.message, this.message.content.indexOf("@"))
+                if(words.includes("@group")) GroupManager(this.message, false)
                 break;
 
             case "permanent-testing":
@@ -51,13 +46,13 @@ class MessageManager {
                 if (firstWord === "!roles") ReactRole(this.message);
                 if(firstWord === "!export") ExportManager(this.message);
                 if(firstWord === "!unassigned") Unassigned(this.message);
-                if(firstWord === "!group") GroupManager(this.message, 0);
+                if(firstWord === "!group") GroupManager(this.message, true);
                 if(firstWord === "!profile") ProfileManager(this.message, 0);
                 break;
 
             case "bot-commands":
 
-                if(firstWord === "!group") GroupManager(this.message, 0);
+                if(firstWord === "!group") GroupManager(this.message, true);
                 if(firstWord === "!profile") ProfileManager(this.message, 0);
                 if(firstWord === "!fiyesta") Ticket(this.message, "fiyesta");
                 if(firstWord === "!shoutout") Ticket(this.message, "shoutout");

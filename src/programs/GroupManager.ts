@@ -1,7 +1,8 @@
 import Discord, { Snowflake, TextChannel, GuildMember, Message, MessageEmbed, MessageReaction, User } from 'discord.js';
 import Tools from '../common/tools';
-import { MODERATOR_ROLE_NAME } from '../const';
+import { MODERATOR_ROLE_NAME, ENGINEER_ROLE_NAME } from '../const';
 import { group } from 'console';
+import { isAuthorModerator } from '../common/moderator';
 
 interface DiscordGroup {
     name: String,
@@ -9,40 +10,38 @@ interface DiscordGroup {
     description: String,
 }
 
-let message: Message;
 
+export default async function GroupManager(message: Discord.Message, isConfig: boolean) {
 
-export default async function GroupManager(pMessage: Discord.Message, commandIndex: number) {
-    message = pMessage;
+    const content = message.content
+    
+    if (isConfig) {
 
-    const content = pMessage.content.slice(commandIndex)
-
-    if (pMessage.cleanContent.startsWith("!group")) {
-
-        const words = Tools.stringToWords(pMessage.cleanContent)
+        const words = Tools.stringToWords(content)
         words.shift();
         const [action, requestName, ...descriptionWords] = words
         const description = descriptionWords.join(" ");
 
         if (!action || !(["join", "create", "leave", "search", "delete"].includes(action))) {
-            pMessage.reply(`Incorrect syntax, please use the following: \`!group join|leave|create|search|delete\``);
+
+            const helpMessage = `Incorrect syntax, please use the following: \`!group join|leave|create|search|delete\`. If you need additional help, react with 🛠️ below to tag a ${ENGINEER_ROLE_NAME}`
+            const angryMessage = await message.reply(helpMessage)
             return;
         }
 
         const groups = await <DiscordGroup[]><unknown>Tools.resolveFile("groupManager");
-        const user = pMessage.member;
-        const moderator = !!pMessage.member.roles.has(pMessage.guild.roles.find(r => r.name === MODERATOR_ROLE_NAME).id);
+        const user = message.member;
+        const moderator = isAuthorModerator(message)
 
         switch (action) {
 
             case "join":
-
                 joinGroup(groups, requestName, user);
                 break;
 
             case "create":
-                if (moderator) createGroup(groups, requestName, user, description);
-                else pMessage.reply("You do not have permission to use this command.")
+                if(moderator) createGroup(groups, requestName, user, description);
+                else message.reply("You do not have permission to use this command.")
                 break;
 
             case "leave":
@@ -51,18 +50,18 @@ export default async function GroupManager(pMessage: Discord.Message, commandInd
 
             case "search":
                 searchGroup(groups, requestName);
-
                 break;
+
             case "delete":
-                if (moderator) deleteGroup(groups, requestName);
-                else pMessage.reply("You do not have permission to use this command.")
+                if(moderator) deleteGroup(groups, requestName);
+                else message.reply("You do not have permission to use this command.")
                 break;
 
         }
 
     }
 
-    else if (content.startsWith("@")) {
+    else {
 
         const args = <string[]>content.split(" ");
         args.shift();
@@ -71,18 +70,18 @@ export default async function GroupManager(pMessage: Discord.Message, commandInd
         const groups = await Tools.resolveFile("groupManager");
         groups.forEach((group: any) => {
 
-            if (group.name.toLowerCase() == requestName) {
+            if (group.name.toLowerCase() == requestName.toLowerCase()) {
                 foundGroup = true;
                 let writeLine: string = "**@" + group.name + "**:"
                 group.members.forEach((member: string) => {
                     writeLine = writeLine.concat(" <@" + member + ">,")
                 });
-                pMessage.channel.send(writeLine)
+                message.channel.send(writeLine)
             }
         })
 
         if (!foundGroup) {
-            pMessage.reply("I couldn't find that group.")
+            message.reply("I couldn't find that group.")
         }
     }
 
