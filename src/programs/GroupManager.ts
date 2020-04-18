@@ -1,6 +1,6 @@
 import Discord, { Snowflake, TextChannel, GuildMember, Message, MessageEmbed, MessageReaction, User } from 'discord.js';
 import Tools from '../common/tools';
-import { MODERATOR_ROLE_NAME, ENGINEER_ROLE_NAME } from '../const';
+import { MODERATOR_ROLE_ID, ENGINEER_ROLE_NAME } from '../const';
 import { group } from 'console';
 import { isAuthorModerator } from '../common/moderator';
 
