@@ -71,7 +71,11 @@ class MessageManager {
 
                 this.message.react('👍').then(() => this.message.react('👎'));
                 break;
-            }
+
+            case "gaming":
+                if(words.includes("@group")) GroupManager(this.message, false)
+                break;
+        }
 
             if (firstWord === "F") this.message.react("🇫");
             if (["i love u yesbot", "i love you yesbot", "yesbot i love you "].includes(this.message.content.toLowerCase())) this.sendLove();
