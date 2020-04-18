@@ -1,10 +1,13 @@
 import {Client, Channel, Emoji, Guild, GuildMember, PartialGuildMember, Message, User, PartialUser, Collection, Role, TextChannel, Snowflake, MessageReaction, Speaking, PartialMessage, Presence, VoiceState,} from 'discord.js';
 import { MessageManager, ReactionAdd, ReactionRemove, Ready, MemberJoin, GuildMemberUpdate } from './events';
 import { BOT_TOKEN, GUILD_ID, OUTPUT_CHANNEL_ID } from './const';
+import Firebase from './collections/firebaseConnection';
 
 
 const bot = new Client({ partials: ['REACTION', 'MESSAGE']});
 bot.login(BOT_TOKEN);
+
+export const db = new Firebase();
 
 //! ================= EVENT HANDLERS ====================
 bot.on("channelCreate", (channelType:Channel) => null);

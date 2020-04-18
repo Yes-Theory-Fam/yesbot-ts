@@ -1,5 +1,7 @@
 import Discord from 'discord.js';
 import Tools from '../common/tools';
+import { hasRole } from '../common/moderator';
+import { BuddyProjectSignup } from '../programs/BuddyProject';
 
 class GuildMemberUpdate {
 
@@ -7,16 +9,11 @@ class GuildMemberUpdate {
     bot: Discord.Client;
 
     constructor(oldMember:Discord.GuildMember | Discord.PartialGuildMember, newMember:Discord.GuildMember | Discord.PartialGuildMember) {
-        this.updateUserStore(oldMember, newMember);
-    }
-
-    updateUserStore(oldMember:Discord.GuildMember | Discord.PartialGuildMember, newMember:Discord.GuildMember | Discord.PartialGuildMember) {
-        const users = Tools.resolveFile('userStore')
-        const { id, roles, nickname, displayHexColor, displayName } = newMember;
         
+        if(hasRole(newMember, "Buddy Project 2020") && !hasRole(oldMember, "Buddy Project 2020")) {
+            BuddyProjectSignup(newMember)
+        }
     }
-
-
 
 }
 

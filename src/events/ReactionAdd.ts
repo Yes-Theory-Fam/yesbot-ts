@@ -35,15 +35,9 @@ class ReactionAdd {
         const reactRoleObjects = await Tools.resolveFile("reactRoleObjects");
         reactRoleObjects.forEach((element: any) => {
             if (this.messageId === element.messageId && this.reaction === element.reaction) {
-                const guildMember = this.guild.members.find(m => m.id == this.user.id);
-                const roleToAdd = this.guild.roles.find(r => r.id == element.roleId);
-                const groupsHeaderRole = this.guild.roles.find(r => r.id == "603387942702022696")
-                const fiyestasHeaderRole = this.guild.roles.find(r => r.id == "602491235705421844")
-                const badgesHeaderRole = this.guild.roles.find(r => r.id == "602491468795478036")
+                const guildMember = this.guild.members.cache.find(m => m.id == this.user.id);
+                const roleToAdd = this.guild.roles.cache.find(r => r.id == element.roleId);
                 guildMember.roles.add(roleToAdd);
-                guildMember.roles.add(groupsHeaderRole);
-                guildMember.roles.add(fiyestasHeaderRole);
-                guildMember.roles.add(badgesHeaderRole);
             }
         });
     }

@@ -2,8 +2,9 @@ import  Discord, { TextChannel } from 'discord.js';
 import { Someone, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, InitialiseTestEnvironment, Unassigned, ProfileManager, EasterEvent } from '../programs';
 import bot from "../index"
 import ExportManager from '../programs/ExportManager';
-import {USA_IMAGE_URL, CANADA_IMAGE_URL, UK_IMAGE_URL, AUSTRALIA_IMAGE_URL, EASTER_EVENT} from '../const'
+import {USA_IMAGE_URL, CANADA_IMAGE_URL, UK_IMAGE_URL, AUSTRALIA_IMAGE_URL } from '../const'
 import Tools from '../common/tools';
+import { hasRole } from '../common/moderator';
 
 class MessageManager {
     message: Discord.Message;
@@ -44,7 +45,7 @@ class MessageManager {
 
             case "permanent-testing":
 
-                if (firstWord === "!roles") ReactRole(this.message);
+                if (firstWord === "!role") ReactRole(this.message);
                 if(firstWord === "!export") ExportManager(this.message);
                 if(firstWord === "!unassigned") Unassigned(this.message);
                 if(firstWord === "!group") GroupManager(this.message, true);
@@ -78,8 +79,10 @@ class MessageManager {
                 break;
 
             }
-            
+
             if (firstWord === "!vote") this.addVote()
+            if (firstWord === "!delete") hasRole(this.message.member, "Support") ? this.deleteMessages() : null;
+            if (firstWord === "!role") ReactRole(this.message);
             if (firstWord === "F") this.message.react("🇫");
             if (["i love u yesbot", "i love you yesbot", "yesbot i love you "].includes(this.message.content.toLowerCase())) this.sendLove();
             if (this.message.content.toLowerCase().startsWith("yesbot") && this.message.content.toLowerCase().endsWith('?')) this.randomReply();
@@ -106,6 +109,16 @@ class MessageManager {
         default:
             break;
     }
+}
+
+deleteMessages = async () => {
+    const words = Tools.stringToWords(this.message.content)
+    words.shift();
+    const messagesToDelete = Number(words[0])
+    if(messagesToDelete !== NaN) {
+        this.message.channel.bulkDelete(messagesToDelete)
+    }
+    
 }
 
 addVote = async () => {

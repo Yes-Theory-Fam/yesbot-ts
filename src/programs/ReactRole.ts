@@ -1,40 +1,39 @@
 import Discord, {Snowflake, TextChannel} from 'discord.js';
 import Tools from '../common/tools';
 import { MODERATOR_ROLE_NAME } from '../const';
+import { isAuthorModerator } from '../common/moderator';
 
 
-export default async function ReactRole(pMessage: Discord.Message) {
+export default async function ReactRole(message: Discord.Message) {
 
     //! This comes to us in the format of "!roles [add|list] [messageId] [emoji] [roleId] [channelId]"
     //! So first we need to establish if it is add or list
-    const isSupport = pMessage.member.roles.cache.has(pMessage.guild.roles.cache.find(r => r.name == MODERATOR_ROLE_NAME).id)
-    if(!isSupport) return;
+    if(!isAuthorModerator(message)) return;
 
-    const args = <string[]>pMessage.content.split(" ");
-    args.shift();
-    const [action, messageId, reaction, roleId, channelId] = args
+    const words = Tools.stringToWords(message.content)
+    words.shift();
+    const [action, messageId, reaction, roleId, channelId] = words
+    const workingChannel:Discord.Channel = channelId ? message.guild.channels.resolve(channelId) : message.channel;
+
     if(!action || !(["add","list","delete"].includes(action))){
-        pMessage.reply(`Incorrect syntax, please use the following: \`!roles add|list|delete\``);
+        message.reply(`Incorrect syntax, please use the following: \`!roles add|list|delete\``);
         return;
     }
     switch (action) {
         case "add":
-            if(!messageId || !reaction || !roleId || !channelId || !pMessage) {
-                pMessage.reply(`Incorrect syntax, please use the following: \`!roles add messageId reaction roleId channelId\``);
+            if(!messageId || !reaction || !roleId || !message) {
+                message.reply(`Incorrect syntax, please use the following: \`!roles add messageId reaction roleId <channelId>\``);
                  return;
             }
-            addReactRoleObject(messageId, reaction, roleId, channelId, pMessage);
+            addReactRoleObject(messageId, reaction, roleId, channelId, message);
             break;
         case "list":
-            listReactRoleObjects(pMessage)
+            listReactRoleObjects(message)
         case "delete":
-            deleteReactRoleObjects(args[1], pMessage)
+            deleteReactRoleObjects(words[1], message)
         default:
             break;
     }
-    
-    
-
 }
 
 async function addReactRoleObject(messageId: Snowflake, reaction: string, roleId: Snowflake, channelId: Snowflake, pMessage: Discord.Message) {

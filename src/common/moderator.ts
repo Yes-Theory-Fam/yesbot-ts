@@ -1,4 +1,4 @@
-import { Message } from "discord.js"
+import { Message, GuildMember, PartialGuildMember } from "discord.js"
 import { MODERATOR_ROLE_NAME } from "../const"
 
 export const isAuthorModerator = (message: Message):boolean => {
@@ -9,4 +9,8 @@ export const isAuthorModerator = (message: Message):boolean => {
       return false;
    }
     
-} 
+}
+
+export const hasRole = (member: GuildMember | PartialGuildMember, roleName: string): boolean => {
+   return !!member.roles.cache.find(r => r.name === roleName)
+}
