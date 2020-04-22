@@ -14,3 +14,7 @@ export const isAuthorModerator = (message: Message):boolean => {
 export const hasRole = (member: GuildMember | PartialGuildMember, roleName: string): boolean => {
    return !!member.roles.cache.find(r => r.name === roleName)
 }
+
+export const isRegistered = (member:GuildMember | PartialGuildMember):boolean => {
+   return !!member.roles.cache.find(role => role.name.startsWith("I'm from "))
+}

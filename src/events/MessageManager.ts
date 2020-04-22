@@ -10,6 +10,7 @@ class MessageManager {
     message: Discord.Message;
     author: Discord.User;
     bot: Discord.Client;
+    logs: boolean;
 
     constructor(msg: Discord.Message) {
         this.message = msg;
@@ -18,7 +19,7 @@ class MessageManager {
         this.routeMessage();
     }
     routeMessage() {
-        
+
         const words = this.message.content.split(" ")
         const firstWord = words[0];
         const channel = <Discord.TextChannel>this.message.channel;
@@ -27,11 +28,12 @@ class MessageManager {
 
             case "where-are-you-from":
             case "welcome-chat":
+            case "flag-drop":
                 if (firstWord == "!usa") this.SendMap('usa');
                 if (firstWord == "!canada") this.SendMap('canada');
                 if (firstWord == "!australia") this.SendMap('australia');
-                if (firstWord == "!uk") this.SendMap('uk');;
-                WhereAreYouFromManager(this.message)
+                if (firstWord == "!uk") this.SendMap('uk');
+                WhereAreYouFromManager(this.message);
                 if(firstWord === "!state") StateRoleFinder(this.message);
                 break;
 
@@ -86,7 +88,7 @@ class MessageManager {
             if (firstWord === "F") this.message.react("🇫");
             if (["i love u yesbot", "i love you yesbot", "yesbot i love you "].includes(this.message.content.toLowerCase())) this.sendLove();
             if (this.message.content.toLowerCase().startsWith("yesbot") && this.message.content.toLowerCase().endsWith('?')) this.randomReply();
-            
+             
 
         }
 
@@ -134,9 +136,7 @@ randomReply() {
     let replies = ["yes.", "probably.", "doubtful.", "i'm afraid I don't know that one", "absolutely not.", "not a chance.", "definitely.", "very very very unlikely"];
     this.message.reply(replies[Math.floor(Math.random()*replies.length)])
 }
-sendLove() {
-    console.log(this.message.member);
-    
+sendLove() {    
     this.message.reply("I love you too! (Although I'm not entirely sure what love is but this experience I'm feeling is probably some iteration of love.)")
     this.message.react("😍");
 }
