@@ -111,11 +111,11 @@ class MessageManager {
                         case "✅":
                             const member = getMember(this.message.author.id)
                             member.setNickname(this.message.content)
-                            this.message.delete();
+                            sentMessage.delete();
                             textLog(`${this.message.author.toString()} was renamed to ${this.message.content}.`)
                             break;
                         case "🚫":
-                            this.message.delete();
+                            sentMessage.delete();
                             textLog(`${this.message.author.toString()} was not renamed.`)
                             break;
                     
