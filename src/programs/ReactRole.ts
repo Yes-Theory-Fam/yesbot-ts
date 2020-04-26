@@ -1,4 +1,4 @@
-import Discord, {Snowflake, TextChannel} from 'discord.js';
+import Discord, {Snowflake, TextChannel, Message} from 'discord.js';
 import Tools from '../common/tools';
 import { MODERATOR_ROLE_NAME } from '../const';
 import { isAuthorModerator } from '../common/moderator';
@@ -15,7 +15,7 @@ export default async function ReactRole(message: Discord.Message) {
     const [action, messageId, reaction, roleId, channelId] = words
     const workingChannel:Discord.Channel = channelId ? message.guild.channels.resolve(channelId) : message.channel;
 
-    if(!action || !(["add","list","delete"].includes(action))){
+    if(!action || !(["add","list","delete", "search"].includes(action))){
         message.reply(`Incorrect syntax, please use the following: \`!roles add|list|delete\``);
         return;
     }
@@ -31,8 +31,20 @@ export default async function ReactRole(message: Discord.Message) {
             listReactRoleObjects(message)
         case "delete":
             deleteReactRoleObjects(words[1], message)
+        case "search":
+            searchForRole(words[1], message)
         default:
             break;
+    }
+}
+
+const searchForRole = async (roleSearchString:string, message:Message) => {
+    const foundRole = message.guild.roles.cache.find(role => role.name.toLowerCase().includes(roleSearchString.toLowerCase()));
+    if(!foundRole) {
+        message.reply("I couldn't find that role!")
+    }
+    else {
+        message.reply(`There are ${foundRole.members.size} members in ${foundRole.toString()}`)
     }
 }
 

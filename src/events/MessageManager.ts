@@ -1,10 +1,10 @@
-import  Discord, { TextChannel } from 'discord.js';
+import  Discord, { TextChannel, User } from 'discord.js';
 import { Someone, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, InitialiseTestEnvironment, Unassigned, ProfileManager, EasterEvent } from '../programs';
 import bot from "../index"
 import ExportManager from '../programs/ExportManager';
 import {USA_IMAGE_URL, CANADA_IMAGE_URL, UK_IMAGE_URL, AUSTRALIA_IMAGE_URL } from '../const'
 import Tools from '../common/tools';
-import { hasRole } from '../common/moderator';
+import { hasRole, textLog, getMember } from '../common/moderator';
 
 class MessageManager {
     message: Discord.Message;
@@ -16,7 +16,13 @@ class MessageManager {
         this.message = msg;
         this.author = msg.author;
         this.bot = bot;
-        this.routeMessage();
+        if(msg.channel.type === "dm" && !msg.author.bot) {
+            this.routeDm();
+        }
+        else {
+            this.routeMessage();
+        }
+        
     }
     routeMessage() {
 
@@ -47,7 +53,6 @@ class MessageManager {
 
             case "permanent-testing":
 
-                if (firstWord === "!role") ReactRole(this.message);
                 if(firstWord === "!export") ExportManager(this.message);
                 if(firstWord === "!unassigned") Unassigned(this.message);
                 if(firstWord === "!group") GroupManager(this.message, true);
@@ -90,6 +95,34 @@ class MessageManager {
             if (this.message.content.toLowerCase().startsWith("yesbot") && this.message.content.toLowerCase().endsWith('?')) this.randomReply();
              
 
+        }
+
+        async routeDm() {
+            this.message.reply("Nice DM")
+            const message = `Username: ${this.message.author.toString()} would like to rename to "${this.message.content}". Allow?`;
+            const sentMessage = await textLog(message)
+            sentMessage.react("✅").then(message => sentMessage.react("🚫"))
+            sentMessage.awaitReactions((reaction: any, user: User) => {
+                return !user.bot
+            }, { max: 1, time: 6000000, errors: ['time'] })
+                .then(collected => {
+                    const reaction = collected.first();
+                    switch (reaction.emoji.toString()) {
+                        case "✅":
+                            const member = getMember(this.message.author.id)
+                            member.setNickname(this.message.content)
+                            this.message.delete();
+                            textLog(`${this.message.author.toString()} was renamed to ${this.message.content}.`)
+                            break;
+                        case "🚫":
+                            this.message.delete();
+                            textLog(`${this.message.author.toString()} was not renamed.`)
+                            break;
+                    
+                        default:
+                            break;
+                    }
+                })
         }
 
     resources = (channel:string) =>{

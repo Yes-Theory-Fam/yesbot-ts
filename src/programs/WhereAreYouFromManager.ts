@@ -22,7 +22,7 @@ export default async function WhereAreYouFromManager(pMessage: Discord.Message) 
             pMessage.member.createDM().then(dmChannel => {
                 const rules = pMessage.guild.channels.cache.find(c => c.name === "rules");
                 const generalInfo = pMessage.guild.channels.cache.find(c => c.name === "general-info")
-                dmChannel.send(`Hey! My name is YesBot, I'm so happy to see you've made it into our world, we really hope you stick around!\n\nIn the meantime, you should checkout ${rules.toString()} and ${generalInfo.toString()} , they contain a lot of good-to-knows about our server, and what cool stuff we can do.\nIt would be awesome to know your name, could you reply to this message with your first name please? Then I can introduce you to our family :D\n\nI know Discord can be a lot to take in at first, trust me, but it's really quite a wonderful place. If you like, I can send you a video on how Discord works for our server. For the mobile version, click :iphone: , or for the desktop version, click :desktop:`)
+                dmChannel.send(`Hey! My name is YesBot, I'm so happy to see you've made it into our world, we really hope you stick around!\n\nIn the meantime, you should checkout ${rules.toString()} and ${generalInfo.toString()} , they contain a lot of good-to-knows about our server and what cool stuff you can do.\nIt would be awesome to know your name, could you reply to this message with your first name please? Then I can introduce you to our family :grin:\n\nI know Discord can be a lot to take in at first, trust me, but it's really quite a wonderful place.`)
             })
         }
     }
