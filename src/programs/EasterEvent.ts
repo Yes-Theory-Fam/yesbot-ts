@@ -56,7 +56,6 @@ export default async function EasterEvent(msg: Discord.Message) {
 
 (function loop() {
     var rand = Math.round(Math.random() * EGG_DELAY_SECONDS * 1000);
-    console.log(rand)
     setTimeout(() =>{
             if(EASTER_EVENT) sendEgg();
             loop();  

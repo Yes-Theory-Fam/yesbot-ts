@@ -1,24 +1,31 @@
-import  Discord, { TextChannel } from 'discord.js';
+import  Discord, { TextChannel, User } from 'discord.js';
 import { Someone, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, InitialiseTestEnvironment, Unassigned, ProfileManager, EasterEvent } from '../programs';
 import bot from "../index"
 import ExportManager from '../programs/ExportManager';
 import {USA_IMAGE_URL, CANADA_IMAGE_URL, UK_IMAGE_URL, AUSTRALIA_IMAGE_URL } from '../const'
 import Tools from '../common/tools';
-import { hasRole } from '../common/moderator';
+import { hasRole, textLog, getMember } from '../common/moderator';
 
 class MessageManager {
     message: Discord.Message;
     author: Discord.User;
     bot: Discord.Client;
+    logs: boolean;
 
     constructor(msg: Discord.Message) {
         this.message = msg;
         this.author = msg.author;
         this.bot = bot;
-        this.routeMessage();
+        if(msg.channel.type === "dm" && !msg.author.bot) {
+            this.routeDm();
+        }
+        else {
+            this.routeMessage();
+        }
+        
     }
     routeMessage() {
-        
+
         const words = this.message.content.split(" ")
         const firstWord = words[0];
         const channel = <Discord.TextChannel>this.message.channel;
@@ -27,11 +34,12 @@ class MessageManager {
 
             case "where-are-you-from":
             case "welcome-chat":
+            case "flag-drop":
                 if (firstWord == "!usa") this.SendMap('usa');
                 if (firstWord == "!canada") this.SendMap('canada');
                 if (firstWord == "!australia") this.SendMap('australia');
-                if (firstWord == "!uk") this.SendMap('uk');;
-                WhereAreYouFromManager(this.message)
+                if (firstWord == "!uk") this.SendMap('uk');
+                WhereAreYouFromManager(this.message);
                 if(firstWord === "!state") StateRoleFinder(this.message);
                 break;
 
@@ -45,7 +53,6 @@ class MessageManager {
 
             case "permanent-testing":
 
-                if (firstWord === "!role") ReactRole(this.message);
                 if(firstWord === "!export") ExportManager(this.message);
                 if(firstWord === "!unassigned") Unassigned(this.message);
                 if(firstWord === "!group") GroupManager(this.message, true);
@@ -86,8 +93,36 @@ class MessageManager {
             if (firstWord === "F") this.message.react("🇫");
             if (["i love u yesbot", "i love you yesbot", "yesbot i love you "].includes(this.message.content.toLowerCase())) this.sendLove();
             if (this.message.content.toLowerCase().startsWith("yesbot") && this.message.content.toLowerCase().endsWith('?')) this.randomReply();
-            
+             
 
+        }
+
+        async routeDm() {
+            this.message.reply("I've sent your name request to the mods, hopefully they answer soon! In the meantime, you're free to roam around the server and explore. Maybe post an introduction to get started? :grin:")
+            const message = `Username: ${this.message.author.toString()} would like to rename to "${this.message.content}". Allow?`;
+            const sentMessage = await textLog(message)
+            sentMessage.react("✅").then(message => sentMessage.react("🚫"))
+            sentMessage.awaitReactions((reaction: any, user: User) => {
+                return !user.bot
+            }, { max: 1, time: 6000000, errors: ['time'] })
+                .then(collected => {
+                    const reaction = collected.first();
+                    switch (reaction.emoji.toString()) {
+                        case "✅":
+                            const member = getMember(this.message.author.id)
+                            member.setNickname(this.message.content)
+                            this.message.delete();
+                            textLog(`${this.message.author.toString()} was renamed to ${this.message.content}.`)
+                            break;
+                        case "🚫":
+                            this.message.delete();
+                            textLog(`${this.message.author.toString()} was not renamed.`)
+                            break;
+                    
+                        default:
+                            break;
+                    }
+                })
         }
 
     resources = (channel:string) =>{
@@ -134,9 +169,7 @@ randomReply() {
     let replies = ["yes.", "probably.", "doubtful.", "i'm afraid I don't know that one", "absolutely not.", "not a chance.", "definitely.", "very very very unlikely"];
     this.message.reply(replies[Math.floor(Math.random()*replies.length)])
 }
-sendLove() {
-    console.log(this.message.member);
-    
+sendLove() {    
     this.message.reply("I love you too! (Although I'm not entirely sure what love is but this experience I'm feeling is probably some iteration of love.)")
     this.message.react("😍");
 }

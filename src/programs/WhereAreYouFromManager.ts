@@ -1,44 +1,55 @@
 import Discord, { TextChannel } from 'discord.js';
 import Tools from '../common/tools';
+import {isRegistered, textLog} from '../common/moderator';
 import flag from 'country-code-emoji';
-import { userInfo } from 'os';
+import { Country, countries } from "../collections/flagEmojis";
 
-interface Country {
-    name: string;
-    code: string
-}
 
 export default async function WhereAreYouFromManager(pMessage: Discord.Message) {
 
-    const hasRoles = !!pMessage.member.roles.cache.find(role => role.name.includes("I'm from"));
-    const {guild, channel} = pMessage;
-    const countries: Array<Object> = await Tools.resolveFile("countryRoles");
-    const words: Array<string> = pMessage.cleanContent.split(" ");
+    const newUser = !isRegistered(pMessage.member);
+    let countryToAssign: Country;
 
-    words.forEach(word => {
-        countries.forEach((country: any) => {
-            if (word.toLowerCase() === country.name.toLowerCase()) {
-                const roleToGive = pMessage.guild.roles.cache.find(role => role.name.toLowerCase().includes(word.toLowerCase()));
-                if (roleToGive) {
-                    const flagReaction: string = flag(country.code)
-                    if (!hasRoles) {
-                        pMessage.react(flag(country.code))
-                        pMessage.awaitReactions((reaction: any, user: Discord.User) => {
+    if(newUser) {
+        countries.forEach((country:Country) => {
+            if(country.emoji === pMessage.content || pMessage.content.toLowerCase().includes(country.name.toLowerCase())) countryToAssign = country;
+        });
 
-                        
-                            return (flagReaction.includes(reaction.emoji.name) && !user.bot);
-                        },{ 
-                            max: 1, time: 60000000, errors: ['time'] }).then(collected => {
-                                const user = pMessage.guild.members.cache.find(member => {
-                                    return !!member.roles.cache.find(role => role.name == "Support")
-                                });
-                                if (user) pMessage.member.roles.add(roleToGive);
-                            })
-                    }
-                }
+        if(countryToAssign) {
+
+            const isOutlier = ["Australia", "United States", "United Kingdom", "Canada"].find(each => countryToAssign.title.includes(each));
+            let roleToAssign: Discord.Role;
+
+            switch (isOutlier) {
+                case "Australia":
+                    roleToAssign = pMessage.guild.roles.cache.find(role => role.name === "I'm from Australia!");
+                    break;
+                case "United Kingdom":
+                    roleToAssign = pMessage.guild.roles.cache.find(role => role.name === "I'm from the UK!");
+                    break;
+                case "United States":
+                    roleToAssign = pMessage.guild.roles.cache.find(role => role.name === "I'm from the USA!");
+                    break;
+                case "Canada":
+                    roleToAssign = pMessage.guild.roles.cache.find(role => role.name === "I'm from Canada!");
+                    break;
+                default:
+                    roleToAssign = pMessage.guild.roles.cache.find(role => role.name.toLowerCase().includes(countryToAssign.name.toLowerCase()));
+                    break;
             }
-        })
-    });
 
+            if(!roleToAssign) {
+                textLog(`<@${pMessage.author.id}> just requested role for country ${countryToAssign.name}, but I could not find it. Please make sure this role exists.`);
+                return;
+            }
+            pMessage.member.roles.add(roleToAssign);
+            pMessage.react("👍")
+            pMessage.member.createDM().then(dmChannel => {
+                const rules = pMessage.guild.channels.cache.find(c => c.name === "rules");
+                const generalInfo = pMessage.guild.channels.cache.find(c => c.name === "general-info")
+                dmChannel.send(`Hey! My name is YesBot, I'm so happy to see you've made it into our world, we really hope you stick around!\n\nIn the meantime, you should checkout ${rules.toString()} and ${generalInfo.toString()} , they contain a lot of good-to-knows about our server and what cool stuff you can do.\nIt would be awesome to know your name, could you reply to this message with your first name please? Then I can introduce you to our family :grin:\n\nI know Discord can be a lot to take in at first, trust me, but it's really quite a wonderful place.`)
+            })
+        }
+    }
 
 }
