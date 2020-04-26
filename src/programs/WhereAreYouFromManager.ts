@@ -1,6 +1,6 @@
 import Discord, { TextChannel } from 'discord.js';
 import Tools from '../common/tools';
-import {isRegistered} from '../common/moderator';
+import {isRegistered, textLog} from '../common/moderator';
 import flag from 'country-code-emoji';
 import { Country, countries } from "../collections/flagEmojis";
 
@@ -16,7 +16,32 @@ export default async function WhereAreYouFromManager(pMessage: Discord.Message) 
         });
 
         if(countryToAssign) {
-            const roleToAssign = pMessage.guild.roles.cache.find(role => role.name.toLowerCase().includes(countryToAssign.name.toLowerCase()));
+
+            const isOutlier = ["Australia", "United States", "United Kingdom", "Canada"].find(each => countryToAssign.title.includes(each));
+            let roleToAssign: Discord.Role;
+
+            switch (isOutlier) {
+                case "Australia":
+                    roleToAssign = pMessage.guild.roles.cache.find(role => role.name === "I'm from Australia!");
+                    break;
+                case "United Kingdom":
+                    roleToAssign = pMessage.guild.roles.cache.find(role => role.name === "I'm from the UK!");
+                    break;
+                case "United States":
+                    roleToAssign = pMessage.guild.roles.cache.find(role => role.name === "I'm from the USA!");
+                    break;
+                case "Canada":
+                    roleToAssign = pMessage.guild.roles.cache.find(role => role.name === "I'm from Canada!");
+                    break;
+                default:
+                    roleToAssign = pMessage.guild.roles.cache.find(role => role.name.toLowerCase().includes(countryToAssign.name.toLowerCase()));
+                    break;
+            }
+
+            if(!roleToAssign) {
+                textLog(`<@${pMessage.author.id}> just requested role for country ${countryToAssign.name}, but I could not find it. Please make sure this role exists.`);
+                return;
+            }
             pMessage.member.roles.add(roleToAssign);
             pMessage.react("👍")
             pMessage.member.createDM().then(dmChannel => {

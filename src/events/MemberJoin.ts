@@ -15,7 +15,7 @@ class MemberJoin {
         `Hey ${member.toString()}. What's your name? :grin: You've just joined the Yes Theory Fam Discord Server! Drop where you're from in here so you can be given access to all the channels. Don't forget to also read the <#450102410262609943>. In the meantime you can go say hi to a couple of our friends in <#689589205755625641>! :heart: `
     ]
         let message = messages[Math.floor(Math.random()*messages.length)]
-        //welcomeChannel.send(message)
+        welcomeChannel.send(message)
 
 
     }
