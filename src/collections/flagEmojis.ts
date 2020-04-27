@@ -67,7 +67,6 @@ export const countries: Country[] = [
     "unicode": "U+1F1E6 U+1F1F4",
     "name": "Angola",
     "title": "flag for Angola",
-
   },
   {
     "code": "AQ",

@@ -14,7 +14,7 @@ export default async function WhereAreYouFromManager(pMessage: Discord.Message) 
 
     if(newUser) {
         countries.forEach((country:Country) => {
-            if(country.emoji === pMessage.content || pMessage.content.toLowerCase().includes(country.name.toLowerCase())) {
+            if(pMessage.content.includes(country.emoji) || pMessage.content.toLowerCase().includes(country.name.toLowerCase())) {
                     countryToAssign = country;
                     count++
             }
