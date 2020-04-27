@@ -98,12 +98,6 @@ const deleteGroup = (message:Discord.Message, groups: DiscordGroup[], requestedG
 
     groups.forEach((group: DiscordGroup) => {
         if (group.name.toLowerCase() == requestedGroupName.toLowerCase()) {
-            group.members.forEach(async (member) => {
-                let localUserData = await Tools.getUserData(<string>member)
-                localUserData.groups.splice(localUserData.groups.indexOf(<string>group.name), 1)
-                Tools.updateUserData(localUserData)
-            })
-
             groups.splice(groups.indexOf(group), 1)
             exists = true;
         }
@@ -198,7 +192,6 @@ const createGroup = async (message:Discord.Message, groups: DiscordGroup[], requ
         message.react("👎")
         return;
     }
-    let localUserData = await Tools.getUserData(member.user.id)
     let exists = false;
 
     groups.forEach((group: any) => {
@@ -209,8 +202,6 @@ const createGroup = async (message:Discord.Message, groups: DiscordGroup[], requ
     })
 
     if (!exists) {
-
-        localUserData.groups.push(requestedGroupName)
 
         groups.push({
             "name": requestedGroupName,
