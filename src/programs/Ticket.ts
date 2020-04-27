@@ -1,6 +1,7 @@
-import Discord, { OverwriteResolvable, SnowflakeUtil, TextChannel, GuildMember, User } from 'discord.js';
+import Discord, { OverwriteResolvable, SnowflakeUtil, TextChannel, GuildMember, User, UserFlags } from 'discord.js';
 import Tools from '../common/tools';
 import { ENGINEER_ROLE_NAME, COORDINATOR_ROLE_NAME, MODERATOR_ROLE_NAME } from '../const';
+import { isAuthorModerator } from '../common/moderator';
 
 
 
@@ -9,8 +10,6 @@ export default async function Ticket(pMessage: Discord.Message, type:string) {
     
     const TICKET_LOG_CHANNEL = `${type}-logs`;
 
-    const FIYESTA_CATEGORY_ID = guild_name == "Yes Theory Fam" ? "668016641090781194" : "668435952623943680"
-    const SHOUTOUT_CATEGORY_ID = guild_name == "Yes Theory Fam" ? "668016826810105876":"668435954670895114";
     const CONTEST_CATEGORY_ID = guild_name == "Yes Theory Fam" ? "not done":"695317780198719500";
 
     const ENGINEER_ROLE_ID = '667747778201649172';
@@ -27,14 +26,14 @@ export default async function Ticket(pMessage: Discord.Message, type:string) {
     switch (type) {
         case "fiyesta":
             moderatorRoleName = ENGINEER_ROLE_NAME;
-            categoryId = FIYESTA_CATEGORY_ID;
-            moderatorRoleId = ENGINEER_ROLE_ID;
+            categoryId = pMessage.guild.channels.cache.find(c => c.name.toLowerCase().includes("application")).id;
+            moderatorRoleId = pMessage.guild.roles.cache.find(r => r.name.toLowerCase().includes("server engineer")).id;
             ticketMessage = `Hi ${pMessage.member.toString()}, please list the details of your proposed FiYESta below and read the <#502198786441871381> while you wait.`
             break;
         case "shoutout":
             moderatorRoleName = COORDINATOR_ROLE_NAME;
-            categoryId = SHOUTOUT_CATEGORY_ID;
-            moderatorRoleId = COORDINATOR_ROLE_ID;
+            categoryId = pMessage.guild.channels.cache.find(c => c.name.toLowerCase().includes("validation")).id;
+            moderatorRoleId = pMessage.guild.roles.cache.find(r => r.name.toLowerCase().includes("server coordinator")).id;
             ticketMessage = `Hi ${pMessage.member.toString()}, please list the details of your shoutout below.`
             break;
         case "contest":
@@ -46,8 +45,6 @@ export default async function Ticket(pMessage: Discord.Message, type:string) {
         break;
     }
 
-    const moderatorRole = pMessage.guild.roles.cache.find(r => r.name == moderatorRoleName)
-
     //! This comes to us in the format of "![fiyesta|shoutout] [close|logs]?"
     const args = pMessage.cleanContent.split(" ")
     if(args[1] && !(args[1] == "close" || args[1] == "logs" || args[1] == "forceclose")) {
@@ -57,12 +54,12 @@ export default async function Ticket(pMessage: Discord.Message, type:string) {
     const isForceClose = pMessage.cleanContent.split(" ")[1] == "forceclose";
     
     const isClose = pMessage.cleanContent.split(" ")[1] == "close";
-    const supportRole = pMessage.guild.roles.find(r => r.name == moderatorRoleName);
+    const supportRole = pMessage.guild.roles.cache.find(r => r.name == moderatorRoleName);
 
     if (isClose) {
         const ticketChannel = <Discord.TextChannel>pMessage.channel;
         if (ticketChannel.name.startsWith(type)) {
-            if (pMessage.member.roles.has(supportRole.id)) createCloseMessage(ticketChannel, pMessage.author, TICKET_LOG_CHANNEL)
+            if (isAuthorModerator(pMessage)) createCloseMessage(ticketChannel, pMessage.author, TICKET_LOG_CHANNEL)
         }
         return;
     }
@@ -70,7 +67,7 @@ export default async function Ticket(pMessage: Discord.Message, type:string) {
     if(isForceClose){
         const ticketChannel = <Discord.TextChannel>pMessage.channel;
         if(ticketChannel.name.startsWith(type)) {
-            if(pMessage.member.roles.has(supportRole.id)) closeTicket(ticketChannel, pMessage.author, TICKET_LOG_CHANNEL)
+            if (isAuthorModerator(pMessage)) closeTicket(ticketChannel, pMessage.author, TICKET_LOG_CHANNEL)
         }
     }
 
@@ -89,21 +86,15 @@ export default async function Ticket(pMessage: Discord.Message, type:string) {
                 },
                 {
                     id: pMessage.author.id,
-                    allow: ['VIEW_CHANNEL'],
-                },
-                {
-                    id: pMessage.client.user.id,
-                    allow: ['VIEW_CHANNEL']
-                },
-                {
-                    id: moderatorRoleId,
-                    allow: ['VIEW_CHANNEL']
+                    allow: ['VIEW_CHANNEL', 'READ_MESSAGE_HISTORY'],
+                    deny: ['SEND_MESSAGES', 'ADD_REACTIONS']
                 }
+    
             ],
             parent:categoryId
         }
         channelName = channelName.replace(/\s+/g, '-').toLowerCase();
-        if(pMessage.guild.channels.find(c => c.name == channelName)) {
+        if(pMessage.guild.channels.cache.find(c => c.name == channelName)) {
             pMessage.author.createDM().then(channel => {
                 channel.send("You already have a ticket open, please close that one first before opening another.")
             })
@@ -157,18 +148,15 @@ async function createCloseMessage(c: TextChannel, m: User, TICKET_LOG_CHANNEL:st
     message.awaitReactions((reaction: any, user: User) => {
         return ['✅', '📑'].includes(reaction.emoji.name) && user.id != message.author.id
     }, { max: 1, time: 60000, errors: ['time'] })
-        .then(collected => {
-            const reaction = collected.first();
-            const user = reaction.users.array()[1];
 
-            if (reaction.emoji.name === '✅') {
-                message.reply('you reacted with a ✅ up.');
-            } else if (reaction.emoji.name === '📑'){
-                user.createDM().then(async dm => dm.send(await createOutput(c, m), { split: true }))
-            }
-            reaction.message.channel
-            closeTicket(reaction.message.channel as TextChannel, user, TICKET_LOG_CHANNEL)
-        })
+    .then(collected => {
+        const reaction = collected.first();
+        const user = reaction.users.cache.find(u => !u.bot)
+        if (reaction.emoji.toString() === '📑') {
+            user.createDM().then(async dm => dm.send(await createOutput(c, m), { split: true }))
+        }
+        closeTicket(reaction.message.channel as TextChannel, user, TICKET_LOG_CHANNEL)
+    })
 }
 
 function timeConverter(UNIX_timestamp:number){

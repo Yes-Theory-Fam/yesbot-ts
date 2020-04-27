@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node-dev --respawn src/index.ts",
+    "start": "ts-node src/index.ts",
     "deploy:prod": "rsync -avzhe 'ssh -i ~/.ssh/ytf.pem' --progress ./* ubuntu@yestheoryfam.com:/home/ubuntu/yesbot2"
   },
   "author": "",
