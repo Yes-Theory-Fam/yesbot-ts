@@ -80,8 +80,8 @@
         ]
     },
     {
-        "name ": "Costar",
-        "members ": [
+        "name": "Costar",
+        "members": [
             "219502124709445633",
             "615600628584153092",
             "317773965609140226",
@@ -136,8 +136,8 @@
         ]
     },
     {
-        "name ": "Minecraft ",
-        "members ": [
+        "name": "Minecraft ",
+        "members": [
             "274284574555766786",
             "576070552473698315",
             "246994880331644928",
@@ -156,8 +156,8 @@
         ]
     },
     {
-        "name ": "CSGO ",
-        "members ": [
+        "name": "CSGO ",
+        "members": [
             "458083908873879552",
             "430097531654111252",
             "388210515564036096",
@@ -184,8 +184,8 @@
         ]
     },
     {
-        "name ": "DoYourLanguage ",
-        "members ": [
+        "name": "DoYourLanguage ",
+        "members": [
             "187957977339133952",
             "260826111376621568",
             "317773965609140226",
@@ -225,12 +225,12 @@
     },
     {
         "name": "LeagueNA",
-        "members ": [
+        "members": [
             "482017673136439316",
             "341239732191232020",
             "332256152995758100"
         ],
-        "description ": "Find yourself a group to play withfor League of Legends on the North American server!"
+        "description": "Find yourself a group to play withfor League of Legends on the North American server!"
     },
     {
         "name": "ValorantEU",

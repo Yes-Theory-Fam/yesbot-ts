@@ -1,7 +1,6 @@
 import Discord, { TextChannel } from 'discord.js';
 import Tools from '../common/tools';
 import {isRegistered, textLog} from '../common/moderator';
-import flag from 'country-code-emoji';
 import { Country, countries } from "../collections/flagEmojis";
 import { MODERATOR_ROLE_NAME } from '../const';
 

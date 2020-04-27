@@ -115,13 +115,13 @@ const deleteGroup = (message:Discord.Message, groups: DiscordGroup[], requestedG
 
 
 const searchGroup = (message:Discord.Message, groups: DiscordGroup[], requestedGroupName: string = "") => {
+
     const groupsPerPage = 4;
     const pages: Array<MessageEmbed> = [];
-    groups = orderGroupsBy(groups)
-
     const groupFilter = ({ name }: DiscordGroup) => name.toLowerCase().includes(requestedGroupName.toLowerCase());
     const byMemberCount = (a: DiscordGroup, b: DiscordGroup) => b.members.length - a.members.length;
-    const copy = Array.from(groups.filter(groupFilter)).sort(byMemberCount);
+    const copy:Array<DiscordGroup> = requestedGroupName ?  groups.filter(groupFilter).sort(byMemberCount) : groups.sort(byMemberCount)
+
     const pageAmount = Math.ceil(copy.length / groupsPerPage);
 
     for (let i = 0; i < pageAmount; i++) {
@@ -183,9 +183,6 @@ const searchGroup = (message:Discord.Message, groups: DiscordGroup[], requestedG
     }
 }
 
-const orderGroupsBy = (object: Array<DiscordGroup>): DiscordGroup[] => {
-    return object;
-}
 
 const createGroup = async (message:Discord.Message, groups: DiscordGroup[], requestedGroupName: string, member: GuildMember, description: String) => {
     if (!requestedGroupName) {

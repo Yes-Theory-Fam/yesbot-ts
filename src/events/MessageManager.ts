@@ -63,8 +63,6 @@ class MessageManager {
 
                 if(firstWord === "!group") GroupManager(this.message, true);
                 if(firstWord === "!profile") ProfileManager(this.message, 0);
-                if(firstWord === "!fiyesta") Ticket(this.message, "fiyesta");
-                if(firstWord === "!shoutout") Ticket(this.message, "shoutout");
                 break;
 
             case "coding":
@@ -86,7 +84,8 @@ class MessageManager {
                 break;
 
             }
-
+            if(firstWord === "!fiyesta") Ticket(this.message, "fiyesta");
+            if(firstWord === "!shoutout") Ticket(this.message, "shoutout");
             if (firstWord === "!vote") this.addVote()
             if (firstWord === "!delete") hasRole(this.message.member, "Support") ? this.deleteMessages() : null;
             if (firstWord === "!role") ReactRole(this.message);
