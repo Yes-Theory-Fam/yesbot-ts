@@ -2,8 +2,6 @@ import {Client, Channel, Emoji, Guild, GuildMember, PartialGuildMember, Message,
 import { MessageManager, ReactionAdd, ReactionRemove, Ready, MemberJoin, GuildMemberUpdate } from './events';
 import { BOT_TOKEN, GUILD_ID } from './const';
 import Firebase from './collections/firebaseConnection';
-// Imported for DB side-effects.
-import "./db";
 
 
 const bot = new Client({ partials: ['REACTION', 'MESSAGE']});
