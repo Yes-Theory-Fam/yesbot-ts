@@ -116,7 +116,7 @@ class MessageManager {
                             break;
                         case "🚫":
                             sentMessage.delete();
-                            textLog(`${this.message.author.toString()} was not renamed.`)
+                            textLog(`${this.message.author.toString()} was *not* renamed to ${this.message.content}.`)
                             break;
                     
                         default:
