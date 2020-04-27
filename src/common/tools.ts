@@ -40,28 +40,6 @@ class Tools {
         })
     }
 
-    static async getUserData(id:string): Promise<LocalUser> {
-        const users:LocalUser[] = await <LocalUser[]><unknown>this.resolveFile("userStore")
-        const localUser = users.find(user => user.id === id);
-        if(!localUser) {
-            users.push({"id":id,"groups":[]})
-            await this.writeFile("userStore", users)
-            return {"id":id,"groups":[]}
-        }
-        return localUser
-    }
-
-    static async updateUserData(user:LocalUser) {
-        let users:LocalUser[] = await <LocalUser[]><unknown>this.resolveFile("userStore")
-        users.forEach((storedUser, index, array) => {
-            if(user.id === storedUser.id) {
-                array[index] = user
-            }
-        })
-        
-        
-        await this.writeFile("userStore", users)
-    }
 
     static async writeFile(filename: string, data:any) {
         fs.writeFile(`./src/collections/${filename}.json`, JSON.stringify(data), () => {

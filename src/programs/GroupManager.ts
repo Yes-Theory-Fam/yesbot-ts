@@ -211,7 +211,6 @@ const createGroup = async (message:Discord.Message, groups: DiscordGroup[], requ
     if (!exists) {
 
         localUserData.groups.push(requestedGroupName)
-        Tools.updateUserData(localUserData)
 
         groups.push({
             "name": requestedGroupName,
@@ -228,14 +227,11 @@ const createGroup = async (message:Discord.Message, groups: DiscordGroup[], requ
 
 const joinGroup = async (message:Discord.Message, groups: DiscordGroup[], requestedGroupName: string, member: GuildMember) => {
     let foundGroup = false;
-    let localUserData = await Tools.getUserData(member.user.id)
 
     groups.forEach((group: DiscordGroup) => {
         if (group.name.toLowerCase() === requestedGroupName.toLowerCase()) {
             foundGroup = true;
 
-            localUserData.groups.push(<string>group.name)
-            Tools.updateUserData(localUserData)
             if (!group.members.includes(member.id)) {
                 group.members.push(member.id)
                 Tools.writeFile("groupManager", groups)
@@ -253,12 +249,9 @@ const joinGroup = async (message:Discord.Message, groups: DiscordGroup[], reques
 }
 
 const leaveGroup = async (message:Discord.Message, groups: DiscordGroup[], requestedGroupName: string, member: GuildMember) => {
-    let localUserData = await Tools.getUserData(member.user.id)
     let success: boolean = false;
     groups.forEach((group: DiscordGroup) => {
         if (group.name.toLowerCase() === requestedGroupName.toLowerCase()) {
-            localUserData.groups.splice(localUserData.groups.indexOf(<string>group.name), 1)
-            Tools.updateUserData(localUserData)
             const groupPosition = group.members.indexOf(member.id)
 
             if (groupPosition > -1) {
