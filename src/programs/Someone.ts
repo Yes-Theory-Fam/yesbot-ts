@@ -1,7 +1,9 @@
 import Discord, { User, Channel, TextChannel, GuildMember } from 'discord.js';
 import Tools from '../common/tools';
 import axios from 'axios';
-import * as fs from 'fs';
+import { isAfter, addHours } from "date-fns";
+
+import { SomeoneRepository } from '../entities/Someone';
 
 const QUESTION_LINK: string = 'https://spreadsheets.google.com/feeds/cells/1J7DlkcWzhcm9CXiWCB-dQloCqIHjVpupyvMqBPlJ7Mk/1/public/full?alt=json'
 
@@ -54,27 +56,34 @@ const sendMessage = async (author:GuildMember, target:User, question:string, cha
 }
 
 async function updateLastMessage(message: Discord.Message) {
+    const someones = await SomeoneRepository();
+    const someone = someones.create({
+        id: message.author.id,
+    });
 
-    const object = {
-        "time": new Date().toString().slice(0, 15),
-        "id": message.author.id
+    try {
+        console.info("@someone: Updating database record")
+        someones.save({
+        ...someone,
+        time: new Date(),
+        });
+    } catch (e) {
+        console.error(`Failed to save @someone for user '${someone.id}'`);
+        return false;
     }
-    let someoneUsers = await Tools.resolveFile("someoneUsers");
-    someoneUsers = someoneUsers || [];
-    const thisUser:any = someoneUsers.find((u:any) => u.id == object.id);
-    if(thisUser) thisUser.time = object.time;
-    else someoneUsers.push(object);
-    await Tools.writeFile("someoneUsers", someoneUsers);
+
     return true;
 }
 
 async function isAllowed(user:Discord.User) {
-    let someoneUsers = await Tools.resolveFile("someoneUsers");
+    const someoneRepository = await SomeoneRepository();
+    const someone = await someoneRepository.findOne({id: user.id });
+
+    if (someone === undefined) {
+        return true;
+    }
     
-    
-    const thisUser: any = someoneUsers.find((u: any) => u.id == user.id);
-    if (thisUser && thisUser.time == new Date().toString().slice(0, 15)) return false;
-    else return true;
+    return isAfter(new Date(), addHours(someone.time, 24));
 }
 
 async function getTarget(arg: string, message: Discord.Message) {
