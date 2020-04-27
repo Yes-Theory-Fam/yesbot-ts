@@ -3,18 +3,26 @@ import Tools from '../common/tools';
 import {isRegistered, textLog} from '../common/moderator';
 import flag from 'country-code-emoji';
 import { Country, countries } from "../collections/flagEmojis";
+import { MODERATOR_ROLE_NAME } from '../const';
 
 
 export default async function WhereAreYouFromManager(pMessage: Discord.Message) {
 
     const newUser = !isRegistered(pMessage.member);
     let countryToAssign: Country;
+    let count = 0
 
     if(newUser) {
         countries.forEach((country:Country) => {
-            if(country.emoji === pMessage.content || pMessage.content.toLowerCase().includes(country.name.toLowerCase())) countryToAssign = country;
+            if(country.emoji === pMessage.content || pMessage.content.toLowerCase().includes(country.name.toLowerCase())) {
+                    countryToAssign = country;
+                    count++
+            }
         });
-
+        if(count > 1) {
+            pMessage.reply("Please only tell me 1 country for now, you can ask a member of the Support team about multiple nationalities :grin:")
+            return;
+        }
         if(countryToAssign) {
 
             const isOutlier = ["Australia", "United States", "United Kingdom", "Canada"].find(each => countryToAssign.title.includes(each));
@@ -39,7 +47,8 @@ export default async function WhereAreYouFromManager(pMessage: Discord.Message) 
             }
 
             if(!roleToAssign) {
-                textLog(`<@${pMessage.author.id}> just requested role for country ${countryToAssign.name}, but I could not find it. Please make sure this role exists.`);
+                const moderatorRole = pMessage.guild.roles.cache.find(r => r.name === MODERATOR_ROLE_NAME)
+                textLog(`${moderatorRole.toString()}: <@${pMessage.author.id}> just requested role for country ${countryToAssign.name}, but I could not find it. Please make sure this role exists.`);
                 return;
             }
             pMessage.member.roles.add(roleToAssign);

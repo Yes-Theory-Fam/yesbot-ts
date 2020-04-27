@@ -594,13 +594,6 @@ export const countries: Country[] = [
     "code": "GB",
     "emoji": "🇬🇧",
     "unicode": "U+1F1EC U+1F1E7",
-    "name": "United Kingdom",
-    "title": "flag for United Kingdom",
-  },
-  {
-    "code": "GB",
-    "emoji": "🇬🇧",
-    "unicode": "U+1F1EC U+1F1E7",
     "name": "UK",
     "title": "flag for United Kingdom",
   },
@@ -1791,13 +1784,6 @@ export const countries: Country[] = [
     "name": "Uganda",
     "title": "flag for Uganda",
 
-  },
-  {
-    "code": "UM",
-    "emoji": "🇺🇲",
-    "unicode": "U+1F1FA U+1F1F2",
-    "name": "USA",
-    "title": "flag for United States Minor Outlying Islands"
   },
   {
     "code": "US",
