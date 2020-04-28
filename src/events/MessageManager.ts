@@ -92,6 +92,7 @@ class MessageManager {
             if (firstWord === "F") this.message.react("🇫");
             if (["i love u yesbot", "i love you yesbot", "yesbot i love you "].includes(this.message.content.toLowerCase())) this.sendLove();
             if (this.message.content.toLowerCase().startsWith("yesbot") && this.message.content.toLowerCase().endsWith('?')) this.randomReply();
+            if(this.message.content.toLowerCase().startsWith("!group toggle")) GroupManager(this.message, true)
              
 
         }
