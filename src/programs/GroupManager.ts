@@ -3,7 +3,7 @@ import Tools from '../common/tools';
 import { MODERATOR_ROLE_NAME, ENGINEER_ROLE_NAME } from '../const';
 import { isAuthorModerator } from '../common/moderator';
 import { UserGroup, UserGroupRepository, UserGroupMembershipRepository, GroupMember } from '../entities/UserGroup';
-import { Like } from 'typeorm';
+import { ILike } from '../lib/typeormILIKE';
 
 interface DiscordGroup {
     name: String,
@@ -123,10 +123,7 @@ const searchGroup = async (message:Discord.Message, requestedGroupName: string =
 
     const copy = (await groupRepository.find({
         where: {
-            // Case-sensitive rn, waiting on this to land
-            // https://github.com/typeorm/typeorm/pull/5828
-            // Can hack it myself. Will check tomorrow.
-            name: Like(`%${requestedGroupName}%`),
+            name: ILike(`%${requestedGroupName}%`),
         },
         relations: ["members"],
     })).sort(byMemberCount);
