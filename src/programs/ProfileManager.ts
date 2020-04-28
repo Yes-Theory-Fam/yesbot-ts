@@ -73,7 +73,7 @@ const getProfileEmbed = async (member:GuildMember, message: Message): Promise<Me
     })
     groupString = groupString.substring(0, groupString.length - 2);
     
-    const numberOfFiyestas:Number = member.roles.cache.filter(r => r.name.toLowerCase().includes("fiyesta")).size
+    const numberOfFiyestas:Number = member.roles.cache.filter(r => r.name.toLowerCase().includes("fiyesta") && !r.name.toLowerCase().includes("fiyestas")).size
 
     const joinDate = member.joinedAt.toDateString()
     profileEmbed.setThumbnail(member.user.avatarURL())
