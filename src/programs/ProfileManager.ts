@@ -73,7 +73,6 @@ const getProfileEmbed = async (member:GuildMember, message: Message): Promise<Me
     })
     groupString = groupString.substring(0, groupString.length - 2);
     
-    const numberOfFiyestas:Number = member.roles.cache.filter(r => r.name.toLowerCase().includes("fiyesta") && !r.name.toLowerCase().includes("fiyestas")).size
 
     const joinDate = member.joinedAt.toDateString()
     profileEmbed.setThumbnail(member.user.avatarURL())
@@ -85,7 +84,6 @@ const getProfileEmbed = async (member:GuildMember, message: Message): Promise<Me
     profileEmbed.addField("Joined on:", joinDate, true);
     profileEmbed.addField("Birthday:", birthdayString, true);
     profileEmbed.addField("Groups:", groupString || "None", true);
-    profileEmbed.addField("Attended # of FiYEStas:", numberOfFiyestas || "None", true);
     profileEmbed.setFooter("Thank you for using the Yes Theory Fam Discord Server!")
     return profileEmbed;
 }
