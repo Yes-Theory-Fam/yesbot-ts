@@ -66,12 +66,13 @@ const getProfileEmbed = async (member:GuildMember, message: Message): Promise<Me
         return null
     }
 
-    const groups = await groupRepository.find({
-        relations: ["members"]
-    });
+    const groups = await groupRepository
+        .createQueryBuilder("usergroup")
+        .leftJoinAndSelect("usergroup.members", "groupmember")
+        .where('groupmember.id = :id', { id: member.id })
+        .getMany()
 
     const groupString = groups
-        .filter(group => group.members.some(m => m.id === member.id))
         .map(group => group.name)
         .join(', ');
 
