@@ -2,6 +2,8 @@ import Discord, { Snowflake, TextChannel, GuildMember, Message, MessageEmbed, Me
 import Tools from '../common/tools';
 import { MODERATOR_ROLE_NAME, ENGINEER_ROLE_NAME } from '../const';
 import { isAuthorModerator } from '../common/moderator';
+import { UserGroup, UserGroupRepository, UserGroupMembershipRepository, GroupMember } from '../entities/UserGroup';
+import { ILike } from '../lib/typeormILIKE';
 
 interface DiscordGroup {
     name: String,
@@ -21,21 +23,21 @@ export default async function GroupManager(message: Discord.Message, isConfig: b
         const [action, requestName, ...descriptionWords] = words
         const description = descriptionWords.join(" ");
 
-        if (!action || !(["join", "create", "leave", "search", "delete", "toggle"].includes(action))) {
+        if (!action || !(["join", "create", "leave", "search", "delete", "update", "toggle"].includes(action))) {
 
-            const helpMessage = `Incorrect syntax, please use the following: \`!group join|leave|create|search|delete\`. If you need additional help, react with 🛠️ below to tag a ${ENGINEER_ROLE_NAME}`
+
+            const helpMessage = `Incorrect syntax, please use the following: \`!group join|leave|create|search|delete|update\`. If you need additional help, react with 🛠️ below to tag a ${ENGINEER_ROLE_NAME}`
             const angryMessage = await message.reply(helpMessage)
             return;
         }
 
-        const groups = await <DiscordGroup[]><unknown>Tools.resolveFile("groupManager");
         const user = message.member;
         const moderator = isAuthorModerator(message)
 
         switch (action) {
 
             case "join":
-                joinGroup(message, groups, requestName, user);
+                joinGroup(message, requestName, user);
                 break;
 
             case "toggle":
@@ -43,41 +45,48 @@ export default async function GroupManager(message: Discord.Message, isConfig: b
                 break;
 
             case "create":
-                if(moderator) createGroup(message, groups, requestName, user, description);
+                if(moderator) createGroup(message, requestName, user, description);
                 else message.reply("You do not have permission to use this command.")
                 break;
 
             case "leave":
-                leaveGroup(message, groups, requestName, user);
+                leaveGroup(message, requestName, user);
                 break;
 
             case "search":
-                searchGroup(message, groups, requestName);
+                searchGroup(message, requestName);
                 break;
 
             case "delete":
-                if(moderator) deleteGroup(message, groups, requestName);
+                if(moderator) deleteGroup(message, requestName);
                 else message.reply("You do not have permission to use this command.")
                 break;
 
+            case "update": {
+                moderator
+                ? updateGroup(message, requestName, description)
+                : message.reply("You do not have permission to use this command.");
+            }
         }
 
     }
 
     else {
+        const groupRepository = await UserGroupRepository();
 
         const args = <string[]>content.split(" ");
         args.shift();
         const [requestName] = args
         let foundGroup = false;
-        const groups = await Tools.resolveFile("groupManager");
-        groups.forEach((group: any) => {
-
+        const groups = (await groupRepository.find({
+            relations: ["members"],
+        }));
+        groups.forEach((group: UserGroup) => {
             if (group.name.toLowerCase() == requestName.toLowerCase()) {
                 foundGroup = true;
                 let writeLine: string = "**@" + group.name + "**:"
-                group.members.forEach((member: string) => {
-                    writeLine = writeLine.concat(" <@" + member + ">,")
+                group.members.forEach((member: GroupMember) => {
+                    writeLine = writeLine.concat(" <@" + member.id + ">,")
                 });
                 message.channel.send(writeLine)
             }
@@ -87,10 +96,8 @@ export default async function GroupManager(message: Discord.Message, isConfig: b
             message.reply("I couldn't find that group.")
         }
     }
-
-
-
 }
+
 
 const toggleGroup = async (words:string[], message: Discord.Message) => {
     words.shift();
@@ -110,39 +117,44 @@ const toggleGroup = async (words:string[], message: Discord.Message) => {
     
 }
 
-const deleteGroup = (message:Discord.Message, groups: DiscordGroup[], requestedGroupName: string = "") => {
+
+const deleteGroup = async (message:Discord.Message, requestedGroupName: string = "") => {
 
     if (!requestedGroupName) {
         message.react("👎")
         return;
     }
-    let exists = false;
 
-    groups.forEach((group: DiscordGroup) => {
-        if (group.name.toLowerCase() == requestedGroupName.toLowerCase()) {
-            groups.splice(groups.indexOf(group), 1)
-            exists = true;
-        }
-    })
+    const groupRepository = await UserGroupRepository();
+    const group = await groupRepository.findOne({
+        where: {
+            name: requestedGroupName,
+        },
+    });
 
-    if (exists) {
-        Tools.writeFile("groupManager", groups);
-        message.react("👍")
+    if (group === undefined) {
+        await message.reply("That group does not exist!");
+        return;
     }
-    else {
-        message.react("👎")
 
-    }
+    await groupRepository.delete(group);
+    await message.react("👍");
 }
 
 
-const searchGroup = (message:Discord.Message, groups: DiscordGroup[], requestedGroupName: string = "") => {
+const searchGroup = async (message:Discord.Message, requestedGroupName: string = "") => {
+    const groupRepository = await UserGroupRepository();
 
     const groupsPerPage = 4;
     const pages: Array<MessageEmbed> = [];
-    const groupFilter = ({ name }: DiscordGroup) => name.toLowerCase().includes(requestedGroupName.toLowerCase());
-    const byMemberCount = (a: DiscordGroup, b: DiscordGroup) => b.members.length - a.members.length;
-    const copy:Array<DiscordGroup> = requestedGroupName ?  groups.filter(groupFilter).sort(byMemberCount) : groups.sort(byMemberCount)
+    const byMemberCount = (a: UserGroup, b: UserGroup) => b.members.length - a.members.length;
+
+    const copy = (await groupRepository.find({
+        where: {
+            name: ILike(`%${requestedGroupName}%`),
+        },
+        relations: ["members"],
+    })).sort(byMemberCount);
 
     const pageAmount = Math.ceil(copy.length / groupsPerPage);
 
@@ -206,77 +218,117 @@ const searchGroup = (message:Discord.Message, groups: DiscordGroup[], requestedG
 }
 
 
-const createGroup = async (message:Discord.Message, groups: DiscordGroup[], requestedGroupName: string, member: GuildMember, description: String) => {
+const createGroup = async (message:Discord.Message, requestedGroupName: string, member: GuildMember, description: string) => {
     if (!requestedGroupName) {
         message.react("👎")
         return;
     }
-    let exists = false;
 
-    groups.forEach((group: any) => {
-        if (group.name.toLowerCase() == requestedGroupName.toLowerCase()) {
-            message.reply("That group already exists!")
-            exists = true;
+    const groupRepository = await UserGroupRepository();
+    const group = await groupRepository.findOne({
+        where: {
+            name: requestedGroupName,
         }
-    })
+    });
 
-    if (!exists) {
-
-        groups.push({
-            "name": requestedGroupName,
-            "members": [
-                message.author.id
-            ],
-            "description": description
-        })
-
-        Tools.writeFile("groupManager", groups);
-        message.react("👍")
+    if (group !== undefined) {
+        await message.reply("That group already exists!")
+        return
     }
+
+    const newGroup = groupRepository.create({
+        name: requestedGroupName,
+        description,
+    });
+
+    await groupRepository.save(newGroup);
+    await message.react("👍")
 }
 
-const joinGroup = async (message:Discord.Message, groups: DiscordGroup[], requestedGroupName: string, member: GuildMember) => {
-    let foundGroup = false;
+const updateGroup = async(message: Discord.Message, requestedGroupName: string, description: string) => {
+    if (!requestedGroupName) {
+        message.react("👎")
+        return;
+    }
 
-    groups.forEach((group: DiscordGroup) => {
-        if (group.name.toLowerCase() === requestedGroupName.toLowerCase()) {
-            foundGroup = true;
-
-            if (!group.members.includes(member.id)) {
-                group.members.push(member.id)
-                Tools.writeFile("groupManager", groups)
-                message.react("👍")
-            }
-            else {
-                message.react("👎")
-                message.reply("You are already in that group!")
-            }
+    const groupRepository = await UserGroupRepository();
+    const group = await groupRepository.findOne({
+        where: {
+            name: ILike(requestedGroupName),
         }
-    })
-    if (!foundGroup) {
+    });
+
+    if (group === undefined) {
+        await message.reply("That group doesn't exists!")
+        return
+    }
+
+    const previousDescription = group.description;
+
+    group.description = description;
+    await groupRepository.save(group);
+
+    await message.reply(`Group description updated from \n> ${previousDescription} \nto \n> ${group.description}`);
+}
+
+const joinGroup = async (message:Discord.Message, requestedGroupName: string, member: GuildMember) => {
+    const groupRepository = await UserGroupRepository();
+    const userGroupMembershipRepository = await UserGroupMembershipRepository();
+
+    const newGroupMember = userGroupMembershipRepository.create({
+        id: member.id,
+    });
+
+    const group = await groupRepository.findOne({
+        where: {
+            name: ILike(requestedGroupName),
+        },
+        relations: ["members"]
+    });
+
+    if (group === undefined) {
         message.reply("I couldn't find that group.")
+        return
     }
+
+    if (group.members.some((m: GroupMember) => m.id === member.id)) {
+        message.react("👎")
+        message.reply("You are already in that group!")
+        return
+    }
+
+    const membership = await userGroupMembershipRepository.save(newGroupMember);
+    groupRepository.save({
+        ...group,
+        members: [...group.members, membership],
+    });
+
+    message.react("👍");
 }
 
-const leaveGroup = async (message:Discord.Message, groups: DiscordGroup[], requestedGroupName: string, member: GuildMember) => {
-    let success: boolean = false;
-    groups.forEach((group: DiscordGroup) => {
-        if (group.name.toLowerCase() === requestedGroupName.toLowerCase()) {
-            const groupPosition = group.members.indexOf(member.id)
+const leaveGroup = async (message:Discord.Message, requestedGroupName: string, member: GuildMember) => {
+    const groupRepository = await UserGroupRepository();
 
-            if (groupPosition > -1) {
+    const group = await groupRepository.findOne({
+        where: {
+            name: ILike(requestedGroupName),
+        },
+        relations: ["members"]
+    });
 
+    if (group === undefined) {
+        message.reply("I couldn't find that group.")
+        return
+    }
 
-                group.members.splice(groupPosition, 1)
+    const updatedMemberList = group.members.filter((m: GroupMember) => m.id !== member.id);
+    groupRepository.save({
+        ...group,
+        members: updatedMemberList,
+    });
 
+    const removed = updatedMemberList.length < group.members.length;
 
-                Tools.writeFile("groupManager", groups)
-                success = true;
-            }
-        }
-    })
-    message.react(success ? "👍" : "👎");
-    if (!success) message.reply("You are not in that group!")
+    message.react(removed ? "👍" : "👎");
+    if (!removed) message.reply("You are not in that group!")
 }
-
-
