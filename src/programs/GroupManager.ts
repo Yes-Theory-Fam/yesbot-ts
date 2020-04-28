@@ -25,7 +25,7 @@ export default async function GroupManager(message: Discord.Message, isConfig: b
 
         if (!action || !(["join", "create", "leave", "search", "delete", "update"].includes(action))) {
 
-            const helpMessage = `Incorrect syntax, please use the following: \`!group join|leave|create|search|delete\`. If you need additional help, react with 🛠️ below to tag a ${ENGINEER_ROLE_NAME}`
+            const helpMessage = `Incorrect syntax, please use the following: \`!group join|leave|create|search|delete|update\`. If you need additional help, react with 🛠️ below to tag a ${ENGINEER_ROLE_NAME}`
             const angryMessage = await message.reply(helpMessage)
             return;
         }
