@@ -15,7 +15,6 @@ class ReactionAdd {
     pureEmoji: any
 
     constructor(messageReaction: Discord.MessageReaction, user: User | PartialUser) {
-        Tools.resolveFile("reactRoleObjects")
         this.bot = bot;
         this.user = <User>user;
         this.messageId = messageReaction.message.id;
@@ -40,6 +39,16 @@ class ReactionAdd {
                 guildMember.roles.add(roleToAdd);
             }
         });
+
+        const groupToggleObject = await Tools.resolveFile("groupToggle");
+        groupToggleObject.forEach((toggleObject:any) => {
+            if(this.messageId === toggleObject.messageId && this.reaction === toggleObject.emoji) {
+                const groupChannel = this.guild.channels.cache.find(c => c.name === toggleObject.channelName);
+                (groupChannel as TextChannel).updateOverwrite(this.user.id, {
+                    VIEW_CHANNEL: true
+                })
+            }
+        })
     }
 
     isYTF(roleToAdd: Discord.Role): boolean {

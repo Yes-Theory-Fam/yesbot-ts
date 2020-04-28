@@ -21,7 +21,7 @@ export default async function GroupManager(message: Discord.Message, isConfig: b
         const [action, requestName, ...descriptionWords] = words
         const description = descriptionWords.join(" ");
 
-        if (!action || !(["join", "create", "leave", "search", "delete"].includes(action))) {
+        if (!action || !(["join", "create", "leave", "search", "delete", "toggle"].includes(action))) {
 
             const helpMessage = `Incorrect syntax, please use the following: \`!group join|leave|create|search|delete\`. If you need additional help, react with 🛠️ below to tag a ${ENGINEER_ROLE_NAME}`
             const angryMessage = await message.reply(helpMessage)
@@ -36,6 +36,10 @@ export default async function GroupManager(message: Discord.Message, isConfig: b
 
             case "join":
                 joinGroup(message, groups, requestName, user);
+                break;
+
+            case "toggle":
+                toggleGroup(words, message);
                 break;
 
             case "create":
@@ -86,6 +90,24 @@ export default async function GroupManager(message: Discord.Message, isConfig: b
 
 
 
+}
+
+const toggleGroup = async (words:string[], message: Discord.Message) => {
+    words.shift();
+    const [ messageId, emoji, channelName ] = words;
+    const toggleObject = {
+        messageId,
+        emoji,
+        channelName,
+        originalChannel: message.channel.id
+    }
+    if(Tools.updateFile("groupToggle", toggleObject)) {
+        let [ogMessage, channel] = await Tools.getMessageById(messageId, message.guild, message.channel.id)
+        ogMessage = <Discord.Message>ogMessage;
+        ogMessage.react(emoji)
+        message.react("👍")
+    }
+    
 }
 
 const deleteGroup = (message:Discord.Message, groups: DiscordGroup[], requestedGroupName: string = "") => {
