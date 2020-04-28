@@ -67,9 +67,6 @@ const getProfileEmbed = async (member:GuildMember, message: Message): Promise<Me
     }
 
     const groups = await groupRepository.find({
-        where: {
-            "members.id": member.id,
-        },
         relations: ["members"]
     });
 
