@@ -23,9 +23,9 @@ export default async function GroupManager(message: Discord.Message, isConfig: b
         const [action, requestName, ...descriptionWords] = words
         const description = descriptionWords.join(" ");
 
-        if (!action || !(["join", "create", "leave", "search", "delete"].includes(action))) {
+        if (!action || !(["join", "create", "leave", "search", "delete", "update"].includes(action))) {
 
-            const helpMessage = `Incorrect syntax, please use the following: \`!group join|leave|create|search|delete\`. If you need additional help, react with 🛠️ below to tag a ${ENGINEER_ROLE_NAME}`
+            const helpMessage = `Incorrect syntax, please use the following: \`!group join|leave|create|search|delete|update\`. If you need additional help, react with 🛠️ below to tag a ${ENGINEER_ROLE_NAME}`
             const angryMessage = await message.reply(helpMessage)
             return;
         }
@@ -57,6 +57,11 @@ export default async function GroupManager(message: Discord.Message, isConfig: b
                 else message.reply("You do not have permission to use this command.")
                 break;
 
+            case "update": {
+                moderator
+                ? updateGroup(message, requestName, description)
+                : message.reply("You do not have permission to use this command.");
+            }
         }
 
     }
@@ -215,6 +220,32 @@ const createGroup = async (message:Discord.Message, requestedGroupName: string, 
 
     await groupRepository.save(newGroup);
     await message.react("👍")
+}
+
+const updateGroup = async(message: Discord.Message, requestedGroupName: string, description: string) => {
+    if (!requestedGroupName) {
+        message.react("👎")
+        return;
+    }
+
+    const groupRepository = await UserGroupRepository();
+    const group = await groupRepository.findOne({
+        where: {
+            name: requestedGroupName,
+        }
+    });
+
+    if (group === undefined) {
+        await message.reply("That group doesn't exists!")
+        return
+    }
+
+    const previousDescription = group.description;
+
+    group.description = description;
+    await groupRepository.save(group);
+
+    await message.reply(`Group description updated from \n> ${previousDescription} \nto \n> ${group.description}`);
 }
 
 const joinGroup = async (message:Discord.Message, requestedGroupName: string, member: GuildMember) => {
