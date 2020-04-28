@@ -231,7 +231,7 @@ const updateGroup = async(message: Discord.Message, requestedGroupName: string, 
     const groupRepository = await UserGroupRepository();
     const group = await groupRepository.findOne({
         where: {
-            name: requestedGroupName,
+            name: ILike(requestedGroupName),
         }
     });
 
@@ -258,7 +258,7 @@ const joinGroup = async (message:Discord.Message, requestedGroupName: string, me
 
     const group = await groupRepository.findOne({
         where: {
-            name: requestedGroupName,
+            name: ILike(requestedGroupName),
         },
         relations: ["members"]
     });
@@ -288,7 +288,7 @@ const leaveGroup = async (message:Discord.Message, requestedGroupName: string, m
 
     const group = await groupRepository.findOne({
         where: {
-            name: requestedGroupName,
+            name: ILike(requestedGroupName),
         },
         relations: ["members"]
     });
