@@ -1,6 +1,7 @@
 import Discord, { Snowflake, TextChannel, GuildMember, Message, MessageEmbed } from 'discord.js';
 import Tools from '../common/tools';
 import { MODERATOR_ROLE_NAME } from '../const';
+import { UserGroupRepository } from '../entities/UserGroup';
 
 interface DiscordGroup {
     name: String,
@@ -40,6 +41,8 @@ interface Birthday {
 }
 
 const getProfileEmbed = async (member:GuildMember, message: Message): Promise<MessageEmbed> => {
+    const groupRepository = await UserGroupRepository();
+
     const profileEmbed = new MessageEmbed();
     const countryRole = member.roles.cache.find(r => r.name.includes("I'm from"))
     let countryString = ''
@@ -63,16 +66,15 @@ const getProfileEmbed = async (member:GuildMember, message: Message): Promise<Me
         return null
     }
 
-    let groupString: string = '';
+    const groups = await groupRepository
+        .createQueryBuilder("usergroup")
+        .leftJoinAndSelect("usergroup.members", "groupmember")
+        .where('groupmember.id = :id', { id: member.id })
+        .getMany()
 
-    const groups = <DiscordGroup[]>await Tools.resolveFile("groupManager")
-    groups.forEach(group => {
-        if(group.members.find(m => m === member.id)) {
-            groupString = groupString+group.name+", "
-        }
-    })
-    groupString = groupString.substring(0, groupString.length - 2);
-    
+    const groupString = groups
+        .map(group => group.name)
+        .join(', ');
 
     const joinDate = member.joinedAt.toDateString()
     profileEmbed.setThumbnail(member.user.avatarURL())
