@@ -505,6 +505,13 @@ export const countries: Country[] = [
     "title": "flag for Western Sahara"
   },
   {
+    "code": "EN",
+    "emoji": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+    "unicode": "U+1F3F4+U+E0067+U+E0062+U+E0065+U+E006E+U+E0067+U+E007F",
+    "name":"England",
+    "title":"flag of England"
+  },
+  {
     "code": "ER",
     "emoji": "🇪🇷",
     "unicode": "U+1F1EA U+1F1F7",
