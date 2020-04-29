@@ -259,7 +259,7 @@ const updateGroup = async(message: Discord.Message, requestedGroupName: string, 
     });
 
     if (group === undefined) {
-        await message.reply("That group doesn't exists!")
+        await message.reply("That group doesn't exist!")
         return
     }
 
