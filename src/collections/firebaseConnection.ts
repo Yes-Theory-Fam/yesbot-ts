@@ -15,12 +15,13 @@ export default class Firebase {
       projectId: FIREBASE_PROJECT,
     };
 
-    
+    if (!FIREBASE_API_KEY || !FIREBASE_AUTH_DOMAIN || !FIREBASE_PROJECT) {
+      console.warn("Missing firebase configuration; not starting firebase")
+      return
+    }
 
     firebase.initializeApp(firebaseConfig);
     this.store = firebase.firestore();
     console.log( this.store ? "Firebase successfully initialised" : "ERROR Initisalising Firebase")
   }
 }
-
-
