@@ -13,6 +13,7 @@ const messages = [
   ["12 10", null],
   ["12 12", new Date(1970, 11, 12)],
   ["november 3rd", new Date(1970, 10, 3)],
+  ["05.20", new Date(1970, 4, 20)],
 ];
 
 const errors = messages

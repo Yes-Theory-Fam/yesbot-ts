@@ -97,18 +97,25 @@ export function getUserBirthdate(message: string): Date | null {
             if (isNaN(n)) {
                 return false
             };
-            return n <= 12;
+            return n > 0 && n <= 12;
         })
 
-        if (matches.length > 1) {
+        if (matches.length > 1 && matches[0] !== matches[1]) {
             // Maybe a bit harsh, but we abort early if we find >= 2 numbers in the message
-            // where both of them are numbers <= 12.
+            // where both of them are numbers <= 12 but not the same.
             return null;
         }
         monthNumMatch = parseInt(matches[0])
     }
 
-    const dayMatches = message.match(/(\d+)(st|nd|rd|th)?/);
+    let messageWithoutMonthNumber = message;
+    if (monthNameMatches === undefined) {
+        const pre = message.substr(0, message.indexOf(monthNumMatch.toString()))
+        const post = message.substr(pre.length + monthNumMatch.toString().length)
+        messageWithoutMonthNumber = pre + post;
+    }
+
+    const dayMatches = messageWithoutMonthNumber.match(/(0[1-9]|[1-3]0|[1-9]+)(st|nd|rd|th)?/);
 
     if (!dayMatches || dayMatches.length < 2) {
         console.error("Couldn't find a match for a day in ", message)
