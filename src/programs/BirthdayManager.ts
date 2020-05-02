@@ -36,7 +36,7 @@ export default async function BirthdayManager(message: Message) {
     await birthdayMessage.react("👎");
 
     const filter: CollectorFilter = (reaction: MessageReaction, user: User) => {
-        return user.id === message.author.id && ["👍", "👎"].indexOf(reaction.emoji.name) !== -1;
+        return user.id === message.author.id && ["👍", "👎"].includes(reaction.emoji.name);
     }
 
     let birthdayAccepted;
