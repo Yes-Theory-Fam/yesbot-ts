@@ -50,9 +50,6 @@ export default async function BirthdayManager(message: Message) {
     if (birthdayAccepted.first().emoji.name === "👎") {
         message.channel.send("Okay, please be more specific and try again, or hang around for a Support to help you out! :grin:")
         return
-    } else if (birthdayAccepted.first().emoji.name !== "👍") {
-        // Abort if we get another emoji
-        return
     } else {
         // Clean up
         await birthdayMessage.delete();
