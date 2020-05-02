@@ -3,7 +3,7 @@ import { getAllCountries, getCountry } from "countries-and-timezones";
 
 import Tools from "../common/tools";
 import { textLog } from "../common/moderator";
-import { BirthdayRepository, Birthday } from "../entities/Birthday";
+import { BirthdayRepository } from "../entities/Birthday";
 
 const IM_FROM = "I'm from ";
 const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
@@ -14,6 +14,19 @@ export default async function BirthdayManager(message: Message) {
 
     if (words.length < 2) {
         message.channel.send("Please type !birthday and your birthday. I prefer if you use a name for the month :robot:")
+        return
+    }
+
+    const birthdayRepository = await BirthdayRepository();
+
+    const userExistingBirthday = await birthdayRepository.findOne({
+        where: {
+            id: message.author.id,
+        },
+    });
+
+    if (userExistingBirthday !== undefined) {
+        message.channel.send(`I have already stored your birthday as ${formatBirthdate(userExistingBirthday.birthdate)} :tada:`)
         return
     }
 
