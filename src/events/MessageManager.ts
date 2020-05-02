@@ -1,5 +1,5 @@
 import  Discord, { TextChannel, User } from 'discord.js';
-import { Someone, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, InitialiseTestEnvironment, Unassigned, ProfileManager, EasterEvent } from '../programs';
+import { Someone, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, BirthdayManager, Unassigned, ProfileManager, EasterEvent } from '../programs';
 import bot from "../index"
 import ExportManager from '../programs/ExportManager';
 import {USA_IMAGE_URL, CANADA_IMAGE_URL, UK_IMAGE_URL, AUSTRALIA_IMAGE_URL } from '../const'
@@ -63,6 +63,7 @@ class MessageManager {
 
                 if(firstWord === "!group") GroupManager(this.message, true);
                 if(firstWord === "!profile") ProfileManager(this.message, 0);
+                if(firstWord === "!profile") BirthdayManager(this.message);
                 break;
 
             case "coding":

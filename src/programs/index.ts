@@ -8,6 +8,7 @@ import GroupManager from "./GroupManager";
 import InitialiseTestEnvironment from './InitialiseTestEnvironment';
 import Unassigned from './Unassigned';
 import ProfileManager from './ProfileManager';
-import EasterEvent from './EasterEvent'
+import EasterEvent from './EasterEvent';
+import BirthdayManager from './BirthdayManager'
 
-export { Someone,EasterEvent, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, InitialiseTestEnvironment, Unassigned, ProfileManager }; 
+export { Someone,BirthdayManager,EasterEvent, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, InitialiseTestEnvironment, Unassigned, ProfileManager }; 
