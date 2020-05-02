@@ -29,9 +29,9 @@ export default async function Deadchat(pMessage: Discord.Message) {
     const question: DeadchatQuestion = await deadchatRepo
         .createQueryBuilder()
         .select()
-        .limit(1)
         .andWhere("random() < 0.5 OR id = 1") // To get a random-ish question (strongly biased towards the top few questions but good enough I guess)
         .orderBy("last_used", "ASC")
+        .limit(1)
         .getOne();
 
     pMessage.channel.send(question.question);
