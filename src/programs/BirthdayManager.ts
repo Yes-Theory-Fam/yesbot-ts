@@ -90,7 +90,7 @@ async function createBirthday(id: string, birthdate: Date) {
 export function getUserBirthdate(message: string): Date | null {
     const words = message.split(/[\s,-\/\.]\s?/);
 
-    const monthNameMatches = months.find(month => words.find(word => word.toLowerCase().indexOf(month) !== -1));
+    const monthNameMatches = months.find(month => words.find(word => word.toLowerCase().includes(month)));
 
     let monthNumMatch = -1;
     if (monthNameMatches === undefined) {
