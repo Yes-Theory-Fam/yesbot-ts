@@ -3,6 +3,7 @@ import { getUserBirthdate } from "./BirthdayManager";
 const messages = [
   ["dec-24", new Date(1970, 11, 24)],
   ["dec 4", new Date(1970, 11, 4)],
+  ["Dec 4", new Date(1970, 11, 4)],
   ["dec 04", new Date(1970, 11, 4)],
   ["december 24", new Date(1970, 11, 24)],
   ["24/12", new Date(1970, 11, 24)],
