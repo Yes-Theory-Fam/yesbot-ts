@@ -152,7 +152,7 @@ async function getUserTimezone(message: Message): Promise<string> {
     const timezones = countryRole
         .map(timezonesFromRole)
         .reduce((prev, curr) => [...prev, ...curr], [])
-        .filter(tz => tz.indexOf("/") !== -1);
+        .filter(tz => tz.includes("/"));
 
     if (timezones.length > 20) {
         throw new Error('Too many available time zones');
