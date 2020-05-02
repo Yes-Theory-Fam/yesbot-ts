@@ -19,7 +19,7 @@ async function importBirthdaysToDatabase() {
   const existingBirthdayUsers = existingBirthdays.map((b) => b.userid);
 
   const toCreate = birthdays
-    .filter(({ id }) => existingBirthdayUsers.indexOf(id) === -1)
+    .filter(({ id }) => !existingBirthdayUsers.includes(id))
     .map(({ id, date }) =>
       birthdayRepository.create({
         userid: id,
