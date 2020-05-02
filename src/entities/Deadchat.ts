@@ -8,8 +8,8 @@ export class DeadchatQuestion {
     @Column()
     question: string;
 
-    @Column({ default: false, name: "is_used" })
-    isUsed: boolean;
+    @Column({ default: new Date(), name: "last_used" })
+    lastUsed: Date;
 }
 
 export const DeadchatRepository = async () => {

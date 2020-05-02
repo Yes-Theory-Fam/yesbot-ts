@@ -1,5 +1,4 @@
 import Discord, { TextChannel } from 'discord.js';
-import Tools from '../common/tools';
 import { DeadchatQuestion, DeadchatRepository } from '../entities/Deadchat';
 
 export default async function Deadchat(pMessage: Discord.Message) {
@@ -31,11 +30,11 @@ export default async function Deadchat(pMessage: Discord.Message) {
         .createQueryBuilder()
         .select()
         .limit(1)
-        .andWhere("is_used = false")
-        .andWhere("random() < 0.5") // To get a random-ish question (strongly biased towards the top few questions but good enough I guess)
+        .andWhere("random() < 0.5 OR id = 1") // To get a random-ish question (strongly biased towards the top few questions but good enough I guess)
+        .orderBy("last_used", "ASC")
         .getOne();
 
     pMessage.channel.send(question.question);
-    question.isUsed = true;
+    question.lastUsed = new Date();
     deadchatRepo.save(question);
 }
