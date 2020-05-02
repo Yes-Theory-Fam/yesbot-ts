@@ -2,6 +2,7 @@ import Discord, { Snowflake, TextChannel, GuildMember, Message, MessageEmbed } f
 import Tools from '../common/tools';
 import { MODERATOR_ROLE_NAME } from '../const';
 import { UserGroupRepository } from '../entities/UserGroup';
+import { formatBirthday, getUserBirthday } from './BirthdayManager';
 
 interface DiscordGroup {
     name: String,
@@ -53,14 +54,7 @@ const getProfileEmbed = async (member:GuildMember, message: Message): Promise<Me
         }
     })
     const yesEmoji = member.guild.emojis.cache.find(e => e.name == "yes_yf")
-    const birthdays:Birthday[] = <Birthday[]><unknown>await Tools.resolveFile("birthdayMembers");
-    let birthdayString = 'Unknown'
-    birthdays.forEach((birthday:Birthday) => {
-        if(birthday.id === member.id) {
-            
-            birthdayString=birthday.date
-        }
-    })
+    const birthdayString = formatBirthday(await getUserBirthday(member.user.id))
     if(!countryRole) {
         message.reply("That user isn't registered here!")
         return null
