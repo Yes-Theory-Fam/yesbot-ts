@@ -17,15 +17,9 @@ export default async function BirthdayManager(message: Message) {
         return
     }
 
-    const birthdayRepository = await BirthdayRepository();
+    const userExistingBirthday = await getUserBirthday(message.author.id);
 
-    const userExistingBirthday = await birthdayRepository.findOne({
-        where: {
-            id: message.author.id,
-        },
-    });
-
-    if (userExistingBirthday !== undefined) {
+    if (userExistingBirthday !== null) {
         message.channel.send(`I have already stored your birthday as ${formatBirthday(userExistingBirthday)} :tada:`)
         return
     }
@@ -250,6 +244,18 @@ function timezonesFromRole(country: string): readonly string[] {
     const countryId = Object.keys(countries)
         .find(id => countries[id].name === country);
     return countries[countryId].timezones;
+}
+
+export async function getUserBirthday(userId: string): Promise<Date | null> {
+    const birthdayRepository = await BirthdayRepository();
+
+    const userExistingBirthday = await birthdayRepository.findOne({
+        where: {
+            userid: userId,
+        },
+    });
+
+    return userExistingBirthday === undefined ? null : userExistingBirthday.birthdate;
 }
 
 export function formatBirthday(date: Date | null): string {
