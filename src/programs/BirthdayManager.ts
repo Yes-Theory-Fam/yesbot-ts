@@ -152,6 +152,8 @@ async function getUserTimezone(message: Message): Promise<string> {
     let reactions: string[] = [];
 
     timezones.forEach((tz, i)=> {
+        if (stopAddReactions) return;
+
         const currentTime = new Date();
         const currentTimeString = `Current time: ${currentTime.toLocaleTimeString('en-GB', { timeZone: tz })}`;
         const identifier = String.fromCodePoint(regionIdentifierStart + i);
@@ -159,11 +161,18 @@ async function getUserTimezone(message: Message): Promise<string> {
         reactions.push(identifier);
     })
 
+    let stopAddReactions = false;
     const sentMessage = await message.channel.send(response);
     response.fields
-        .forEach(async (_, i) =>
-            sentMessage.react(String.fromCodePoint(regionIdentifierStart + i))
-        );
+        .forEach(async (_, i) => {
+            try {
+                await sentMessage.react(String.fromCodePoint(regionIdentifierStart + i))
+            } catch (err) {
+                // If we err here, it's probably because the user already selected an emoji.
+                // Best to just skip adding more emojis.
+                stopAddReactions = true;
+            }
+        });
 
     const filter: CollectorFilter = (reaction: MessageReaction, user: User) => {
         return user.id !== sentMessage.author.id && reactions.includes(reaction.emoji.name)
