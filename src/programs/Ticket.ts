@@ -86,8 +86,8 @@ export default async function Ticket(pMessage: Discord.Message, type:string) {
                 },
                 {
                     id: pMessage.author.id,
-                    allow: ['VIEW_CHANNEL', 'READ_MESSAGE_HISTORY'],
-                    deny: ['SEND_MESSAGES', 'ADD_REACTIONS']
+                    allow: ['VIEW_CHANNEL', 'READ_MESSAGE_HISTORY', 'SEND_MESSAGES'],
+                    deny: ['ADD_REACTIONS']
                 }
     
             ],
