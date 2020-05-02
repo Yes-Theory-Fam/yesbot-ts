@@ -24,7 +24,7 @@ export default async function BirthdayManager(message: Message) {
         return
     }
 
-    const birthdayMessage = await message.channel.send(`Hi <@${message.author.id}>, I think your birthday is ${months[birthdate.getMonth()]}-${birthdate.getDate()}. If that is correct, please click :+1:.`)
+    const birthdayMessage = await message.channel.send(`Hi <@${message.author.id}>, I think your birthday is ${formatBirthdate(birthdate)}. If that is correct, please click :+1:.`)
     await birthdayMessage.react("👍");
     await birthdayMessage.react("👎");
 
@@ -66,9 +66,8 @@ export default async function BirthdayManager(message: Message) {
         return;
     }
 
-    // if we're here, we have 'timezone' as the timezone for the user. Now we can do whatever we want!
-    message.channel.send(`Okay, I'll store your birthday as ${months[birthdate.getMonth()]}-${birthdate.getDate()} in the timezone ${timezone}.`);
-    textLog(`Hi there! Could someone help me by executing this command? Thank you!\n\`bb.override <@${message.author.id}> set ${months[birthdate.getMonth()]}-${birthdate.getDate()} ${timezone}\``);
+    message.channel.send(`Okay, I'll store your birthday as ${formatBirthdate(birthdate)} in the timezone ${timezone}.`);
+    textLog(`Hi there! Could someone help me by executing this command? Thank you!\n\`bb.override <@${message.author.id}> set ${formatBirthdate(birthdate)} ${timezone}\``);
     createBirthday(message.author.id, birthdate);
 }
 
@@ -238,4 +237,8 @@ function timezonesFromRole(country: string): readonly string[] {
     const countryId = Object.keys(countries)
         .find(id => countries[id].name === country);
     return countries[countryId].timezones;
+}
+
+function formatBirthdate(date: Date): string {
+    return `${months[date.getMonth()]}-${date.getDate()}`;
 }
