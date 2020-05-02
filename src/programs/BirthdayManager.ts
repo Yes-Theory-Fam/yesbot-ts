@@ -26,7 +26,7 @@ export default async function BirthdayManager(message: Message) {
     });
 
     if (userExistingBirthday !== undefined) {
-        message.channel.send(`I have already stored your birthday as ${formatBirthdate(userExistingBirthday.birthdate)} :tada:`)
+        message.channel.send(`I have already stored your birthday as ${formatBirthday(userExistingBirthday)} :tada:`)
         return
     }
 
@@ -37,7 +37,7 @@ export default async function BirthdayManager(message: Message) {
         return
     }
 
-    const birthdayMessage = await message.channel.send(`Hi <@${message.author.id}>, I think your birthday is ${formatBirthdate(birthdate)}. If that is correct, please click :+1:.`)
+    const birthdayMessage = await message.channel.send(`Hi <@${message.author.id}>, I think your birthday is ${formatBirthday(birthdate)}. If that is correct, please click :+1:.`)
     await birthdayMessage.react("👍");
     await birthdayMessage.react("👎");
 
@@ -79,8 +79,8 @@ export default async function BirthdayManager(message: Message) {
         return;
     }
 
-    message.channel.send(`Okay, I'll store your birthday as ${formatBirthdate(birthdate)} in the timezone ${timezone}.`);
-    textLog(`Hi there! Could someone help me by executing this command? Thank you!\n\`bb.override <@${message.author.id}> set ${formatBirthdate(birthdate)} ${timezone}\``);
+    message.channel.send(`Okay, I'll store your birthday as ${formatBirthday(birthdate)} in the timezone ${timezone}.`);
+    textLog(`Hi there! Could someone help me by executing this command? Thank you!\n\`bb.override <@${message.author.id}> set ${formatBirthday(birthdate)} ${timezone}\``);
     createBirthday(message.author.id, birthdate);
 }
 
@@ -252,6 +252,6 @@ function timezonesFromRole(country: string): readonly string[] {
     return countries[countryId].timezones;
 }
 
-function formatBirthdate(date: Date): string {
-    return `${months[date.getMonth()]}-${date.getDate()}`;
+export function formatBirthday(date: Date | null): string {
+    return (date === null) ? 'Unknown' : `${months[date.getMonth()]}-${date.getDate()}`;
 }
