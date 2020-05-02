@@ -5,7 +5,6 @@ import ExportManager from '../programs/ExportManager';
 import {USA_IMAGE_URL, CANADA_IMAGE_URL, UK_IMAGE_URL, AUSTRALIA_IMAGE_URL } from '../const'
 import Tools from '../common/tools';
 import { hasRole, textLog, getMember } from '../common/moderator';
-import { BirthdayHelper } from '../programs/BirthdayHelper';
 
 class MessageManager {
     message: Discord.Message;
