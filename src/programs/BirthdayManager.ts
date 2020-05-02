@@ -2,14 +2,54 @@ import { CollectorFilter, Message, GuildMember, MessageEmbed, User, MessageReact
 import { getAllCountries, getCountry } from "countries-and-timezones";
 
 import Tools from "../common/tools";
+import { textLog } from "../common/moderator";
+import { BirthdayRepository, Birthday } from "../entities/Birthday";
 
 const IM_FROM = "I'm from ";
+const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
 
 export default async function BirthdayManager(message: Message) {
 
     const words = Tools.stringToWords(message.content);
 
-    const [command, birthdate] = words;
+    if (words.length < 2) {
+        message.channel.send("Please type !birthday and your birthday. I prefer if you use a name for the month :robot:")
+        return
+    }
+
+    const birthdate = getUserBirthdate(message.content);
+
+    if (birthdate === null) {
+        message.channel.send("I'm unable to understand that date. Could you please specify it in month-date form? Like this: `!birthday december-24`. Thank you!");
+        return
+    }
+
+    const birthdayMessage = await message.channel.send(`Hi <@${message.author.id}>, I think your birthday is ${months[birthdate.getMonth()]}-${birthdate.getDate()}. If that is correct, please click :+1:.`)
+    await birthdayMessage.react("👍");
+    await birthdayMessage.react("👎");
+
+    const filter: CollectorFilter = (reaction: MessageReaction, user: User) => {
+        return user.id === message.author.id && ["👍", "👎"].indexOf(reaction.emoji.name) !== -1;
+    }
+
+    let birthdayAccepted;
+    try {
+        birthdayAccepted = await birthdayMessage.awaitReactions(filter, { max: 1, time: 15000, errors: ['time']});
+    } catch (err) {
+        // timeout probably
+        return
+    }
+
+    if (birthdayAccepted.first().emoji.name === "👎") {
+        message.channel.send("Okay, please be more specific and try again, or hang around for a Support to help you out! :grin:")
+        return
+    } else if (birthdayAccepted.first().emoji.name !== "👍") {
+        // Abort if we get another emoji
+        return
+    } else {
+        // Clean up
+        await birthdayMessage.delete();
+    }
 
     let timezone;
     try {
@@ -27,10 +67,70 @@ export default async function BirthdayManager(message: Message) {
     }
 
     // if we're here, we have 'timezone' as the timezone for the user. Now we can do whatever we want!
+    message.channel.send(`Okay, I'll store your birthday as ${months[birthdate.getMonth()]}-${birthdate.getDate()} in the timezone ${timezone}.`);
+    textLog(`Hi there! Could someone help me by executing this command? Thank you!\n\`bb.override <@${message.author.id}> set ${months[birthdate.getMonth()]}-${birthdate.getDate()} ${timezone}\``);
+    createBirthday(message.author.id, birthdate);
 }
 
-const createBirthday = (id:string, Date:Date) => {
-    // const birthdays =
+async function createBirthday(id: string, birthdate: Date) {
+    const birthdayRepository = await BirthdayRepository();
+    const birthday = birthdayRepository.create({
+        userid: id,
+        birthdate,
+    })
+    await birthdayRepository.save(birthday);
+}
+
+export function getUserBirthdate(message: string): Date | null {
+    const words = message.split(/[\s,-\/\.]\s?/);
+
+    const monthNameMatches = months.find(month => words.find(word => word.indexOf(month) !== -1));
+
+    let monthNumMatch = -1;
+    if (monthNameMatches === undefined) {
+        // This will brute force by taking the first word that's a pure number..
+        const matches = words.filter(word => {
+            if (word.length > 2) {
+                return false;
+            }
+            const n = parseInt(word)
+            if (isNaN(n)) {
+                return false
+            };
+            return n <= 12;
+        })
+
+        if (matches.length > 1) {
+            // Maybe a bit harsh, but we abort early if we find >= 2 numbers in the message
+            // where both of them are numbers <= 12.
+            return null;
+        }
+        monthNumMatch = parseInt(matches[0])
+    }
+
+    const dayMatches = message.match(/(\d+)(st|nd|rd|th)?/);
+
+    if (!dayMatches || dayMatches.length < 2) {
+        console.error("Couldn't find a match for a day in ", message)
+        return null
+    }
+
+    // First one is the JS direct match, 2nd one is first capture group (\d+), which is the actual date
+    const day = parseInt(dayMatches[1]);
+
+    if (isNaN(day)) {
+        console.error(`Tried to parse ${dayMatches[1]} as an int and failed!`);
+        return null
+    }
+
+    const month = monthNameMatches !== undefined ? months.indexOf(monthNameMatches) : monthNumMatch - 1;
+
+    if (monthNameMatches === undefined && monthNumMatch !== day && monthNumMatch <= 12 && day <= 12) {
+        // Cannot find out since i don't know which is month and which is date
+        return null
+    }
+
+    return new Date(1970, month, day)
 }
 
 async function getUserTimezone(message: Message): Promise<string> {
@@ -84,7 +184,6 @@ async function getUserTimezone(message: Message): Promise<string> {
     const reaction = received.first();
     const selectedTz = timezones[reactions.indexOf(reaction.emoji.name)];
 
-    message.channel.send(`Found timezone for <@${message.author.id}> to be ${selectedTz}.`);
     sentMessage.delete();
     return selectedTz;
 }
