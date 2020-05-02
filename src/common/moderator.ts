@@ -1,6 +1,5 @@
-import { Message, GuildMember, PartialGuildMember, TextChannel } from "discord.js"
+import { Message, GuildMember, PartialGuildMember, TextChannel, Client } from "discord.js"
 import { MODERATOR_ROLE_NAME, OUTPUT_CHANNEL_ID, GUILD_ID } from "../const"
-import bot from "..";
 
 export const isAuthorModerator = (message: Message):boolean => {
    if(message.member.roles.hoist) {
@@ -21,11 +20,12 @@ export const isRegistered = (member:GuildMember | PartialGuildMember):boolean =>
 }
 
 export const textLog = (text:string): Promise<Message> => {
-   
+   const bot = require('..') as Client;
    const outputChannel = <TextChannel>bot.channels.resolve(OUTPUT_CHANNEL_ID)
    return outputChannel.send(text)
 }
 
 export const getMember = (userId:string): GuildMember => {
+   const bot = require('..') as Client;
    return bot.guilds.resolve(GUILD_ID).members.resolve(userId)
 }
