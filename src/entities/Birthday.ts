@@ -8,7 +8,7 @@ export class Birthday {
     userid: string;
 
     @Column("timestamp with time zone")
-    birthdate: string;
+    birthdate: Date;
 
 }
 

@@ -11,3 +11,5 @@ export default async function BirthdayManager(message: Message) {
         birthdate,
     })
 }
+
+createBirthday(id, Date)
