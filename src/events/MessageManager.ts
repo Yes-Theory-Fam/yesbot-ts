@@ -60,10 +60,9 @@ class MessageManager {
                 break;
 
             case "bot-commands":
-
                 if(firstWord === "!group") GroupManager(this.message, true);
                 if(firstWord === "!profile") ProfileManager(this.message, 0);
-                if(firstWord === "!profile") BirthdayManager(this.message);
+                if(firstWord === "!birthday") BirthdayManager(this.message);
                 break;
 
             case "coding":
