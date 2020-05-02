@@ -185,7 +185,7 @@ async function getUserTimezone(message: Message): Promise<string> {
         });
 
     const filter: CollectorFilter = (reaction: MessageReaction, user: User) => {
-        return user.id !== sentMessage.author.id && reactions.includes(reaction.emoji.name)
+        return user.id === message.author.id && reactions.includes(reaction.emoji.name)
     }
 
     let received;
