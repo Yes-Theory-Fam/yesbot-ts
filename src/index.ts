@@ -55,3 +55,4 @@ bot.on("webhookUpdate", (channel: TextChannel) => null);
 //! ================= /EVENT HANDLERS ===================
 
 export default bot;
+module.exports = bot; // Required for require() when lazy loading.
