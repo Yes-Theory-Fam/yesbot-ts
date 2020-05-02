@@ -17,8 +17,10 @@ export default async function BirthdayManager(message: Message) {
     } catch (err) {
         if (err.message === 'Too many available time zones') {
             message.channel.send("Ouch, it seems like you have an extreme amounts of timezones available!\nPlease wait for a support :grin:");
+        } else if (err.message === "time expired") {
+            message.react("⏰");
         } else {
-            console.error(err);
+            console.error('birthday err', err);
             message.channel.send("Hmm, something went wrong. Please contact my engineers if this seems unreasonable. :nerd:")
         }
         return;
@@ -67,11 +69,23 @@ async function getUserTimezone(message: Message): Promise<string> {
         return user.id !== sentMessage.author.id && reactions.includes(reaction.emoji.name)
     }
 
-    const received = await sentMessage.awaitReactions(filter, { max: 1, time: 60000, errors: ['time']})
+    let received;
+    try {
+        received = await sentMessage.awaitReactions(filter, { max: 1, time: 60000, errors: ['time']})
+    } catch (err) {
+        if (err.toString() === "[object Map]") {
+            await sentMessage.delete();
+            throw new Error('time expired');
+        } else {
+            throw err;
+        }
+    }
+
     const reaction = received.first();
     const selectedTz = timezones[reactions.indexOf(reaction.emoji.name)];
 
     message.channel.send(`Found timezone for <@${message.author.id}> to be ${selectedTz}.`);
+    sentMessage.delete();
     return selectedTz;
 }
 
