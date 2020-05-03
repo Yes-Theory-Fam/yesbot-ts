@@ -62,7 +62,7 @@ export default async function Poll(pMessage: Discord.Message) {
 
     if (uniqueOptions.length < 2) {
         pMessage.reply("More than one distinct option is required!").then(message => {
-            // message.delete({timeout: 10000});
+            message.delete({timeout: 10000});
         }).catch(console.log);
         pMessage.delete();
         return;

@@ -73,7 +73,6 @@ class MessageManager {
                 if (this.message.author.id !== bot.user.id) {
                     Poll(this.message);
                 }
-                // this.message.react('🇦').then(() => this.message.react('🅱️'))
                 break;
 
             case "feature-requests":
