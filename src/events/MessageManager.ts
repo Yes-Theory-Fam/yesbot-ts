@@ -1,5 +1,5 @@
 import  Discord, { TextChannel, User } from 'discord.js';
-import { Someone, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, BirthdayManager, Unassigned, ProfileManager, EasterEvent } from '../programs';
+import { Someone, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, BirthdayManager, Unassigned, ProfileManager, EasterEvent, Poll } from '../programs';
 import bot from "../index"
 import ExportManager from '../programs/ExportManager';
 import {USA_IMAGE_URL, CANADA_IMAGE_URL, UK_IMAGE_URL, AUSTRALIA_IMAGE_URL } from '../const'
@@ -70,8 +70,8 @@ class MessageManager {
                 break;
 
             case "polls":
-
-                this.message.react('🇦').then(() => this.message.react('🅱️'))
+                Poll(this.message);
+                // this.message.react('🇦').then(() => this.message.react('🅱️'))
                 break;
 
             case "feature-requests":
