@@ -58,6 +58,16 @@ const getOptions = (messageContent: string) => {
 
 export default async function Poll(pMessage: Discord.Message) {
     const options = getOptions(pMessage.content);
+    const uniqueOptions = options.filter((value, index, self) => self.indexOf(value) === index);
+
+    if (uniqueOptions.length < 2) {
+        pMessage.reply("More than one distinct option is required!").then(message => {
+            // message.delete({timeout: 10000});
+        }).catch(console.log);
+        pMessage.delete();
+        return;
+    }
+
     for (let i = 0; i < options.length; i++) {
         await pMessage.react(options[i]);
     }
