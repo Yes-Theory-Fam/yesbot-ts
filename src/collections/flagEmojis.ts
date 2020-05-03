@@ -260,8 +260,8 @@ export const countries: Country[] = [
     "code": "BV",
     "emoji": "🇧🇻",
     "unicode": "U+1F1E7 U+1F1FB",
-    "name": "Bouvet Island",
-    "title": "flag for Bouvet Island"
+    "name": "Norway",
+    "title": "flag for Norway"
   },
   {
     "code": "BW",
