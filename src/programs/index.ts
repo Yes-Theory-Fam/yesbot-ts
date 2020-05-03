@@ -9,6 +9,7 @@ import InitialiseTestEnvironment from './InitialiseTestEnvironment';
 import Unassigned from './Unassigned';
 import ProfileManager from './ProfileManager';
 import EasterEvent from './EasterEvent';
-import BirthdayManager from './BirthdayManager'
+import BirthdayManager from './BirthdayManager';
+import Poll from './Poll';
 
-export { Someone,BirthdayManager,EasterEvent, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, InitialiseTestEnvironment, Unassigned, ProfileManager }; 
+export { Someone,BirthdayManager,EasterEvent, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, InitialiseTestEnvironment, Unassigned, ProfileManager, Poll }; 
