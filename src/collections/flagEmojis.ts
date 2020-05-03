@@ -1784,6 +1784,13 @@ export const countries: Country[] = [
 
   },
   {
+    "code": "UM",
+    "emoji": "🇺🇲",
+    "unicode": "U+1F1FA U+1F1F2",
+    "name": "USA",
+    "title": "flag for United States",
+  },
+  {
     "code": "UG",
     "emoji": "🇺🇬",
     "unicode": "U+1F1FA U+1F1EC",
