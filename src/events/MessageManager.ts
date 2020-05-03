@@ -1,4 +1,4 @@
-import  Discord, { TextChannel, User } from 'discord.js';
+import  Discord, { TextChannel, User, Channel } from 'discord.js';
 import { Someone, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, BirthdayManager, Unassigned, ProfileManager, EasterEvent, Poll } from '../programs';
 import bot from "../index"
 import ExportManager from '../programs/ExportManager';
@@ -48,7 +48,6 @@ class MessageManager {
                
                 if(firstWord === "@someone") Someone(this.message);
                 if(firstWord === "!deadchat") Deadchat(this.message);
-                if(words.includes("@group")) GroupManager(this.message, false)
                 break;
 
             case "permanent-testing":
@@ -79,12 +78,8 @@ class MessageManager {
 
                 this.message.react('👍').then(() => this.message.react('👎'));
                 break;
-
-            case "gaming":
-                if(words.includes("@group")) GroupManager(this.message, false)
-                break;
-
             }
+
             if(firstWord === "!fiyesta") Ticket(this.message, "fiyesta");
             if(firstWord === "!shoutout") Ticket(this.message, "shoutout");
             if (firstWord === "!vote") this.addVote()
@@ -94,7 +89,20 @@ class MessageManager {
             if (["i love u yesbot", "i love you yesbot", "yesbot i love you "].includes(this.message.content.toLowerCase())) this.sendLove();
             if (this.message.content.toLowerCase().startsWith("yesbot") && this.message.content.toLowerCase().endsWith('?')) this.randomReply();
             if(this.message.content.toLowerCase().startsWith("!group toggle")) GroupManager(this.message, true)
-             
+
+            const isChannelAllowed = (channel: Channel): boolean => {
+                const isTextChannel = (channel: Channel): channel is TextChannel => (channel as TextChannel).name && !!(channel as TextChannel).parent;
+                if (!isTextChannel(channel)) return;
+
+                const allowedCategories = ["hobbies"];
+                const allowedChannels = ["chat", "chat-too", "gaming"];
+
+                if (allowedCategories.some(category => channel.parent?.name?.toLowerCase()?.includes(category))) return true;
+                
+                return allowedChannels.includes(channel.name.toLowerCase());
+            };
+
+            if(words.includes("@group") && isChannelAllowed(this.message.channel)) GroupManager(this.message, false)
 
         }
 
