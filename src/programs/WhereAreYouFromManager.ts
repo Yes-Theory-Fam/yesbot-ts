@@ -8,20 +8,19 @@ import { MODERATOR_ROLE_NAME } from '../const';
 export default async function WhereAreYouFromManager(pMessage: Discord.Message) {
 
     const newUser = !isRegistered(pMessage.member);
-    let countryToAssign: Country;
-    let count = 0
 
     if(newUser) {
-        countries.forEach((country:Country) => {
-            if(pMessage.content.includes(country.emoji) || pMessage.content.toLowerCase().includes(country.name.toLowerCase())) {
-                    countryToAssign = country;
-                    count++
-            }
+        const matchedCountries = countries.filter((country:Country) => {
+            return pMessage.content.includes(country.emoji) || pMessage.content.toLowerCase().includes(country.name.toLowerCase())
         });
-        if(count > 1) {
+        const uniqueMatches = matchedCountries.filter(({name: filterName}, index, self) => self.findIndex(({name}) => name === filterName) === index);
+
+        if(uniqueMatches.length > 1) {
             pMessage.reply("Please only tell me 1 country for now, you can ask a member of the Support team about multiple nationalities :grin:")
             return;
         }
+
+        const countryToAssign = uniqueMatches[0];
         if(countryToAssign) {
 
             const isOutlier = ["Australia", "United States", "United Kingdom", "Canada"].find(each => countryToAssign.title.includes(each));
