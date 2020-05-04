@@ -10,6 +10,6 @@ import Unassigned from './Unassigned';
 import ProfileManager from './ProfileManager';
 import EasterEvent from './EasterEvent';
 import BirthdayManager from './BirthdayManager';
-import Poll from './Poll';
+import PollsManager from './PollsManager';
 
-export { Someone,BirthdayManager,EasterEvent, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, InitialiseTestEnvironment, Unassigned, ProfileManager, Poll }; 
+export { Someone,BirthdayManager,EasterEvent, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, InitialiseTestEnvironment, Unassigned, ProfileManager, PollsManager }; 
