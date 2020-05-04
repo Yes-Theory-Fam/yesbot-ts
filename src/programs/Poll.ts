@@ -25,8 +25,10 @@ const getPollOptions = (messageContent: string, anyMatchRegex: RegExp, actualMat
 
     // Push the matches
     while (match) {
-        usedEmojis.push(match[1]);
-        match = actualMatchRegex.exec(messageContent)
+        // For some reason it manages to match numbers...
+        if (isNaN(Number(match[1])))
+            usedEmojis.push(match[1]);
+        match = actualMatchRegex.exec(messageContent);
     }
 
     return usedEmojis;
@@ -34,7 +36,9 @@ const getPollOptions = (messageContent: string, anyMatchRegex: RegExp, actualMat
 
 // Potentially naive approach but looking at the recent polls it's realistic
 const getOptions = (messageContent: string) => {
-    const emojis = getPollOptions(messageContent, unicodeEmojiRegex, RegExp("^\s*(" + unicodeEmojiRegex.source + ").*$", "gum"));
+    const emojiOptionRegex = RegExp("(" + unicodeEmojiRegex.source + ")", "gu");
+    const emojis = getPollOptions(messageContent, emojiOptionRegex, RegExp(emojiOptionRegex.source, "gu"));
+
     if (emojis.length > 1) return emojis;
 
     const capitals = getPollOptions(messageContent, /^[A-Z]\p{P}/um, /^([A-Z])\p{P}.*$/gum);
