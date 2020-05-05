@@ -2,7 +2,7 @@ import { CollectorFilter, Message, GuildMember, MessageEmbed, User, MessageReact
 import { getAllCountries, getCountry } from "countries-and-timezones";
 
 import Tools from "../common/tools";
-import { textLog } from "../common/moderator";
+import { textLog, isAuthorModerator } from "../common/moderator";
 import { BirthdayRepository } from "../entities/Birthday";
 
 const IM_FROM = "I'm from ";
@@ -17,7 +17,11 @@ export default async function BirthdayManager(message: Message) {
         return
     }
 
-    const userExistingBirthday = await getUserBirthday(message.author.id);
+    const birthdayUser = (isAuthorModerator(message) && message.mentions.users.size === 1)
+        ? message.mentions.users.first()
+        : message.author;
+
+    const userExistingBirthday = await getUserBirthday(birthdayUser.id);
 
     if (userExistingBirthday !== null) {
         message.channel.send(`I have already stored your birthday as ${formatBirthday(userExistingBirthday)} :tada:`)
@@ -31,12 +35,12 @@ export default async function BirthdayManager(message: Message) {
         return
     }
 
-    const birthdayMessage = await message.channel.send(`Hi <@${message.author.id}>, I think your birthday is ${formatBirthday(birthdate)}. If that is correct, please click :+1:.`)
+    const birthdayMessage = await message.channel.send(`Hi <@${birthdayUser.id}>, I think your birthday is ${formatBirthday(birthdate)}. If that is correct, please click :+1:.`)
     await birthdayMessage.react("👍");
     await birthdayMessage.react("👎");
 
     const filter: CollectorFilter = (reaction: MessageReaction, user: User) => {
-        return user.id === message.author.id && ["👍", "👎"].includes(reaction.emoji.name);
+        return (user.id === birthdayUser.id || user.id === message.author.id) && ["👍", "👎"].includes(reaction.emoji.name);
     }
 
     let birthdayAccepted;
@@ -71,8 +75,8 @@ export default async function BirthdayManager(message: Message) {
     }
 
     message.channel.send(`Okay, I'll store your birthday as ${formatBirthday(birthdate)} in the timezone ${timezone}.`);
-    textLog(`Hi there! Could someone help me by executing this command? Thank you!\n\`bb.override <@${message.author.id}> set ${formatBirthday(birthdate)} ${timezone}\``);
-    createBirthday(message.author.id, birthdate);
+    textLog(`Hi there! Could someone help me by executing this command? Thank you!\n\`bb.override <@${birthdayUser.id}> set ${formatBirthday(birthdate)} ${timezone}\``);
+    createBirthday(birthdayUser.id, birthdate);
 }
 
 async function createBirthday(id: string, birthdate: Date) {
