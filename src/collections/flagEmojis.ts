@@ -256,13 +256,13 @@ export const countries: Country[] = [
     "title": "flag for Bhutan",
 
   },
-  // {
-  //   "code": "BV",
-  //   "emoji": "🇧🇻",
-  //   "unicode": "U+1F1E7 U+1F1FB",
-  //   "name": "Norway",
-  //   "title": "flag for Norway"
-  // },
+  {
+    "code": "BV",
+    "emoji": "🇧🇻",
+    "unicode": "U+1F1E7 U+1F1FB",
+    "name": "Norway",
+    "title": "flag for Norway"
+  },
   {
     "code": "BW",
     "emoji": "🇧🇼",
@@ -1783,13 +1783,13 @@ export const countries: Country[] = [
     "title": "flag for Ukraine",
 
   },
-  // {
-  //   "code": "UM",
-  //   "emoji": "🇺🇲",
-  //   "unicode": "U+1F1FA U+1F1F2",
-  //   "name": "USA",
-  //   "title": "flag for United States",
-  // },
+  {
+    "code": "UM",
+    "emoji": "🇺🇲",
+    "unicode": "U+1F1FA U+1F1F2",
+    "name": "USA",
+    "title": "flag for United States",
+  },
   {
     "code": "UG",
     "emoji": "🇺🇬",
