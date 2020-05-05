@@ -207,13 +207,22 @@ async function getUserTimezone(message: Message): Promise<string> {
     return selectedTz;
 }
 
-async function fetchUserCountryRoles(user: GuildMember) {
-    return user.roles.cache
-        .filter(role => role.name.startsWith("I'm from "))
-        .map(role => role.name.substring(IM_FROM.length, role.name.indexOf("!")));
+interface CountryWithRegion {
+    country: string;
+    region: string;
 }
 
-function timezonesFromRole(country: string): readonly string[] {
+async function fetchUserCountryRoles(user: GuildMember): Promise<CountryWithRegion[]> {
+    return user.roles.cache
+        .filter(role => role.name.startsWith("I'm from "))
+        .map<CountryWithRegion>(role => ({
+            country: role.name.substring(IM_FROM.length, role.name.indexOf("!")),
+            region: role.name.substring(role.name.indexOf("(") + 1, role.name.indexOf(")")),
+        }));
+}
+
+function timezonesFromRole(props: CountryWithRegion): readonly string[] {
+    const { country, region } = props;
     // Edge cases
     switch (country) {
         case "the USA":
@@ -232,6 +241,25 @@ function timezonesFromRole(country: string): readonly string[] {
             }).filter(tz => tz !== null);
         case "the UK":
             return getCountry("GB").timezones;
+        case "Australia": {
+            switch (region) {
+                case "Western":
+                    return ["Australia/Perth"]
+                case "Northern Territory":
+                    return ["Australia/Darwin"]
+                case "Southern":
+                    return ["Australia/Adelaide"]
+                case "Queensland":
+                    return ["Australia/Brisbane"]
+                case "NSW + Victoria":
+                    return ["Australia/Sydney"]
+                default:
+                    return getCountry("AU")
+                        .timezones
+                        // Invalid JS timezones
+                        .filter(tz => tz !== "Australia/LHI" && tz !== "Australia/ACT" && tz !== "Australia/NSW")
+            }
+        }
     }
 
     // let's find what tz's are available for this country
