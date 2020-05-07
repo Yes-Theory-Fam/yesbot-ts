@@ -54,12 +54,12 @@ class MessageManager {
 
                 if(firstWord === "!export") ExportManager(this.message);
                 if(firstWord === "!unassigned") Unassigned(this.message);
-                if(firstWord === "!group") GroupManager(this.message, true);
+                if(firstWord === "!group" && !this.message.content.toLowerCase().startsWith("!group toggle")) GroupManager(this.message, true);
                 if(firstWord === "!profile") ProfileManager(this.message, 0);
                 break;
 
             case "bot-commands":
-                if(firstWord === "!group") GroupManager(this.message, true);
+                if(firstWord === "!group" && !this.message.content.toLowerCase().startsWith("!group toggle")) GroupManager(this.message, true);
                 if(firstWord === "!profile") ProfileManager(this.message, 0);
                 if(firstWord === "!birthday") BirthdayManager(this.message);
                 break;
