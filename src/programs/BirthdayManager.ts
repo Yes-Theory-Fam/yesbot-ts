@@ -45,7 +45,7 @@ export default async function BirthdayManager(message: Message) {
 
     let birthdayAccepted;
     try {
-        birthdayAccepted = await birthdayMessage.awaitReactions(filter, { max: 1, time: 15000, errors: ['time']});
+        birthdayAccepted = await birthdayMessage.awaitReactions(filter, { max: 1, time: 15000, errors: ['time'] });
     } catch (err) {
         // timeout probably
         return
@@ -165,7 +165,7 @@ async function getUserTimezone(message: Message): Promise<string> {
     const regionIdentifierStart = 127462;
     let reactions: string[] = [];
 
-    timezones.forEach((tz, i)=> {
+    timezones.forEach((tz, i) => {
         if (stopAddReactions) return;
 
         const currentTime = new Date();
@@ -194,7 +194,7 @@ async function getUserTimezone(message: Message): Promise<string> {
 
     let received;
     try {
-        received = await sentMessage.awaitReactions(filter, { max: 1, time: 60000, errors: ['time']})
+        received = await sentMessage.awaitReactions(filter, { max: 1, time: 60000, errors: ['time'] })
     } catch (err) {
         if (err.toString() === "[object Map]") {
             await sentMessage.delete();
@@ -267,11 +267,14 @@ function timezonesFromRole(props: CountryWithRegion): readonly string[] {
     }
 
     // let's find what tz's are available for this country
+    let fixedCountry = country;
+    if (country.startsWith("the "))
+        fixedCountry = country.substring("the ".length);
 
     // REALLY
     const countries = getAllCountries();
     const countryId = Object.keys(countries)
-        .find(id => countries[id].name === country);
+        .find(id => countries[id].name === fixedCountry);
     return countries[countryId].timezones;
 }
 
