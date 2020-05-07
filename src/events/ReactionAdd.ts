@@ -1,12 +1,16 @@
-import Discord, { Snowflake, User, Channel, Guild, TextChannel, Emoji, GuildCreateChannelOptions, PartialUser } from 'discord.js';
+import Discord, { Snowflake, User, Channel, Guild, TextChannel, Emoji, GuildCreateChannelOptions, PartialUser, Message } from 'discord.js';
 import bot from "../index"
 import Tools from '../common/tools';
 import AdventureGame from "../programs/AdventureGame"
+import { ChannelToggleRepository } from '../entities/ChannelToggle';
+import { MessageRepository } from '../entities/Message';
+import { backfillReactions } from '../programs/GroupManager';
 
 class ReactionAdd {
 
 
     bot: Discord.Client;
+    message: Message;
     messageId: Snowflake;
     user: User;
     reaction: string;
@@ -17,6 +21,7 @@ class ReactionAdd {
     constructor(messageReaction: Discord.MessageReaction, user: User | PartialUser) {
         this.bot = bot;
         this.user = <User>user;
+        this.message = messageReaction.message;
         this.messageId = messageReaction.message.id;
         this.reaction = messageReaction.emoji.name;
         this.pureEmoji = messageReaction.emoji.toString()
@@ -40,15 +45,7 @@ class ReactionAdd {
             }
         });
 
-        const groupToggleObject = await Tools.resolveFile("groupToggle");
-        groupToggleObject.forEach((toggleObject:any) => {
-            if(this.messageId === toggleObject.messageId && this.reaction === toggleObject.emoji) {
-                const groupChannel = this.guild.channels.cache.find(c => c.name === toggleObject.channelName);
-                (groupChannel as TextChannel).updateOverwrite(this.user.id, {
-                    VIEW_CHANNEL: true
-                })
-            }
-        })
+        this.handleChannelToggleReaction();
     }
 
     isYTF(roleToAdd: Discord.Role): boolean {
@@ -71,8 +68,45 @@ class ReactionAdd {
         
     }
 
+    async handleChannelToggleReaction() {
+        const messageRepository = await MessageRepository();
+        const storedMessage = await messageRepository.findOne({
+            where: {
+                id: this.messageId,
+            }
+        });
 
+        if (storedMessage === undefined) {
+            // abort if we don't know of a trigger for this message
+            return
+        }
 
+        // Make sure we know what channel this message is forever
+        if (storedMessage.channel === null) {
+            // record what channel this message is in
+            await messageRepository.save({
+                ...storedMessage,
+                channel: this.channel.id,
+            });
+            this.message.react(this.reaction);
+            backfillReactions(this.messageId, this.channel.id, this.guild);
+        }
+
+        const channelToggleRepository = await ChannelToggleRepository();
+        const toggle = await channelToggleRepository.findOne({
+            where: {
+                emoji: this.reaction,
+                message: this.messageId,
+            }
+        });
+
+        if (toggle !== undefined) {
+            const channel = this.guild.channels.cache.find(channel => channel.id === toggle.channel);
+            await channel.updateOverwrite(this.user.id, {
+                VIEW_CHANNEL: true,
+            });
+        }
+    }
 }
 
 export default ReactionAdd;

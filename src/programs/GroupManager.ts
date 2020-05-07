@@ -1,9 +1,11 @@
-import Discord, { Snowflake, TextChannel, GuildMember, Message, MessageEmbed, MessageReaction, User } from 'discord.js';
+import Discord, { Snowflake, TextChannel, GuildMember, Message, MessageEmbed, MessageReaction, User, Guild } from 'discord.js';
 import Tools from '../common/tools';
 import { MODERATOR_ROLE_NAME, ENGINEER_ROLE_NAME } from '../const';
 import { isAuthorModerator } from '../common/moderator';
 import { UserGroup, UserGroupRepository, UserGroupMembershipRepository, GroupMember } from '../entities/UserGroup';
 import { ILike } from '../lib/typeormILIKE';
+import { MessageRepository, getOrCreateMessage } from '../entities/Message';
+import { ChannelToggleRepository } from '../entities/ChannelToggle';
 
 interface DiscordGroup {
     name: String,
@@ -108,27 +110,67 @@ const toggleGroup = async (words:string[], message: Discord.Message) => {
         message.reply("Invalid syntax, please double check for messageId, emoji, channelName and try again.")
         return;
     }
-    const existingChannel = !!message.guild.channels.cache.find(c => c.name === channelName.toLowerCase());
+    const existingChannel = message.guild.channels.cache.find(c => c.name === channelName.toLowerCase());
     if(!existingChannel) {
         message.react("👎")
         message.reply("That channel doesn't exist here.")
         return;
     }
-    const toggleObject = {
-        messageId,
-        emoji,
-        channelName,
-        originalChannel: message.channel.id
+
+    const reactionMessage = await getOrCreateMessage(messageId);
+
+    if (reactionMessage.channel === null) {
+        message.reply("Since this is the first time I've heard of this message I need your help. " +
+            `Can you put one ${emoji} emoji on the message for me please?\n` +
+            "After you've done that, I'll make sure to put up all the emojis on it. :grin:\n" +
+            "You can keep adding emojis here and add one on the original message when you're done, and I'll add them all!"
+            )
     }
-    if(Tools.updateFile("groupToggle", toggleObject)) {
-        let [ogMessage, channel] = await Tools.getMessageById(messageId, message.guild, message.channel.id)
-        ogMessage = <Discord.Message>ogMessage;
-        ogMessage.react(emoji)
-        message.react("👍")
+
+    const channelToggleRepository = await ChannelToggleRepository();
+
+    try {
+        const toggle = channelToggleRepository.create({
+            emoji,
+            message: reactionMessage,
+            channel: existingChannel.id,
+        });
+        await channelToggleRepository.save(toggle);
+        message.react("👍");
+    } catch (err) {
+        console.error('Failed to create toggle', err)
+        message.react("👎");
+        return
     }
-    
+
+    if (reactionMessage.channel !== null) {
+        await backfillReactions(reactionMessage.id, reactionMessage.channel, message.guild);
+    }
 }
 
+export async function backfillReactions(messageId: string, channelId: string, guild: Guild): Promise<boolean> {
+    console.log(`backfilling reactions for message ${messageId} in ${channelId}`)
+    const channelToggleRepository = await ChannelToggleRepository();
+
+    const channel = guild.channels.cache.find(c => c.id === channelId) as TextChannel;
+
+    if (channel === undefined) {
+        throw new Error("I can't find that channel. Maybe it has been deleted?")
+    }
+
+    const reactionDiscordMessage = await channel.messages.fetch(messageId)
+    const toggles = await channelToggleRepository.find({
+        where: {
+            message: messageId,
+        }
+    });
+
+    // Only add missing reactions
+    toggles
+        .filter(t => !reactionDiscordMessage.reactions.cache.has(t.emoji))
+        .forEach(toggle => reactionDiscordMessage.react(toggle.emoji));
+    return true;
+}
 
 const deleteGroup = async (message:Discord.Message, requestedGroupName: string = "") => {
 
