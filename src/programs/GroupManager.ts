@@ -103,6 +103,17 @@ export default async function GroupManager(message: Discord.Message, isConfig: b
 const toggleGroup = async (words:string[], message: Discord.Message) => {
     words.shift();
     const [ messageId, emoji, channelName ] = words;
+    if(!(messageId && emoji && channelName)) {
+        message.react("👎")
+        message.reply("Invalid syntax, please double check for messageId, emoji, channelName and try again.")
+        return;
+    }
+    const existingChannel = !!message.guild.channels.cache.find(c => c.name === channelName.toLowerCase());
+    if(!existingChannel) {
+        message.react("👎")
+        message.reply("That channel doesn't exist here.")
+        return;
+    }
     const toggleObject = {
         messageId,
         emoji,
