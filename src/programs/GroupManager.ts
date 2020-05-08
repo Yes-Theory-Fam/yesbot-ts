@@ -167,7 +167,10 @@ export async function backfillReactions(messageId: string, channelId: string, gu
     const toggles = await channelToggleRepository.find({
         where: {
             message: messageId,
-        }
+        },
+        order: {
+            id: "ASC",
+        },
     });
 
     // Only add missing reactions
