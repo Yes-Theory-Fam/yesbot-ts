@@ -153,7 +153,7 @@ const toggleGroup = async (words:string[], message: Discord.Message) => {
     }
 }
 
-export async function backfillReactions(messageId: string, channelId: string, guild: Guild): Promise<boolean> {
+export async function backfillReactions(messageId: string, channelId: string, guild: Guild) {
     console.log(`backfilling reactions for message ${messageId} in ${channelId}`)
     const channelToggleRepository = await ChannelToggleRepository();
 
@@ -174,7 +174,6 @@ export async function backfillReactions(messageId: string, channelId: string, gu
     toggles
         .filter(t => !reactionDiscordMessage.reactions.cache.has(t.emoji))
         .forEach(toggle => reactionDiscordMessage.react(toggle.emoji));
-    return true;
 }
 
 const deleteGroup = async (message:Discord.Message, requestedGroupName: string = "") => {
