@@ -58,9 +58,7 @@ class ReactionRemove {
             textLog(`I can't find this channel <#${channel.id}>. Has it been deleted?`);
             return;
         }
-        await channel.updateOverwrite(this.user.id, {
-            VIEW_CHANNEL: false,
-        });
+        await channel.permissionOverwrites.get(this.user.id).delete();
     }
 }
 
