@@ -174,8 +174,9 @@ export async function backfillReactions(messageId: string, channelId: string, gu
     });
 
     // Only add missing reactions
-    toggles
-        .forEach(toggle => reactionDiscordMessage.react(toggle.emoji));
+    for (let i = 0; i < toggles.length; i++) {
+        await reactionDiscordMessage.react(toggles[i].emoji);
+    }
 }
 
 const deleteGroup = async (message:Discord.Message, requestedGroupName: string = "") => {
