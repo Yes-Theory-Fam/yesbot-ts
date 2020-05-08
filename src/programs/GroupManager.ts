@@ -103,6 +103,11 @@ export default async function GroupManager(message: Discord.Message, isConfig: b
 
 
 const toggleGroup = async (words:string[], message: Discord.Message) => {
+    if (!isAuthorModerator(message)) {
+        message.react("👎");
+        return;
+    }
+
     words.shift();
     const [ messageId, emoji, channelName ] = words;
     if(!(messageId && emoji && channelName)) {
