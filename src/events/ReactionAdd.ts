@@ -5,6 +5,7 @@ import AdventureGame from "../programs/AdventureGame"
 import { ChannelToggleRepository } from '../entities/ChannelToggle';
 import { MessageRepository } from '../entities/Message';
 import { backfillReactions } from '../programs/GroupManager';
+import { textLog } from '../common/moderator';
 
 class ReactionAdd {
 
@@ -102,6 +103,11 @@ class ReactionAdd {
 
         if (toggle !== undefined) {
             const channel = this.guild.channels.cache.find(channel => channel.id === toggle.channel);
+            if (channel === undefined) {
+                textLog(`I can't find this channel <#${channel.id}>. Has it been deleted?`);
+                return;
+            }
+
             await channel.updateOverwrite(this.user.id, {
                 VIEW_CHANNEL: true,
             });

@@ -2,6 +2,7 @@ import Discord, { Snowflake, User, Channel, Guild, TextChannel, PartialUser } fr
 import bot from "../index"
 import Tools from '../common/tools';
 import { ChannelToggleRepository } from '../entities/ChannelToggle';
+import { textLog } from '../common/moderator';
 
 class ReactionRemove {
 
@@ -50,11 +51,16 @@ class ReactionRemove {
             return;
         }
 
-        this.guild.channels.cache
-            .find(c => c.id === toggle.channel)
-            .updateOverwrite(this.user.id, {
-                VIEW_CHANNEL: false,
-            })
+        const channel = this.guild.channels.cache
+            .find(c => c.id === toggle.channel);
+
+            if (channel === undefined) {
+            textLog(`I can't find this channel <#${channel.id}>. Has it been deleted?`);
+            return;
+        }
+        await channel.updateOverwrite(this.user.id, {
+            VIEW_CHANNEL: false,
+        });
     }
 }
 
