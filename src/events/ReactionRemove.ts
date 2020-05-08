@@ -1,6 +1,8 @@
 import Discord, { Snowflake, User, Channel, Guild, TextChannel, PartialUser } from 'discord.js';
 import bot from "../index"
 import Tools from '../common/tools';
+import { ChannelToggleRepository } from '../entities/ChannelToggle';
+import { textLog } from '../common/moderator';
 
 class ReactionRemove {
 
@@ -33,19 +35,33 @@ class ReactionRemove {
             }
         });
 
-        const groupToggleObject = await Tools.resolveFile("groupToggle");
-        groupToggleObject.forEach((toggleObject:any) => {
-            if(this.messageId === toggleObject.messageId && this.reaction === toggleObject.emoji) {
-                const groupChannel = this.guild.channels.cache.find(c => c.name === toggleObject.channelName);
-                (groupChannel as TextChannel).updateOverwrite(this.user.id, {
-                    VIEW_CHANNEL: false
-                })
-            }
-        })
+        this.handleChannelToggleReaction();
     }
 
 
+    async handleChannelToggleReaction() {
+        const channelToggleRepository = await ChannelToggleRepository();
+        const toggle = await channelToggleRepository.findOne({
+            where: {
+                emoji: this.reaction,
+                message: this.messageId,
+            }
+        });
+        if (toggle === undefined) {
+            return;
+        }
 
+        const channel = this.guild.channels.cache
+            .find(c => c.id === toggle.channel);
+
+            if (channel === undefined) {
+            textLog(`I can't find this channel <#${channel.id}>. Has it been deleted?`);
+            return;
+        }
+        await channel.updateOverwrite(this.user.id, {
+            VIEW_CHANNEL: false,
+        });
+    }
 }
 
 export default ReactionRemove;
