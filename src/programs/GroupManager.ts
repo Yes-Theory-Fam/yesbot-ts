@@ -172,7 +172,6 @@ export async function backfillReactions(messageId: string, channelId: string, gu
 
     // Only add missing reactions
     toggles
-        .filter(t => !reactionDiscordMessage.reactions.cache.has(t.emoji))
         .forEach(toggle => reactionDiscordMessage.react(toggle.emoji));
 }
 
