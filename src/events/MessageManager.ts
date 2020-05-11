@@ -2,9 +2,10 @@ import  Discord, { TextChannel, User, Channel } from 'discord.js';
 import { Someone, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, BirthdayManager, Unassigned, ProfileManager, EasterEvent, PollsManager } from '../programs';
 import bot from "../index"
 import ExportManager from '../programs/ExportManager';
-import {USA_IMAGE_URL, CANADA_IMAGE_URL, UK_IMAGE_URL, AUSTRALIA_IMAGE_URL } from '../const'
+import {USA_IMAGE_URL, CANADA_IMAGE_URL, UK_IMAGE_URL, AUSTRALIA_IMAGE_URL, RESOURCES_CODING, RESOURCES_SPANISH } from '../const'
 import Tools from '../common/tools';
 import { hasRole, textLog, getMember } from '../common/moderator';
+import Resource from '../programs/ResourceManager';
 
 class MessageManager {
     message: Discord.Message;
@@ -64,10 +65,6 @@ class MessageManager {
                 if(firstWord === "!birthday") BirthdayManager(this.message);
                 break;
 
-            case "coding":
-                if(firstWord === "!resources") this.resources("coding");
-                break;
-
             case "polls":
                 PollsManager(this.message);
                 break;
@@ -79,6 +76,7 @@ class MessageManager {
             }
 
             if(firstWord === "!fiyesta") Ticket(this.message, "fiyesta");
+            if(firstWord === "!resources") Resource(this.message);
             if(firstWord === "!shoutout") Ticket(this.message, "shoutout");
             if (firstWord === "!vote") this.addVote()
             if (firstWord === "!delete") hasRole(this.message.member, "Support") ? this.deleteMessages() : null;
@@ -132,26 +130,6 @@ class MessageManager {
                 })
         }
 
-    resources = (channel:string) =>{
-    switch (channel) {
-        case "coding":
-            this.message.channel.send(`
-
-            Our own lovely Michel has written a guide tailored for this group that in his own words "gives you a good guess of what awaits you". You can find that here: https://gist.github.com/geisterfurz007/473abe140d3504bc018255597201431e
-
-            Our group suggest Javascript as the first language whose rabbit hole you can fall down at the start of your journey. You can read more about Javascript here:
-                         - CodeCademy online course: <https://www.codecademy.com/learn/javascript>
-                         - Eloquent Javascript, free book: <http://eloquentjavascript.net/>
-                         - MDN's JavaScript guide: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Introduction>
-                         - You Don't Know JS (free book series): <https://github.com/getify/You-Dont-Know-JS>
-                         - Javascript reference/docs: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference>
-            `)
-            break;
-    
-        default:
-            break;
-    }
-}
 
 deleteMessages = async () => {
     const words = Tools.stringToWords(this.message.content)
