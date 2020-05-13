@@ -6,6 +6,7 @@ import {USA_IMAGE_URL, CANADA_IMAGE_URL, UK_IMAGE_URL, AUSTRALIA_IMAGE_URL, RESO
 import Tools from '../common/tools';
 import { hasRole, textLog, getMember } from '../common/moderator';
 import Resource from '../programs/ResourceManager';
+import FamilyManager from '../programs/FamilyManager';
 
 class MessageManager {
     message: Discord.Message;
@@ -49,6 +50,7 @@ class MessageManager {
                
                 if(firstWord === "@someone") Someone(this.message);
                 if(firstWord === "!deadchat") Deadchat(this.message);
+                if(firstWord === '!family') FamilyManager(this.message);
                 break;
 
             case "permanent-testing":
