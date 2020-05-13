@@ -17,6 +17,9 @@ export class Family {
   @Column("text", { nullable: true })
   dad: string;
 
+  @Column("text", { nullable: true })
+  bestfriend: string;
+
   @Column("timestamp with time zone", { nullable: true })
   marriageDate: Date;
 }
