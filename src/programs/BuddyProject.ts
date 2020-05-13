@@ -34,16 +34,18 @@ export async function BuddyProjectSignup(member:GuildMember | PartialGuildMember
       discord_user,
     })
 
-    const successMessage = "Woo! You just signed up to the buddy project, exciting right? I'll message you again in a week or so with your buddy and what you need to do next!";
+    const successMessage = "Woo! You just signed up to the buddy project, exciting right? I'll message you again momentarily with your buddy and what you need to do next!";
     dmChannel.send(successMessage)
    
-    const potentialMatch = await buddyEntries.find({where: { discord_user: !discord_user}})
+    const potentialMatch = await buddyEntries.findOne({where: { discord_user: !discord_user}})
+
+    if(potentialMatch) {
+      dmChannel.send("Here is your match:" + potentialMatch.user_id);
+
+    }
+    
   }
   
   
   return null;
-}
-
-export const BuddyProjectMatch = (buddyEntry:BuddyProjectEntry, member :GuildMember | PartialGuildMember ) => {
-
 }
