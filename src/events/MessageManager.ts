@@ -127,7 +127,10 @@ class MessageManager {
                 const nameMessage = await dmChannel.awaitMessages(() => true, { time: 60000, max: 1 });
                 removeIgnore();
                
-                if (nameMessage.size === 0) throw "No response";
+                if (nameMessage.size === 0) {
+                    requestMessage.delete();
+                    throw "No response";
+                }
 
                 const requestedName = nameMessage.first().content;
                 this.proposeNameChange(requestedName);
