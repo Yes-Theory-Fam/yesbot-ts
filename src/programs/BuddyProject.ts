@@ -7,21 +7,27 @@ import {
 import { Repository } from "typeorm";
 
 const updateDatabaseWithQuery = (
-  BE: Repository<BuddyProjectEntry>,
+  BuddyEntryRepo: Repository<BuddyProjectEntry>,
   memberId: string,
   buddyId: string,
   BuddyEntry: BuddyProjectEntry
 ) => {
-  BE.createQueryBuilder()
+  BuddyEntryRepo.createQueryBuilder()
     .update(BuddyEntry)
     .set({ matched: true, buddy_id: buddyId })
     .where("used_id = :member_id", { member_id: memberId })
-    .execute();
-  BE.createQueryBuilder()
+    .execute()
+    .catch((err) =>
+      console.log("There was an error updating member entry: ", err)
+    );
+  BuddyEntryRepo.createQueryBuilder()
     .update(BuddyEntry)
     .set({ matched: true, buddy_id: memberId })
     .where("used_id = :member_id", { member_id: buddyId })
-    .execute();
+    .execute()
+    .catch((err) =>
+      console.log("There was an error updating buddy entry: ", err)
+    );
 };
 
 export async function BuddyProjectSignup(
@@ -59,44 +65,48 @@ export async function BuddyProjectSignup(
         where: { discord_user: !discord_user, matched: false },
       });
       if (potentialMatches.length > 0) {
-        await buddyEntries
-          .findOne({ where: { discord_user: !discord_user } })
-          .then((res) => {
-            updateDatabaseWithQuery(
-              buddyEntries,
-              member.id,
-              res.user_id,
-              BuddyEntry
-            );
-
-            new Client().users.fetch(res.buddy_id).then((mm) =>
-              mm.createDM().then((buddyDm) => {
-                buddyDm.send("Here is your match: " + member.id);
-              })
-            );
-            dmChannel.send("Here is your match:" + res.user_id);
-          });
-        return null;
-      }
-
-      // If the opposite group didn't have any matches, find one from own group
-      await buddyEntries
-        .findOne({ where: { discord_user: discord_user, matched: false } })
-        .then((res) => {
+        try {
+          const finalMatch = potentialMatches[0];
           updateDatabaseWithQuery(
             buddyEntries,
             member.id,
-            res.user_id,
+            finalMatch.user_id,
             BuddyEntry
           );
-
-          new Client().users.fetch(res.buddy_id).then((mm) =>
-            mm.createDM().then((buddyDm) => {
-              buddyDm.send("Here is your match: " + "<@" + member.id + ">");
-            })
+          const buddyDmClient = await new Client().users.fetch(
+            finalMatch.user_id
           );
-          dmChannel.send("Here is your match:" + "<@" + res.user_id + ">");
+          buddyDmClient.send("Here is your match:" + "<@" + member.id + ">");
+          dmChannel.send("Here is your match:" + finalMatch.user_id);
+          return null;
+        } catch (err) {
+          console.log(
+            "There was an error finding matches for opposite group: ",
+            err
+          );
+        }
+      }
+
+      try {
+        // If the opposite group didn't have any matches, find one from own group
+        const finalMatch = await buddyEntries.findOne({
+          where: { discord_user: discord_user, matched: false },
         });
+        updateDatabaseWithQuery(
+          buddyEntries,
+          member.id,
+          finalMatch.user_id,
+          BuddyEntry
+        );
+
+        const buddyDmClient = await new Client().users.fetch(
+          finalMatch.user_id
+        );
+        buddyDmClient.send("Here is your match:" + "<@" + member.id + ">");
+        dmChannel.send("Here is your match:" + "<@" + finalMatch.user_id + ">");
+      } catch (err) {
+        console.log("There was an error finding discord user group: ", err);
+      }
     }
   }
 
