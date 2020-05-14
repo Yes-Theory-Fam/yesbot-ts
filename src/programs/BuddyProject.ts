@@ -76,8 +76,8 @@ export async function BuddyProjectSignup(
           const buddyDmClient = await new Client().users.fetch(
             finalMatch.user_id
           );
-          buddyDmClient.send("Here is your match:" + "<@" + member.id + ">");
-          dmChannel.send("Here is your match:" + finalMatch.user_id);
+          buddyDmClient.send(`Here is your match: <@${member.id}>`);
+          dmChannel.send(`Here is your match: <@${finalMatch.user_id}> !`);
           return null;
         } catch (err) {
           console.log(
@@ -102,8 +102,8 @@ export async function BuddyProjectSignup(
         const buddyDmClient = await new Client().users.fetch(
           finalMatch.user_id
         );
-        buddyDmClient.send("Here is your match:" + "<@" + member.id + ">");
-        dmChannel.send("Here is your match:" + "<@" + finalMatch.user_id + ">");
+        buddyDmClient.send(`Here is your match: <@${member.id}>`);
+        dmChannel.send(`Here is your match: <@${finalMatch.user_id}> !`);
       } catch (err) {
         console.log("There was an error finding discord user group: ", err);
       }
