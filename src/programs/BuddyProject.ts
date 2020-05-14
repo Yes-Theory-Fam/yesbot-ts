@@ -92,10 +92,10 @@ export async function BuddyProjectSignup(
 
           new Client().users.fetch(res.buddy_id).then((mm) =>
             mm.createDM().then((buddyDm) => {
-              buddyDm.send("Here is your match: " + member.id);
+              buddyDm.send("Here is your match: " + "<@" + member.id + ">");
             })
           );
-          dmChannel.send("Here is your match:" + res.user_id);
+          dmChannel.send("Here is your match:" + "<@" + res.user_id + ">");
         });
     }
   }
