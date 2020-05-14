@@ -95,7 +95,7 @@ export async function BuddyProjectSignup(
               buddyDm.send("Here is your match: " + "<@" + member.id + ">");
             })
           );
-          dmChannel.send("Here is your match:" + "<@" + res.user_id + ">");
+          dmChannel.send("Here is your match: " + "<@" + res.user_id + ">");
         });
     }
   }
