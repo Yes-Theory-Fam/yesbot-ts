@@ -1,9 +1,10 @@
-import  Discord, { TextChannel, User, Channel } from 'discord.js';
+import  Discord, { TextChannel, User, Channel, CollectorFilter, MessageReaction, Snowflake } from 'discord.js';
 import { Someone, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, BirthdayManager, Unassigned, ProfileManager, EasterEvent, PollsManager } from '../programs';
 import bot from "../index"
 import ExportManager from '../programs/ExportManager';
 import {USA_IMAGE_URL, CANADA_IMAGE_URL, UK_IMAGE_URL, AUSTRALIA_IMAGE_URL, RESOURCES_CODING, RESOURCES_SPANISH } from '../const'
 import Tools from '../common/tools';
+import state from '../common/state';
 import { hasRole, textLog, getMember } from '../common/moderator';
 import Resource from '../programs/ResourceManager';
 
@@ -103,8 +104,47 @@ class MessageManager {
         }
 
         async routeDm() {
-            this.message.reply("I've sent your name request to the mods, hopefully they answer soon! In the meantime, you're free to roam around the server and explore. Maybe post an introduction to get started? :grin:")
-            const message = `Username: ${this.message.author.toString()} would like to rename to "${this.message.content}". Allow?`;
+            const dmChannel = this.message.channel;
+            if (state.ignoredGroupDMs.includes(dmChannel.id)) return;
+            const removeIgnore = () => {
+                const index = state.ignoredGroupDMs.indexOf(dmChannel.id);
+                if (index > -1) {
+                    state.ignoredGroupDMs.splice(index, 1);
+                }
+            }
+
+            const nameChangeMessage = await this.message.reply("Hey, I'm just a bot! Most of what I can do, I do on the YesFam discord, so talk to me there instead! I can help you change your name, though, if you're new around here. Click the :baby: if you want to change your name!");
+            await nameChangeMessage.react("👶");
+            const filter: CollectorFilter = (reaction: MessageReaction, user: User) => reaction.emoji.name === "👶" && !user.bot;
+            try {
+                const reactions = await nameChangeMessage.awaitReactions(filter, { time: 60000, max: 1 });
+                if (reactions.size === 0) throw "No reactions";
+                
+                const requestMessage = await dmChannel.send("Okay, what's your name then? Please only respond with your name like Henry or Julie, that makes things easier for the Supports! :upside_down:");
+                state.ignoredGroupDMs.push(dmChannel.id);
+                const nameMessage = await dmChannel.awaitMessages(() => true, { time: 60000, max: 1 });
+                removeIgnore();
+               
+                if (nameMessage.size === 0) {
+                    requestMessage.delete();
+                    throw "No response";
+                }
+
+                const requestedName = nameMessage.first().content;
+                this.proposeNameChange(requestedName);
+                await requestMessage.delete();
+            } catch {
+                removeIgnore();
+                // Time's up; nothing to do here, really
+                dmChannel.send("Because of technical reasons I can only wait 60 seconds for a reaction. I removed the other message to not confuse you. If you need anything from me, just drop me a message!");
+            }
+
+            await nameChangeMessage.delete();
+        }
+
+        proposeNameChange = async (name: string) => {
+            this.message.reply("Perfect! I've sent your name request to the mods, hopefully they answer soon! In the meantime, you're free to roam around the server and explore. Maybe post an introduction to get started? :grin:")
+            const message = `Username: ${this.message.author.toString()} would like to rename to "${name}". Allow?`;
             const sentMessage = await textLog(message)
             sentMessage.react("✅").then(message => sentMessage.react("🚫"))
             sentMessage.awaitReactions((reaction: any, user: User) => {
@@ -115,13 +155,13 @@ class MessageManager {
                     switch (reaction.emoji.toString()) {
                         case "✅":
                             const member = getMember(this.message.author.id)
-                            member.setNickname(this.message.content)
+                            member.setNickname(name)
                             sentMessage.delete();
-                            textLog(`${this.message.author.toString()} was renamed to ${this.message.content}.`)
+                            textLog(`${this.message.author.toString()} was renamed to ${name}.`)
                             break;
                         case "🚫":
                             sentMessage.delete();
-                            textLog(`${this.message.author.toString()} was *not* renamed to ${this.message.content}.`)
+                            textLog(`${this.message.author.toString()} was *not* renamed to ${name}.`)
                             break;
                     
                         default:
