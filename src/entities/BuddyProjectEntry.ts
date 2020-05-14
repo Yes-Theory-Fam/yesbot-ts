@@ -12,8 +12,8 @@ export class BuddyProjectEntry {
     @Column("boolean")
     discord_user: boolean;
 
-    @Column({type:"text",nullable:true})
-    buddy_id: boolean | null;
+    @Column({ type: "text", nullable: true })
+    buddy_id: string | null;
 
 }
 
