@@ -1,6 +1,6 @@
 import { db } from "..";
 import bot from "../index";
-import { GuildMember, PartialGuildMember, User, TextChannel } from "discord.js";
+  import { GuildMember, PartialGuildMember, User, TextChannel } from "discord.js";
 import {
   BuddyProjectEntryRepository,
   BuddyProjectEntry,
@@ -136,7 +136,6 @@ export async function BuddyProjectSignup(
           //! Found a buddy
           buddy = member.guild.members.resolve(finalMatch.user_id).user;
 
-          return;
         } catch (err) {
           console.log(
             "There was an error finding matches for opposite group: ",
@@ -157,6 +156,7 @@ export async function BuddyProjectSignup(
         );
 
         buddy = member.guild.members.resolve(finalMatch.user_id).user
+        
       }
 
       //? Did we find a buddy?
