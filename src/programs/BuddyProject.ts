@@ -1,4 +1,5 @@
 import { db } from "..";
+import bot from "../index";
 import { GuildMember, PartialGuildMember, Client } from "discord.js";
 import {
   BuddyProjectEntryRepository,
@@ -15,7 +16,7 @@ const updateDatabaseWithQuery = (
   BuddyEntryRepo.createQueryBuilder()
     .update(BuddyEntry)
     .set({ matched: true, buddy_id: buddyId })
-    .where("used_id = :member_id", { member_id: memberId })
+    .where("user_id = :member_id", { member_id: memberId })
     .execute()
     .catch((err) =>
       console.log("There was an error updating member entry: ", err)
@@ -23,7 +24,7 @@ const updateDatabaseWithQuery = (
   BuddyEntryRepo.createQueryBuilder()
     .update(BuddyEntry)
     .set({ matched: true, buddy_id: memberId })
-    .where("used_id = :member_id", { member_id: buddyId })
+    .where("user_id = :member_id", { member_id: buddyId })
     .execute()
     .catch((err) =>
       console.log("There was an error updating buddy entry: ", err)
@@ -73,12 +74,11 @@ export async function BuddyProjectSignup(
             finalMatch.user_id,
             BuddyEntry
           );
-          const buddyDmClient = await new Client().users.fetch(
-            finalMatch.user_id
-          );
+
+          const buddyDmClient = await bot.users.fetch(finalMatch.user_id);
           buddyDmClient.send(`Here is your match: <@${member.id}>`);
           dmChannel.send(`Here is your match: <@${finalMatch.user_id}> !`);
-          return null;
+          return;
         } catch (err) {
           console.log(
             "There was an error finding matches for opposite group: ",
@@ -99,9 +99,7 @@ export async function BuddyProjectSignup(
           BuddyEntry
         );
 
-        const buddyDmClient = await new Client().users.fetch(
-          finalMatch.user_id
-        );
+        const buddyDmClient = await bot.users.fetch(finalMatch.user_id);
         buddyDmClient.send(`Here is your match: <@${member.id}>`);
         dmChannel.send(`Here is your match: <@${finalMatch.user_id}> !`);
       } catch (err) {
