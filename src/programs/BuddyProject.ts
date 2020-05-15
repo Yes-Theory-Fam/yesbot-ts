@@ -32,8 +32,8 @@ const updateDatabaseWithQuery = (
     );
 };
 
-export const getMatchText = (member:User, buddy:User, set:number): string => `
-Hey there! Thank you for signing up to be a part of the Buddy Project :speech_balloon: . You’ve been paired with ${buddy.toString()}. This is where your Buddy Project journey starts! :grin:  First, you’ll have to get in touch with your Buddy. In every pair, one of the two people have been designated to be the “initiator” of the conversation. This responsibility falls on you! Message your buddy to start talking by searching up their username through the find function at the top left-hand corner of your screen, then start the chat! :heart:
+export const getMatchText = (match:User, set:number): string => `
+Hey there! Thank you for signing up to be a part of the Buddy Project :speech_balloon: . You’ve been paired with ${match.toString()}. This is where your Buddy Project journey starts! :grin:  First, you’ll have to get in touch with your Buddy. In every pair, one of the two people have been designated to be the “initiator” of the conversation. This responsibility falls on you! Message your buddy to start talking by searching up their username through the find function at the top left-hand corner of your screen, then start the chat! :heart:
 Most importantly, here’s your list of questions:
 
 ${set == 1 ? `
@@ -156,15 +156,15 @@ export async function BuddyProjectSignup(
         );
 
         buddy = member.guild.members.resolve(finalMatch.user_id).user
-        
+
       }
 
       //? Did we find a buddy?
 
       if(buddy){
         outputChannel.send(`Successfully matched ${buddy.toString()} with ${member.toString()}`);
-        buddy.createDM().then(dmChannel => dmChannel.send(getMatchText(member.user, buddy, 1), { split: true }));
-        member.createDM().then(dmChannel => dmChannel.send(getMatchText(buddy, member.user, 2), { split: true }));
+        buddy.createDM().then(dmChannel => dmChannel.send(getMatchText(member.user, 1), { split: true }));
+        member.createDM().then(dmChannel => dmChannel.send(getMatchText(buddy, 2), { split: true }));
       }
     }
   }
