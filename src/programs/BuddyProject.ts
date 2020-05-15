@@ -1,6 +1,6 @@
 import { db } from "..";
 import bot from "../index";
-import { GuildMember, PartialGuildMember, Client } from "discord.js";
+import { GuildMember, PartialGuildMember, Client, TextChannel } from "discord.js";
 import {
   BuddyProjectEntryRepository,
   BuddyProjectEntry,
@@ -41,6 +41,7 @@ export async function BuddyProjectSignup(
   const dmChannel = await member.createDM();
   const buddyEntries = await BuddyProjectEntryRepository();
   const hasEntered = await buddyEntries.findOne(member.id);
+  const planningChannel = member.guild.channels.cache.find(c => c.name == "planning") as TextChannel;
 
   if (hasEntered) {
     dmChannel.send(
@@ -77,8 +78,9 @@ export async function BuddyProjectSignup(
           );
 
           const buddyDmClient = await bot.users.fetch(finalMatch.user_id);
-          buddyDmClient.send(`Here is your match: <@${member.id}>`);
-          dmChannel.send(`Here is your match: <@${finalMatch.user_id}> !`);
+          // buddyDmClient.send(`Here is your match: <@${member.id}>`);
+          // dmChannel.send(`Here is your match: <@${finalMatch.user_id}> !`);
+          planningChannel.send(`<@${member.id}> is being matched with <@${finalMatch.user_id}>.`);
           return;
         } catch (err) {
           console.log(
@@ -100,9 +102,9 @@ export async function BuddyProjectSignup(
           BuddyEntry
         );
 
-        const buddyDmClient = await bot.users.fetch(finalMatch.user_id);
-        buddyDmClient.send(`Here is your match: <@${member.id}>`);
-        dmChannel.send(`Here is your match: <@${finalMatch.user_id}> !`);
+          // buddyDmClient.send(`Here is your match: <@${member.id}>`);
+          // dmChannel.send(`Here is your match: <@${finalMatch.user_id}> !`);
+          planningChannel.send(`<@${member.id}> is being matched with <@${finalMatch.user_id}>.`);
       } catch (err) {
         console.log("There was an error finding discord user group: ", err);
       }
