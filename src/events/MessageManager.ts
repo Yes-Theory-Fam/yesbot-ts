@@ -91,8 +91,8 @@ class MessageManager {
                 const isTextChannel = (channel: Channel): channel is TextChannel => (channel as TextChannel).name && !!(channel as TextChannel).parent;
                 if (!isTextChannel(channel)) return;
 
-                const allowedCategories = ["hobbies"];
-                const allowedChannels = ["chat", "chat-too", "gaming"];
+                const allowedCategories = ["hobbies", "gaming"];
+                const allowedChannels = ["chat", "chat-too", "learning-spanish"];
 
                 if (allowedCategories.some(category => channel.parent?.name?.toLowerCase()?.includes(category))) return true;
                 
