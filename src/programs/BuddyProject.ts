@@ -5,6 +5,7 @@ import {
   BuddyProjectEntry,
 } from "../entities/BuddyProjectEntry";
 import { Repository } from "typeorm";
+import { BUDDY_PROJECT_MATCHING } from '../const';
 
 const updateDatabaseWithQuery = (
   BE: Repository<BuddyProjectEntry>,
@@ -53,7 +54,7 @@ export async function BuddyProjectSignup(
       "Woo! You just signed up to the buddy project, exciting right? I'll message you again momentarily with your buddy and what you need to do next!";
     dmChannel.send(successMessage);
 
-    if (new Date().getDate() >= 15) {
+    if (BUDDY_PROJECT_MATCHING) {
       // Find matches of the opposite group (aka newsletter group if user is of discord group)
       const potentialMatches = await buddyEntries.find({
         where: { discord_user: !discord_user, matched: false },
