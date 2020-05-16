@@ -50,6 +50,8 @@ export default async function WhereAreYouFromManager(pMessage: Discord.Message) 
                 return;
             }
             pMessage.member.roles.add(roleToAssign);
+            const unassignedRole = pMessage.member.guild.roles.cache.find(role => role.name === "Unassigned");
+            pMessage.member.roles.remove(unassignedRole);
             pMessage.react("👍")
             pMessage.member.createDM().then(dmChannel => {
                 const rules = pMessage.guild.channels.cache.find(c => c.name === "rules");

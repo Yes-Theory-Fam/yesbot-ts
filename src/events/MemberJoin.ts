@@ -8,6 +8,9 @@ class MemberJoin {
     bot: Discord.Client;
 
     constructor(member: GuildMember | PartialGuildMember) {
+        const unassignedRole = member.guild.roles.cache.find(role => role.name === "Unassigned");
+        member.roles.add(unassignedRole);
+
         if(member.roles.cache.find(r => r.name === "Buddy Project 2020")) {
             BuddyProjectSignup(member);
         }
