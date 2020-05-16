@@ -1,6 +1,6 @@
 import { db } from "..";
 import bot from "../index";
-  import { GuildMember, PartialGuildMember, User, TextChannel } from "discord.js";
+import { GuildMember, PartialGuildMember, User, TextChannel } from "discord.js";
 import {
   BuddyProjectEntryRepository,
   BuddyProjectEntry,
@@ -32,7 +32,7 @@ const updateDatabaseWithQuery = (
     );
 };
 
-export const getMatchText = (match:User, set:number): string => `
+export const getMatchText = (match: User, set: number): string => `
 Hey there! Thank you for signing up to be a part of the Buddy Project :speech_balloon: . You’ve been paired with ${match.toString()} (If this is just a long number for you, copy and paste this in <#701717612001886228> to get who it is :grin:). This is where your Buddy Project journey starts! :grin:  First, you’ll have to get in touch with your Buddy. In every pair, one of the two people have been designated to be the “initiator” of the conversation. This responsibility falls on you! Message your buddy to start talking by searching up their username through the find function at the top left-hand corner of your screen, then start the chat! :heart:
 Most importantly, here’s your list of questions:
 
@@ -94,6 +94,8 @@ export async function BuddyProjectSignup(
   const buddyEntries = await BuddyProjectEntryRepository();
   const hasEntered = await buddyEntries.findOne(member.id);
   const outputChannel = member.guild.channels.cache.find(c => c.name == "buddy-project-matches") as TextChannel;
+  let buddy: User = null;
+
 
 
   let outputText = `New entry from ${member.toString()}`
@@ -122,7 +124,6 @@ export async function BuddyProjectSignup(
 
     if (BUDDY_PROJECT_MATCHING) {
       outputText = outputText.concat(" - Looking for match.")
-      let buddy: User = null;
 
       //? Find matches of the opposite group (aka newsletter group if user is of discord group)
       const potentialMatches = await buddyEntries.find({
@@ -139,7 +140,7 @@ export async function BuddyProjectSignup(
             match.user_id,
             BuddyEntry
           );
-          
+
           //! Found a buddy
           buddy = member.guild.members.resolve(match.user_id).user;
 
@@ -161,7 +162,7 @@ export async function BuddyProjectSignup(
         outputText = outputText.concat(` - Found ${finalMatches.length} members of same platform.`)
 
         if (finalMatches.length > 0) {
-          try{
+          try {
             const finalMatch = finalMatches[0];
             updateDatabaseWithQuery(
               buddyEntries,
@@ -169,24 +170,28 @@ export async function BuddyProjectSignup(
               finalMatch.user_id,
               BuddyEntry
             );
-            
+
             //! Found a buddy
             buddy = member.guild.members.resolve(finalMatch.user_id).user;
           }
           catch (err) {
-          console.log(
-            "There was an error finding matches for opposite group: ",
-            err
-          );
+            console.log(
+              "There was an error finding matches for opposite group: ",
+              err
+            );
+          }
+
+          //? Did we find a buddy?
+
+
+        }
       }
 
-      //? Did we find a buddy?
 
-      
     }
   }
-  
-  if(buddy){
+
+  if (buddy) {
     outputChannel.send(`Successfully matched ${buddy.toString()} with ${member.toString()}`);
     buddy.createDM().then(dmChannel => dmChannel.send(getMatchText(member.user, 1), { split: true }));
     member.createDM().then(dmChannel => dmChannel.send(getMatchText(buddy, 2), { split: true }));
@@ -194,7 +199,7 @@ export async function BuddyProjectSignup(
   else {
     outputText = outputText.concat(" - Didn't find valid match.")
   };
-  
+
   outputChannel.send(outputText)
   return null;
 }
