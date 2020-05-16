@@ -121,26 +121,27 @@ export async function BuddyProjectSignup(
     outputText = outputText.concat(" - Successfully entered.")
 
     if (BUDDY_PROJECT_MATCHING) {
-
+      outputText = outputText.concat(" - Looking for match.")
       let buddy: User = null;
 
       //? Find matches of the opposite group (aka newsletter group if user is of discord group)
       const potentialMatches = await buddyEntries.find({
         where: { discord_user: !discord_user, matched: false },
       });
+      outputText = outputText.concat(` - Found ${potentialMatches.length} members of opposite platform.`)
 
       if (potentialMatches.length > 0) {
         try {
-          const finalMatch = potentialMatches[0];
+          const match = potentialMatches[0];
           updateDatabaseWithQuery(
             buddyEntries,
             member.id,
-            finalMatch.user_id,
+            match.user_id,
             BuddyEntry
           );
           
           //! Found a buddy
-          buddy = member.guild.members.resolve(finalMatch.user_id).user;
+          buddy = member.guild.members.resolve(match.user_id).user;
 
         } catch (err) {
           console.log(
@@ -151,33 +152,49 @@ export async function BuddyProjectSignup(
       }
       else {
 
-        const finalMatch = await buddyEntries.findOne({
+        outputText = outputText.concat(` - Looking for members of same platform.`)
+
+        const finalMatches = await buddyEntries.find({
           where: { matched: false },
         });
-        updateDatabaseWithQuery(
-          buddyEntries,
-          member.id,
-          finalMatch.user_id,
-          BuddyEntry
-        );
 
-        buddy = member.guild.members.resolve(finalMatch.user_id).user
+        outputText = outputText.concat(` - Found ${finalMatches.length} members of same platform.`)
 
+        if (finalMatches.length > 0) {
+          try{
+            const finalMatch = finalMatches[0];
+            updateDatabaseWithQuery(
+              buddyEntries,
+              member.id,
+              finalMatch.user_id,
+              BuddyEntry
+            );
+            
+            //! Found a buddy
+            buddy = member.guild.members.resolve(finalMatch.user_id).user;
+          }
+          catch (err) {
+          console.log(
+            "There was an error finding matches for opposite group: ",
+            err
+          );
       }
 
       //? Did we find a buddy?
 
-      if(buddy){
-        outputChannel.send(`Successfully matched ${buddy.toString()} with ${member.toString()}`);
-        buddy.createDM().then(dmChannel => dmChannel.send(getMatchText(member.user, 1), { split: true }));
-        member.createDM().then(dmChannel => dmChannel.send(getMatchText(buddy, 2), { split: true }));
-      }
-      else {
-        outputText = outputText.concat(" - Didn't find valid match.")
-      };
       
     }
   }
+  
+  if(buddy){
+    outputChannel.send(`Successfully matched ${buddy.toString()} with ${member.toString()}`);
+    buddy.createDM().then(dmChannel => dmChannel.send(getMatchText(member.user, 1), { split: true }));
+    member.createDM().then(dmChannel => dmChannel.send(getMatchText(buddy, 2), { split: true }));
+  }
+  else {
+    outputText = outputText.concat(" - Didn't find valid match.")
+  };
+  
   outputChannel.send(outputText)
   return null;
 }
