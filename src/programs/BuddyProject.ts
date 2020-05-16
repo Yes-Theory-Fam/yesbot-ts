@@ -192,13 +192,14 @@ export async function BuddyProjectSignup(
     }
   }
 
-  if (buddy) {
+  if (buddy && buddy.id != member.id) {
     outputText = outputText.concat(` - Found a match with  ${buddy.toString()}!`)
     buddy.createDM().then(dmChannel => dmChannel.send(getMatchText(member.user, 1), { split: true }));
     member.createDM().then(dmChannel => dmChannel.send(getMatchText(buddy, 2), { split: true }));
   }
   else {
-    outputText = outputText.concat(" - Didn't find valid match.")
+    outputText = outputText.concat(" - Didn't find valid match.");
+    if (buddy.id == member.id) outputText = outputText.concat(" - Matched with myself.");
   };
 
   outputChannel.send(outputText)
