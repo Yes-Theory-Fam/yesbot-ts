@@ -95,7 +95,11 @@ export async function BuddyProjectSignup(
   const hasEntered = await buddyEntries.findOne(member.id);
   const outputChannel = member.guild.channels.cache.find(c => c.name == "buddy-project-matches") as TextChannel;
 
+
+  let outputText = `New entry from ${member.toString()}`
+
   if (hasEntered) {
+    outputText.concat(" - Already entered - Matched: " + hasEntered.matched)
     dmChannel.send(
       hasEntered.matched
         ? `It looks like I already found you a match! Did <@${hasEntered.buddy_id}> stopped replying? :grin:`
@@ -113,6 +117,8 @@ export async function BuddyProjectSignup(
     const successMessage =
       "Woo! You just signed up to the buddy project, exciting right? I'll message you again momentarily with your buddy and what you need to do next!";
     dmChannel.send(successMessage);
+
+    outputText.concat(" - Successfully entered.")
 
     if (BUDDY_PROJECT_MATCHING) {
 
@@ -166,9 +172,13 @@ export async function BuddyProjectSignup(
         buddy.createDM().then(dmChannel => dmChannel.send(getMatchText(member.user, 1), { split: true }));
         member.createDM().then(dmChannel => dmChannel.send(getMatchText(buddy, 2), { split: true }));
       }
+      else {
+        outputText.concat(" - Didn't find valid match.")
+      };
+      
     }
   }
-
+  outputChannel.send(outputText)
   return null;
 }
 
