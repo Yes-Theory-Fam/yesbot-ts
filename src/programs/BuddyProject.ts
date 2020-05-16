@@ -193,8 +193,7 @@ export async function BuddyProjectSignup(
   }
 
   if (buddy) {
-    outputText = outputText.concat(" - Found a match!")
-    outputChannel.send(`Successfully matched ${buddy.toString()} with ${member.toString()}`);
+    outputText = outputText.concat(` - Found a match with  ${buddy.toString()}!`)
     buddy.createDM().then(dmChannel => dmChannel.send(getMatchText(member.user, 1), { split: true }));
     member.createDM().then(dmChannel => dmChannel.send(getMatchText(buddy, 2), { split: true }));
   }
