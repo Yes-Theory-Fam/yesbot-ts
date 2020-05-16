@@ -202,7 +202,7 @@ export async function BuddyProjectSignup(
   }
   else {
     outputText = outputText.concat(" - Didn't find valid match.");
-    if (buddy.id == member.id) outputText = outputText.concat(" - Matched with myself.");
+    if (buddy && buddy.id == member.id) outputText = outputText.concat(" - Matched with myself.");
   };
 
   outputChannel.send(outputText)
