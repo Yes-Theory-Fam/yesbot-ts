@@ -22,6 +22,12 @@ export class UserGroup {
     @ManyToMany(type => GroupMember)
     @JoinTable()
     members: GroupMember[];
+
+    @Column("timestamp", { name: "last_used", default: () => "'now'::timestamp - '1 hour'::interval" })
+    lastUsed: Date;
+
+    @Column({ default: 60 })
+    cooldown: number;
 }
 
 export const UserGroupRepository = async () => {

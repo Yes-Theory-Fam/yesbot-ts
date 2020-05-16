@@ -25,10 +25,10 @@ export default async function GroupManager(message: Discord.Message, isConfig: b
         const [action, requestName, ...descriptionWords] = words
         const description = descriptionWords.join(" ");
 
-        if (!action || !(["join", "create", "leave", "search", "delete", "update", "toggle"].includes(action))) {
+        if (!action || !(["join", "create", "leave", "search", "delete", "update", "toggle", "changeCooldown"].includes(action))) {
 
 
-            const helpMessage = `Incorrect syntax, please use the following: \`!group join|leave|create|search|delete|update\`. If you need additional help, react with 🛠️ below to tag a ${ENGINEER_ROLE_NAME}`
+            const helpMessage = `Incorrect syntax, please use the following: \`!group join|leave|create|search|delete|update|changeCooldown\`. If you need additional help, react with 🛠️ below to tag a ${ENGINEER_ROLE_NAME}`
             const angryMessage = await message.reply(helpMessage)
             return;
         }
@@ -69,6 +69,11 @@ export default async function GroupManager(message: Discord.Message, isConfig: b
                 ? updateGroup(message, requestName, description)
                 : message.reply("You do not have permission to use this command.");
             }
+            case "changeCooldown": {
+                moderator
+                ? changeCooldown(message, requestName, description)
+                : message.reply("You do not have permission to use this command.");
+            }
         }
 
     }
@@ -80,24 +85,37 @@ export default async function GroupManager(message: Discord.Message, isConfig: b
         const args = <string[]>groupTriggerStart.split(" ");
         args.shift();
         const [requestName] = args
-        let foundGroup = false;
         const groups = (await groupRepository.find({
             relations: ["members"],
         }));
-        groups.forEach((group: UserGroup) => {
-            if (group.name.toLowerCase() == requestName.toLowerCase()) {
-                foundGroup = true;
-                let writeLine: string = "**@" + group.name + "**:"
-                group.members.forEach((member: GroupMember) => {
-                    writeLine = writeLine.concat(" <@" + member.id + ">,")
-                });
-                message.channel.send(writeLine)
-            }
-        })
+        const matchingGroups = groups.filter((group: UserGroup) => (
+            group.name.toLowerCase() == requestName.toLowerCase()
+        ));
 
-        if (!foundGroup) {
+        if (matchingGroups.length === 0) {
             message.reply("I couldn't find that group.")
+            return;
         }
+
+        const group = matchingGroups[0];
+        const timeDifference = (Date.now() - group.lastUsed.getTime()) / 1000 / 60;
+
+        if (timeDifference < group.cooldown) {
+            const remainingCooldown = group.cooldown - Math.round(timeDifference);
+            const denyMessage = await message.reply(`Sorry, this group was already pinged within the last ${group.cooldown} minutes; it's about ${remainingCooldown} minutes left until you can ping it again.`);
+            message.delete();
+            denyMessage.delete({ timeout: 10000 });
+            return;
+        }
+
+        let writeLine: string = `**@${group.name}**:`
+        group.members.forEach((member: GroupMember) => {
+            writeLine = writeLine.concat(" <@" + member.id + ">,")
+        });
+        message.channel.send(writeLine);
+
+        group.lastUsed = new Date();
+        groupRepository.save(group);
     }
 }
 
@@ -331,6 +349,26 @@ const updateGroup = async(message: Discord.Message, requestedGroupName: string, 
 
     await message.reply(`Group description updated from \n> ${previousDescription} \nto \n> ${group.description}`);
 }
+
+const changeCooldown = async(message: Discord.Message, requestedGroupName: string, newCooldown: string) => {
+    const cooldownNumber = Number(newCooldown);
+    if (isNaN(cooldownNumber)) {
+        const complaint = await message.reply("Please write a number for the new cooldown! It will be interpreted as minutes before the group can be pinged again.");
+        complaint.delete({ timeout: 10000 });
+        return;
+    }
+
+    const repo = await UserGroupRepository();
+    const group = await repo.findOne({
+        where: {
+            name: ILike(requestedGroupName),
+        }
+    });
+
+    group.cooldown = cooldownNumber;
+    repo.save(group);
+    message.react("👍");
+};
 
 const joinGroup = async (message:Discord.Message, requestedGroupName: string, member: GuildMember) => {
     const groupRepository = await UserGroupRepository();
