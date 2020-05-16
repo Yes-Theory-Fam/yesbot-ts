@@ -154,13 +154,16 @@ export async function BuddyProjectSignup(
       }
       else {
 
-        outputText = outputText.concat(` - Looking for members of same platform.`)
+        outputText = outputText.concat(` - Looking for only **new** members.`)
 
         const finalMatches = await buddyEntries.find({
-          where: { matched: false },
+          //! Uncomment below to turn on discord - discord matches
+          // where: { matched: false },
+  
+          where: { discord_user: !discord_user, matched: false },
         });
 
-        outputText = outputText.concat(` - Found ${finalMatches.length} members of same platform.`)
+        outputText = outputText.concat(` - Found ${finalMatches.length} **new** members.`)
 
         if (finalMatches.length > 0) {
           try {
