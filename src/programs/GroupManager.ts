@@ -79,6 +79,10 @@ export default async function GroupManager(message: Discord.Message, isConfig: b
     }
 
     else {
+        // Matches if there is at least one line containing @group that doesn't start with a >
+        const match = /^(?!>).*@group/gm;
+        if (!match.test(content)) return;
+
         const groupRepository = await UserGroupRepository();
 
         const groupTriggerStart = content.substring(content.indexOf("@group"));
