@@ -103,7 +103,6 @@ export default async function GroupManager(message: Discord.Message, isConfig: b
         if (timeDifference < group.cooldown) {
             const remainingCooldown = group.cooldown - Math.round(timeDifference);
             const denyMessage = await message.reply(`Sorry, this group was already pinged within the last ${group.cooldown} minutes; it's about ${remainingCooldown} minutes left until you can ping it again.`);
-            message.delete();
             denyMessage.delete({ timeout: 10000 });
             return;
         }
