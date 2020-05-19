@@ -245,6 +245,10 @@ function timezonesFromRole(props: CountryWithRegion): readonly string[] {
             }).filter(tz => tz !== null);
         case "the UK":
             return getCountry("GB").timezones;
+        case "Mexico":
+            return getCountry("MX").timezones
+                // BajaSur and BajaNorth are invalid in JS.
+                .filter(tz => !tz.startsWith('Mexico/Baja'));
         case "Australia": {
             switch (region) {
                 case "Western":
