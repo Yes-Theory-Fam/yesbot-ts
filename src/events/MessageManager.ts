@@ -1,5 +1,5 @@
 import  Discord, { TextChannel, User, Channel, CollectorFilter, MessageReaction, Snowflake } from 'discord.js';
-import { Someone, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, BirthdayManager, Unassigned, ProfileManager, EasterEvent, PollsManager } from '../programs';
+import { BirthdayManager, DadJoke, Deadchat, EasterEvent, GroupManager, PollsManager, ProfileManager, ReactRole, Someone, StateRoleFinder, Ticket, Unassigned, WhereAreYouFromManager } from '../programs';
 import bot from "../index"
 import ExportManager from '../programs/ExportManager';
 import {USA_IMAGE_URL, CANADA_IMAGE_URL, UK_IMAGE_URL, AUSTRALIA_IMAGE_URL, RESOURCES_CODING, RESOURCES_SPANISH } from '../const'
@@ -50,6 +50,7 @@ class MessageManager {
                
                 if(firstWord === "@someone") Someone(this.message);
                 if(firstWord === "!deadchat") Deadchat(this.message);
+                if(firstWord === '!dadjoke') DadJoke(this.message);
                 break;
 
             case "permanent-testing":
