@@ -28,9 +28,19 @@ class MessageManager {
     }
     routeMessage() {
 
+        const filteredWords = ["nigger", "nigga"];
+
         const words = this.message.content.split(" ")
         const firstWord = words[0];
         const channel = <Discord.TextChannel>this.message.channel;
+
+        const isFiltered = words.some(r=> filteredWords.indexOf(r) !== -1)
+        if(isFiltered) {
+            this.message.delete();
+            this.message.author.createDM().then(dm => dm.send(`Usage of the N word is absolutely banned within this server. Please refer to the <#450102410262609943>.`))
+            
+        }
+        
 
         switch (channel.name) {
 
