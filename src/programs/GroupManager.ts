@@ -107,11 +107,11 @@ export default async function GroupManager(message: Discord.Message, isConfig: b
             return;
         }
 
-        let writeLine: string = `**@${group.name}**:`
-        group.members.forEach((member: GroupMember) => {
-            writeLine = writeLine.concat(" <@" + member.id + ">,")
-        });
-        message.channel.send(writeLine);
+        const groupPingMessage = `**@${group.name}**: ` + group
+            .members.map(member => `<@${member.id}>`)
+            .join(", ");
+
+        message.channel.send(groupPingMessage);
 
         group.lastUsed = new Date();
         groupRepository.save(group);
