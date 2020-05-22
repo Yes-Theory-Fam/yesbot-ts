@@ -82,7 +82,7 @@ export default async function GroupManager(message: Discord.Message, isConfig: b
         const groupRepository = await UserGroupRepository();
 
         const groupTriggerStart = content.substring(content.indexOf("@group"));
-        const args = <string[]>groupTriggerStart.split(" ");
+        const args = <string[]>groupTriggerStart.split(/\s/g);
         args.shift();
         const [requestName] = args
         const groups = (await groupRepository.find({
