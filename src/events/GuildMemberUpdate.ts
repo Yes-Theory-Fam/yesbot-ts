@@ -13,6 +13,19 @@ class GuildMemberUpdate {
         if(hasRole(newMember, "Buddy Project 2020") && !hasRole(oldMember, "Buddy Project 2020")) {
             BuddyProjectSignup(newMember)
         }
+
+        const regionCountries = ["Australia", "Canada", "the UK", "the USA"];
+        const findGeneralRole = (member: Discord.GuildMember | Discord.PartialGuildMember) => member.roles.cache.find(({name}) => {
+            return regionCountries.some(country => name.endsWith(`${country}!`));
+        });
+        const hasSpecificRole = (member: Discord.GuildMember | Discord.PartialGuildMember) => member.roles.cache.some(({name}) => {
+            return regionCountries.some(country => name.includes(`${country}! (`));
+        });
+
+        const generalRole = findGeneralRole(oldMember);
+        if (generalRole && hasSpecificRole(newMember)) {
+            newMember.roles.remove(generalRole);
+        }
     }
 
 }
