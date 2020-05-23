@@ -87,8 +87,10 @@ export default async function GroupManager(message: Discord.Message, isConfig: b
 
         const groupRepository = await UserGroupRepository();
 
-        const groupTriggerStart = unquoted.substring(unquoted.indexOf("@group"));
-        const args = <string[]>groupTriggerStart.split(" ");
+
+        const groupTriggerStart = content.substring(content.indexOf("@group"));
+        const args = <string[]>groupTriggerStart.split(/\s/g);
+
         args.shift();
         const [requestName] = args
         const groups = (await groupRepository.find({
@@ -113,11 +115,11 @@ export default async function GroupManager(message: Discord.Message, isConfig: b
             return;
         }
 
-        let writeLine: string = `**@${group.name}**:`
-        group.members.forEach((member: GroupMember) => {
-            writeLine = writeLine.concat(" <@" + member.id + ">,")
-        });
-        message.channel.send(writeLine);
+        const groupPingMessage = `**@${group.name}**: ` + group
+            .members.map(member => `<@${member.id}>`)
+            .join(", ");
+
+        message.channel.send(groupPingMessage);
 
         group.lastUsed = new Date();
         groupRepository.save(group);

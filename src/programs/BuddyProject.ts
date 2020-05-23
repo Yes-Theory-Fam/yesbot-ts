@@ -157,13 +157,10 @@ export async function BuddyProjectSignup(
         outputText = outputText.concat(` - Looking for only **new** members.`)
 
         const finalMatches = await buddyEntries.find({
-          //! Uncomment below to turn on discord - discord matches
-          // where: { matched: false },
-  
-          where: { discord_user: !discord_user, matched: false },
+          where: { matched: false },
         });
 
-        outputText = outputText.concat(` - Found ${finalMatches.length} **new** members.`)
+        outputText = outputText.concat(` - Found ${finalMatches.length} potential matches.`)
 
         if (finalMatches.length > 0) {
           try {

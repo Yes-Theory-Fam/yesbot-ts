@@ -28,9 +28,19 @@ class MessageManager {
     }
     routeMessage() {
 
+        const filteredWords = ["nigger", "nigga"];
+
         const words = this.message.content.split(" ")
         const firstWord = words[0];
         const channel = <Discord.TextChannel>this.message.channel;
+
+        const isFiltered = words.some(r=> filteredWords.indexOf(r) !== -1)
+        if(isFiltered) {
+            this.message.delete();
+            this.message.author.createDM().then(dm => dm.send(`Usage of the N word is absolutely banned within this server. Please refer to the <#450102410262609943>.`))
+            
+        }
+        
 
         switch (channel.name) {
 
@@ -122,7 +132,7 @@ class MessageManager {
                 
                 const requestMessage = await dmChannel.send("Okay, what's your name then? Please only respond with your name like Henry or Julie, that makes things easier for the Supports! :upside_down:");
                 state.ignoredGroupDMs.push(dmChannel.id);
-                const nameMessage = await dmChannel.awaitMessages(() => true, { time: 60000, max: 1 });
+                const nameMessage = await dmChannel.awaitMessages((_, user: User) => !user.bot, { time: 60000, max: 1 });
                 removeIgnore();
                
                 if (nameMessage.size === 0) {
