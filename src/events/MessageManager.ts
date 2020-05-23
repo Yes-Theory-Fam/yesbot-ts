@@ -132,7 +132,7 @@ class MessageManager {
                 
                 const requestMessage = await dmChannel.send("Okay, what's your name then? Please only respond with your name like Henry or Julie, that makes things easier for the Supports! :upside_down:");
                 state.ignoredGroupDMs.push(dmChannel.id);
-                const nameMessage = await dmChannel.awaitMessages(() => true, { time: 60000, max: 1 });
+                const nameMessage = await dmChannel.awaitMessages((_, user: User) => !user.bot, { time: 60000, max: 1 });
                 removeIgnore();
                
                 if (nameMessage.size === 0) {
