@@ -1,6 +1,8 @@
 import fs, { exists } from 'fs';
 import { resolve } from 'dns';
-import Discord, { TextChannel, Snowflake } from 'discord.js';
+import Discord, { TextChannel, Snowflake, Guild, GuildMember, PartialGuildMember } from 'discord.js';
+import { ChannelToggleRepository } from '../entities/ChannelToggle';
+import { textLog } from './moderator';
 
 interface LocalUser {
     id:string,
@@ -84,6 +86,28 @@ class Tools {
 
     static async getRoleById(roleId: Snowflake, guild:Discord.Guild) {
         return guild.roles.cache.find((r) => r.id == roleId)
+    }
+
+    static async addPerUserPermissions(reactionName: string, messageId: string, guild: Guild, user: GuildMember | PartialGuildMember) {
+        const channelToggleRepository = await ChannelToggleRepository();
+        const toggle = await channelToggleRepository.findOne({
+            where: {
+                emoji: reactionName,
+                message: messageId,
+            }
+        });
+    
+        if (toggle !== undefined) {
+            const channel = guild.channels.cache.find(channel => channel.id === toggle.channel);
+            if (channel === undefined) {
+                textLog(`I can't find this channel <#${channel.id}>. Has it been deleted?`);
+                return;
+            }
+    
+            await channel.updateOverwrite(user.id, {
+                VIEW_CHANNEL: true,
+            });
+        }
     }
 }
 
