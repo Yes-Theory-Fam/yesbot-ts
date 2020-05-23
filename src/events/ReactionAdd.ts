@@ -69,15 +69,6 @@ class ReactionAdd {
     }
 
     async handleChannelToggleReaction() {
-        const member = this.guild.member(this.user);
-        // Catch users who are timeouted and deny their attempts at accessing other channels
-        if (hasRole(member, "Time Out")) {
-            const reaction = this.message.reactions.cache.find(reaction => reaction.emoji.name === this.reaction);
-            reaction.users.remove(member);
-
-            return;
-        }
-
         const messageRepository = await MessageRepository();
         const storedMessage = await messageRepository.findOne({
             where: {
@@ -88,6 +79,15 @@ class ReactionAdd {
         if (storedMessage === undefined) {
             // abort if we don't know of a trigger for this message
             return
+        }
+
+        const member = this.guild.member(this.user);
+        // Catch users who are timeouted and deny their attempts at accessing other channels
+        if (hasRole(member, "Time Out")) {
+            const reaction = this.message.reactions.cache.find(reaction => reaction.emoji.name === this.reaction);
+            reaction.users.remove(member);
+
+            return;
         }
 
         // Make sure we know what channel this message is forever
