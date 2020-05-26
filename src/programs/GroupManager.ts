@@ -223,7 +223,7 @@ const deleteGroup = async (message:Discord.Message, requestedGroupName: string =
         return;
     }
 
-    await groupRepository.delete(group);
+    await groupRepository.delete(group.id);
     await message.react("👍");
 }
 
