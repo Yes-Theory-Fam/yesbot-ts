@@ -40,7 +40,7 @@ export default async function WhereAreYouFromManager(pMessage: Discord.Message) 
                     roleToAssign = pMessage.guild.roles.cache.find(role => role.name === "I'm from Canada!");
                     break;
                 default:
-                    roleToAssign = pMessage.guild.roles.cache.find(role => role.name.includes("I'm from") && role.name.toLowerCase().includes(countryToAssign.name.toLowerCase()));
+                    roleToAssign = pMessage.guild.roles.cache.find(role => role.name.startsWith("I'm from") && role.name.toLowerCase().endsWith(countryToAssign.name.toLowerCase() + "!"));
                     break;
             }
 
