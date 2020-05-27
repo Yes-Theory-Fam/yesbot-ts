@@ -11,7 +11,7 @@ export default async function WhereAreYouFromManager(pMessage: Discord.Message) 
 
     if(newUser) {
         const matchedCountries = countries.filter((country:Country) => {
-            return pMessage.content.includes(country.emoji) || pMessage.content.toLowerCase().includes(country.name.toLowerCase())
+            return pMessage.content.includes(country.emoji) || pMessage.content.match(RegExp(`\\b${country.name}\\b`, "i"));
         });
         const uniqueMatches = matchedCountries.filter(({name: filterName}, index, self) => self.findIndex(({name}) => name === filterName) === index);
 
