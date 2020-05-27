@@ -2,10 +2,9 @@ import Discord, { Snowflake, User, Channel, Guild, TextChannel, Emoji, GuildCrea
 import bot from "../index"
 import Tools from '../common/tools';
 import AdventureGame from "../programs/AdventureGame"
-import { ChannelToggleRepository } from '../entities/ChannelToggle';
 import { MessageRepository } from '../entities/Message';
 import { backfillReactions } from '../programs/GroupManager';
-import { textLog } from '../common/moderator';
+import { hasRole } from '../common/moderator';
 
 class ReactionAdd {
 
@@ -82,6 +81,15 @@ class ReactionAdd {
             return
         }
 
+        const member = this.guild.member(this.user);
+        // Catch users who are timeouted and deny their attempts at accessing other channels
+        if (hasRole(member, "Time Out")) {
+            const reaction = this.message.reactions.cache.find(reaction => reaction.emoji.name === this.reaction);
+            reaction.users.remove(member);
+
+            return;
+        }
+
         // Make sure we know what channel this message is forever
         if (storedMessage.channel === null) {
             // record what channel this message is in
@@ -93,25 +101,7 @@ class ReactionAdd {
             backfillReactions(this.messageId, this.channel.id, this.guild);
         }
 
-        const channelToggleRepository = await ChannelToggleRepository();
-        const toggle = await channelToggleRepository.findOne({
-            where: {
-                emoji: this.reaction,
-                message: this.messageId,
-            }
-        });
-
-        if (toggle !== undefined) {
-            const channel = this.guild.channels.cache.find(channel => channel.id === toggle.channel);
-            if (channel === undefined) {
-                textLog(`I can't find this channel <#${channel.id}>. Has it been deleted?`);
-                return;
-            }
-
-            await channel.updateOverwrite(this.user.id, {
-                VIEW_CHANNEL: true,
-            });
-        }
+        Tools.addPerUserPermissions(this.reaction, this.messageId, this.guild, this.guild.member(this.user));
     }
 }
 
