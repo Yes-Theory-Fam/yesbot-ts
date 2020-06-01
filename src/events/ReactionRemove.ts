@@ -22,7 +22,7 @@ class ReactionRemove {
         this.reaction = messageReaction.emoji.name;
         this.channel = <TextChannel>messageReaction.message.channel;
         this.guild = <Guild>this.channel.guild;
-        this.main();
+        if(this.channel.name != "pick-your-color") this.main();
     }
 
     async main() {
