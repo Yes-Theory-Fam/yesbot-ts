@@ -1,4 +1,4 @@
-import Discord, { Snowflake, User, Channel, Guild, TextChannel, Emoji, GuildCreateChannelOptions, PartialUser, Message } from 'discord.js';
+import Discord, { Snowflake, User, Channel, Guild, TextChannel, Emoji, GuildCreateChannelOptions, PartialUser, Message, GuildMember } from 'discord.js';
 import bot from "../index"
 import Tools from '../common/tools';
 import AdventureGame from "../programs/AdventureGame"
@@ -7,6 +7,8 @@ import { backfillReactions } from '../programs/GroupManager';
 import { hasRole } from '../common/moderator';
 
 class ReactionAdd {
+
+    
 
 
     bot: Discord.Client;
@@ -41,31 +43,30 @@ class ReactionAdd {
             if (this.messageId === element.messageId && this.reaction === element.reaction) {
                 const guildMember = this.guild.members.cache.find(m => m.id == this.user.id);
                 const roleToAdd = this.guild.roles.cache.find(r => r.id == element.roleId);
-                guildMember.roles.add(roleToAdd);
+
+                if(this.hasNitroColour(guildMember) && this.messageId == "637401981262102578") {
+                    guildMember.createDM().then(dm => dm.send("You can't assign yourself a new colour yet, please wait until the end of the month!"))
+                }
+                else {
+                    guildMember.roles.add(roleToAdd);
+                }
+                
             }
         });
 
         this.handleChannelToggleReaction();
     }
 
-    isYTF(roleToAdd: Discord.Role): boolean {
-        if ((roleToAdd.name == "Lazy Lime" ||
-            roleToAdd.name == "Mellow Yellow" ||
-            roleToAdd.name == "Retro Red" ||
-            roleToAdd.name == "Wine Red" ||
-            roleToAdd.name == "Baby Blue" ||
-            roleToAdd.name == "Ocean Blue" ||
-            roleToAdd.name == "Swamp Green" ||
-            roleToAdd.name == "Original Nitro"
-        ) && (roleToAdd.guild.name == "JamiesBotPlayground" || roleToAdd.guild.name == "Yes Theory Fam")) {
-            return true
-        }
-        return false;
-
-    }
-
-    handleNitro(guildMember:Discord.GuildMember, roleToAdd:Discord.Role) {
-        
+    
+    hasNitroColour = (member:GuildMember): boolean => {
+        const nitroColours: string[] = ["636122019183722496", "636902084108615690", "636901944790876160", "636525712450256896", "636670666447388702"]
+        let hasColour = false;
+        nitroColours.forEach(colour => {
+            if(member.roles.cache.find(role => role.id === colour)) {
+                hasColour = true;
+            }
+        })
+        return hasColour;
     }
 
     async handleChannelToggleReaction() {
