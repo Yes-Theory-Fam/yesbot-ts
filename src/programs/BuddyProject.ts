@@ -129,6 +129,7 @@ export async function BuddyProjectSignup(
       user_id: member.id,
       matched: false,
       discord_user: discord_user,
+      matchedDate: new Date(),
     });
     await buddyEntries.save(newBuddy);
 
