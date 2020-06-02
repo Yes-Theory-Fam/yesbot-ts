@@ -25,6 +25,11 @@ export default async function BuddyProjectGhost(user: User, guild: Guild, reacti
     return;
   }
 
+  if (entry.reportedGhostDate) {
+    userDm.send("You already reported that you are possibly being ghosted. I will come back to that report after 7 days in case I haven't heard back from your buddy. Until then, please have some patience.");
+    return;
+  }
+
   const buddy = guild.member(entry.buddy_id);
 
   if (!buddy) {
