@@ -11,5 +11,6 @@ import ProfileManager from './ProfileManager';
 import EasterEvent from './EasterEvent';
 import BirthdayManager from './BirthdayManager';
 import PollsManager from './PollsManager';
+import PhilosophyManager from './PhilosophyManager'
 
-export { Someone,BirthdayManager,EasterEvent, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, InitialiseTestEnvironment, Unassigned, ProfileManager, PollsManager }; 
+export { PhilosophyManager, Someone,BirthdayManager,EasterEvent, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, InitialiseTestEnvironment, Unassigned, ProfileManager, PollsManager }; 
