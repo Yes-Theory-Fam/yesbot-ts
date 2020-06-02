@@ -2,18 +2,16 @@ import Discord from 'discord.js';
 import axios from 'axios';
 
 
-const QUESTION_LINK: string = 'https://spreadsheets.google.com/feeds/cells/1J7DlkcWzhcm9CXiWCB-dQloCqIHjVpupyvMqBPlJ7Mk/1/public/full?alt=json'
-let message: Discord.Message;
+const QUESTION_LINK: string = 'https://spreadsheets.google.com/feeds/cells/1wJWtBLmG5RBwVLsS1fhUEL5MdGy9kKHu7Q8-AunZDu8/1/public/full?alt=json'
 
 
 
 export default async function PhilosophyManager(message: Discord.Message, action: string) {
 
-    message = message;
 
     switch (action) {
         case "topic":
-            sendTopic();
+            sendTopic(message);
             
             break;
     
@@ -22,7 +20,7 @@ export default async function PhilosophyManager(message: Discord.Message, action
     }
 }
 
-const sendTopic = async () => {
+const sendTopic = async (message: Discord.Message) => {
 
     const response = await axios.get(QUESTION_LINK)
     let questions: string[] = [];
@@ -32,7 +30,6 @@ const sendTopic = async () => {
     });
     let date = new Date().getDate();
     date--;
-
     const question = questions[date];
     message.channel.send(question)
 }
