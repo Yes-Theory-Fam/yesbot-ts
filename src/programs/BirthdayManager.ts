@@ -79,7 +79,8 @@ export default async function BirthdayManager(message: Message) {
     }
 
     message.channel.send(`Okay, I'll store your birthday as ${formatBirthday(birthdate)} in the timezone ${timezone}.`);
-    textLog(`Hi there! Could someone help me by executing this command? Thank you!\n\`bb.override <@${birthdayUser.id}> set ${formatBirthday(birthdate)} ${timezone}\``);
+    textLog("Hi there! Could someone help me by executing this command? Thank you!");
+    textLog(`bb.override <@${birthdayUser.id}> set ${formatBirthday(birthdate)} ${timezone}`);
     createBirthday(birthdayUser.id, birthdate);
 }
 
