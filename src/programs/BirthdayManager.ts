@@ -268,6 +268,10 @@ function timezonesFromRole(props: CountryWithRegion): readonly string[] {
                         .filter(tz => tz !== "Australia/LHI" && tz !== "Australia/ACT" && tz !== "Australia/NSW")
             }
         }
+        case "Canada": {
+            return getCountry("CA").timezones
+                .filter(tz => tz.startsWith("Canada/"));
+        }
     }
 
     // let's find what tz's are available for this country
