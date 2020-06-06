@@ -1,4 +1,4 @@
-import Discord, { TextChannel, User } from 'discord.js';
+import Discord, { TextChannel, Guild, Role, User } from 'discord.js';
 import Tools from '../common/tools';
 import {isRegistered, textLog} from '../common/moderator';
 import { Country, countries } from "../collections/flagEmojis";
@@ -10,40 +10,17 @@ export default async function WhereAreYouFromManager(pMessage: Discord.Message) 
     const newUser = !isRegistered(pMessage.member);
 
     if(newUser) {
-        const matchedCountries = countries.filter((country:Country) => {
-            return pMessage.content.includes(country.emoji) || pMessage.content.toLowerCase().includes(country.name.toLowerCase())
-        });
-        const uniqueMatches = matchedCountries.filter(({name: filterName}, index, self) => self.findIndex(({name}) => name === filterName) === index);
+        const matchedCountries = getCountriesFromMessage(pMessage.content);
 
-        if(uniqueMatches.length > 1) {
+        if(matchedCountries.length > 1) {
             pMessage.reply("Please only tell me 1 country for now, you can ask a member of the Support team about multiple nationalities :grin:")
             return;
         }
 
-        const countryToAssign = uniqueMatches[0];
+        const countryToAssign = matchedCountries[0];
         if(countryToAssign) {
-
-            const isOutlier = ["Australia", "United States", "United Kingdom", "Canada"].find(each => countryToAssign.title.includes(each));
-            let roleToAssign: Discord.Role;
-
-            switch (isOutlier) {
-                case "Australia":
-                    roleToAssign = pMessage.guild.roles.cache.find(role => role.name === "I'm from Australia!");
-                    break;
-                case "United Kingdom":
-                    roleToAssign = pMessage.guild.roles.cache.find(role => role.name === "I'm from the UK!");
-                    break;
-                case "United States":
-                    roleToAssign = pMessage.guild.roles.cache.find(role => role.name === "I'm from the USA!");
-                    break;
-                case "Canada":
-                    roleToAssign = pMessage.guild.roles.cache.find(role => role.name === "I'm from Canada!");
-                    break;
-                default:
-                    roleToAssign = pMessage.guild.roles.cache.find(role => role.name.includes("I'm from") && role.name.toLowerCase().includes(countryToAssign.name.toLowerCase()));
-                    break;
-            }
-
+            const roleToAssign = getRoleForCountry(countryToAssign, pMessage.guild);
+        
             if(!roleToAssign) {
                 const moderatorRole = pMessage.guild.roles.cache.find(r => r.name === MODERATOR_ROLE_NAME)
                 textLog(`${moderatorRole.toString()}: <@${pMessage.author.id}> just requested role for country ${countryToAssign.name}, but I could not find it. Please make sure this role exists.`);
@@ -83,3 +60,27 @@ const getWelcomeMessage = (user:User) => {
     
 }
 
+export const getRoleForCountry = (country: Country, guild: Guild): Role => {
+    const isOutlier = ["Australia", "United States", "United Kingdom", "Canada"].find(each => country.title.includes(each));
+
+    switch (isOutlier) {
+        case "Australia":
+            return guild.roles.cache.find(role => role.name === "I'm from Australia!");
+        case "United Kingdom":
+            return guild.roles.cache.find(role => role.name === "I'm from the UK!");
+        case "United States":
+            return guild.roles.cache.find(role => role.name === "I'm from the USA!");
+        case "Canada":
+            return guild.roles.cache.find(role => role.name === "I'm from Canada!");
+        default:
+            return guild.roles.cache.find(role => role.name.startsWith("I'm from") && role.name.toLowerCase().endsWith(country.name.toLowerCase() + "!"));
+    }
+}
+
+export const getCountriesFromMessage = (message: string) => {
+    const matchedCountries = countries.filter((country: Country) => {
+        return message.includes(country.emoji) || message.match(RegExp(`\\b${country.name}\\b`, "i"));
+    });
+
+    return matchedCountries.filter(({ name: filterName }, index, self) => self.findIndex(({ name }) => name === filterName) === index);
+}
