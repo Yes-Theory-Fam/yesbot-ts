@@ -118,7 +118,14 @@ class MessageManager {
         }
 
         async routeDm() {
+            const member = getMember(this.message.author.id);
             const dmChannel = this.message.channel;
+
+            if (!member) {
+                dmChannel.send("Hey, I am the bot of the Yes Theory Fam Discord Server :) Looks like you are not on it currently, so I cannot really do a lot for you. If you'd like to join, click here: https://discord.gg/yestheory");
+                return;
+            }
+
             if (state.ignoredGroupDMs.includes(dmChannel.id)) return;
             const removeIgnore = () => {
                 const index = state.ignoredGroupDMs.indexOf(dmChannel.id);
