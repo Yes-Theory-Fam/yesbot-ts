@@ -1,5 +1,5 @@
 import  Discord, { TextChannel, User, Channel, CollectorFilter, MessageReaction, Snowflake } from 'discord.js';
-import { PhilosophyManager, Someone, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, BirthdayManager, Unassigned, ProfileManager, EasterEvent, PollsManager } from '../programs';
+import { TopicManager, Someone, ReactRole, StateRoleFinder, Ticket, Deadchat, WhereAreYouFromManager, GroupManager, BirthdayManager, Unassigned, ProfileManager, EasterEvent, PollsManager } from '../programs';
 import bot from "../index"
 import ExportManager from '../programs/ExportManager';
 import {USA_IMAGE_URL, CANADA_IMAGE_URL, UK_IMAGE_URL, AUSTRALIA_IMAGE_URL, RESOURCES_CODING, RESOURCES_SPANISH } from '../const'
@@ -80,9 +80,6 @@ class MessageManager {
                 PollsManager(this.message);
                 break;
 
-            case "philosophy":
-                if(firstWord === "!topic")  PhilosophyManager(this.message, "topic");
-                break;
 
             case "feature-requests":
 
@@ -90,6 +87,7 @@ class MessageManager {
                 break;
             }
 
+            if(firstWord === "!topic") TopicManager(this.message);
             if(firstWord === "!fiyesta") Ticket(this.message, "fiyesta");
             if(firstWord === "!resources") Resource(this.message);
             if(firstWord === "!shoutout") Ticket(this.message, "shoutout");
