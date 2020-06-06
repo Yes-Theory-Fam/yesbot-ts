@@ -4,6 +4,7 @@ import { getAllCountries, getCountry } from "countries-and-timezones";
 import Tools from "../common/tools";
 import { textLog, isAuthorModerator } from "../common/moderator";
 import { BirthdayRepository } from "../entities/Birthday";
+import { ENGINEER_ROLE_NAME } from "../const";
 
 const IM_FROM = "I'm from ";
 const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
@@ -64,7 +65,10 @@ export default async function BirthdayManager(message: Message) {
         timezone = await getUserTimezone(message);
     } catch (err) {
         if (err.message === 'Too many available time zones') {
-            message.channel.send("Ouch, it seems like you have an extreme amounts of timezones available!\nPlease wait for a support :grin:");
+            const engineerRole = message.guild.roles.cache.find(r => r.name === ENGINEER_ROLE_NAME);
+            message.channel.send("Ouch, it seems like you have an extreme amounts of timezones available!" +
+                "\nPlease wait while I call for my masters. :grin:" +
+                `\nBeep boop ${engineerRole.toString()}? :telephone:`);
         } else if (err.message === "time expired") {
             message.react("⏰");
         } else {
@@ -75,7 +79,8 @@ export default async function BirthdayManager(message: Message) {
     }
 
     message.channel.send(`Okay, I'll store your birthday as ${formatBirthday(birthdate)} in the timezone ${timezone}.`);
-    textLog(`Hi there! Could someone help me by executing this command? Thank you!\n\`bb.override <@${birthdayUser.id}> set ${formatBirthday(birthdate)} ${timezone}\``);
+    textLog("Hi there! Could someone help me by executing this command? Thank you!");
+    textLog(`bb.override <@${birthdayUser.id}> set ${formatBirthday(birthdate)} ${timezone}`);
     createBirthday(birthdayUser.id, birthdate);
 }
 
@@ -267,6 +272,10 @@ function timezonesFromRole(props: CountryWithRegion): readonly string[] {
                         // Invalid JS timezones
                         .filter(tz => tz !== "Australia/LHI" && tz !== "Australia/ACT" && tz !== "Australia/NSW")
             }
+        }
+        case "Canada": {
+            return getCountry("CA").timezones
+                .filter(tz => tz.startsWith("Canada/"));
         }
     }
 
