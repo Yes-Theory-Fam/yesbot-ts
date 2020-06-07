@@ -63,11 +63,16 @@ export async function BuddyConfirmation(user: User, guild: Guild) {
   const repo = await BuddyProjectEntryRepository();
   const entry = await repo.findOne(user.id);
 
+  const userDm = await user.createDM();
+  if (!entry) {
+    userDm.send("Hey, thanks for the confirmation. Unfortunately you missed the 7 day period and have been unmatched. To reenter the project, click the speech bubble in buddy-project on the Yes Theory Fam Server twice and be sure to stick around so you don't miss your buddy!");
+    return;
+  }
+
   const buddy = guild.member(entry.buddy_id);
   const buddyDm = await buddy.createDM();
   buddyDm.send("Looks like your buddy is there indeed! I have just gotten the reaction from them :) Please send them another DM to make it easier to reply.");
 
-  const userDm = await user.createDM();
   userDm.send("Hey, thanks for confirming you are there :) Please, please contact your buddy! They should have sent you a message before so check if you can find that in your DMs. I also asked them to contact you again to make it easier for you to find the DMs with them.")
 
   repo.createQueryBuilder().update().set({
