@@ -10,7 +10,7 @@
 import bot from '../index';
 
 import { BuddyProjectEntryRepository, BuddyProjectEntry } from '../entities/BuddyProjectEntry';
-import { MoreThan } from "typeorm";
+import { LessThan } from "typeorm";
 import { GuildMember, Guild } from 'discord.js';
 import { textLog } from '../common/moderator';
 
@@ -24,7 +24,9 @@ const checkBuddyProjectGhosts = async (guild: Guild) => {
 
   const ghosted = await repo.find({
     where: {
-      reportedGhostDate: MoreThan(sevenDaysAgo)
+      // Counter intuitive and reads wrong but is correct because it ends up as
+      // reportedGhostDate < sevenDaysAgo so "reportedGhostDate before seven days ago"
+      reportedGhostDate: LessThan(sevenDaysAgo)
     }
   });
 
