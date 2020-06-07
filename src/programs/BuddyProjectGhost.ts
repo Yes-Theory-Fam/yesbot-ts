@@ -1,6 +1,6 @@
 import { User, Guild, MessageReaction } from "discord.js";
 
-import { BuddyProjectEntry, BuddyProjectEntryRepository } from '../entities/BuddyProjectEntry';
+import { BuddyProjectEntryRepository } from '../entities/BuddyProjectEntry';
 import { textLog } from "../common/moderator";
 
 export default async function BuddyProjectGhost(user: User, guild: Guild, reaction: MessageReaction) {
@@ -70,8 +70,11 @@ export async function BuddyConfirmation(user: User, guild: Guild) {
   const userDm = await user.createDM();
   userDm.send("Hey, thanks for confirming you are there :) Please, please contact your buddy! They should have sent you a message before so check if you can find that in your DMs. I also asked them to contact you again to make it easier for you to find the DMs with them.")
 
-  entry.reportedGhostDate = null;
-  repo.save(entry);
+  repo.createQueryBuilder().update().set({
+    reportedGhostDate: null
+  })
+    .where({ user_id: entry.buddy_id })
+    .execute();
 
   // Ideally we probably also want to remove the reaction by the other user that reported the buddy as ghosting but not sure if there is a super sensible way to do this other than resolving the channel, resolving the message, resolving the reaction, removing the user's reaction.
 }
