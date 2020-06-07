@@ -46,7 +46,7 @@ const checkBuddyProjectGhosts = async (guild: Guild) => {
     const buddyDm = await buddy.createDM();
     buddyDm.send("Hey there! Unfortunately you didn't click the reaction within the last 7 days and thus I expect you to be a very infrequent Discord user. Hence I unmatched you from your buddy to allow them to get a new match. To enter again, go to the Yes Theory Fam server, to the buddy-project check and click the speech bubble twice and be sure to stick around so you don't miss your buddy again :)");
 
-    const userDm = await buddy.createDM();
+    const userDm = await user.createDM();
     await userDm.send("Hey there! Your buddy didn't respond to my message either so I unmatched you! I will also start matching you again in just a second so you get another shot!");
 
     // Clear both entries, then start signup with the ghosted user again.
