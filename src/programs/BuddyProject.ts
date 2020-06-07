@@ -24,7 +24,7 @@ const updateDatabaseWithQuery = (
 ) => {
   BuddyEntryRepo.createQueryBuilder()
     .update(BuddyEntry)
-    .set({ matched: true, buddy_id: buddyId })
+    .set({ matched: true, buddy_id: buddyId, matchedDate: new Date() })
     .where("user_id = :member_id", { member_id: memberId })
     .execute()
     .catch((err) =>
@@ -32,7 +32,7 @@ const updateDatabaseWithQuery = (
     );
   BuddyEntryRepo.createQueryBuilder()
     .update(BuddyEntry)
-    .set({ matched: true, buddy_id: memberId })
+    .set({ matched: true, buddy_id: memberId, matchedDate: new Date() })
     .where("user_id = :member_id", { member_id: buddyId })
     .execute()
     .catch((err) =>
@@ -41,13 +41,11 @@ const updateDatabaseWithQuery = (
 };
 
 export const getMatchText = (match: User, set: number): string => `
-Hey there! Thank you for signing up to be a part of the Buddy Project :speech_balloon: . You’ve been paired with ${match.toString()} - {${
-  match.username + "#" + match.discriminator
-}} (If this is just a long number for you, copy and paste this in <#701717612001886228> to get who it is :grin:). This is where your Buddy Project journey starts! :grin:  First, you’ll have to get in touch with your Buddy. In every pair, one of the two people have been designated to be the “initiator” of the conversation. This responsibility falls on you! Message your buddy to start talking by searching up their username through the find function at the top left-hand corner of your screen, then start the chat! :heart:
+Hey there! Thank you for signing up to be a part of the Buddy Project :speech_balloon: . You’ve been paired with ${match.toString()} - {${match.username + "#" + match.discriminator
+  }} (If this is just a long number for you, copy and paste this in <#701717612001886228> to get who it is :grin:). This is where your Buddy Project journey starts! :grin:  First, you’ll have to get in touch with your Buddy. In every pair, one of the two people have been designated to be the “initiator” of the conversation. This responsibility falls on you! Message your buddy to start talking by searching up their username through the find function at the top left-hand corner of your screen, then start the chat! :heart:
 Most importantly, here’s your list of questions:
 
-${
-  set == 1
+${set == 1
     ? `
 1. ||If you could experience one of the Yes Theory videos, which would it be, and why?||
 3. ||Where are the top three places you want to travel to someday, and why?||
@@ -86,7 +84,7 @@ You may notice that the questions you’ve received are odd-numbered, that’s b
 
 You may notice that the questions you’ve received are even-numbered, that’s because all the odd-numbered questions have been sent to the person you’re paired with. So each one of you has a set of questions that you will take turns asking each other, and both answering every time. 
 `
-}
+  }
 
 
 
@@ -129,7 +127,6 @@ export async function BuddyProjectSignup(
       user_id: member.id,
       matched: false,
       discord_user: discord_user,
-      matchedDate: new Date(),
     });
     await buddyEntries.save(newBuddy);
 
@@ -258,8 +255,7 @@ export const forceMatch = async (
       await buddyEntries.save(user1Entry);
     } else {
       outputText = outputText.concat(
-        `\n${user1.toString()} already has a match with <@${
-          user1Entry.buddy_id
+        `\n${user1.toString()} already has a match with <@${user1Entry.buddy_id
         }>, changing match to <@${user2.id}>`
       );
     }
@@ -286,8 +282,7 @@ export const forceMatch = async (
       await buddyEntries.save(user2Entry);
     } else {
       outputText = outputText.concat(
-        `\n${user2.toString()} already has a match with <@${
-          user2Entry.buddy_id
+        `\n${user2.toString()} already has a match with <@${user2Entry.buddy_id
         }>, changing match to <@${user1.id}>`
       );
     }
@@ -359,8 +354,7 @@ export const removeEntry = async (user: User, guild: Guild) => {
     const buddyEntry = await buddyEntries.findOne(userEntry.buddy_id);
     buddyEntries.remove([userEntry, buddyEntry]);
     outputText = outputText.concat(
-      `\nSuccessfully removed entries for ${user.toString()} and <@${
-        userEntry.buddy_id
+      `\nSuccessfully removed entries for ${user.toString()} and <@${userEntry.buddy_id
       }>`
     );
   } else {
