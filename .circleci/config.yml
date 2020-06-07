@@ -1,0 +1,10 @@
+version: 2.1
+jobs:
+  lint:
+    docker:
+      - image: node:alpine
+    steps:
+      - run:
+          name: The First Step
+          command: |
+            echo 'Hello World!'
