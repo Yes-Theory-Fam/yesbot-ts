@@ -58,6 +58,8 @@ export default async function BuddyProjectGhost(user: User, guild: Guild, reacti
 }
 
 export async function BuddyConfirmation(user: User, guild: Guild) {
+  if (user.bot) return;
+
   const repo = await BuddyProjectEntryRepository();
   const entry = await repo.findOne(user.id);
 
