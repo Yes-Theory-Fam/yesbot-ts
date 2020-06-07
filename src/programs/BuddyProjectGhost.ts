@@ -10,6 +10,12 @@ export default async function BuddyProjectGhost(user: User, guild: Guild, reacti
 
   const cancelReaction = () => reaction.remove();
 
+  if (!entry) {
+    userDm.send("You reported that your buddy hasn't replied yet, however you haven't signed up to the buddy project! You can do so by clicking on the speech bubble icon in channel buddy-project on the Yes Theory Fam server.");
+    cancelReaction();
+    return;
+  }
+
   if (!entry.matched) {
     userDm.send("You reported that your buddy hasn't replied yet, however you are not matched yet.");
     cancelReaction();
