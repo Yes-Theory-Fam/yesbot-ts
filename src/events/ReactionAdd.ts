@@ -10,6 +10,7 @@ import Discord, {
   Message,
   GuildMember,
   MessageReaction,
+  DMChannel,
 } from "discord.js";
 import bot from "../index";
 import Tools from "../common/tools";
@@ -17,6 +18,8 @@ import AdventureGame from "../programs/AdventureGame";
 import { MessageRepository } from "../entities/Message";
 import { backfillReactions } from "../programs/GroupManager";
 import { hasRole } from "../common/moderator";
+import { GUILD_ID } from "../const";
+import BuddyProjectGhost, { BuddyConfirmation } from "../programs/BuddyProjectGhost";
 
 class ReactionAdd {
   bot: Discord.Client;
@@ -76,6 +79,22 @@ class ReactionAdd {
             );
         } else {
           guildMember.roles.add(roleToAdd);
+          if (this.channel instanceof DMChannel && this.pureEmoji === "✅") {
+            const guild = bot.guilds.resolve(GUILD_ID);
+            BuddyConfirmation(this.user, guild);
+            return;
+          }
+
+          if (!(this.channel instanceof TextChannel)) return;
+
+          if (this.pureEmoji === '🧙' && this.channel.name == "discord-disaster") {
+            AdventureGame(this.user, this.guild, this.bot)
+          }
+
+          if (this.channel.name === "buddy-project" && this.pureEmoji === "❌") {
+            BuddyProjectGhost(this.user, this.guild, this.messageReaction);
+            return;
+          }
         }
       }
     });
