@@ -11,15 +11,13 @@ import bot from '../index';
 
 import { BuddyProjectEntryRepository, BuddyProjectEntry } from '../entities/BuddyProjectEntry';
 import { MoreThan } from "typeorm";
-import { GuildMember } from 'discord.js';
+import { GuildMember, Guild } from 'discord.js';
 import { textLog } from '../common/moderator';
 
 import { GUILD_ID } from '../const';
 import { BuddyProjectSignup } from '../programs/BuddyProject';
 
-const GUILD = bot.guilds.resolve(GUILD_ID);
-
-const checkBuddyProjectGhosts = async () => {
+const checkBuddyProjectGhosts = async (guild: Guild) => {
   const repo = await BuddyProjectEntryRepository();
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
@@ -30,6 +28,8 @@ const checkBuddyProjectGhosts = async () => {
     }
   });
 
+  let count = 0;
+
   for (let i = 0; i < ghosted.length; i++) {
     const entry = ghosted[i];
 
@@ -37,7 +37,7 @@ const checkBuddyProjectGhosts = async () => {
     let user: GuildMember;
 
     try {
-      ({ buddy, user } = resolveUsers(entry));
+      ({ buddy, user } = resolveUsers(entry, guild));
     } catch (e) {
       textLog(e);
       continue;
@@ -54,20 +54,30 @@ const checkBuddyProjectGhosts = async () => {
     await repo.delete({ user_id: entry.buddy_id });
 
     BuddyProjectSignup(user);
+    count++;
   }
+
+  return count;
 };
 
-const resolveUser = (id: string, type: "ghosted" | "buddy") => {
-  const user = GUILD.member(id);
+const resolveUser = (id: string, type: "ghosted" | "buddy", guild: Guild) => {
+  const user = guild.member(id);
   if (!user) throw `I couldn't find the user <@${id}> while trying to sort out ghosting! (this would have been the ${type} user)`;
 
   return user;
 }
 
-const resolveUsers = (entry: BuddyProjectEntry): { buddy: GuildMember, user: GuildMember } => {
-  const buddy = resolveUser(entry.buddy_id, "buddy");
-  const user = resolveUser(entry.user_id, "ghosted");
+const resolveUsers = (entry: BuddyProjectEntry, guild: Guild): { buddy: GuildMember, user: GuildMember } => {
+  const buddy = resolveUser(entry.buddy_id, "buddy", guild);
+  const user = resolveUser(entry.user_id, "ghosted", guild);
   return { buddy, user };
 };
 
-checkBuddyProjectGhosts().then((count) => console.log(`Done, handled ${count} ghosted people.`));
+bot.on("ready", async () => {
+  console.log(new Date(), "Secondary bot instance running to handle ghosts - starting");
+  const guild = bot.guilds.resolve(GUILD_ID);
+  const count = await checkBuddyProjectGhosts(guild);
+  console.log(new Date(), `Done, handled ${count} ghosted people.`);
+
+  setTimeout(() => bot.destroy(), 1000);
+});
