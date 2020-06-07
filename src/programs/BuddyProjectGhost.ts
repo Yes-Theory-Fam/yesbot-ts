@@ -45,7 +45,7 @@ export default async function BuddyProjectGhost(user: User, guild: Guild, reacti
   }
 
   const buddyDm = await buddy.createDM();
-  const buddyMessage = await buddyDm.send(`Hey there! You signed up to the buddy project and got matched with <@${user.id}> (${user.username}#${user.tag}) but never responded to them. In order to not get unmatched, click on the checkmark below this message within the next seven days and send them a message :)`);
+  const buddyMessage = await buddyDm.send(`Hey there! You signed up to the buddy project and got matched with <@${user.id}> (${user.tag}) but never responded to them. In order to not get unmatched, click on the checkmark below this message within the next seven days and send them a message :)`);
 
   // The listener for reactions like these is /events/ReactionAdd because they have to be long term (one week) which isn't feasible with awaitReactions
   // The code running when this happens is in the function below.
