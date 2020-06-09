@@ -277,6 +277,9 @@ function timezonesFromRole(props: CountryWithRegion): readonly string[] {
             return getCountry("CA").timezones
                 .filter(tz => tz.startsWith("Canada/"));
         }
+        case "Czech Republic": {
+            return getCountry("CZ").timezones;
+        }
     }
 
     // let's find what tz's are available for this country
