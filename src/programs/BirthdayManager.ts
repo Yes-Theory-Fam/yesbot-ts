@@ -235,19 +235,63 @@ function timezonesFromRole(props: CountryWithRegion): readonly string[] {
     // Edge cases
     switch (country) {
         case "the USA":
-            // This is to slim down the extremely big list of US TZs.
-            // Also, we remove any timezone that JS is unable to display.
-            const usTZs = getCountry("US").timezones
-                .filter(tz => tz.startsWith('America/'))
-                .filter(tz => tz.lastIndexOf('/') === tz.indexOf('/'));
-            return usTZs.map(tz => {
-                try {
-                    new Date().toLocaleTimeString('en-GB', { timeZone: tz });
-                    return tz;
-                } catch (e) {
-                    return null;
+            switch (region) {
+                case "Southwest": {
+                    return [
+                        "America/Shiprock",
+                        "America/Phoenix",
+                    ]
                 }
-            }).filter(tz => tz !== null);
+                case "West": {
+                    return [
+                        "America/Atka",
+                        "America/Adak",
+                        "America/Anchorage",
+                        "America/Boise",
+                        "America/Denver",
+                        "America/Juneau",
+                        "America/Los_Angeles",
+                        "America/Metlakatla",
+                        "America/Nome",
+                        "America/Sitka",
+                        "America/Yakutat",
+                    ]
+                }
+                case "Midwest": {
+                    return [
+                        "America/Indianapolis",
+                        "America/Chicago",
+                        "America/Detroit",
+                        "America/Fort_Wayne",
+                        "America/Menominee",
+                    ]
+                }
+                case "Southeast": {
+                    return [
+                        "America/Louisville",
+                    ]
+                }
+                case "Northeast": {
+                    return [
+                        "America/New_York",
+                    ]
+                }
+                default: {
+                    // This is to slim down the extremely big list of US TZs.
+                    // Also, we remove any timezone that JS is unable to display.
+                    const usTZs = getCountry("US").timezones
+                    .filter(tz => tz.startsWith('America/'))
+                    .filter(tz => tz.lastIndexOf('/') === tz.indexOf('/'));
+                    return usTZs.map(tz => {
+                        try {
+                            new Date().toLocaleTimeString('en-GB', { timeZone: tz });
+                            return tz;
+                        } catch (e) {
+                            return null;
+                        }
+                    }).filter(tz => tz !== null);
+                }
+            }
         case "the UK":
             return getCountry("GB").timezones;
         case "Mexico":
