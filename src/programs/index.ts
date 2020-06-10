@@ -12,8 +12,10 @@ import EasterEvent from "./EasterEvent";
 import BirthdayManager from "./BirthdayManager";
 import PollsManager from "./PollsManager";
 import TopicManager from "./TopicManager";
+import BuddyProjectManager from "./BuddyProjectManager";
 
 export {
+  BuddyProjectManager,
   TopicManager,
   Someone,
   BirthdayManager,
