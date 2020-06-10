@@ -1,5 +1,5 @@
 import { Message, User } from "discord.js";
-import { forceMatch, checkEntry, removeEntry } from "./BuddyProject";
+import { forceMatch, checkEntry, removeEntry, cleanEntries } from "./BuddyProject";
 
 export default async function BuddyProjectManager(message: Message, action: string) { 
     switch (action) {
@@ -31,6 +31,9 @@ export default async function BuddyProjectManager(message: Message, action: stri
                                 break;
                         }
                     })
+                break;
+        case "clean":
+            cleanEntries(message.guild);
     
         default:
             break;

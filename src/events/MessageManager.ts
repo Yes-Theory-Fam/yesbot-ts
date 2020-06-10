@@ -123,6 +123,7 @@ class MessageManager {
         if(firstWord === "!match") BuddyProjectManager(this.message, "match");
         if(firstWord === "!check") BuddyProjectManager(this.message, "check");
         if(firstWord === "!unmatch") BuddyProjectManager(this.message, "unmatch");
+        if(firstWord === "!clean") BuddyProjectManager(this.message, "clean");
         break;
     }
     

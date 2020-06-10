@@ -322,3 +322,11 @@ export const removeEntry = async (user:User, guild:Guild) => {
 
   outputChannel.send(outputText);
 }
+
+export const cleanEntries = async (guild:Guild) => {
+  const buddyEntries = await BuddyProjectEntryRepository();
+  const unmatchedEntries = await buddyEntries.findAndCount({where: { matched: false }});
+  const outputChannel = guild.channels.cache.find(c => c.name == "buddy-project-matches") as TextChannel;
+  let outputText = `Found ${unmatchedEntries[1]} unmatched members`;
+  outputChannel.send(outputText);
+}
