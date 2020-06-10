@@ -38,7 +38,7 @@ Most importantly, here’s your list of questions:
 
 ${set == 1 ? `
 1. ||If you could experience one of the Yes Theory videos, which would it be, and why?||
-3. ||Where are the top three places you wan to travel to someday, and why?||
+3. ||Where are the top three places you want to travel to someday, and why?||
 5. ||What are the things in your life that make you feel like yourself? Have you neglected them lately?||
 7. ||What would you do if you had one hour left to live?||
 9. ||What would your younger self not believe about your life today?||
