@@ -44,7 +44,7 @@ const getWelcomeMessage = (user:User) => {
     const welcomeMessages = [
         `${user.toString()} just joined the party! Make some noise everyone :zany_face:`,
         `${user.toString()} just *sliiiiid* into the server.`,
-        `Everyone welcome ${user.toString()}> !`,
+        `Everyone welcome ${user.toString()}!`,
         `Welcome ${user.toString()}, say hi! `,
         `Glad you're finally here ${user.toString()}, we've been waiting for you :heart_eyes: `,
         `Welcome ${user.toString()}. We hope you brought :pizza: `,
