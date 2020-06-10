@@ -7,6 +7,7 @@ import Discord, {
   Snowflake,
 } from "discord.js";
 import {
+  BuddyProjectManager,
   TopicManager,
   Someone,
   ReactRole,
@@ -117,8 +118,14 @@ class MessageManager {
       case "feature-requests":
         this.message.react("👍").then(() => this.message.react("👎"));
         break;
+        
+      case "buddy-project-matches":
+        if(firstWord === "!match") BuddyProjectManager(this.message, "match");
+        if(firstWord === "!check") BuddyProjectManager(this.message, "check");
+        if(firstWord === "!unmatch") BuddyProjectManager(this.message, "unmatch");
+        break;
     }
-
+    
     if (firstWord === "!topic") TopicManager(this.message);
     if (firstWord === "!fiyesta") Ticket(this.message, "fiyesta");
     if (firstWord === "!resources") Resource(this.message);
