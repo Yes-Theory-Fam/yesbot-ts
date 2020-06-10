@@ -1,20 +1,18 @@
-import Discord, { TextChannel } from 'discord.js';
-
-
+import Discord, { TextChannel } from "discord.js";
 
 async function Resource(message: Discord.Message) {
-    const channel = message.channel as TextChannel;
-        switch (channel.name) {
-            case "coding":
-                message.channel.send(RESOURCES_CODING)
-                break;
-            case "learning-spanish":
-                message.channel.send(RESOURCES_SPANISH)
-                break;
-        
-            default:
-                break;
-        }
+  const channel = message.channel as TextChannel;
+  switch (channel.name) {
+    case "coding":
+      message.channel.send(RESOURCES_CODING);
+      break;
+    case "learning-spanish":
+      message.channel.send(RESOURCES_SPANISH);
+      break;
+
+    default:
+      break;
+  }
 }
 
 export default Resource;
@@ -51,4 +49,4 @@ Worksheets and lesson plans <https://www.teacherspayteachers.com/Browse/Price-Ra
 __**For learning**__
 Online dictionary 
 <https://www.spanishdict.com/>
-Website that focuses on learning how to pronounce all the words in the world <https://forvo.com/>`
+Website that focuses on learning how to pronounce all the words in the world <https://forvo.com/>`;

@@ -1,6 +1,9 @@
-import { getCountriesFromMessage, getRoleForCountry } from './WhereAreYouFromManager';
-import bot from '../index';
-import { GUILD_ID } from '../const';
+import {
+  getCountriesFromMessage,
+  getRoleForCountry,
+} from "./WhereAreYouFromManager";
+import bot from "../index";
+import { GUILD_ID } from "../const";
 
 // message, countryName, roleName
 type Testcase = [string, string, string];
@@ -56,7 +59,7 @@ const test = () => {
 
   //Delay to allow the bot to clear the event queue before terminating to avoid an error that otherwise occurs
   setTimeout(() => bot.destroy(), 1000);
-}
+};
 
 // bot.on("ready", () => bot.destroy());
 bot.on("ready", test);

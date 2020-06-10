@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "lint": "prettier --check \"src/!(collections)/**/*.(js|ts|json)\"",
+    "lint:fix": "prettier --write \"src/!(collections)/**/*.(js|ts|json)\"",
     "start": "ts-node-dev --respawn src/index.ts",
     "start:prod": "ts-node src/index.ts"
   },
@@ -28,6 +30,7 @@
     "@types/countries-and-timezones": "^2.0.2",
     "@types/node": "^13.11.1",
     "@types/ws": "^7.2.4",
+    "prettier": "^2.0.5",
     "ts-node-dev": "^1.0.0-pre.44"
   }
 }
