@@ -1,4 +1,11 @@
-import { CollectorFilter, Message, GuildMember, MessageEmbed, User, MessageReaction } from "discord.js";
+import {
+  CollectorFilter,
+  Message,
+  GuildMember,
+  MessageEmbed,
+  User,
+  MessageReaction,
+} from "discord.js";
 import { getAllCountries, getCountry } from "countries-and-timezones";
 
 import Tools from "../common/tools";
@@ -7,349 +14,429 @@ import { BirthdayRepository } from "../entities/Birthday";
 import { ENGINEER_ROLE_NAME } from "../const";
 
 const IM_FROM = "I'm from ";
-const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+const months = [
+  "jan",
+  "feb",
+  "mar",
+  "apr",
+  "may",
+  "jun",
+  "jul",
+  "aug",
+  "sep",
+  "oct",
+  "nov",
+  "dec",
+];
 
 export default async function BirthdayManager(message: Message) {
+  const words = Tools.stringToWords(message.content);
 
-    const words = Tools.stringToWords(message.content);
+  if (words.length < 2) {
+    message.channel.send(
+      "Please type !birthday and your birthday. I prefer if you use a name for the month :robot:"
+    );
+    return;
+  }
 
-    if (words.length < 2) {
-        message.channel.send("Please type !birthday and your birthday. I prefer if you use a name for the month :robot:")
-        return
-    }
+  const birthdayUser =
+    isAuthorModerator(message) && message.mentions.users.size === 1
+      ? message.mentions.users.first()
+      : message.author;
 
-    const birthdayUser = (isAuthorModerator(message) && message.mentions.users.size === 1)
-        ? message.mentions.users.first()
-        : message.author;
+  const userExistingBirthday = await getUserBirthday(birthdayUser.id);
 
-    const userExistingBirthday = await getUserBirthday(birthdayUser.id);
+  if (userExistingBirthday !== null) {
+    message.channel.send(
+      `I have already stored your birthday as ${formatBirthday(
+        userExistingBirthday
+      )} :tada:`
+    );
+    return;
+  }
 
-    if (userExistingBirthday !== null) {
-        message.channel.send(`I have already stored your birthday as ${formatBirthday(userExistingBirthday)} :tada:`)
-        return
-    }
+  const birthdate = getUserBirthdate(message.content);
 
-    const birthdate = getUserBirthdate(message.content);
+  if (birthdate === null) {
+    message.channel.send(
+      "I'm unable to understand that date. Could you please specify it in month-date form? Like this: `!birthday december-24`. Thank you!"
+    );
+    return;
+  }
 
-    if (birthdate === null) {
-        message.channel.send("I'm unable to understand that date. Could you please specify it in month-date form? Like this: `!birthday december-24`. Thank you!");
-        return
-    }
+  const birthdayMessage = await message.channel.send(
+    `Hi <@${birthdayUser.id}>, I think your birthday is ${formatBirthday(
+      birthdate
+    )}. If that is correct, please click :+1:.`
+  );
+  await birthdayMessage.react("👍");
+  await birthdayMessage.react("👎");
 
-    const birthdayMessage = await message.channel.send(`Hi <@${birthdayUser.id}>, I think your birthday is ${formatBirthday(birthdate)}. If that is correct, please click :+1:.`)
-    await birthdayMessage.react("👍");
-    await birthdayMessage.react("👎");
+  const filter: CollectorFilter = (reaction: MessageReaction, user: User) => {
+    return (
+      (user.id === birthdayUser.id || user.id === message.author.id) &&
+      ["👍", "👎"].includes(reaction.emoji.name)
+    );
+  };
 
-    const filter: CollectorFilter = (reaction: MessageReaction, user: User) => {
-        return (user.id === birthdayUser.id || user.id === message.author.id) && ["👍", "👎"].includes(reaction.emoji.name);
-    }
+  let birthdayAccepted;
+  try {
+    birthdayAccepted = await birthdayMessage.awaitReactions(filter, {
+      max: 1,
+      time: 15000,
+      errors: ["time"],
+    });
+  } catch (err) {
+    // timeout probably
+    return;
+  }
 
-    let birthdayAccepted;
-    try {
-        birthdayAccepted = await birthdayMessage.awaitReactions(filter, { max: 1, time: 15000, errors: ['time'] });
-    } catch (err) {
-        // timeout probably
-        return
-    }
+  if (birthdayAccepted.first().emoji.name === "👎") {
+    message.channel.send(
+      "Okay, please be more specific and try again, or hang around for a Support to help you out! :grin:"
+    );
+    return;
+  } else {
+    // Clean up
+    await birthdayMessage.delete();
+  }
 
-    if (birthdayAccepted.first().emoji.name === "👎") {
-        message.channel.send("Okay, please be more specific and try again, or hang around for a Support to help you out! :grin:")
-        return
+  let timezone;
+  try {
+    timezone = await getUserTimezone(message);
+  } catch (err) {
+    if (err.message === "Too many available time zones") {
+      const engineerRole = message.guild.roles.cache.find(
+        (r) => r.name === ENGINEER_ROLE_NAME
+      );
+      message.channel.send(
+        "Ouch, it seems like you have an extreme amounts of timezones available!" +
+          "\nPlease wait while I call for my masters. :grin:" +
+          `\nBeep boop ${engineerRole.toString()}? :telephone:`
+      );
+    } else if (err.message === "time expired") {
+      message.react("⏰");
     } else {
-        // Clean up
-        await birthdayMessage.delete();
+      console.error("birthday err", err);
+      message.channel.send(
+        "Hmm, something went wrong. Please contact my engineers if this seems unreasonable. :nerd:"
+      );
     }
+    return;
+  }
 
-    let timezone;
-    try {
-        timezone = await getUserTimezone(message);
-    } catch (err) {
-        if (err.message === 'Too many available time zones') {
-            const engineerRole = message.guild.roles.cache.find(r => r.name === ENGINEER_ROLE_NAME);
-            message.channel.send("Ouch, it seems like you have an extreme amounts of timezones available!" +
-                "\nPlease wait while I call for my masters. :grin:" +
-                `\nBeep boop ${engineerRole.toString()}? :telephone:`);
-        } else if (err.message === "time expired") {
-            message.react("⏰");
-        } else {
-            console.error('birthday err', err);
-            message.channel.send("Hmm, something went wrong. Please contact my engineers if this seems unreasonable. :nerd:")
-        }
-        return;
-    }
-
-    message.channel.send(`Okay, I'll store your birthday as ${formatBirthday(birthdate)} in the timezone ${timezone}.`);
-    textLog("Hi there! Could someone help me by executing this command? Thank you!");
-    textLog(`bb.override <@${birthdayUser.id}> set ${formatBirthday(birthdate)} ${timezone}`);
-    createBirthday(birthdayUser.id, birthdate);
+  message.channel.send(
+    `Okay, I'll store your birthday as ${formatBirthday(
+      birthdate
+    )} in the timezone ${timezone}.`
+  );
+  textLog(
+    "Hi there! Could someone help me by executing this command? Thank you!"
+  );
+  textLog(
+    `bb.override <@${birthdayUser.id}> set ${formatBirthday(
+      birthdate
+    )} ${timezone}`
+  );
+  createBirthday(birthdayUser.id, birthdate);
 }
 
 async function createBirthday(id: string, birthdate: Date) {
-    const birthdayRepository = await BirthdayRepository();
-    const birthday = birthdayRepository.create({
-        userid: id,
-        birthdate,
-    })
-    await birthdayRepository.save(birthday);
+  const birthdayRepository = await BirthdayRepository();
+  const birthday = birthdayRepository.create({
+    userid: id,
+    birthdate,
+  });
+  await birthdayRepository.save(birthday);
 }
 
 export function getUserBirthdate(message: string): Date | null {
-    const words = message.split(/[\s,-\/\.]\s?/);
+  const words = message.split(/[\s,-\/\.]\s?/);
 
-    const monthNameMatches = months.find(month => words.find(word => word.toLowerCase().includes(month)));
+  const monthNameMatches = months.find((month) =>
+    words.find((word) => word.toLowerCase().includes(month))
+  );
 
-    let monthNumMatch = -1;
-    if (monthNameMatches === undefined) {
-        // This will brute force by taking the first word that's a pure number..
-        const matches = words.filter(word => {
-            if (word.length > 2) {
-                return false;
-            }
-            const n = parseInt(word)
-            if (isNaN(n)) {
-                return false
-            };
-            return n > 0 && n <= 12;
-        })
+  let monthNumMatch = -1;
+  if (monthNameMatches === undefined) {
+    // This will brute force by taking the first word that's a pure number..
+    const matches = words.filter((word) => {
+      if (word.length > 2) {
+        return false;
+      }
+      const n = parseInt(word);
+      if (isNaN(n)) {
+        return false;
+      }
+      return n > 0 && n <= 12;
+    });
 
-        if (matches.length > 1 && matches[0] !== matches[1]) {
-            // Maybe a bit harsh, but we abort early if we find >= 2 numbers in the message
-            // where both of them are numbers <= 12 but not the same.
-            return null;
-        }
-        monthNumMatch = parseInt(matches[0])
+    if (matches.length > 1 && matches[0] !== matches[1]) {
+      // Maybe a bit harsh, but we abort early if we find >= 2 numbers in the message
+      // where both of them are numbers <= 12 but not the same.
+      return null;
     }
+    monthNumMatch = parseInt(matches[0]);
+  }
 
-    let messageWithoutMonthNumber = message;
-    if (monthNameMatches === undefined) {
-        const pre = message.substr(0, message.indexOf(monthNumMatch.toString()))
-        const post = message.substr(pre.length + monthNumMatch.toString().length)
-        messageWithoutMonthNumber = pre + post;
-    }
+  let messageWithoutMonthNumber = message;
+  if (monthNameMatches === undefined) {
+    const pre = message.substr(0, message.indexOf(monthNumMatch.toString()));
+    const post = message.substr(pre.length + monthNumMatch.toString().length);
+    messageWithoutMonthNumber = pre + post;
+  }
 
-    const dayMatches = messageWithoutMonthNumber.match(/(0[1-9]|[1-3]0|[1-9]+)(st|nd|rd|th)?/);
+  const dayMatches = messageWithoutMonthNumber.match(
+    /(0[1-9]|[1-3]0|[1-9]+)(st|nd|rd|th)?/
+  );
 
-    if (!dayMatches || dayMatches.length < 2) {
-        console.error("Couldn't find a match for a day in ", message)
-        return null
-    }
+  if (!dayMatches || dayMatches.length < 2) {
+    console.error("Couldn't find a match for a day in ", message);
+    return null;
+  }
 
-    // First one is the JS direct match, 2nd one is first capture group (\d+), which is the actual date
-    const day = parseInt(dayMatches[1]);
+  // First one is the JS direct match, 2nd one is first capture group (\d+), which is the actual date
+  const day = parseInt(dayMatches[1]);
 
-    if (isNaN(day)) {
-        console.error(`Tried to parse ${dayMatches[1]} as an int and failed!`);
-        return null
-    }
+  if (isNaN(day)) {
+    console.error(`Tried to parse ${dayMatches[1]} as an int and failed!`);
+    return null;
+  }
 
-    const month = monthNameMatches !== undefined ? months.indexOf(monthNameMatches) : monthNumMatch - 1;
+  const month =
+    monthNameMatches !== undefined
+      ? months.indexOf(monthNameMatches)
+      : monthNumMatch - 1;
 
-    if (monthNameMatches === undefined && monthNumMatch !== day && monthNumMatch <= 12 && day <= 12) {
-        // Cannot find out since i don't know which is month and which is date
-        return null
-    }
+  if (
+    monthNameMatches === undefined &&
+    monthNumMatch !== day &&
+    monthNumMatch <= 12 &&
+    day <= 12
+  ) {
+    // Cannot find out since i don't know which is month and which is date
+    return null;
+  }
 
-    return new Date(1970, month, day)
+  return new Date(1970, month, day);
 }
 
 async function getUserTimezone(message: Message): Promise<string> {
-    const countryRole = await fetchUserCountryRoles(message.member);
+  const countryRole = await fetchUserCountryRoles(message.member);
 
-    const timezones = countryRole
-        .map(timezonesFromRole)
-        .reduce((prev, curr) => [...prev, ...curr], [])
-        .filter(tz => tz.includes("/"));
+  const timezones = countryRole
+    .map(timezonesFromRole)
+    .reduce((prev, curr) => [...prev, ...curr], [])
+    .filter((tz) => tz.includes("/"));
 
-    if (timezones.length > 20) {
-        throw new Error('Too many available time zones');
-    }
+  if (timezones.length > 20) {
+    throw new Error("Too many available time zones");
+  }
 
-    const response = new MessageEmbed();
-    response.setTitle("Pick your timezone");
+  const response = new MessageEmbed();
+  response.setTitle("Pick your timezone");
 
-    const regionIdentifierStart = 127462;
-    let reactions: string[] = [];
+  const regionIdentifierStart = 127462;
+  let reactions: string[] = [];
 
-    timezones.forEach((tz, i) => {
-        if (stopAddReactions) return;
+  timezones.forEach((tz, i) => {
+    if (stopAddReactions) return;
 
-        const currentTime = new Date();
-        const currentTimeString = `Current time: ${currentTime.toLocaleTimeString('en-GB', { timeZone: tz })}`;
-        const identifier = String.fromCodePoint(regionIdentifierStart + i);
-        response.addField(tz, `${identifier} - ${currentTimeString}`);
-        reactions.push(identifier);
-    })
+    const currentTime = new Date();
+    const currentTimeString = `Current time: ${currentTime.toLocaleTimeString(
+      "en-GB",
+      { timeZone: tz }
+    )}`;
+    const identifier = String.fromCodePoint(regionIdentifierStart + i);
+    response.addField(tz, `${identifier} - ${currentTimeString}`);
+    reactions.push(identifier);
+  });
 
-    let stopAddReactions = false;
-    const sentMessage = await message.channel.send(response);
-    response.fields
-        .forEach(async (_, i) => {
-            try {
-                await sentMessage.react(String.fromCodePoint(regionIdentifierStart + i))
-            } catch (err) {
-                // If we err here, it's probably because the user already selected an emoji.
-                // Best to just skip adding more emojis.
-                stopAddReactions = true;
-            }
-        });
-
-    const filter: CollectorFilter = (reaction: MessageReaction, user: User) => {
-        return user.id === message.author.id && reactions.includes(reaction.emoji.name)
-    }
-
-    let received;
+  let stopAddReactions = false;
+  const sentMessage = await message.channel.send(response);
+  response.fields.forEach(async (_, i) => {
     try {
-        received = await sentMessage.awaitReactions(filter, { max: 1, time: 60000, errors: ['time'] })
+      await sentMessage.react(String.fromCodePoint(regionIdentifierStart + i));
     } catch (err) {
-        if (err.toString() === "[object Map]") {
-            await sentMessage.delete();
-            throw new Error('time expired');
-        } else {
-            throw err;
-        }
+      // If we err here, it's probably because the user already selected an emoji.
+      // Best to just skip adding more emojis.
+      stopAddReactions = true;
     }
+  });
 
-    const reaction = received.first();
-    const selectedTz = timezones[reactions.indexOf(reaction.emoji.name)];
+  const filter: CollectorFilter = (reaction: MessageReaction, user: User) => {
+    return (
+      user.id === message.author.id && reactions.includes(reaction.emoji.name)
+    );
+  };
 
-    sentMessage.delete();
-    return selectedTz;
+  let received;
+  try {
+    received = await sentMessage.awaitReactions(filter, {
+      max: 1,
+      time: 60000,
+      errors: ["time"],
+    });
+  } catch (err) {
+    if (err.toString() === "[object Map]") {
+      await sentMessage.delete();
+      throw new Error("time expired");
+    } else {
+      throw err;
+    }
+  }
+
+  const reaction = received.first();
+  const selectedTz = timezones[reactions.indexOf(reaction.emoji.name)];
+
+  sentMessage.delete();
+  return selectedTz;
 }
 
 interface CountryWithRegion {
-    country: string;
-    region: string;
+  country: string;
+  region: string;
 }
 
-async function fetchUserCountryRoles(user: GuildMember): Promise<CountryWithRegion[]> {
-    return user.roles.cache
-        .filter(role => role.name.startsWith("I'm from "))
-        .map<CountryWithRegion>(role => ({
-            country: role.name.substring(IM_FROM.length, role.name.indexOf("!")),
-            region: role.name.substring(role.name.indexOf("(") + 1, role.name.indexOf(")")),
-        }));
+async function fetchUserCountryRoles(
+  user: GuildMember
+): Promise<CountryWithRegion[]> {
+  return user.roles.cache
+    .filter((role) => role.name.startsWith("I'm from "))
+    .map<CountryWithRegion>((role) => ({
+      country: role.name.substring(IM_FROM.length, role.name.indexOf("!")),
+      region: role.name.substring(
+        role.name.indexOf("(") + 1,
+        role.name.indexOf(")")
+      ),
+    }));
 }
 
 function timezonesFromRole(props: CountryWithRegion): readonly string[] {
-    const { country, region } = props;
-    // Edge cases
-    switch (country) {
-        case "the USA":
-            switch (region) {
-                case "Southwest": {
-                    return [
-                        "America/Shiprock",
-                        "America/Phoenix",
-                    ]
-                }
-                case "West": {
-                    return [
-                        "America/Atka",
-                        "America/Adak",
-                        "America/Anchorage",
-                        "America/Boise",
-                        "America/Denver",
-                        "America/Juneau",
-                        "America/Los_Angeles",
-                        "America/Metlakatla",
-                        "America/Nome",
-                        "America/Sitka",
-                        "America/Yakutat",
-                    ]
-                }
-                case "Midwest": {
-                    return [
-                        "America/Indianapolis",
-                        "America/Chicago",
-                        "America/Detroit",
-                        "America/Fort_Wayne",
-                        "America/Menominee",
-                    ]
-                }
-                case "Southeast": {
-                    return [
-                        "America/Louisville",
-                    ]
-                }
-                case "Northeast": {
-                    return [
-                        "America/New_York",
-                    ]
-                }
-                default: {
-                    // This is to slim down the extremely big list of US TZs.
-                    // Also, we remove any timezone that JS is unable to display.
-                    const usTZs = getCountry("US").timezones
-                    .filter(tz => tz.startsWith('America/'))
-                    .filter(tz => tz.lastIndexOf('/') === tz.indexOf('/'));
-                    return usTZs.map(tz => {
-                        try {
-                            new Date().toLocaleTimeString('en-GB', { timeZone: tz });
-                            return tz;
-                        } catch (e) {
-                            return null;
-                        }
-                    }).filter(tz => tz !== null);
-                }
-            }
-        case "the UK":
-            return getCountry("GB").timezones;
-        case "Mexico":
-            return getCountry("MX").timezones
-                // BajaSur and BajaNorth are invalid in JS.
-                .filter(tz => !tz.startsWith('Mexico/Baja'));
-        case "Australia": {
-            switch (region) {
-                case "Western":
-                    return ["Australia/Perth"]
-                case "Northern Territory":
-                    return ["Australia/Darwin"]
-                case "Southern":
-                    return ["Australia/Adelaide"]
-                case "Queensland":
-                    return ["Australia/Brisbane"]
-                case "NSW + Victoria":
-                    return ["Australia/Sydney"]
-                default:
-                    return getCountry("AU")
-                        .timezones
-                        // Invalid JS timezones
-                        .filter(tz => tz !== "Australia/LHI" && tz !== "Australia/ACT" && tz !== "Australia/NSW")
-            }
+  const { country, region } = props;
+  // Edge cases
+  switch (country) {
+    case "the USA":
+      switch (region) {
+        case "Southwest": {
+          return ["America/Shiprock", "America/Phoenix"];
         }
-        case "Canada": {
-            return getCountry("CA").timezones
-                .filter(tz => tz.startsWith("Canada/"));
+        case "West": {
+          return [
+            "America/Atka",
+            "America/Adak",
+            "America/Anchorage",
+            "America/Boise",
+            "America/Denver",
+            "America/Juneau",
+            "America/Los_Angeles",
+            "America/Metlakatla",
+            "America/Nome",
+            "America/Sitka",
+            "America/Yakutat",
+          ];
         }
-        case "Czech Republic": {
-            return getCountry("CZ").timezones;
+        case "Midwest": {
+          return [
+            "America/Indianapolis",
+            "America/Chicago",
+            "America/Detroit",
+            "America/Fort_Wayne",
+            "America/Menominee",
+          ];
         }
+        case "Southeast": {
+          return ["America/Louisville"];
+        }
+        case "Northeast": {
+          return ["America/New_York"];
+        }
+        default: {
+          // This is to slim down the extremely big list of US TZs.
+          // Also, we remove any timezone that JS is unable to display.
+          const usTZs = getCountry("US")
+            .timezones.filter((tz) => tz.startsWith("America/"))
+            .filter((tz) => tz.lastIndexOf("/") === tz.indexOf("/"));
+          return usTZs
+            .map((tz) => {
+              try {
+                new Date().toLocaleTimeString("en-GB", { timeZone: tz });
+                return tz;
+              } catch (e) {
+                return null;
+              }
+            })
+            .filter((tz) => tz !== null);
+        }
+      }
+    case "the UK":
+      return getCountry("GB").timezones;
+    case "Mexico":
+      return getCountry("MX")
+        .timezones // BajaSur and BajaNorth are invalid in JS.
+        .filter((tz) => !tz.startsWith("Mexico/Baja"));
+    case "Australia": {
+      switch (region) {
+        case "Western":
+          return ["Australia/Perth"];
+        case "Northern Territory":
+          return ["Australia/Darwin"];
+        case "Southern":
+          return ["Australia/Adelaide"];
+        case "Queensland":
+          return ["Australia/Brisbane"];
+        case "NSW + Victoria":
+          return ["Australia/Sydney"];
+        default:
+          return getCountry("AU")
+            .timezones // Invalid JS timezones
+            .filter(
+              (tz) =>
+                tz !== "Australia/LHI" &&
+                tz !== "Australia/ACT" &&
+                tz !== "Australia/NSW"
+            );
+      }
     }
+    case "Canada": {
+      return getCountry("CA").timezones.filter((tz) =>
+        tz.startsWith("Canada/")
+      );
+    }
+    case "Czech Republic": {
+      return getCountry("CZ").timezones;
+    }
+  }
 
-    // let's find what tz's are available for this country
-    let fixedCountry = country;
-    if (country.startsWith("the "))
-        fixedCountry = country.substring("the ".length);
+  // let's find what tz's are available for this country
+  let fixedCountry = country;
+  if (country.startsWith("the "))
+    fixedCountry = country.substring("the ".length);
 
-    // REALLY
-    const countries = getAllCountries();
-    const countryId = Object.keys(countries)
-        .find(id => countries[id].name === fixedCountry);
-    return countries[countryId].timezones;
+  // REALLY
+  const countries = getAllCountries();
+  const countryId = Object.keys(countries).find(
+    (id) => countries[id].name === fixedCountry
+  );
+  return countries[countryId].timezones;
 }
 
 export async function getUserBirthday(userId: string): Promise<Date | null> {
-    const birthdayRepository = await BirthdayRepository();
+  const birthdayRepository = await BirthdayRepository();
 
-    const userExistingBirthday = await birthdayRepository.findOne({
-        where: {
-            userid: userId,
-        },
-    });
+  const userExistingBirthday = await birthdayRepository.findOne({
+    where: {
+      userid: userId,
+    },
+  });
 
-    return userExistingBirthday === undefined ? null : userExistingBirthday.birthdate;
+  return userExistingBirthday === undefined
+    ? null
+    : userExistingBirthday.birthdate;
 }
 
 export function formatBirthday(date: Date | null): string {
-    return (date === null) ? 'Unknown' : `${months[date.getMonth()]}-${date.getDate()}`;
+  return date === null
+    ? "Unknown"
+    : `${months[date.getMonth()]}-${date.getDate()}`;
 }

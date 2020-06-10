@@ -4,7 +4,9 @@ jobs:
     docker:
       - image: node:alpine
     steps:
+      - checkout
       - run:
-          name: The First Step
+          name: Lint
           command: |
-            echo 'Hello World!'
+            npm install
+            npm run lint
