@@ -7,6 +7,7 @@ import Tools from '../common/tools';
 import state from '../common/state';
 import { hasRole, textLog, getMember } from '../common/moderator';
 import Resource from '../programs/ResourceManager';
+import BuddyProjectManager from '../programs/BuddyProjectManager';
 
 class MessageManager {
     message: Discord.Message;
@@ -78,6 +79,12 @@ class MessageManager {
 
             case "polls":
                 PollsManager(this.message);
+                break;
+
+            case "buddy-project-matches":
+                if(firstWord === "!match") BuddyProjectManager(this.message, "match");
+                if(firstWord === "!check") BuddyProjectManager(this.message, "check");
+                if(firstWord === "!unmatch") BuddyProjectManager(this.message, "unmatch");
                 break;
 
 

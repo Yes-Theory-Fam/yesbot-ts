@@ -1,6 +1,6 @@
 import { db } from "..";
 import bot from "../index";
-import { GuildMember, PartialGuildMember, User, TextChannel } from "discord.js";
+import { GuildMember, PartialGuildMember, User, TextChannel, Guild } from "discord.js";
 import {
   BuddyProjectEntryRepository,
   BuddyProjectEntry,
@@ -204,6 +204,109 @@ export async function BuddyProjectSignup(
 
   outputChannel.send(outputText)
   return null;
+}
+
+export const forceMatch = async ( user1:User, user2:User, guild:Guild ) : Promise<Boolean> => {
+
+  const buddyEntries = await BuddyProjectEntryRepository();
+  const user1Entry = await buddyEntries.findOne(user1.id);
+  const user2Entry = await buddyEntries.findOne(user2.id);
+  const outputChannel = guild.channels.cache.find(c => c.name == "buddy-project-matches") as TextChannel;
+  let outputText = `Trying to force match between ${user1.toString()} and ${user2.toString()}`;
+
+  if(user1Entry) {
+    outputText = outputText.concat(`\n${user1.toString()} has already entered.`);
+    if(!user1Entry.buddy_id) {
+      outputText = outputText.concat(`\n${user1.toString()} has not found a match yet.`);
+      user1Entry.buddy_id = user2.id;
+      user1Entry.matched = true;
+      await buddyEntries.save(user1Entry);
+    }
+    else {
+      outputText = outputText.concat(`\n${user1.toString()} already has a match with <@${user1Entry.buddy_id}>, changing match to <@${user2.id}>`);
+    }
+  }
+  else {
+    const createdUser1Entry = buddyEntries.create({
+      user_id: user1.id,
+      matched: true,
+      discord_user: true,
+      buddy_id: user2.id
+    });
+    await buddyEntries.save(createdUser1Entry);
+  }
+
+  if(user2Entry) {
+    outputText = outputText.concat(`\n${user2.toString()} has already entered.`);
+    if(!user2Entry.buddy_id) {
+      outputText = outputText.concat(`\n${user2.toString()} has not found a match yet.`);
+      user2Entry.buddy_id = user1.id;
+      user2Entry.matched = true;
+      await buddyEntries.save(user2Entry);
+    }
+    else {
+      outputText = outputText.concat(`\n${user2.toString()} already has a match with <@${user2Entry.buddy_id}>, changing match to <@${user1.id}>`);
+    }
+  }
+  else {
+    const createdUser2Entry = buddyEntries.create({
+      user_id: user2.id,
+      matched: true,
+      discord_user: true,
+      buddy_id: user1.id
+    });
+    await buddyEntries.save(createdUser2Entry);
+  }
+
+  const matched = ((await buddyEntries.findOne(user1.id)).buddy_id === user2.id) && ((await buddyEntries.findOne(user2.id)).buddy_id === user1.id);
+
+  if(matched) {
+    outputText = outputText.concat(`\nSuccessfully matched ${user1.toString()} with ${user2.toString()}`);
+    user1.createDM().then(dmChannel => dmChannel.send(getMatchText(user1, 1), { split: true }));
+    user2.createDM().then(dmChannel => dmChannel.send(getMatchText(user2, 2), { split: true }));
+    outputChannel.send(outputText);
+    return true;
+  }
+
+  else {
+    outputText = outputText.concat(`\nSomething went wrong. Please tag an engineer to take a look.`);
+    return false;
+  }
+
+}
+
+export const checkEntry = async (user:User, guild:Guild) => {
+  const buddyEntries = await BuddyProjectEntryRepository();
+  const userEntry = await buddyEntries.findOne(user.id);
+  const outputChannel = guild.channels.cache.find(c => c.name == "buddy-project-matches") as TextChannel;
+  let outputText = `__**Entry details for ${user.toString()}:**__
+  **Entered**: ${!!userEntry}
+  **Matched**: ${userEntry?.matched}
+  **Buddy**: <@${userEntry?.buddy_id}>`;
+  outputChannel.send(outputText);
+
+}
+
+export const removeEntry = async (user:User, guild:Guild) => {
+  const buddyEntries = await BuddyProjectEntryRepository();
+  const userEntry = await buddyEntries.findOne(user.id);
+  const outputChannel = guild.channels.cache.find(c => c.name == "buddy-project-matches") as TextChannel;
+  let outputText = `Removing entry for ${user.toString()}.`;
+
+  if(!userEntry) outputText = outputText.concat(`\nUser is not entered.`)
+
+  if(userEntry.matched) {
+    outputText = outputText.concat(`\nUser already has a match - <@${userEntry.buddy_id}>`)
+    const buddyEntry = await buddyEntries.findOne(userEntry.buddy_id);
+    buddyEntries.remove([userEntry, buddyEntry]);
+    outputText = outputText.concat(`\nSuccessfully removed entries for ${user.toString()} and <@${userEntry.buddy_id}>`);
+  }
+  else {
+    buddyEntries.remove(userEntry);
+    outputText = outputText.concat(`\nSuccessfully removed entries for ${user.toString()}.`);
+  }
+
+  outputChannel.send(outputText);
 }
 
 
