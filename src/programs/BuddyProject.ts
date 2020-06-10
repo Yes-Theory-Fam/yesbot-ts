@@ -276,8 +276,8 @@ export const forceMatch = async ( user1:User, user2:User, guild:Guild ) : Promis
 
   if(matched) {
     outputText = outputText.concat(`\nSuccessfully matched ${user1.toString()} with ${user2.toString()}`);
-    user1.createDM().then(dmChannel => dmChannel.send(getMatchText(user1, 1), { split: true }));
-    user2.createDM().then(dmChannel => dmChannel.send(getMatchText(user2, 2), { split: true }));
+    user1.createDM().then(dmChannel => dmChannel.send(getMatchText(user2, 1), { split: true }));
+    user2.createDM().then(dmChannel => dmChannel.send(getMatchText(user1, 2), { split: true }));
     outputChannel.send(outputText);
     return true;
   }
