@@ -134,9 +134,9 @@ export default async function BirthdayManager(message: Message) {
     "Hi there! Could someone help me by executing this command? Thank you!"
   );
   textLog(
-    `bb.override <@${birthdayUser.id}> set ${formatBirthday(
+    `\`bb.override <@${birthdayUser.id}> set ${formatBirthday(
       birthdate
-    )} ${timezone}`
+    )} ${timezone}\``
   );
   createBirthday(birthdayUser.id, birthdate);
 }
