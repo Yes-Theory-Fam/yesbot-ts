@@ -179,7 +179,7 @@ export async function BuddyProjectSignup(
 
         if (finalMatches.length > 0) {
           try {
-            const finalMatch = finalMatches[0];
+            const finalMatch = finalMatches.find(el => el.user_id !== member.id);
             updateDatabaseWithQuery(
               buddyEntries,
               member.id,
