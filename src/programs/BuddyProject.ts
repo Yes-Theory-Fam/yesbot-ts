@@ -173,7 +173,9 @@ export async function BuddyProjectSignup(
           where: { matched: false },
         });
 
-        const potentialMatches = finalMatches.filter(el => el.user_id !== member.id);
+        const potentialMatches = finalMatches.filter(
+          (el) => el.user_id !== member.id
+        );
         outputText = outputText.concat(
           ` - Found ${potentialMatches.length} potential matches.`
         );
