@@ -374,15 +374,47 @@ export const removeEntry = async (user: User, guild: Guild) => {
 
 export const cleanEntries = async (guild: Guild) => {
   const buddyEntries = await BuddyProjectEntryRepository();
-  const unmatchedEntries = await buddyEntries.findAndCount({
+  const unmatchedEntries = await buddyEntries.find({
     where: { matched: false },
   });
   const outputChannel = guild.channels.cache.find(
     (c) => c.name == "buddy-project-matches"
   ) as TextChannel;
-  let outputText = `Found ${unmatchedEntries[1]} unmatched members`;
-  const unmatchedPeople = unmatchedEntries[0];
-  outputChannel.send(outputText);
+  let outputText = `Found ${unmatchedEntries.length} unmatched members`;
+
+  // Strictly not as random as keeping them all together but this makes things easier and is probably just as good.
+  const half = unmatchedEntries.splice(0, Math.floor(unmatchedEntries.length / 2));
+
+  // Half is either the same length or has one entry less, using its length avoids an IndexError opposed to using unmatchedEntries
+  for (let i = 0; i < half.length; i++) {
+    const current = half[i];
+
+    const matchIndex = Math.floor(Math.random() * unmatchedEntries.length);
+    const match = unmatchedEntries[matchIndex];
+
+    updateDatabaseWithQuery(buddyEntries, current.user_id, match.user_id, half[i]);
+
+    const user1 = guild.client.users.resolve(current.user_id);
+    const user2 = guild.client.users.resolve(match.user_id);
+
+    user1
+      .createDM()
+      .then((dmChannel) =>
+        dmChannel.send(getMatchText(user2, 1), { split: true })
+      );
+
+    user2
+      .createDM()
+      .then((dmChannel) =>
+        dmChannel.send(getMatchText(user1, 2), { split: true })
+      );
+
+    outputText += `\nMatched <@${current.user_id}> with <@${match.user_id}>!`;
+
+    unmatchedEntries.splice(matchIndex, 1);
+  }
+
+  outputChannel.send(outputText, { split: true });
 };
 
 export const checkAllEntries = async (guild: Guild) => {
