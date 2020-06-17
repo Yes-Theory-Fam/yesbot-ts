@@ -173,13 +173,16 @@ export async function BuddyProjectSignup(
           where: { matched: false },
         });
 
+        const potentialMatches = finalMatches.filter(el => el.user_id !== member.id);
         outputText = outputText.concat(
-          ` - Found ${finalMatches.length} potential matches.`
+          ` - Found ${potentialMatches.length} potential matches.`
         );
 
-        if (finalMatches.length > 0) {
+        if (potentialMatches.length > 0) {
           try {
-            const finalMatch = finalMatches.find(el => el.user_id !== member.id);
+            const finalMatch = potentialMatches[0];
+            // raragon@onlineprograms.maryville.edu
+            // 314-798-0145
             updateDatabaseWithQuery(
               buddyEntries,
               member.id,
