@@ -181,8 +181,6 @@ export async function BuddyProjectSignup(
         if (potentialMatches.length > 0) {
           try {
             const finalMatch = potentialMatches[0];
-            // raragon@onlineprograms.maryville.edu
-            // 314-798-0145
             updateDatabaseWithQuery(
               buddyEntries,
               member.id,
