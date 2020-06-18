@@ -52,12 +52,14 @@ export default async function BuddyProjectManager(
         });
       break;
     case "clean":
-      cleanEntries(message.guild);
+      const [_, firstArg] = message.content.split(" ");
+      const count = isNaN(Number(firstArg)) ? undefined : Number(firstArg);
+      cleanEntries(message.guild, count);
       break;
 
     case "game":
       beginGame(message.guild);
-
+    
     default:
       break;
   }
