@@ -23,6 +23,7 @@ export default async function BuddyProjectManager(
       break;
     case "checkAll":
       checkAllEntries(message.guild);
+      break;
     case "unmatch":
       const confirm = await message.reply(
         `Are you sure you would like to remove <@${
