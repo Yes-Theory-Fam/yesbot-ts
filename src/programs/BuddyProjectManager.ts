@@ -4,6 +4,7 @@ import {
   checkEntry,
   removeEntry,
   cleanEntries,
+  checkAllEntries,
 } from "./BuddyProject";
 
 export default async function BuddyProjectManager(
@@ -20,7 +21,8 @@ export default async function BuddyProjectManager(
     case "check":
       checkEntry(message.mentions.users.array()[0], message.guild);
       break;
-
+    case "checkAll":
+      checkAllEntries(message.guild);
     case "unmatch":
       const confirm = await message.reply(
         `Are you sure you would like to remove <@${

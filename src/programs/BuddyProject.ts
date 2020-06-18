@@ -381,3 +381,16 @@ export const cleanEntries = async (guild: Guild) => {
   let outputText = `Found ${unmatchedEntries[1]} unmatched members`;
   outputChannel.send(outputText);
 };
+
+export const checkAllEntries = async (guild: Guild) => {
+  const entries = await BuddyProjectEntryRepository();
+  const all = await entries.find({ where: { matched: false } });
+
+  const outputChannel = guild.channels.cache.find(
+    (c) => c.name == "buddy-project-matches"
+  ) as TextChannel;
+  const returnString = "";
+  all.forEach((each) => returnString + ` , ${each.user_id}`);
+  let outputText = `All unmatched members: ${returnString}`;
+  outputChannel.send(outputText);
+};
