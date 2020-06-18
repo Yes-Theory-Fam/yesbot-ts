@@ -122,7 +122,8 @@ class MessageManager {
       case "buddy-project-matches":
         if (firstWord === "!match") BuddyProjectManager(this.message, "match");
         if (firstWord === "!check") BuddyProjectManager(this.message, "check");
-        if (firstWord === "!checkAll") BuddyProjectManager(this.message, "checkAll");
+        if (firstWord === "!checkAll")
+          BuddyProjectManager(this.message, "checkAll");
         if (firstWord === "!unmatch")
           BuddyProjectManager(this.message, "unmatch");
         if (firstWord === "!clean") BuddyProjectManager(this.message, "clean");
