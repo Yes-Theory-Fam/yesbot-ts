@@ -389,8 +389,7 @@ export const checkAllEntries = async (guild: Guild) => {
   const outputChannel = guild.channels.cache.find(
     (c) => c.name == "buddy-project-matches"
   ) as TextChannel;
-  const returnString = "";
-  all.forEach((each) => returnString + ` , ${each.user_id}`);
+  const returnString = all.map((each) => each.user_id).join(", ");
   let outputText = `All unmatched members: ${returnString}`;
-  outputChannel.send(outputText);
+  outputChannel.send(outputText, { split: true });
 };
