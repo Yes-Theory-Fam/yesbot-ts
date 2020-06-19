@@ -1,11 +1,5 @@
 import { Message, User } from "discord.js";
-import {
-  forceMatch,
-  checkEntry,
-  removeEntry,
-  cleanEntries,
-  checkAllEntries,
-} from "./BuddyProject";
+import { forceMatch, checkEntry, removeEntry, cleanEntries, beginGame, checkAllEntries } from "./BuddyProject";
 
 export default async function BuddyProjectManager(
   message: Message,
@@ -45,13 +39,24 @@ export default async function BuddyProjectManager(
               removeEntry(message.mentions.users.array()[0], message.guild);
               break;
 
-            default:
-              break;
-          }
-        });
-      break;
-    case "clean":
-      cleanEntries(message.guild);
+                        
+                            default:
+                                break;
+                        }
+                    })
+                break;
+        case "clean":
+            cleanEntries(message.guild);
+            break;
+        
+        
+        case "game":
+            beginGame(message.guild);
+    
+        default:
+            break;
+    }
+};
 
     default:
       break;
