@@ -1,6 +1,13 @@
 import { db } from "..";
 import bot from "../index";
-import { GuildMember, PartialGuildMember, User, TextChannel, Guild, MessageEmbed } from "discord.js";
+import {
+  GuildMember,
+  PartialGuildMember,
+  User,
+  TextChannel,
+  Guild,
+  MessageEmbed,
+} from "discord.js";
 import {
   BuddyProjectEntryRepository,
   BuddyProjectEntry,
@@ -17,7 +24,7 @@ const updateDatabaseWithQuery = (
 ) => {
   BuddyEntryRepo.createQueryBuilder()
     .update(BuddyEntry)
-    .set({ matched: true, buddy_id: buddyId }) 
+    .set({ matched: true, buddy_id: buddyId })
     .where("user_id = :member_id", { member_id: memberId })
     .execute()
     .catch((err) =>
@@ -363,17 +370,20 @@ export const removeEntry = async (user: User, guild: Guild) => {
   }
 
   outputChannel.send(outputText);
+};
 
-}
-
-export const cleanEntries = async (guild:Guild) => {
+export const cleanEntries = async (guild: Guild) => {
   const buddyEntries = await BuddyProjectEntryRepository();
-  const unmatchedEntries = await buddyEntries.findAndCount({where: { matched: false }});
-  const outputChannel = guild.channels.cache.find(c => c.name == "buddy-project-matches") as TextChannel;
+  const unmatchedEntries = await buddyEntries.findAndCount({
+    where: { matched: false },
+  });
+  const outputChannel = guild.channels.cache.find(
+    (c) => c.name == "buddy-project-matches"
+  ) as TextChannel;
   let outputText = `Found ${unmatchedEntries[1]} unmatched members`;
-  const unmatchedPeople = unmatchedEntries[0]
+  const unmatchedPeople = unmatchedEntries[0];
   outputChannel.send(outputText);
-}
+};
 
 export const checkAllEntries = async (guild: Guild) => {
   const entries = await BuddyProjectEntryRepository();
@@ -387,60 +397,70 @@ export const checkAllEntries = async (guild: Guild) => {
   outputChannel.send(outputText, { split: true });
 };
 
-export const beginGame = async (guild:Guild) => {
+export const beginGame = async (guild: Guild) => {
   const buddyEntries = await BuddyProjectEntryRepository();
 
-  const unmatchedEntries = await buddyEntries.find({where: { matched: false }});
-    for (var i = unmatchedEntries.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var temp = unmatchedEntries[i];
-      unmatchedEntries[i] = unmatchedEntries[j];
-      unmatchedEntries[j] = temp;
+  const unmatchedEntries = await buddyEntries.find({
+    where: { matched: false },
+  });
+  for (var i = unmatchedEntries.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var temp = unmatchedEntries[i];
+    unmatchedEntries[i] = unmatchedEntries[j];
+    unmatchedEntries[j] = temp;
   }
 
   const random6 = unmatchedEntries.slice(0, 6);
-  const outputChannel = guild.channels.cache.find(c => c.name == "buddy-project-matches") as TextChannel;
-  const nominee: User = guild.members.cache.find(u => u.id === random6[0].user_id)?.user;
-  console.log(nominee)
-  const gameStartMessage = await outputChannel.send(`Find a match for <@${nominee?.id}>?`);
+  const outputChannel = guild.channels.cache.find(
+    (c) => c.name == "buddy-project-matches"
+  ) as TextChannel;
+  const nominee: User = guild.members.cache.find(
+    (u) => u.id === random6[0].user_id
+  )?.user;
+  console.log(nominee);
+  const gameStartMessage = await outputChannel.send(
+    `Find a match for <@${nominee?.id}>?`
+  );
 
   const applicantMap = [
     {
-      "user": guild.members.cache.find( u => u.id === random6[1].user_id).user,
-      "emoji": "1️⃣"
+      user: guild.members.cache.find((u) => u.id === random6[1].user_id).user,
+      emoji: "1️⃣",
     },
     {
-      "user": guild.members.cache.find( u => u.id === random6[2].user_id).user,
-      "emoji": "2️⃣"
+      user: guild.members.cache.find((u) => u.id === random6[2].user_id).user,
+      emoji: "2️⃣",
     },
     {
-      "user": guild.members.cache.find( u => u.id === random6[3].user_id).user,
-      "emoji": "3️⃣"
+      user: guild.members.cache.find((u) => u.id === random6[3].user_id).user,
+      emoji: "3️⃣",
     },
     {
-      "user": guild.members.cache.find( u => u.id === random6[4].user_id).user,
-      "emoji": "4️⃣"
+      user: guild.members.cache.find((u) => u.id === random6[4].user_id).user,
+      emoji: "4️⃣",
     },
     {
-      "user": guild.members.cache.find( u => u.id === random6[5].user_id).user,
-      "emoji": "5️⃣"
+      user: guild.members.cache.find((u) => u.id === random6[5].user_id).user,
+      emoji: "5️⃣",
     },
-  ]
-  gameStartMessage.react("👍").then(reaction => gameStartMessage.react("👎"));
+  ];
+  gameStartMessage.react("👍").then((reaction) => gameStartMessage.react("👎"));
 
-  const gameStartMessageReaction = await Tools.getFirstReaction(gameStartMessage);
+  const gameStartMessageReaction = await Tools.getFirstReaction(
+    gameStartMessage
+  );
   switch (gameStartMessageReaction) {
     case "👍":
       const matchEmbed = new MessageEmbed({
-        title:`Pick a match for <@${nominee.id}>`,
-      }).setColor(`#a02222`)
-      applicantMap.forEach(applicant => {
-        matchEmbed.addField(applicant.emoji, applicant.user.id)
+        title: `Pick a match for <@${nominee.id}>`,
+      }).setColor(`#a02222`);
+      applicantMap.forEach((applicant) => {
+        matchEmbed.addField(applicant.emoji, applicant.user.id);
       });
       const embedMessage = await outputChannel.send(matchEmbed);
       Tools.addNumberReactions(5, embedMessage);
       const reaction = await Tools.getFirstReaction(embedMessage);
-      switch(reaction) {
+      switch (reaction) {
         case "1️⃣":
           forceMatch(nominee, applicantMap[0].user, guild);
           break;
@@ -452,7 +472,7 @@ export const beginGame = async (guild:Guild) => {
           break;
         case "4️⃣":
           forceMatch(nominee, applicantMap[0].user, guild);
-          break
+          break;
         case "5️⃣":
           forceMatch(nominee, applicantMap[0].user, guild);
           break;
@@ -460,4 +480,4 @@ export const beginGame = async (guild:Guild) => {
           break;
       }
   }
-}
+};

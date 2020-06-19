@@ -55,14 +55,34 @@ class Tools {
   }
 
   static async getFirstReaction(message: Message) {
-    const collected = await message.awaitReactions((reaction: any, user: User) => {  return !user.bot }, { max: 1, time: 6000000, errors: ['time'] })
+    const collected = await message.awaitReactions(
+      (reaction: any, user: User) => {
+        return !user.bot;
+      },
+      { max: 1, time: 6000000, errors: ["time"] }
+    );
     return collected.first().emoji.toString();
   }
 
-  static async addNumberReactions(options: number, message:Message): Promise<boolean> {
-    if(options > 5) return false;
+  static async addNumberReactions(
+    options: number,
+    message: Message
+  ): Promise<boolean> {
+    if (options > 5) return false;
     for (let index = 1; index < options; index++) {
-      await message.react( options === 1? "1️⃣": options === 2? "2️⃣" : options === 3? "3️⃣" : options === 4 ? "4️⃣": options === 5 ? "5️⃣" : null)
+      await message.react(
+        options === 1
+          ? "1️⃣"
+          : options === 2
+          ? "2️⃣"
+          : options === 3
+          ? "3️⃣"
+          : options === 4
+          ? "4️⃣"
+          : options === 5
+          ? "5️⃣"
+          : null
+      );
     }
   }
 
