@@ -424,23 +424,23 @@ export const beginGame = async (guild: Guild) => {
 
   const applicantMap = [
     {
-      user: guild.members.cache.find((u) => u.id === random6[1].user_id).user,
+      user: guild.members.cache.find((u) => u.id === random6[1].user_id)?.user,
       emoji: "1️⃣",
     },
     {
-      user: guild.members.cache.find((u) => u.id === random6[2].user_id).user,
+      user: guild.members.cache.find((u) => u.id === random6[2].user_id)?.user,
       emoji: "2️⃣",
     },
     {
-      user: guild.members.cache.find((u) => u.id === random6[3].user_id).user,
+      user: guild.members.cache.find((u) => u.id === random6[3].user_id)?.user,
       emoji: "3️⃣",
     },
     {
-      user: guild.members.cache.find((u) => u.id === random6[4].user_id).user,
+      user: guild.members.cache.find((u) => u.id === random6[4].user_id)?.user,
       emoji: "4️⃣",
     },
     {
-      user: guild.members.cache.find((u) => u.id === random6[5].user_id).user,
+      user: guild.members.cache.find((u) => u.id === random6[5].user_id)?.user,
       emoji: "5️⃣",
     },
   ];
