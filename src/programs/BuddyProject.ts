@@ -452,10 +452,10 @@ export const beginGame = async (guild: Guild) => {
   switch (gameStartMessageReaction) {
     case "👍":
       const matchEmbed = new MessageEmbed({
-        title: `Pick a match for <@${nominee.id}>`,
+        title: `Pick a match for <@${nominee?.id}>`,
       }).setColor(`#a02222`);
       applicantMap.forEach((applicant) => {
-        matchEmbed.addField(applicant.emoji, applicant.user.id);
+        matchEmbed.addField(applicant.emoji, `<@${applicant.user.id}>`);
       });
       const embedMessage = await outputChannel.send(matchEmbed);
       Tools.addNumberReactions(5, embedMessage);
