@@ -383,6 +383,11 @@ export const cleanEntries = async (guild: Guild, matches?: number) => {
   let outputText = `Found ${unmatchedEntries.length} unmatched members`;
 
   const maxMatches = Math.floor(unmatchedEntries.length / 2);
+  if (maxMatches < 1) {
+    outputText += "\nMatching failed (not enough unmatched members available)";
+    outputChannel.send(outputText);
+    return;
+  }
   const matchCount = matches ? Math.min(matches, maxMatches) : maxMatches;
   const matching = unmatchedEntries.splice(0, matchCount);
   // Strictly not as random as keeping them all together but this makes things easier and is probably just as good.
@@ -415,6 +420,7 @@ export const cleanEntries = async (guild: Guild, matches?: number) => {
 
     unmatchedEntries.splice(matchIndex, 1);
   }
+  outputText += `\n\nDone matching! List of matches is above; ${unmatchedEntries.length} unmatched members (${Math.floor(unmatchedEntries.length / 2)} matches) remaining!`;
 
   outputChannel.send(outputText, { split: true });
 };
