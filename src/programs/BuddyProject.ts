@@ -399,7 +399,12 @@ export const cleanEntries = async (guild: Guild, matches?: number) => {
     const matchIndex = Math.floor(Math.random() * unmatchedEntries.length);
     const match = unmatchedEntries[matchIndex];
 
-    updateDatabaseWithQuery(buddyEntries, current.user_id, match.user_id, matching[i]);
+    updateDatabaseWithQuery(
+      buddyEntries,
+      current.user_id,
+      match.user_id,
+      matching[i]
+    );
 
     const user1 = guild.client.users.resolve(current.user_id);
     const user2 = guild.client.users.resolve(match.user_id);
@@ -420,7 +425,11 @@ export const cleanEntries = async (guild: Guild, matches?: number) => {
 
     unmatchedEntries.splice(matchIndex, 1);
   }
-  outputText += `\n\nDone matching! List of matches is above; ${unmatchedEntries.length} unmatched members (${Math.floor(unmatchedEntries.length / 2)} matches) remaining!`;
+  outputText += `\n\nDone matching! List of matches is above; ${
+    unmatchedEntries.length
+  } unmatched members (${Math.floor(
+    unmatchedEntries.length / 2
+  )} matches) remaining!`;
 
   outputChannel.send(outputText, { split: true });
 };
