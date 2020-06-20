@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "prettier": "@yestheoryfam/prettier-config",
   "scripts": {
     "lint": "prettier --check \"src/!(collections)/**/*.(js|ts|json)\"",
     "lint:fix": "prettier --write \"src/!(collections)/**/*.(js|ts|json)\"",
@@ -27,6 +28,7 @@
     "typescript": "^3.8.3"
   },
   "devDependencies": {
+    "@yestheoryfam/prettier-config": "^1.0.0",
     "@types/countries-and-timezones": "^2.0.2",
     "@types/node": "^13.11.1",
     "@types/ws": "^7.2.4",
