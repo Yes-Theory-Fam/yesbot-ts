@@ -5,6 +5,7 @@ import Firebase from './collections/firebaseConnection';
 // Imported for DB side-effects.
 import "./db";
 
+//senseless comment
 
 const bot = new Client({ partials: ['REACTION', 'MESSAGE']});
 bot.login(BOT_TOKEN);
