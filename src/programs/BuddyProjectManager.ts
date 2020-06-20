@@ -59,7 +59,7 @@ export default async function BuddyProjectManager(
 
     case "game":
       beginGame(message.guild);
-    
+
     default:
       break;
   }
