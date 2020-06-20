@@ -1,5 +1,11 @@
-import { Message, CategoryChannel, VoiceChannel, VoiceState, Snowflake } from 'discord.js';
-import state from '../common/state';
+import {
+  Message,
+  CategoryChannel,
+  VoiceChannel,
+  VoiceState,
+  Snowflake,
+} from "discord.js";
+import state from "../common/state";
 
 const timeout = 60 * 1000;
 const minPeople = 1;
@@ -36,12 +42,16 @@ const createOnDemand = async (message: Message, limit: number) => {
   const hasExisting = state.voiceChannels.has(id);
 
   if (hasExisting) {
-    message.reply("You already have an existing voice channel!").then(message => message.delete({ timeout: 10000 }));
+    message
+      .reply("You already have an existing voice channel!")
+      .then((message) => message.delete({ timeout: 10000 }));
     return;
   }
 
   const guild = message.guild;
-  const category = guild.channels.cache.find(channel => channel.name.toLowerCase().endsWith("voice"));
+  const category = guild.channels.cache.find((channel) =>
+    channel.name.toLowerCase().endsWith("voice")
+  );
   if (!category || !(category instanceof CategoryChannel)) {
     // TODO add logging
     return;
@@ -56,17 +66,23 @@ const createOnDemand = async (message: Message, limit: number) => {
 
   state.voiceChannels.set(id, { channelId: channel.id, timeouts: [] });
 
-  message.reply(`Your room was created with a limit of ${limit}, have fun :smile:`);
+  message.reply(
+    `Your room was created with a limit of ${limit}, have fun :smile:`
+  );
 
   const timeoutId = setTimeout(() => checkForDelete(channel), timeout);
   state.voiceChannels.get(id).timeouts.push(timeoutId);
-}
+};
 
 const limitOnDemand = (message: Message, limit: number) => {
   const { id } = message.author;
   const { channelId } = state.voiceChannels.get(id);
   if (!channelId) {
-    message.reply("You don't have a voice channel. You can create one using `!voice create` and an optional limit").then(message => message.delete({ timeout: 10000 }));
+    message
+      .reply(
+        "You don't have a voice channel. You can create one using `!voice create` and an optional limit"
+      )
+      .then((message) => message.delete({ timeout: 10000 }));
     return;
   }
 
@@ -80,9 +96,12 @@ const limitOnDemand = (message: Message, limit: number) => {
   });
 
   message.reply(`Successfully changed the limit of your room to ${limit}`);
-}
+};
 
-export const voiceOnDemandReset = async (oldState: VoiceState, newState: VoiceState) => {
+export const voiceOnDemandReset = async (
+  oldState: VoiceState,
+  newState: VoiceState
+) => {
   // Not sure if that's a thing but better be safe than sorry
   if (!oldState.channel && !newState.channel) return;
 
@@ -99,7 +118,7 @@ export const voiceOnDemandReset = async (oldState: VoiceState, newState: VoiceSt
     });
 
     return;
-  };
+  }
 
   // To avoid events like muting
   if (oldState?.channel?.id === newState?.channel?.id) return;
@@ -123,23 +142,28 @@ const checkForDelete = (channel: VoiceChannel) => {
 
   if (channel.members.size < minPeople) {
     // TODO Discord logging
-    console.log(`Less than two people remaining in ${channel.name}! Resetting name and permissions.`);
+    console.log(
+      `Less than two people remaining in ${channel.name}! Resetting name and permissions.`
+    );
     channel.delete();
 
     const [userId] = entryForChannelId(channel.id);
     state.voiceChannels.delete(userId);
   }
-}
+};
 
 const entryForChannelId = (id: Snowflake) => {
   const entryIterator = state.voiceChannels.entries();
   let entry = entryIterator.next();
   while (!entry.done) {
-    const value: [Snowflake, { channelId: Snowflake, timeouts: Array<NodeJS.Timeout> }] = entry.value;
+    const value: [
+      Snowflake,
+      { channelId: Snowflake; timeouts: Array<NodeJS.Timeout> }
+    ] = entry.value;
     const [userId, { channelId }] = value;
     if (channelId === id) {
       return value;
     }
     entry = entryIterator.next();
   }
-}
+};

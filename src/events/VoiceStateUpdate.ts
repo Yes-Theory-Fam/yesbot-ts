@@ -1,5 +1,5 @@
-import { VoiceState } from 'discord.js';
-import { voiceOnDemandReset } from '../programs/VoiceOnDemand';
+import { VoiceState } from "discord.js";
+import { voiceOnDemandReset } from "../programs/VoiceOnDemand";
 
 class VoiceStateUpdate {
   constructor(oldState: VoiceState, newState: VoiceState) {
