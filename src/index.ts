@@ -1,5 +1,5 @@
 import {Client, Channel, Emoji, Guild, GuildMember, PartialGuildMember, Message, User, PartialUser, Collection, Role, TextChannel, Snowflake, MessageReaction, Speaking, PartialMessage, Presence, VoiceState,} from 'discord.js';
-import { MessageManager, ReactionAdd, ReactionRemove, Ready, MemberJoin, GuildMemberUpdate } from './events';
+import { MessageManager, ReactionAdd, ReactionRemove, Ready, MemberJoin, GuildMemberUpdate, VoiceStateUpdate } from './events';
 import { BOT_TOKEN, GUILD_ID } from './const';
 import Firebase from './collections/firebaseConnection';
 // Imported for DB side-effects.
@@ -49,7 +49,7 @@ bot.on("roleCreate", (role: Role) => null);
 bot.on("roleDelete", (role: Role) => null);
 bot.on("roleUpdate", (oldRole: Role, newRole: Role) => null);
 bot.on("userUpdate", (oldUser: User | PartialUser, newUser: User | PartialUser) => null);
-bot.on("voiceStateUpdate", (oldMember: VoiceState, newMember: VoiceState) => null);
+bot.on("voiceStateUpdate", (oldMember: VoiceState, newMember: VoiceState) => new VoiceStateUpdate(oldMember, newMember));
 bot.on("warn",  (info: string) => null);
 bot.on("webhookUpdate", (channel: TextChannel) => null);
 //! ================= /EVENT HANDLERS ===================
