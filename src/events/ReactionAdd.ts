@@ -176,41 +176,6 @@ class ReactionAdd {
       return;
     }
 
-    if (this.channel.name === "buddy-project" && this.pureEmoji === "❌") {
-      BuddyProjectGhost(this.user, this.guild, this.messageReaction);
-      return;
-    }
-
-    const reactRoleObjects = await Tools.resolveFile("reactRoleObjects");
-    reactRoleObjects.forEach((element: any) => {
-      if (
-        this.messageId === element.messageId &&
-        this.reaction === element.reaction
-      ) {
-        const guildMember = this.guild.members.cache.find(
-          (m) => m.id == this.user.id
-        );
-        const roleToAdd = this.guild.roles.cache.find(
-          (r) => r.id == element.roleId
-        );
-
-        if (
-          this.hasNitroColour(guildMember) &&
-          this.messageId == "637401981262102578"
-        ) {
-          guildMember
-            .createDM()
-            .then((dm) =>
-              dm.send(
-                "You can't assign yourself a new colour yet, please wait until the end of the month!"
-              )
-            );
-        } else {
-          guildMember.roles.add(roleToAdd);
-        }
-      }
-    });
-
     // Make sure we know what channel this message is forever
     if (storedMessage.channel === null) {
       // record what channel this message is in
