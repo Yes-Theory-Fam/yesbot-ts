@@ -36,6 +36,11 @@ class Tools {
     return guild;
   }
 
+  static async addThumbs(message: Message) {
+    await message.react("👍");
+    await message.react("👎");
+  }
+
   static async resolveFile(filename: string): Promise<Object[]> {
     return new Promise((resolve, reject) => {
       try {

@@ -1,38 +1,42 @@
-import Discord, {
+import {
   GuildChannel,
   CategoryChannel,
   TextChannel,
   PartialGuildMember,
   GuildMember,
+  Client,
 } from "discord.js";
 import Tools from "../common/tools";
 import { hasRole } from "../common/moderator";
 import { BuddyProjectSignup } from "../programs/BuddyProject";
 
 class GuildMemberUpdate {
-  bot: Discord.Client;
+  bot: Client;
 
   constructor(
-    oldMember: Discord.GuildMember | Discord.PartialGuildMember,
-    newMember: Discord.GuildMember | Discord.PartialGuildMember
+    oldMember: GuildMember | PartialGuildMember,
+    newMember: GuildMember | PartialGuildMember
   ) {
     if (
       hasRole(newMember, "Buddy Project 2020") &&
       !hasRole(oldMember, "Buddy Project 2020")
     ) {
-      BuddyProjectSignup(newMember);
+      BuddyProjectSignup(newMember as GuildMember).then((output) => {
+        const buddyProjectOutputChannel = <TextChannel>(
+          oldMember.guild.channels.cache.find(
+            (c) => c.name === "buddy-project-output"
+          )
+        );
+        buddyProjectOutputChannel.send(output);
+      });
     }
 
     const regionCountries = ["Australia", "Canada", "the UK", "the USA"];
-    const findGeneralRole = (
-      member: Discord.GuildMember | Discord.PartialGuildMember
-    ) =>
+    const findGeneralRole = (member: GuildMember | PartialGuildMember) =>
       member.roles.cache.find(({ name }) => {
         return regionCountries.some((country) => name.endsWith(`${country}!`));
       });
-    const hasSpecificRole = (
-      member: Discord.GuildMember | Discord.PartialGuildMember
-    ) =>
+    const hasSpecificRole = (member: GuildMember | PartialGuildMember) =>
       member.roles.cache.some(({ name }) => {
         return regionCountries.some((country) =>
           name.includes(`${country}! (`)
