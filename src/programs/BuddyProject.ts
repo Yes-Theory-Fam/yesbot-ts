@@ -71,7 +71,7 @@ export async function BuddyProjectSignup(member: GuildMember): Promise<string> {
   const dmChannel = await member.createDM();
   const buddyEntries = await BuddyProjectEntryRepository();
   let memberEntry = await buddyEntries.findOne(member.id);
-  let output = `New entry from ${member.toString()}`;
+  let output = `New attempted entry from ${member.toString()}`;
   const addOutput = (arg: string) => (output = output.concat(`\n${arg}`));
 
   if (memberEntry) {
@@ -97,8 +97,16 @@ export async function BuddyProjectSignup(member: GuildMember): Promise<string> {
   });
   await buddyEntries.save(memberEntry);
 
-  const successMessage =
-    "Woo! You just signed up to the buddy project, exciting right? I'll message you again momentarily with your buddy and what you need to do next!";
+  const bpRole = member.guild.roles.cache.find(
+    (r) => r.name === "Buddy Project 2020"
+  );
+  if (member.roles.cache.find((r) => r.id === bpRole.id))
+    member.roles.add(bpRole);
+
+  const successMessage = discord_user
+    ? "Woo! You just signed up to the buddy project, exciting right? I'll message you again momentarily with your buddy and what you need to do next!"
+    : "Thanks for signing up to the relaunch! This will work the same as last time, except this time you are guaranteed to get a new member.";
+
   dmChannel.send(successMessage);
   addOutput("Successfully entered.");
 
@@ -177,9 +185,16 @@ export const sendQuestions = (
 
 export const buddyProjectMatch = async (
   user1: GuildMember | User,
-  user2: GuildMember | User
+  user2: GuildMember | User,
+  force: boolean = false
 ): Promise<Boolean> => {
   const buddyEntries = await BuddyProjectEntryRepository();
+
+  const hasBuddy1 = (await buddyEntries.findOne(user1.id)).matched;
+  if (hasBuddy1 && !force) return false;
+  const hasBuddy2 = (await buddyEntries.findOne(user2.id)).matched;
+  if (hasBuddy2 && !force) return false;
+
   const user1Entry = buddyEntries.create({
     user_id: user1.id,
     matched: true,

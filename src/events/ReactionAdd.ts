@@ -74,20 +74,12 @@ class ReactionAdd {
       this.pureEmoji === "🤓" &&
       !this.user.bot
     ) {
-      this.user
-        .createDM()
-        .then((dmChannel) =>
-          dmChannel.send(
-            "Thanks for signing up to the relaunch! This will work the same as last time, except this time you are guaranteed to get a new member."
-          )
-        );
       let outputChannel = <TextChannel>(
         this.guild.channels.cache.find((c) => c.name === "buddy-project-output")
       );
       outputChannel.send(
         `<@${this.user}> is signing up again for the relaunch.`
       );
-      outputChannel.send(await removeEntry(this.user));
       outputChannel.send(
         await BuddyProjectSignup(this.guild.member(this.user))
       );
