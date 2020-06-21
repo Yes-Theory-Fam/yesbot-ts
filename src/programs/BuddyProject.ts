@@ -97,14 +97,16 @@ export async function BuddyProjectSignup(member: GuildMember): Promise<string> {
   });
   await buddyEntries.save(memberEntry);
 
-  const bpRole = member.guild.roles.cache.find(r => r.name === "Buddy Project 2020");
-  if (member.roles.cache.find(r => r.id === bpRole.id))
+  const bpRole = member.guild.roles.cache.find(
+    (r) => r.name === "Buddy Project 2020"
+  );
+  if (member.roles.cache.find((r) => r.id === bpRole.id))
     member.roles.add(bpRole);
 
   const successMessage = discord_user
     ? "Woo! You just signed up to the buddy project, exciting right? I'll message you again momentarily with your buddy and what you need to do next!"
     : "Thanks for signing up to the relaunch! This will work the same as last time, except this time you are guaranteed to get a new member.";
-    
+
   dmChannel.send(successMessage);
   addOutput("Successfully entered.");
 
@@ -187,7 +189,7 @@ export const buddyProjectMatch = async (
   force: boolean = false
 ): Promise<Boolean> => {
   const buddyEntries = await BuddyProjectEntryRepository();
-  
+
   const hasBuddy1 = (await buddyEntries.findOne(user1.id)).matched;
   if (hasBuddy1 && !force) return false;
   const hasBuddy2 = (await buddyEntries.findOne(user2.id)).matched;

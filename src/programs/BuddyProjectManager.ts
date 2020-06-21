@@ -24,11 +24,13 @@ export default async function BuddyProjectManager(
             ? `Sent messages.`
             : `Couldn't send messages.`
         );
-        buddyProjectMatch(usersToMatch[0], usersToMatch[1], true).then((result) => {
-          message.channel.send(
-            result ? `Successfully matched.` : `Error in setting match.`
-          );
-        });
+        buddyProjectMatch(usersToMatch[0], usersToMatch[1], true).then(
+          (result) => {
+            message.channel.send(
+              result ? `Successfully matched.` : `Error in setting match.`
+            );
+          }
+        );
       }
       break;
     case "check":
