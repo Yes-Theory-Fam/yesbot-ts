@@ -71,7 +71,7 @@ export async function BuddyProjectSignup(member: GuildMember): Promise<string> {
   const dmChannel = await member.createDM();
   const buddyEntries = await BuddyProjectEntryRepository();
   let memberEntry = await buddyEntries.findOne(member.id);
-  let output = `New entry from ${member.toString()}`;
+  let output = `New attempted entry from ${member.toString()}`;
   const addOutput = (arg: string) => (output = output.concat(`\n${arg}`));
 
   if (memberEntry) {
