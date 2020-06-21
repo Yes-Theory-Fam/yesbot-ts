@@ -71,7 +71,7 @@ class MessageManager {
           )
         );
     }
-
+    console.log(channel.name);
     switch (channel.name) {
       case "where-are-you-from":
       case "welcome-chat":
