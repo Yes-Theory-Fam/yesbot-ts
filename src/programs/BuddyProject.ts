@@ -7,45 +7,21 @@ import {
   TextChannel,
   Guild,
   MessageEmbed,
+  GuildManager,
 } from "discord.js";
 import {
   BuddyProjectEntryRepository,
   BuddyProjectEntry,
 } from "../entities/BuddyProjectEntry";
-import { Repository } from "typeorm";
+import { Not, getConnection } from "typeorm";
 import { BUDDY_PROJECT_MATCHING } from "../const";
-import Tools from "../common/tools";
-
-const updateDatabaseWithQuery = (
-  BuddyEntryRepo: Repository<BuddyProjectEntry>,
-  memberId: string,
-  buddyId: string,
-  BuddyEntry: BuddyProjectEntry
-) => {
-  BuddyEntryRepo.createQueryBuilder()
-    .update(BuddyEntry)
-    .set({ matched: true, buddy_id: buddyId, matchedDate: new Date() })
-    .where("user_id = :member_id", { member_id: memberId })
-    .execute()
-    .catch((err) =>
-      console.log("There was an error updating member entry: ", err)
-    );
-  BuddyEntryRepo.createQueryBuilder()
-    .update(BuddyEntry)
-    .set({ matched: true, buddy_id: memberId, matchedDate: new Date() })
-    .where("user_id = :member_id", { member_id: buddyId })
-    .execute()
-    .catch((err) =>
-      console.log("There was an error updating buddy entry: ", err)
-    );
-};
 
 export const getMatchText = (match: User, set: number): string => `
-Hey there! Thank you for signing up to be a part of the Buddy Project :speech_balloon: . You’ve been paired with ${match.toString()} - {${match.username + "#" + match.discriminator
-  }} (If this is just a long number for you, copy and paste this in <#701717612001886228> to get who it is :grin:). This is where your Buddy Project journey starts! :grin:  First, you’ll have to get in touch with your Buddy. In every pair, one of the two people have been designated to be the “initiator” of the conversation. This responsibility falls on you! Message your buddy to start talking by searching up their username through the find function at the top left-hand corner of your screen, then start the chat! :heart:
+Hey there! Thank you for signing up to be a part of the Buddy Project :speech_balloon: . You’ve been paired with ${match.toString()} If it's unclear on how to contact this person, please ask for help in <#701717612001886228> :grin:. This is where your Buddy Project journey starts! :grin:  First, you’ll have to get in touch with your Buddy. In every pair, one of the two people have been designated to be the “initiator” of the conversation. This responsibility falls on you! Message your buddy to start talking by searching up their username through the find function at the top left-hand corner of your screen, then start the chat! :heart:
 Most importantly, here’s your list of questions:
 
-${set == 1
+${
+  set == 1
     ? `
 1. ||If you could experience one of the Yes Theory videos, which would it be, and why?||
 3. ||Where are the top three places you want to travel to someday, and why?||
@@ -84,7 +60,7 @@ You may notice that the questions you’ve received are odd-numbered, that’s b
 
 You may notice that the questions you’ve received are even-numbered, that’s because all the odd-numbered questions have been sent to the person you’re paired with. So each one of you has a set of questions that you will take turns asking each other, and both answering every time. 
 `
-  }
+}
 
 
 
@@ -96,383 +72,214 @@ Don’t let the questions limit you, let the conversation flow and just get to k
 Tip: do this in a video call for an even better experience!  :video_camera:
 `;
 
-export async function BuddyProjectSignup(
-  member: GuildMember | PartialGuildMember
-): Promise<null> {
+export const DISCORD_MATCHING: boolean = true;
+
+export async function BuddyProjectSignup(member: GuildMember): Promise<string> {
   const discord_user =
     new Date(member.joinedAt.toDateString()) <
     new Date(new Date().toDateString());
   const dmChannel = await member.createDM();
   const buddyEntries = await BuddyProjectEntryRepository();
-  const hasEntered = await buddyEntries.findOne(member.id);
-  const outputChannel = member.guild.channels.cache.find(
-    (c) => c.name == "buddy-project-matches"
-  ) as TextChannel;
-  let buddy: User = null;
+  let memberEntry = await buddyEntries.findOne(member.id);
+  let output = `New entry from ${member.toString()}`;
+  const addOutput = (arg: string) => (output = output.concat(`\n${arg}`));
 
-  let outputText = `New entry from ${member.toString()}`;
-
-  if (hasEntered) {
-    outputText = outputText.concat(
-      " - Already entered - Matched: " + hasEntered.matched
+  if (memberEntry) {
+    addOutput(
+      `${
+        memberEntry.matched
+          ? `Already matched with <@${memberEntry.buddy_id}>`
+          : `Waiting for match.`
+      }`
     );
     dmChannel.send(
-      hasEntered.matched
-        ? `It looks like I already found you a match! Did <@${hasEntered.buddy_id}> stopped replying? :grin:`
+      memberEntry.matched
+        ? `It looks like I already found you a match! Did <@${memberEntry.buddy_id}> stop replying? :grin:`
         : "Hey there, it looks like you just tried to sign up to the Buddy Project again, no need to do that, you're already registered!"
     );
-  } else {
-    const BuddyEntry = new BuddyProjectEntry();
-    const newBuddy = buddyEntries.create({
-      user_id: member.id,
+    return output;
+  }
+
+  memberEntry = buddyEntries.create({
+    user_id: member.id,
+    matched: false,
+    discord_user: discord_user,
+  });
+  await buddyEntries.save(memberEntry);
+
+  const successMessage =
+    "Woo! You just signed up to the buddy project, exciting right? I'll message you again momentarily with your buddy and what you need to do next!";
+  dmChannel.send(successMessage);
+  addOutput("Successfully entered.");
+
+  if (!BUDDY_PROJECT_MATCHING) {
+    addOutput("Not currently matching.");
+    return output;
+  }
+
+  addOutput("Looking for matches of opposite platform.");
+  let potentialMatches = await buddyEntries.find({
+    where: {
+      discord_user: !discord_user,
       matched: false,
-      discord_user: discord_user,
-    });
-    await buddyEntries.save(newBuddy);
+      user_id: Not(member.id),
+    },
+  });
 
-    const successMessage =
-      "Woo! You just signed up to the buddy project, exciting right? I'll message you again momentarily with your buddy and what you need to do next!";
-    dmChannel.send(successMessage);
+  addOutput(`Found ${potentialMatches.length} members of opposite platform.`);
 
-    outputText = outputText.concat(" - Successfully entered.");
-
-    if (BUDDY_PROJECT_MATCHING) {
-      outputText = outputText.concat(" - Looking for match.");
-
-      //? Find matches of the opposite group (aka newsletter group if user is of discord group)
-      const potentialMatches = await buddyEntries.find({
-        where: { discord_user: !discord_user, matched: false },
-      });
-
-      outputText = outputText.concat(
-        ` - Found ${potentialMatches.length} members of opposite platform.`
+  if (potentialMatches.length === 0) {
+    if (!discord_user || DISCORD_MATCHING) {
+      addOutput(
+        `Looking for anybody. (Discord on discord matching is set to ${DISCORD_MATCHING})`
       );
-
-      if (potentialMatches.length > 0) {
-        try {
-          const match = potentialMatches[0];
-          updateDatabaseWithQuery(
-            buddyEntries,
-            member.id,
-            match.user_id,
-            BuddyEntry
-          );
-
-          //! Found a buddy
-          buddy = member.guild.members.resolve(match.user_id).user;
-        } catch (err) {
-          console.log(
-            "There was an error finding matches for opposite group: ",
-            err
-          );
-        }
-      } else {
-        outputText = outputText.concat(` - Looking for only **new** members.`);
-
-        const finalMatches = await buddyEntries.find({
-          where: { matched: false },
-        });
-
-        const potentialMatches = finalMatches.filter(
-          (el) => el.user_id !== member.id
-        );
-        outputText = outputText.concat(
-          ` - Found ${potentialMatches.length} potential matches.`
-        );
-
-        if (potentialMatches.length > 0) {
-          try {
-            const finalMatch = potentialMatches[0];
-            updateDatabaseWithQuery(
-              buddyEntries,
-              member.id,
-              finalMatch.user_id,
-              BuddyEntry
-            );
-
-            //! Found a buddy
-            buddy = member.guild.members.resolve(finalMatch.user_id).user;
-          } catch (err) {
-            console.log(
-              "There was an error finding matches for opposite group: ",
-              err
-            );
-          }
-
-          //? Did we find a buddy?
-        }
-      }
+      potentialMatches = await buddyEntries.find({
+        where: { matched: false, user_id: Not(member.id) },
+      });
+    }
+    if (potentialMatches.length === 0) {
+      addOutput(`Didn't find anyone.`);
+      return output;
     }
   }
 
-  if (buddy && buddy.id != member.id) {
-    outputText = outputText.concat(
-      ` - Found a match with  ${buddy.toString()}!`
-    );
-    buddy
-      .createDM()
-      .then((dmChannel) =>
-        dmChannel.send(getMatchText(member.user, 1), { split: true })
-      );
-    member
-      .createDM()
-      .then((dmChannel) =>
-        dmChannel.send(getMatchText(buddy, 2), { split: true })
-      );
-  } else {
-    outputText = outputText.concat(" - Didn't find valid match.");
-    if (buddy && buddy.id == member.id)
-      outputText = outputText.concat(" - Matched with myself.");
+  const match = potentialMatches[0];
+  addOutput(`Found <@${match.user_id}>.`);
+
+  let buddy = member.guild.members.cache.find((m) => m.id === match.user_id);
+
+  if (!buddy) {
+    addOutput(`Couldn't find member in guild.`);
+    return output;
   }
 
-  outputChannel.send(outputText);
-  return null;
+  if (await buddyProjectMatch(member, buddy, member.guild)) {
+    addOutput(`Successfully matched users in database.`);
+    if (sendQuestions(member, buddy)) {
+      addOutput(`Successfully sent both users questions.`);
+      return output;
+    } else {
+      addOutput(`Couldn't send users questions.`);
+      return output;
+    }
+  } else {
+    addOutput(`Error in database matching.`);
+    return output;
+  }
 }
 
-export const forceMatch = async (
-  user1: User,
-  user2: User,
+export const sendQuestions = (
+  member: GuildMember | User,
+  buddy: GuildMember | User
+): boolean => {
+  buddy
+    .createDM()
+    .then((dmChannel) =>
+      dmChannel.send(getMatchText(member as User, 1), { split: true })
+    );
+  member
+    .createDM()
+    .then((dmChannel) =>
+      dmChannel.send(getMatchText(buddy as User, 2), { split: true })
+    );
+  return true;
+};
+
+export const buddyProjectMatch = async (
+  user1: GuildMember | User,
+  user2: GuildMember | User,
   guild: Guild
 ): Promise<Boolean> => {
   const buddyEntries = await BuddyProjectEntryRepository();
-  const user1Entry = await buddyEntries.findOne(user1.id);
-  const user2Entry = await buddyEntries.findOne(user2.id);
-  const outputChannel = guild.channels.cache.find(
-    (c) => c.name == "buddy-project-matches"
-  ) as TextChannel;
-  let outputText = `Trying to force match between ${user1.toString()} and ${user2.toString()}`;
-
-  if (user1Entry) {
-    outputText = outputText.concat(
-      `\n${user1.toString()} has already entered.`
-    );
-    if (!user1Entry.buddy_id) {
-      outputText = outputText.concat(
-        `\n${user1.toString()} has not found a match yet.`
-      );
-      user1Entry.buddy_id = user2.id;
-      user1Entry.matched = true;
-      await buddyEntries.save(user1Entry);
-    } else {
-      outputText = outputText.concat(
-        `\n${user1.toString()} already has a match with <@${user1Entry.buddy_id
-        }>, changing match to <@${user2.id}>`
-      );
-    }
-  } else {
-    const createdUser1Entry = buddyEntries.create({
-      user_id: user1.id,
-      matched: true,
-      discord_user: true,
-      buddy_id: user2.id,
-    });
-    await buddyEntries.save(createdUser1Entry);
-  }
-
-  if (user2Entry) {
-    outputText = outputText.concat(
-      `\n${user2.toString()} has already entered.`
-    );
-    if (!user2Entry.buddy_id) {
-      outputText = outputText.concat(
-        `\n${user2.toString()} has not found a match yet.`
-      );
-      user2Entry.buddy_id = user1.id;
-      user2Entry.matched = true;
-      await buddyEntries.save(user2Entry);
-    } else {
-      outputText = outputText.concat(
-        `\n${user2.toString()} already has a match with <@${user2Entry.buddy_id
-        }>, changing match to <@${user1.id}>`
-      );
-    }
-  } else {
-    const createdUser2Entry = buddyEntries.create({
-      user_id: user2.id,
-      matched: true,
-      discord_user: true,
-      buddy_id: user1.id,
-    });
-    await buddyEntries.save(createdUser2Entry);
-  }
-
-  const matched =
-    (await buddyEntries.findOne(user1.id)).buddy_id === user2.id &&
-    (await buddyEntries.findOne(user2.id)).buddy_id === user1.id;
-
-  if (matched) {
-    outputText = outputText.concat(
-      `\nSuccessfully matched ${user1.toString()} with ${user2.toString()}`
-    );
-    user1
-      .createDM()
-      .then((dmChannel) =>
-        dmChannel.send(getMatchText(user2, 1), { split: true })
-      );
-    user2
-      .createDM()
-      .then((dmChannel) =>
-        dmChannel.send(getMatchText(user1, 2), { split: true })
-      );
-    outputChannel.send(outputText);
+  const user1Entry = buddyEntries.create({
+    user_id: user1.id,
+    matched: true,
+    buddy_id: user2.id,
+    discord_user: true,
+    matchedDate: new Date(),
+  });
+  const user2Entry = buddyEntries.create({
+    user_id: user2.id,
+    matched: true,
+    buddy_id: user1.id,
+    discord_user: true,
+    matchedDate: new Date(),
+  });
+  try {
+    await getConnection()
+      .createQueryBuilder()
+      .insert()
+      .into(BuddyProjectEntry)
+      .values([user1Entry, user2Entry])
+      .orUpdate({
+        conflict_target: ["user_id"],
+        overwrite: [
+          "user_id",
+          "matched",
+          "buddy_id",
+          "discord_user",
+          "matched_date",
+        ],
+      })
+      .execute();
     return true;
-  } else {
-    outputText = outputText.concat(
-      `\nSomething went wrong. Please tag an engineer to take a look.`
-    );
+  } catch (error) {
+    console.log(error);
     return false;
   }
 };
 
-export const checkEntry = async (user: User, guild: Guild) => {
+export const checkEntry = async (user: User, guild: Guild): Promise<string> => {
   const buddyEntries = await BuddyProjectEntryRepository();
   const userEntry = await buddyEntries.findOne(user.id);
-  const outputChannel = guild.channels.cache.find(
-    (c) => c.name == "buddy-project-matches"
-  ) as TextChannel;
-  let outputText = `__**Entry details for ${user.toString()}:**__
+  const output = `__**Entry details for ${user.toString()}:**__
   **Entered**: ${!!userEntry}
   **Matched**: ${userEntry?.matched}
   **Buddy**: <@${userEntry?.buddy_id}>`;
-  outputChannel.send(outputText);
+  return output;
 };
 
-export const removeEntry = async (user: User, guild: Guild) => {
+export const removeEntry = async (
+  user: User,
+  guild: Guild
+): Promise<string> => {
   const buddyEntries = await BuddyProjectEntryRepository();
   const userEntry = await buddyEntries.findOne(user.id);
-  const outputChannel = guild.channels.cache.find(
-    (c) => c.name == "buddy-project-matches"
-  ) as TextChannel;
-  let outputText = `Removing entry for ${user.toString()}.`;
+  let output = `Removing entry for ${user.toString()}.`;
+  const addOutput = (arg: string) => (output = output.concat(`\n${arg}`));
 
-  if (!userEntry) outputText = outputText.concat(`\nUser is not entered.`);
+  if (!userEntry) {
+    addOutput(`User is not entered.`);
+    return output;
+  }
 
   if (userEntry.matched) {
-    outputText = outputText.concat(
-      `\nUser already has a match - <@${userEntry.buddy_id}>`
-    );
+    addOutput(`User already has a match - <@${userEntry.buddy_id}>`);
     const buddyEntry = await buddyEntries.findOne(userEntry.buddy_id);
     buddyEntries.remove([userEntry, buddyEntry]);
-    outputText = outputText.concat(
-      `\nSuccessfully removed entries for ${user.toString()} and <@${userEntry.buddy_id
+    addOutput(
+      `Successfully removed entries for ${user.toString()} and <@${
+        userEntry.buddy_id
       }>`
     );
   } else {
     buddyEntries.remove(userEntry);
-    outputText = outputText.concat(
-      `\nSuccessfully removed entries for ${user.toString()}.`
-    );
+    addOutput(`Successfully removed entries for ${user.toString()}.`);
   }
-
-  outputChannel.send(outputText);
+  return output;
 };
 
-export const cleanEntries = async (guild: Guild) => {
+export const checkEntries = async (guild: Guild): Promise<string> => {
   const buddyEntries = await BuddyProjectEntryRepository();
   const unmatchedEntries = await buddyEntries.findAndCount({
     where: { matched: false },
   });
-  const outputChannel = guild.channels.cache.find(
-    (c) => c.name == "buddy-project-matches"
-  ) as TextChannel;
-  let outputText = `Found ${unmatchedEntries[1]} unmatched members`;
+  let output = `Found ${unmatchedEntries[1]} unmatched members`;
   const unmatchedPeople = unmatchedEntries[0];
-  outputChannel.send(outputText);
-};
-
-export const checkAllEntries = async (guild: Guild) => {
-  const entries = await BuddyProjectEntryRepository();
-  const all = await entries.find({ where: { matched: false } });
-
-  const outputChannel = guild.channels.cache.find(
-    (c) => c.name == "buddy-project-matches"
-  ) as TextChannel;
-  const returnString = all.map((each) => each.user_id).join(", ");
-  let outputText = `All unmatched members: ${returnString}`;
-  outputChannel.send(outputText, { split: true });
-};
-
-export const beginGame = async (guild: Guild) => {
-  const buddyEntries = await BuddyProjectEntryRepository();
-
-  const unmatchedEntries = await buddyEntries.find({
-    where: { matched: false },
-  });
-  for (var i = unmatchedEntries.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var temp = unmatchedEntries[i];
-    unmatchedEntries[i] = unmatchedEntries[j];
-    unmatchedEntries[j] = temp;
-  }
-
-  const random6 = unmatchedEntries.slice(0, 6);
-  const outputChannel = guild.channels.cache.find(
-    (c) => c.name == "buddy-project-matches"
-  ) as TextChannel;
-  const nominee: User = guild.members.cache.find(
-    (u) => u.id === random6[0].user_id
-  )?.user;
-  console.log(nominee);
-  const gameStartMessage = await outputChannel.send(
-    `Find a match for <@${nominee?.id}>?`
+  output = output.concat(
+    `\nUnmatched users: ${unmatchedPeople
+      .map((each) => `<@${each.user_id}>`)
+      .join(", ")}`
   );
-
-  const applicantMap = [
-    {
-      user: guild.members.cache.find((u) => u.id === random6[1].user_id)?.user,
-      emoji: "1️⃣",
-    },
-    {
-      user: guild.members.cache.find((u) => u.id === random6[2].user_id)?.user,
-      emoji: "2️⃣",
-    },
-    {
-      user: guild.members.cache.find((u) => u.id === random6[3].user_id)?.user,
-      emoji: "3️⃣",
-    },
-    {
-      user: guild.members.cache.find((u) => u.id === random6[4].user_id)?.user,
-      emoji: "4️⃣",
-    },
-    {
-      user: guild.members.cache.find((u) => u.id === random6[5].user_id)?.user,
-      emoji: "5️⃣",
-    },
-  ];
-  gameStartMessage.react("👍").then((reaction) => gameStartMessage.react("👎"));
-
-  const gameStartMessageReaction = await Tools.getFirstReaction(
-    gameStartMessage
-  );
-  switch (gameStartMessageReaction) {
-    case "👍":
-      const matchEmbed = new MessageEmbed({
-        title: `Pick a match for <@${nominee?.id}>`,
-      }).setColor(`#a02222`);
-      applicantMap.forEach((applicant) => {
-        matchEmbed.addField(applicant.emoji, `<@${applicant.user.id}>`);
-      });
-      const embedMessage = await outputChannel.send(matchEmbed);
-      Tools.addNumberReactions(5, embedMessage);
-      const reaction = await Tools.getFirstReaction(embedMessage);
-      switch (reaction) {
-        case "1️⃣":
-          forceMatch(nominee, applicantMap[0].user, guild);
-          break;
-        case "2️⃣":
-          forceMatch(nominee, applicantMap[0].user, guild);
-          break;
-        case "3️⃣":
-          forceMatch(nominee, applicantMap[0].user, guild);
-          break;
-        case "4️⃣":
-          forceMatch(nominee, applicantMap[0].user, guild);
-          break;
-        case "5️⃣":
-          forceMatch(nominee, applicantMap[0].user, guild);
-          break;
-        default:
-          break;
-      }
-  }
+  return output;
 };

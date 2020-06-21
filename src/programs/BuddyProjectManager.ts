@@ -1,12 +1,12 @@
-import { Message, User } from "discord.js";
+import { Message, User, GuildManager, GuildMember } from "discord.js";
 import {
-  forceMatch,
+  buddyProjectMatch,
   checkEntry,
   removeEntry,
-  cleanEntries,
-  beginGame,
-  checkAllEntries,
+  checkEntries,
+  sendQuestions,
 } from "./BuddyProject";
+import Tools from "../common/tools";
 
 export default async function BuddyProjectManager(
   message: Message,
@@ -16,14 +16,27 @@ export default async function BuddyProjectManager(
     case "match":
       const usersToMatch = message.mentions.users.array();
       if (usersToMatch.length === 2) {
-        forceMatch(usersToMatch[0], usersToMatch[1], message.guild);
+        message.channel.send(
+          `Force matching <@${usersToMatch[0]}> and <@${usersToMatch[1]}>`
+        );
+        message.channel.send(
+          sendQuestions(usersToMatch[0], usersToMatch[1])
+            ? `Sent messages.`
+            : `Couldn't send messages.`
+        );
+        buddyProjectMatch(usersToMatch[0], usersToMatch[1], message.guild).then(
+          (result) => {
+            message.channel.send(
+              result ? `Successfully matched.` : `Error in setting match.`
+            );
+          }
+        );
       }
       break;
     case "check":
-      checkEntry(message.mentions.users.array()[0], message.guild);
-      break;
-    case "checkAll":
-      checkAllEntries(message.guild);
+      message.channel.send(
+        await checkEntry(message.mentions.users.array()[0], message.guild)
+      );
       break;
     case "unmatch":
       const confirm = await message.reply(
@@ -31,32 +44,23 @@ export default async function BuddyProjectManager(
           message.mentions.users.array()[0]
         }>'s entry?`
       );
-      confirm.react("👍").then((reaction) => confirm.react("👎"));
-      confirm
-        .awaitReactions(
-          (reaction: any, user: User) => {
-            return !user.bot;
-          },
-          { max: 1, time: 6000000, errors: ["time"] }
-        )
-        .then((collected) => {
-          const reaction = collected.first();
-          switch (reaction.emoji.toString()) {
-            case "👍":
-              removeEntry(message.mentions.users.array()[0], message.guild);
-              break;
-
-            default:
-              break;
-          }
-        });
+      Tools.addThumbs(confirm);
+      const reaction = await Tools.getFirstReaction(confirm);
+      if (reaction === "👍")
+        message.channel.send(
+          await removeEntry(message.mentions.users.array()[0], message.guild)
+        );
       break;
     case "clean":
-      cleanEntries(message.guild);
+      message.channel.send(await checkEntries(message.guild));
       break;
 
-    case "game":
-      beginGame(message.guild);
+    case "ghost":
+      message.channel
+        .send(
+          "Have you been ghosted? Do you think you've been ghosted hard enough to warrant a new buddy? Let us know by reacting below."
+        )
+        .then((sentMsg) => sentMsg.react("👻"));
 
     default:
       break;

@@ -1,24 +1,26 @@
-import Discord from 'discord.js';
-import bot from "../index"
-import { GUILD_ID, OUTPUT_CHANNEL_ID } from '../const';
-import { BuddyProjectEntryRepository } from '../entities/BuddyProjectEntry';
-import { Not, IsNull } from 'typeorm';
+import Discord from "discord.js";
+import bot from "../index";
+import { GUILD_ID, OUTPUT_CHANNEL_ID } from "../const";
+import { BuddyProjectEntryRepository } from "../entities/BuddyProjectEntry";
+import { Not, IsNull } from "typeorm";
 
 class Ready {
   bot: Discord.Client;
 
   constructor(bot: Discord.Client) {
     this.bot = bot;
-    console.log(`${bot.user.tag} - Online`)
-    const guild = this.bot.guilds.resolve(GUILD_ID)
+    console.log(`${bot.user.tag} - Online`);
+    const guild = this.bot.guilds.resolve(GUILD_ID);
     if (OUTPUT_CHANNEL_ID) {
       const outputChannel = <Discord.TextChannel>(
         guild.channels.resolve(OUTPUT_CHANNEL_ID)
       );
-      outputChannel.send(`${bot.user.tag} - Online`)
+      outputChannel.send(`${bot.user.tag} - Online`);
     }
 
-    this.cacheBuddyDmChannels().then((count) => console.log(`Cached ${count} DM channels of ghosting buddies`));
+    this.cacheBuddyDmChannels().then((count) =>
+      console.log(`Cached ${count} DM channels of ghosting buddies`)
+    );
   }
 
   /*
@@ -34,7 +36,7 @@ class Ready {
     const ghosted = await repo.find({
       where: {
         reportedGhostDate: Not(IsNull()),
-      }
+      },
     });
 
     let count = 0;
@@ -54,6 +56,5 @@ class Ready {
     return count;
   }
 }
-
 
 export default Ready;

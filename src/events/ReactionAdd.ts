@@ -19,7 +19,9 @@ import { MessageRepository } from "../entities/Message";
 import { backfillReactions } from "../programs/GroupManager";
 import { hasRole } from "../common/moderator";
 import { GUILD_ID } from "../const";
-import BuddyProjectGhost, { BuddyConfirmation } from "../programs/BuddyProjectGhost";
+import BuddyProjectGhost, {
+  BuddyConfirmation,
+} from "../programs/BuddyProjectGhost";
 
 class ReactionAdd {
   bot: Discord.Client;
@@ -49,6 +51,13 @@ class ReactionAdd {
   }
 
   async main() {
+    if (
+      this.channel.name === "buddy-project-tools" &&
+      this.pureEmoji === "👻" &&
+      !this.user.bot
+    ) {
+      BuddyProjectGhost(this.user, this.guild, this.messageReaction);
+    }
     if (this.pureEmoji === "🧙" && this.channel.name == "discord-disaster") {
       AdventureGame(this.user, this.guild, this.bot);
     }
@@ -82,17 +91,6 @@ class ReactionAdd {
           if (this.channel instanceof DMChannel && this.pureEmoji === "✅") {
             const guild = bot.guilds.resolve(GUILD_ID);
             BuddyConfirmation(this.user, guild);
-            return;
-          }
-
-          if (!(this.channel instanceof TextChannel)) return;
-
-          if (this.pureEmoji === '🧙' && this.channel.name == "discord-disaster") {
-            AdventureGame(this.user, this.guild, this.bot)
-          }
-
-          if (this.channel.name === "buddy-project" && this.pureEmoji === "❌") {
-            BuddyProjectGhost(this.user, this.guild, this.messageReaction);
             return;
           }
         }
@@ -149,17 +147,31 @@ class ReactionAdd {
 
     const reactRoleObjects = await Tools.resolveFile("reactRoleObjects");
     reactRoleObjects.forEach((element: any) => {
-      if (this.messageId === element.messageId && this.reaction === element.reaction) {
-        const guildMember = this.guild.members.cache.find(m => m.id == this.user.id);
-        const roleToAdd = this.guild.roles.cache.find(r => r.id == element.roleId);
+      if (
+        this.messageId === element.messageId &&
+        this.reaction === element.reaction
+      ) {
+        const guildMember = this.guild.members.cache.find(
+          (m) => m.id == this.user.id
+        );
+        const roleToAdd = this.guild.roles.cache.find(
+          (r) => r.id == element.roleId
+        );
 
-        if (this.hasNitroColour(guildMember) && this.messageId == "637401981262102578") {
-          guildMember.createDM().then(dm => dm.send("You can't assign yourself a new colour yet, please wait until the end of the month!"))
-        }
-        else {
+        if (
+          this.hasNitroColour(guildMember) &&
+          this.messageId == "637401981262102578"
+        ) {
+          guildMember
+            .createDM()
+            .then((dm) =>
+              dm.send(
+                "You can't assign yourself a new colour yet, please wait until the end of the month!"
+              )
+            );
+        } else {
           guildMember.roles.add(roleToAdd);
         }
-
       }
     });
 
