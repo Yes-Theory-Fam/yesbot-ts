@@ -123,14 +123,15 @@ class ReactionAdd {
             );
         } else {
           guildMember.roles.add(roleToAdd);
-          if (this.channel instanceof DMChannel && this.pureEmoji === "✅") {
-            const guild = bot.guilds.resolve(GUILD_ID);
-            BuddyConfirmation(this.user, guild);
-            return;
-          }
         }
       }
     });
+
+    if (this.channel instanceof DMChannel && this.pureEmoji === "✅") {
+      const guild = bot.guilds.resolve(GUILD_ID);
+      BuddyConfirmation(this.user, guild);
+      return;
+    }
 
     this.handleChannelToggleReaction();
   }
