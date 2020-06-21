@@ -45,7 +45,7 @@ export default async function BuddyProjectGhost(
 
   if (entry.reportedGhostDate) {
     userDm.send(
-      "You already reported that you are possibly being ghosted. I will come back to that report after 7 days in case I haven't heard back from your buddy. Until then, please have some patience."
+      "You have already reported being ghosted. Please have some patience :grin:."
     );
     addOutput(`User has already reported being ghosted.`);
     return result;
@@ -65,12 +65,13 @@ export default async function BuddyProjectGhost(
 
   const buddyDm = await buddy.createDM();
   const buddyMessage = await buddyDm.send(
-    `Hey there! You signed up to the buddy project and got matched with <@${user.id}> (${user.tag}) but never responded to them. In order to not get unmatched, click on the checkmark below this message within the next seven days and send them a message :)`
+    `Hey there! You signed up to the buddy project and got matched with <@${user.id}> (${user.tag}) but never responded to them. Please let them know what's going on! :grin:`
   );
 
   // The listener for reactions like these is /events/ReactionAdd because they have to be long term (one week) which isn't feasible with awaitReactions
   // The code running when this happens is in the function below.
-  buddyMessage.react("✅");
+  //We will turn this off pending further discussion about automation
+  // buddyMessage.react("✅");
   entry.reportedGhostDate = new Date();
   await repo.save(entry);
   addOutput(`Reported user as being ghosted.`);
@@ -81,6 +82,7 @@ export default async function BuddyProjectGhost(
   result.success = true;
   return result;
 }
+
 
 export async function BuddyConfirmation(user: User, guild: Guild) {
   if (user.bot) return;
