@@ -1,7 +1,4 @@
-import {
-  Message,
-  TextChannel,
-} from "discord.js";
+import { Message, TextChannel } from "discord.js";
 import {
   buddyProjectMatch,
   checkEntry,
@@ -27,19 +24,15 @@ export default async function BuddyProjectManager(
             ? `Sent messages.`
             : `Couldn't send messages.`
         );
-        buddyProjectMatch(usersToMatch[0], usersToMatch[1]).then(
-          (result) => {
-            message.channel.send(
-              result ? `Successfully matched.` : `Error in setting match.`
-            );
-          }
-        );
+        buddyProjectMatch(usersToMatch[0], usersToMatch[1]).then((result) => {
+          message.channel.send(
+            result ? `Successfully matched.` : `Error in setting match.`
+          );
+        });
       }
       break;
     case "check":
-      message.channel.send(
-        await checkEntry(message.mentions.users.array()[0])
-      );
+      message.channel.send(await checkEntry(message.mentions.users.array()[0]));
       break;
     case "unmatch":
       const confirm = await message.reply(
@@ -64,11 +57,13 @@ export default async function BuddyProjectManager(
           "Have you been ghosted? Do you think you've been ghosted hard enough to warrant a new buddy? Let us know by reacting below."
         )
         .then((sentMsg) => sentMsg.react("👻"));
-        break;
+      break;
     case "retry":
       const bpChannel = <TextChannel>(
         //this will be buddy-project instead of buddy-project-launch when we have a message we like
-        message.guild.channels.cache.find((c) => c.name === "buddy-project-tools")
+        message.guild.channels.cache.find(
+          (c) => c.name === "buddy-project-tools"
+        )
       );
       bpChannel
         .send(

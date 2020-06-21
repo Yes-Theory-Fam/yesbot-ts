@@ -3,7 +3,7 @@ import { BuddyProjectEntryRepository } from "../entities/BuddyProjectEntry";
 
 export default async function BuddyProjectGhost(
   user: User,
-  guild: Guild,
+  guild: Guild
 ): Promise<{ success: boolean; message: string }> {
   const repo = await BuddyProjectEntryRepository();
   const entry = await repo.findOne(user.id);
@@ -81,7 +81,6 @@ export default async function BuddyProjectGhost(
   result.success = true;
   return result;
 }
-
 
 export async function BuddyConfirmation(user: User, guild: Guild) {
   if (user.bot) return;

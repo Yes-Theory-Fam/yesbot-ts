@@ -1,7 +1,4 @@
-import {
-  GuildMember,
-  User,
-} from "discord.js";
+import { GuildMember, User } from "discord.js";
 import {
   BuddyProjectEntryRepository,
   BuddyProjectEntry,
@@ -180,7 +177,8 @@ export const sendQuestions = (
 
 export const buddyProjectMatch = async (
   user1: GuildMember | User,
-  user2: GuildMember | User): Promise<Boolean> => {
+  user2: GuildMember | User
+): Promise<Boolean> => {
   const buddyEntries = await BuddyProjectEntryRepository();
   const user1Entry = buddyEntries.create({
     user_id: user1.id,
@@ -230,8 +228,7 @@ export const checkEntry = async (user: User): Promise<string> => {
   return output;
 };
 
-export const removeEntry = async (
-  user: User): Promise<string> => {
+export const removeEntry = async (user: User): Promise<string> => {
   const buddyEntries = await BuddyProjectEntryRepository();
   const userEntry = await buddyEntries.findOne(user.id);
   let output = `Removing entry for ${user.toString()}.`;

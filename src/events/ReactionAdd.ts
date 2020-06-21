@@ -60,10 +60,7 @@ class ReactionAdd {
       let outputChannel = <TextChannel>(
         this.guild.channels.cache.find((c) => c.name === "buddy-project-output")
       );
-      const output = await BuddyProjectGhost(
-        this.user,
-        this.guild,
-      );
+      const output = await BuddyProjectGhost(this.user, this.guild);
       outputChannel.send(output.message);
       if (!output.success) {
         this.messageReaction.users.remove(this.user);
