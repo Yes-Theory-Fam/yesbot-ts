@@ -22,6 +22,7 @@ import { GUILD_ID } from "../const";
 import BuddyProjectGhost, {
   BuddyConfirmation,
 } from "../programs/BuddyProjectGhost";
+import { removeEntry, BuddyProjectSignup } from "../programs/BuddyProject";
 
 class ReactionAdd {
   bot: Discord.Client;
@@ -56,10 +57,44 @@ class ReactionAdd {
       this.pureEmoji === "👻" &&
       !this.user.bot
     ) {
-      BuddyProjectGhost(this.user, this.guild, this.messageReaction);
+      let outputChannel = <TextChannel>(
+        this.guild.channels.cache.find((c) => c.name === "buddy-project-output")
+      );
+      const output = await BuddyProjectGhost(
+        this.user,
+        this.guild,
+        this.messageReaction
+      );
+      outputChannel.send(output.message);
+      if (!output.success) {
+        this.messageReaction.users.remove(this.user);
+      }
     }
     if (this.pureEmoji === "🧙" && this.channel.name == "discord-disaster") {
       AdventureGame(this.user, this.guild, this.bot);
+    }
+    if (
+      this.channel.name === "buddy-project" &&
+      this.pureEmoji === "👻" &&
+      !this.user.bot
+    ) {
+      this.user
+        .createDM()
+        .then((dmChannel) =>
+          dmChannel.send(
+            "Thanks for signing up to the relaunch! This will work the same as last time, except this time you are guaranteed to get a new member."
+          )
+        );
+      let outputChannel = <TextChannel>(
+        this.guild.channels.cache.find((c) => c.name === "buddy-project-output")
+      );
+      outputChannel.send(
+        `<@${this.user}> is signing up again for the relaunch.`
+      );
+      outputChannel.send(await removeEntry(this.user, this.guild));
+      outputChannel.send(
+        await BuddyProjectSignup(this.guild.member(this.user))
+      );
     }
 
     const reactRoleObjects = await Tools.resolveFile("reactRoleObjects");

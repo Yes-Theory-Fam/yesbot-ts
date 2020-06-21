@@ -1,4 +1,10 @@
-import { Message, User, GuildManager, GuildMember } from "discord.js";
+import {
+  Message,
+  User,
+  GuildManager,
+  GuildMember,
+  TextChannel,
+} from "discord.js";
 import {
   buddyProjectMatch,
   checkEntry,
@@ -59,6 +65,15 @@ export default async function BuddyProjectManager(
       message.channel
         .send(
           "Have you been ghosted? Do you think you've been ghosted hard enough to warrant a new buddy? Let us know by reacting below."
+        )
+        .then((sentMsg) => sentMsg.react("👻"));
+    case "retry":
+      const bpChannel = <TextChannel>(
+        message.guild.channels.cache.find((c) => c.name === "buddy-project")
+      );
+      bpChannel
+        .send(
+          "Hey guys, we're relaunching the buddy project! The relaunch is scheduled to happen on Monday. If you would like to receive a new match, react below."
         )
         .then((sentMsg) => sentMsg.react("👻"));
 

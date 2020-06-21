@@ -129,6 +129,7 @@ class MessageManager {
 
       case "buddy-project-tools":
         if (firstWord === "!ghost") BuddyProjectManager(this.message, "ghost");
+        if (firstWord === "!retry") BuddyProjectManager(this.message, "retry");
     }
 
     if (firstWord === "!topic") TopicManager(this.message);

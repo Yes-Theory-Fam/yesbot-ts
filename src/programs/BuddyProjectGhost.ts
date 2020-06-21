@@ -1,27 +1,27 @@
 import { User, Guild, MessageReaction } from "discord.js";
-
 import { BuddyProjectEntryRepository } from "../entities/BuddyProjectEntry";
-import { textLog } from "../common/moderator";
 
 export default async function BuddyProjectGhost(
   user: User,
   guild: Guild,
   reaction: MessageReaction
-): Promise<string> {
+): Promise<{ success: boolean; message: string }> {
   const repo = await BuddyProjectEntryRepository();
   const entry = await repo.findOne(user.id);
   const userDm = await user.createDM();
-  let output = `${user.toString()} has reported that they have been ghosted.`;
-  const addOutput = (arg: string) => (output = output.concat(`\n${arg}`));
-  const cancelReaction = () => reaction.remove();
+  let result = {
+    success: false,
+    message: `${user.toString()} has reported that they have been ghosted.`,
+  };
+  const addOutput = (arg: string) =>
+    (result.message = result.message.concat(`\n${arg}`));
 
   if (!entry) {
     userDm.send(
       "You reported that your buddy hasn't replied yet, however you haven't signed up to the buddy project! You can do so by clicking on the speech bubble icon in channel buddy-project on the Yes Theory Fam server."
     );
     addOutput(`User hasn't entered.`);
-    cancelReaction();
-    return output;
+    return result;
   }
 
   if (!entry.matched) {
@@ -29,8 +29,7 @@ export default async function BuddyProjectGhost(
       "You reported that your buddy hasn't replied yet, but you don't have a match yet! Please have a little patience in waiting for your buddy :grin:"
     );
     addOutput(`User has no match.`);
-    cancelReaction();
-    return;
+    return result;
   }
 
   const sevenDaysAgo = new Date();
@@ -38,17 +37,18 @@ export default async function BuddyProjectGhost(
 
   if (entry.matchedDate > sevenDaysAgo) {
     userDm.send(
-      "Have some patience :wink: It's not been 7 days since you have been matched! Try again if your buddy hasn't replied to you more than 7 days after getting mached."
+      "Have some patience :wink: It's not even been one week since you have been matched!"
     );
-    cancelReaction();
-    return;
+    addOutput(`User has not waited 7 days since match.`);
+    return result;
   }
 
   if (entry.reportedGhostDate) {
     userDm.send(
       "You already reported that you are possibly being ghosted. I will come back to that report after 7 days in case I haven't heard back from your buddy. Until then, please have some patience."
     );
-    return;
+    addOutput(`User has already reported being ghosted.`);
+    return result;
   }
 
   const buddy = guild.member(entry.buddy_id);
@@ -57,8 +57,8 @@ export default async function BuddyProjectGhost(
     userDm.send(
       "Huh... Looks like I couldn't find your buddy! I reported that to the support team and have them check it. Expect them to get back to you in a bit!"
     );
-    textLog(
-      `Heyyo! <@${user.id}> reported that their buddy <@${buddy.id}> hasn't replied yet, however I could not find that user and couldn't create a DM for that reason. Could one of you try to contact them by DM?`
+    addOutput(
+      `Couldn't find buddy: <@${entry.buddy_id}>. Please contact them.`
     );
     return;
   }
@@ -71,13 +71,15 @@ export default async function BuddyProjectGhost(
   // The listener for reactions like these is /events/ReactionAdd because they have to be long term (one week) which isn't feasible with awaitReactions
   // The code running when this happens is in the function below.
   buddyMessage.react("✅");
-
   entry.reportedGhostDate = new Date();
   await repo.save(entry);
+  addOutput(`Reported user as being ghosted.`);
 
   userDm.send(
     "Hey there! I contacted your buddy with a message asking them to contact you and confirm they received the message. If they didn't confirm that within the next week, you will be unmatched again."
-  ); //  (Due to technical reasons checking for ghosted users is done once a day so it might be 7 days and a half before your case is handled; have some patience please :))?
+  );
+  result.success = true;
+  return result;
 }
 
 export async function BuddyConfirmation(user: User, guild: Guild) {
