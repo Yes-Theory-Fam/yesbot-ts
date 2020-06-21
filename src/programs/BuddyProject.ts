@@ -97,6 +97,10 @@ export async function BuddyProjectSignup(member: GuildMember): Promise<string> {
   });
   await buddyEntries.save(memberEntry);
 
+  const bpRole = member.guild.roles.cache.find(r => r.name === "Buddy Project 2020");
+  if (member.roles.cache.find(r => r.id === bpRole.id))
+    member.roles.add(bpRole);
+
   const successMessage =
     "Woo! You just signed up to the buddy project, exciting right? I'll message you again momentarily with your buddy and what you need to do next!";
   dmChannel.send(successMessage);
