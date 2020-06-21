@@ -83,7 +83,6 @@ export default async function BuddyProjectGhost(
   return result;
 }
 
-
 export async function BuddyConfirmation(user: User, guild: Guild) {
   if (user.bot) return;
 

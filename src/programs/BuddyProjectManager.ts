@@ -67,11 +67,13 @@ export default async function BuddyProjectManager(
           "Have you been ghosted? Do you think you've been ghosted hard enough to warrant a new buddy? Let us know by reacting below."
         )
         .then((sentMsg) => sentMsg.react("👻"));
-        break;
+      break;
     case "retry":
       const bpChannel = <TextChannel>(
         //this will be buddy-project instead of buddy-project-launch when we have a message we like
-        message.guild.channels.cache.find((c) => c.name === "buddy-project-tools")
+        message.guild.channels.cache.find(
+          (c) => c.name === "buddy-project-tools"
+        )
       );
       bpChannel
         .send(
