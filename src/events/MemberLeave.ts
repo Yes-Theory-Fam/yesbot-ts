@@ -9,14 +9,10 @@ export class MemberLeave {
   constructor(member: GuildMember | PartialGuildMember) {
     if (member.roles.cache.find((r) => r.name === "Buddy Project 2020")) {
       RemoveFromBuddyProject(member.id);
-      RemoveFromBirthdays(member.id);
-      RemoveFromGroups(member.id);
     }
-    member.createDM().then((dm) => {
-      dm.send(
-        `Hi ${member.displayName}! Sorry to hear that you left the server! :( If you would ever like to join back, just let me know! :slight_smile: `
-      );
-    });
+
+    RemoveFromBirthdays(member.id);
+    RemoveFromGroups(member.id);
   }
 }
 
