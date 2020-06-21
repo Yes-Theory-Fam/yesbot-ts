@@ -1,13 +1,6 @@
-import { db } from "..";
-import bot from "../index";
 import {
   GuildMember,
-  PartialGuildMember,
   User,
-  TextChannel,
-  Guild,
-  MessageEmbed,
-  GuildManager,
 } from "discord.js";
 import {
   BuddyProjectEntryRepository,
@@ -153,7 +146,7 @@ export async function BuddyProjectSignup(member: GuildMember): Promise<string> {
     return output;
   }
 
-  if (await buddyProjectMatch(member, buddy, member.guild)) {
+  if (await buddyProjectMatch(member, buddy)) {
     addOutput(`Successfully matched users in database.`);
     if (sendQuestions(member, buddy)) {
       addOutput(`Successfully sent both users questions.`);
@@ -187,9 +180,7 @@ export const sendQuestions = (
 
 export const buddyProjectMatch = async (
   user1: GuildMember | User,
-  user2: GuildMember | User,
-  guild: Guild
-): Promise<Boolean> => {
+  user2: GuildMember | User): Promise<Boolean> => {
   const buddyEntries = await BuddyProjectEntryRepository();
   const user1Entry = buddyEntries.create({
     user_id: user1.id,
@@ -229,7 +220,7 @@ export const buddyProjectMatch = async (
   }
 };
 
-export const checkEntry = async (user: User, guild: Guild): Promise<string> => {
+export const checkEntry = async (user: User): Promise<string> => {
   const buddyEntries = await BuddyProjectEntryRepository();
   const userEntry = await buddyEntries.findOne(user.id);
   const output = `__**Entry details for ${user.toString()}:**__
@@ -240,9 +231,7 @@ export const checkEntry = async (user: User, guild: Guild): Promise<string> => {
 };
 
 export const removeEntry = async (
-  user: User,
-  guild: Guild
-): Promise<string> => {
+  user: User): Promise<string> => {
   const buddyEntries = await BuddyProjectEntryRepository();
   const userEntry = await buddyEntries.findOne(user.id);
   let output = `Removing entry for ${user.toString()}.`;
@@ -269,7 +258,7 @@ export const removeEntry = async (
   return output;
 };
 
-export const checkEntries = async (guild: Guild): Promise<string> => {
+export const checkEntries = async (): Promise<string> => {
   const buddyEntries = await BuddyProjectEntryRepository();
   const unmatchedEntries = await buddyEntries.findAndCount({
     where: { matched: false },

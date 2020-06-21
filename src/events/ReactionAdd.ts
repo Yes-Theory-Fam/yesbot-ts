@@ -63,7 +63,6 @@ class ReactionAdd {
       const output = await BuddyProjectGhost(
         this.user,
         this.guild,
-        this.messageReaction
       );
       outputChannel.send(output.message);
       if (!output.success) {
@@ -91,7 +90,7 @@ class ReactionAdd {
       outputChannel.send(
         `<@${this.user}> is signing up again for the relaunch.`
       );
-      outputChannel.send(await removeEntry(this.user, this.guild));
+      outputChannel.send(await removeEntry(this.user));
       outputChannel.send(
         await BuddyProjectSignup(this.guild.member(this.user))
       );

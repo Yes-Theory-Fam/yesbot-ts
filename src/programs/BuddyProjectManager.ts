@@ -1,8 +1,5 @@
 import {
   Message,
-  User,
-  GuildManager,
-  GuildMember,
   TextChannel,
 } from "discord.js";
 import {
@@ -30,7 +27,7 @@ export default async function BuddyProjectManager(
             ? `Sent messages.`
             : `Couldn't send messages.`
         );
-        buddyProjectMatch(usersToMatch[0], usersToMatch[1], message.guild).then(
+        buddyProjectMatch(usersToMatch[0], usersToMatch[1]).then(
           (result) => {
             message.channel.send(
               result ? `Successfully matched.` : `Error in setting match.`
@@ -41,7 +38,7 @@ export default async function BuddyProjectManager(
       break;
     case "check":
       message.channel.send(
-        await checkEntry(message.mentions.users.array()[0], message.guild)
+        await checkEntry(message.mentions.users.array()[0])
       );
       break;
     case "unmatch":
@@ -54,11 +51,11 @@ export default async function BuddyProjectManager(
       const reaction = await Tools.getFirstReaction(confirm);
       if (reaction === "👍")
         message.channel.send(
-          await removeEntry(message.mentions.users.array()[0], message.guild)
+          await removeEntry(message.mentions.users.array()[0])
         );
       break;
     case "clean":
-      message.channel.send(await checkEntries(message.guild));
+      message.channel.send(await checkEntries());
       break;
 
     case "ghost":

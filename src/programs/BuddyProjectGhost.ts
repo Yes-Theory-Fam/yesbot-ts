@@ -4,7 +4,6 @@ import { BuddyProjectEntryRepository } from "../entities/BuddyProjectEntry";
 export default async function BuddyProjectGhost(
   user: User,
   guild: Guild,
-  reaction: MessageReaction
 ): Promise<{ success: boolean; message: string }> {
   const repo = await BuddyProjectEntryRepository();
   const entry = await repo.findOne(user.id);
@@ -64,7 +63,7 @@ export default async function BuddyProjectGhost(
   }
 
   const buddyDm = await buddy.createDM();
-  const buddyMessage = await buddyDm.send(
+  await buddyDm.send(
     `Hey there! You signed up to the buddy project and got matched with <@${user.id}> (${user.tag}) but never responded to them. Please let them know what's going on! :grin:`
   );
 
