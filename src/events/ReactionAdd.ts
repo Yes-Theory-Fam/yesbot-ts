@@ -87,7 +87,6 @@ class ReactionAdd {
       outputChannel.send(
         `<@${this.user}> is signing up again for the relaunch.`
       );
-      outputChannel.send(await removeEntry(this.user));
       outputChannel.send(
         await BuddyProjectSignup(this.guild.member(this.user))
       );

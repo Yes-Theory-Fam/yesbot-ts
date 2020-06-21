@@ -177,9 +177,16 @@ export const sendQuestions = (
 
 export const buddyProjectMatch = async (
   user1: GuildMember | User,
-  user2: GuildMember | User
+  user2: GuildMember | User,
+  force: boolean = false
 ): Promise<Boolean> => {
   const buddyEntries = await BuddyProjectEntryRepository();
+  
+  const hasBuddy1 = (await buddyEntries.findOne(user1.id)).matched;
+  if (hasBuddy1 && !force) return false;
+  const hasBuddy2 = (await buddyEntries.findOne(user2.id)).matched;
+  if (hasBuddy2 && !force) return false;
+
   const user1Entry = buddyEntries.create({
     user_id: user1.id,
     matched: true,
