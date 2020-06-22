@@ -91,33 +91,34 @@ class ReactionAdd {
       );
     }
     const reactionRoleRepository = await ReactionRoleRepository();
-    const reactRoleObjects = await reactionRoleRepository.find();
+    const reactRoleObjects = await reactionRoleRepository.find({
+      where: {
+        messageId: this.messageId,
+        channelId: this.channel.id,
+        reaction: this.reaction,
+      },
+    });
     reactRoleObjects.forEach((reactionRole) => {
-      if (
-        this.messageId === reactionRole.messageId &&
-        this.reaction === reactionRole.reaction
-      ) {
-        const guildMember = this.guild.members.cache.find(
-          (m) => m.id == this.user.id
-        );
-        const roleToAdd = this.guild.roles.cache.find(
-          (r) => r.id == reactionRole.roleId
-        );
+      const guildMember = this.guild.members.cache.find(
+        (m) => m.id == this.user.id
+      );
+      const roleToAdd = this.guild.roles.cache.find(
+        (r) => r.id == reactionRole.roleId
+      );
 
-        if (
-          this.hasNitroColour(guildMember) &&
-          this.messageId == "637401981262102578"
-        ) {
-          guildMember
-            .createDM()
-            .then((dm) =>
-              dm.send(
-                "You can't assign yourself a new colour yet, please wait until the end of the month!"
-              )
-            );
-        } else {
-          guildMember.roles.add(roleToAdd);
-        }
+      if (
+        this.hasNitroColour(guildMember) &&
+        this.messageId == "637401981262102578"
+      ) {
+        guildMember
+          .createDM()
+          .then((dm) =>
+            dm.send(
+              "You can't assign yourself a new colour yet, please wait until the end of the month!"
+            )
+          );
+      } else {
+        guildMember.roles.add(roleToAdd);
       }
     });
 

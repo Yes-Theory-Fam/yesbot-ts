@@ -35,20 +35,21 @@ class ReactionRemove {
 
   async main() {
     const reactionRoleRepository = await ReactionRoleRepository();
-    const reactRoleObjects = await reactionRoleRepository.find();
+    const reactRoleObjects = await reactionRoleRepository.find({
+      where: {
+        messageId: this.messageId,
+        channelId: this.channel.id,
+        reaction: this.reaction,
+      },
+    });
     reactRoleObjects.forEach((reactionRole) => {
-      if (
-        this.messageId === reactionRole.messageId &&
-        this.reaction === reactionRole.reaction
-      ) {
-        const guildMember = this.guild.members.cache.find(
-          (m) => m.id == this.user.id
-        );
-        const roleToAdd = this.guild.roles.cache.find(
-          (r) => r.id == reactionRole.roleId
-        );
-        guildMember.roles.remove(roleToAdd);
-      }
+      const guildMember = this.guild.members.cache.find(
+        (m) => m.id == this.user.id
+      );
+      const roleToAdd = this.guild.roles.cache.find(
+        (r) => r.id == reactionRole.roleId
+      );
+      guildMember.roles.remove(roleToAdd);
     });
 
     this.handleChannelToggleReaction();
