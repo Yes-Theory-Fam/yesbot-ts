@@ -190,7 +190,15 @@ async function deleteReactRoleObjects(index: any, pMessage: Discord.Message) {
       objectToRemove.channelId
     );
     message = <Discord.Message>message;
-    message.reactions.removeAll();
+    try {
+      message.reactions.removeAll();
+    } catch (err) {
+      // We don't really care about the error, since the message/channel might have been removed.
+      // We log it for good measure.
+      console.log(
+        `Error while removing all reactions from a reactionRole message: Err ${err}`
+      );
+    }
     pMessage.channel.send("Successfully removed reaction role.");
   } else {
     pMessage.reply("I cannot find a role with that ID.");
