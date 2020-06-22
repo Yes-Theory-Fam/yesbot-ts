@@ -72,7 +72,6 @@ class MessageManager {
           )
         );
     }
-
     switch (channel.name) {
       case "where-are-you-from":
       case "welcome-chat":
@@ -121,16 +120,17 @@ class MessageManager {
         this.message.react("👍").then(() => this.message.react("👎"));
         break;
 
-      case "buddy-project-matches":
+      case "buddy-project-output":
         if (firstWord === "!match") BuddyProjectManager(this.message, "match");
         if (firstWord === "!check") BuddyProjectManager(this.message, "check");
         if (firstWord === "!unmatch")
           BuddyProjectManager(this.message, "unmatch");
         if (firstWord === "!clean") BuddyProjectManager(this.message, "clean");
-        if (firstWord === "!game") BuddyProjectManager(this.message, "game");
-        if (firstWord === "!checkAll")
-          BuddyProjectManager(this.message, "checkAll");
         break;
+
+      case "buddy-project-tools":
+        if (firstWord === "!ghost") BuddyProjectManager(this.message, "ghost");
+        if (firstWord === "!retry") BuddyProjectManager(this.message, "retry");
     }
 
     if (firstWord === "!topic") TopicManager(this.message);

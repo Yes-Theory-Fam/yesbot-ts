@@ -9,6 +9,8 @@ import Discord, {
   PartialUser,
   Message,
   GuildMember,
+  MessageReaction,
+  DMChannel,
 } from "discord.js";
 import bot from "../index";
 import Tools from "../common/tools";
@@ -16,6 +18,11 @@ import AdventureGame from "../programs/AdventureGame";
 import { MessageRepository } from "../entities/Message";
 import { backfillReactions } from "../programs/GroupManager";
 import { hasRole } from "../common/moderator";
+import { GUILD_ID } from "../const";
+import BuddyProjectGhost, {
+  BuddyConfirmation,
+} from "../programs/BuddyProjectGhost";
+import { removeEntry, BuddyProjectSignup } from "../programs/BuddyProject";
 
 class ReactionAdd {
   bot: Discord.Client;
@@ -26,6 +33,7 @@ class ReactionAdd {
   channel: TextChannel;
   guild: Guild;
   pureEmoji: any;
+  messageReaction: MessageReaction;
 
   constructor(
     messageReaction: Discord.MessageReaction,
@@ -39,12 +47,42 @@ class ReactionAdd {
     this.pureEmoji = messageReaction.emoji.toString();
     this.channel = <TextChannel>messageReaction.message.channel;
     this.guild = <Guild>this.channel.guild;
+    this.messageReaction = messageReaction;
     this.main();
   }
 
   async main() {
+    if (
+      this.channel.name === "buddy-project-tools" &&
+      this.pureEmoji === "👻" &&
+      !this.user.bot
+    ) {
+      let outputChannel = <TextChannel>(
+        this.guild.channels.cache.find((c) => c.name === "buddy-project-output")
+      );
+      const output = await BuddyProjectGhost(this.user, this.guild);
+      outputChannel.send(output.message);
+      if (!output.success) {
+        this.messageReaction.users.remove(this.user);
+      }
+    }
     if (this.pureEmoji === "🧙" && this.channel.name == "discord-disaster") {
       AdventureGame(this.user, this.guild, this.bot);
+    }
+    if (
+      this.channel.name === "buddy-project-tools" &&
+      this.pureEmoji === "🤓" &&
+      !this.user.bot
+    ) {
+      let outputChannel = <TextChannel>(
+        this.guild.channels.cache.find((c) => c.name === "buddy-project-output")
+      );
+      outputChannel.send(
+        `<@${this.user}> is signing up again for the relaunch.`
+      );
+      outputChannel.send(
+        await BuddyProjectSignup(this.guild.member(this.user))
+      );
     }
 
     const reactRoleObjects = await Tools.resolveFile("reactRoleObjects");
@@ -76,6 +114,12 @@ class ReactionAdd {
         }
       }
     });
+
+    if (this.channel instanceof DMChannel && this.pureEmoji === "✅") {
+      const guild = bot.guilds.resolve(GUILD_ID);
+      BuddyConfirmation(this.user, guild);
+      return;
+    }
 
     this.handleChannelToggleReaction();
   }
@@ -117,7 +161,6 @@ class ReactionAdd {
         (reaction) => reaction.emoji.name === this.reaction
       );
       reaction.users.remove(member);
-
       return;
     }
 
