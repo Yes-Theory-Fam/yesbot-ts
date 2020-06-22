@@ -123,7 +123,6 @@ bot.on(
 bot.on(
   "voiceStateUpdate",
   (oldMember: VoiceState, newMember: VoiceState) => new VoiceStateUpdate(oldMember, newMember));
-);
 bot.on("warn", (info: string) => null);
 bot.on("webhookUpdate", (channel: TextChannel) => null);
 //! ================= /EVENT HANDLERS ===================
