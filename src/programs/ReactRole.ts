@@ -118,9 +118,7 @@ async function listReactRoleObjects(pMessage: Discord.Message) {
   let start = 0;
   let end = 5;
   const words = pMessage.content.split(" ");
-  console.log("words", words);
   if (words.length >= 3) {
-    console.log("word2", words[2]);
     start = parseInt(words[2]);
     if (isNaN(start)) {
       pMessage.reply(`Hey! '${words[2]}' isn't a number!`);
@@ -129,7 +127,6 @@ async function listReactRoleObjects(pMessage: Discord.Message) {
   }
 
   if (words.length >= 4) {
-    console.log("word3", words[3]);
     end = parseInt(words[3]);
     if (isNaN(start)) {
       pMessage.reply(`Hey! '${words[3]}' isn't a number!`);
