@@ -56,7 +56,7 @@ export default async function BuddyProjectManager(
     case "ghost":
       message.channel
         .send(
-          `Do you think you've been ghosted?\nHave you gotten no reply from your Buddy? Have you tried contacting them multiple times? Have you been Buddies for longer than a week? If your answer to all those questions is yes, react to this message with :ghost: and I'll do my best to help you out! :yesbot_yf:\nWhile I get back to you, try contacting your buddy again. Who knows, maybe you'll get an answer :zany_face:`
+          `Do you think you've been ghosted?\nHave you gotten no reply from your Buddy? Have you tried contacting them multiple times? Have you been Buddies for longer than a week? If your answer to all those questions is yes, react to this message with :ghost: and I'll do my best to help you out!\nWhile I get back to you, try contacting your buddy again. Who knows, maybe you'll get an answer :zany_face:`
         )
         .then((sentMsg) => sentMsg.react("👻"));
       break;
