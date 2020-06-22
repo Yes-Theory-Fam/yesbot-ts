@@ -1,9 +1,13 @@
 import { VoiceState } from "discord.js";
-import { voiceOnDemandReset } from "../programs/VoiceOnDemand";
+import { getVoiceChannel } from "../programs/VoiceOnDemand";
 
 class VoiceStateUpdate {
   constructor(oldState: VoiceState, newState: VoiceState) {
-    voiceOnDemandReset(oldState, newState);
+    const { member, guild } = newState;
+    const leftPrivateChannel =
+      oldState.channel === getVoiceChannel(guild, member) &&
+      newState.channel == null;
+    if (leftPrivateChannel) oldState.channel.delete();
   }
 }
 
