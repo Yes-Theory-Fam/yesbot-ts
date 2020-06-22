@@ -7,7 +7,7 @@ import { Not, getConnection } from "typeorm";
 import { BUDDY_PROJECT_MATCHING } from "../const";
 
 export const getMatchText = (match: User, set: number): string => `
-Hey there! Thank you for signing up to be a part of the Buddy Project :speech_balloon: . You’ve been paired with ${match.toString()} If it's unclear on how to contact this person, please ask for help in <#701717612001886228> :grin:. This is where your Buddy Project journey starts! :grin:  First, you’ll have to get in touch with your Buddy. In every pair, one of the two people have been designated to be the “initiator” of the conversation. This responsibility falls on you! Message your buddy to start talking by searching up their username through the find function at the top left-hand corner of your screen, then start the chat! :heart:
+Hey there! Thank you for signing up to be a part of the Buddy Project :speech_balloon: . You’ve been paired with <@${match.id}>} If it's unclear on how to contact this person, please ask for help in <#701717612001886228> :grin:. This is where your Buddy Project journey starts! :grin:  First, you’ll have to get in touch with your Buddy. In every pair, one of the two people have been designated to be the “initiator” of the conversation. This responsibility falls on you! Message your buddy to start talking by searching up their username through the find function at the top left-hand corner of your screen, then start the chat! :heart:
 Most importantly, here’s your list of questions:
 
 ${
