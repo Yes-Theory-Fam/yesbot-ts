@@ -112,7 +112,6 @@ async function listReactRoleObjects(pMessage: Discord.Message) {
   const reactRoleObjects = await reactionRoleRepository.find({
     order: { id: "ASC" },
   });
-  console.log("listing");
 
   // Quick fix for limiting the results.
   let start = 0;
