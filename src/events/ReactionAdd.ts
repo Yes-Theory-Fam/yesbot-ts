@@ -58,7 +58,7 @@ class ReactionAdd {
       !this.user.bot
     ) {
       let outputChannel = <TextChannel>(
-        this.guild.channels.cache.find((c) => c.name === "buddy-project-output")
+        this.guild.channels.cache.find((c) => c.name === "buddy-project-ghosts")
       );
       const output = await BuddyProjectGhost(this.user, this.guild);
       outputChannel.send(output.message);

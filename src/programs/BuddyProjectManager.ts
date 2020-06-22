@@ -60,20 +60,6 @@ export default async function BuddyProjectManager(
         )
         .then((sentMsg) => sentMsg.react("👻"));
       break;
-    case "retry":
-      const bpChannel = <TextChannel>(
-        //this will be buddy-project instead of buddy-project-launch when we have a message we like
-        message.guild.channels.cache.find(
-          (c) => c.name === "buddy-project-tools"
-        )
-      );
-      bpChannel
-        .send(
-          //text to change
-          "Hey guys, we're relaunching the buddy project! The relaunch is scheduled to happen on Monday. If you would like to receive a new match, react below."
-        )
-        .then((sentMsg) => sentMsg.react("🤓"));
-
     default:
       break;
   }
