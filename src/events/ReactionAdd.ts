@@ -74,8 +74,10 @@ class ReactionAdd {
       this.pureEmoji === "💬" &&
       !this.user.bot
     ) {
-      const member = this.guild.members.cache.find(m => m.user === this.user);
-      const bpRole = this.guild.roles.cache.find(r => r.name === "Buddy Project 2020");
+      const member = this.guild.members.cache.find((m) => m.user === this.user);
+      const bpRole = this.guild.roles.cache.find(
+        (r) => r.name === "Buddy Project 2020"
+      );
       member.roles.add(bpRole);
       let outputChannel = <TextChannel>(
         this.guild.channels.cache.find((c) => c.name === "buddy-project-output")
