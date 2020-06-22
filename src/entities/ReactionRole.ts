@@ -28,5 +28,3 @@ export class ReactionRole {
 export const ReactionRoleRepository = async () => {
   return getConnection().getRepository(ReactionRole);
 };
-
-// {"messageId":"668469840981393408","reaction":"🏗️","roleId":"668435737401753611","channelId":"668435977051570187"}
