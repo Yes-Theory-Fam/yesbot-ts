@@ -234,6 +234,11 @@ export const buddyProjectMatch = async (
 };
 
 export const checkEntry = async (user: User): Promise<string> => {
+
+  if(!user) {
+    return "Bad user"
+  }
+  
   const buddyEntries = await BuddyProjectEntryRepository();
   const userEntry = await buddyEntries.findOne(user.id);
   const output = `__**Entry details for ${user.toString()}:**__
