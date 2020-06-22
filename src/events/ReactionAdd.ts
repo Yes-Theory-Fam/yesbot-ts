@@ -23,6 +23,7 @@ import BuddyProjectGhost, {
   BuddyConfirmation,
 } from "../programs/BuddyProjectGhost";
 import { removeEntry, BuddyProjectSignup } from "../programs/BuddyProject";
+import { ReactionRoleRepository } from "../entities/ReactionRole";
 
 class ReactionAdd {
   bot: Discord.Client;
@@ -89,18 +90,18 @@ class ReactionAdd {
         await BuddyProjectSignup(this.guild.member(this.user))
       );
     }
-
-    const reactRoleObjects = await Tools.resolveFile("reactRoleObjects");
-    reactRoleObjects.forEach((element: any) => {
+    const reactionRoleRepository = await ReactionRoleRepository();
+    const reactRoleObjects = await reactionRoleRepository.find();
+    reactRoleObjects.forEach((reactionRole) => {
       if (
-        this.messageId === element.messageId &&
-        this.reaction === element.reaction
+        this.messageId === reactionRole.messageId &&
+        this.reaction === reactionRole.reaction
       ) {
         const guildMember = this.guild.members.cache.find(
           (m) => m.id == this.user.id
         );
         const roleToAdd = this.guild.roles.cache.find(
-          (r) => r.id == element.roleId
+          (r) => r.id == reactionRole.roleId
         );
 
         if (
