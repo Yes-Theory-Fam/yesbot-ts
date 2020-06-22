@@ -13,6 +13,7 @@ import BirthdayManager from "./BirthdayManager";
 import PollsManager from "./PollsManager";
 import TopicManager from "./TopicManager";
 import BuddyProjectManager from "./BuddyProjectManager";
+import VoiceOnDemand from "./VoiceOnDemand";
 
 export {
   BuddyProjectManager,
@@ -30,4 +31,5 @@ export {
   Unassigned,
   ProfileManager,
   PollsManager,
+  VoiceOnDemand,
 };

@@ -4,6 +4,7 @@ import ReactionRemove from "./ReactionRemove";
 import Ready from "./Ready";
 import MemberJoin from "./MemberJoin";
 import GuildMemberUpdate from "./GuildMemberUpdate";
+import VoiceStateUpdate from "./VoiceStateUpdate";
 
 export {
   MessageManager,
@@ -12,4 +13,5 @@ export {
   Ready,
   MemberJoin,
   GuildMemberUpdate,
+  VoiceStateUpdate,
 };

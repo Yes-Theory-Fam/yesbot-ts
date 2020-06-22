@@ -21,6 +21,7 @@ import {
   ProfileManager,
   EasterEvent,
   PollsManager,
+  VoiceOnDemand,
 } from "../programs";
 import bot from "../index";
 import ExportManager from "../programs/ExportManager";
@@ -108,6 +109,7 @@ class MessageManager {
           GroupManager(this.message, true);
         if (firstWord === "!profile") ProfileManager(this.message, 0);
         if (firstWord === "!birthday") BirthdayManager(this.message);
+        if (firstWord === "!voice") VoiceOnDemand(this.message);
         break;
 
       case "polls":
