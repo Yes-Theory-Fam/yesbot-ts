@@ -34,10 +34,13 @@ export default async function ReactRole(message: Discord.Message) {
       break;
     case "list":
       listReactRoleObjects(message);
+      break;
     case "delete":
       deleteReactRoleObjects(words[1], message);
+      break;
     case "search":
       searchForRole(words[1], message);
+      break;
     default:
       break;
   }
