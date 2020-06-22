@@ -109,11 +109,42 @@ async function addReactRoleObject(
 async function listReactRoleObjects(pMessage: Discord.Message) {
   const guild = pMessage.guild;
   const reactionRoleRepository = await ReactionRoleRepository();
-  const reactRoleObjects = await reactionRoleRepository.find();
-  let returnString = "**List of available role reactions**:\n\n";
+  const reactRoleObjects = await reactionRoleRepository.find({
+    order: { id: "ASC" },
+  });
+  console.log("listing");
+
+  // Quick fix for limiting the results.
+  let start = 0;
+  let end = 5;
+  const words = pMessage.content.split(" ");
+  console.log("words", words);
+  if (words.length >= 3) {
+    console.log("word2", words[2]);
+    start = parseInt(words[2]);
+    if (isNaN(start)) {
+      pMessage.reply(`Hey! '${words[2]}' isn't a number!`);
+      return;
+    }
+  }
+
+  if (words.length >= 4) {
+    console.log("word3", words[3]);
+    end = parseInt(words[3]);
+    if (isNaN(start)) {
+      pMessage.reply(`Hey! '${words[3]}' isn't a number!`);
+      return;
+    }
+  }
+
+  // Maybe this limits us to the last few items so we don't go out of bounds :)
+  start = reactRoleObjects.length > start ? start : reactRoleObjects.length - 1;
+  end = reactRoleObjects.length > end ? end : reactRoleObjects.length;
+
+  let returnString = `**List of available role reactions (use !role list [start] [end] to limit) - Limit: ${start} - ${end}**:\n\n`;
   try {
     await Promise.all(
-      reactRoleObjects.map(async (reactionRoleObject) => {
+      reactRoleObjects.slice(start, end).map(async (reactionRoleObject) => {
         let role = guild.roles.cache.find(
           (r) => r.id == reactionRoleObject.roleId
         );
@@ -123,7 +154,7 @@ async function listReactRoleObjects(pMessage: Discord.Message) {
           reactionRoleObject.channelId
         );
         message = <Discord.Message>message;
-        returnString += `__**${reactionRoleObject.id}:**__\n**Message**: ${message.cleanContent}\n`;
+        returnString += `__**${reactionRoleObject.id}:**__\n**Message**: ${message?.cleanContent}\n`;
         returnString += `**Channel**: <#${channel}>\n`;
         returnString += `**Reaction**: ${reactionRoleObject.reaction}\n`;
         returnString += `**Reward Role**: <@&${role}>\n`;
@@ -133,7 +164,7 @@ async function listReactRoleObjects(pMessage: Discord.Message) {
     pMessage.channel.send(returnString);
   } catch (error) {
     pMessage.channel.send(
-      "I couldn't find any reaction roles for this server."
+      `I couldn't find any reaction roles for this server. Error message: ${error}`
     );
   }
 }
