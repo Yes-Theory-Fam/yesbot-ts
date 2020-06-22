@@ -7,7 +7,11 @@ import { Not, getConnection } from "typeorm";
 import { BUDDY_PROJECT_MATCHING } from "../const";
 
 export const getMatchText = (match: User, set: number): string => `
-Hey there! Thank you for signing up to be a part of the Buddy Project :speech_balloon: . You’ve been paired with <@${match.id}>} (${match.username + "#" + match.discriminator}). If it's unclear on how to contact this person, please ask for help in <#701717612001886228> :grin:. This is where your Buddy Project journey starts! :grin:  First, you’ll have to get in touch with your Buddy. In every pair, one of the two people have been designated to be the “initiator” of the conversation. This responsibility falls on you! Message your buddy to start talking by searching up their username through the find function at the top left-hand corner of your screen, then start the chat! :heart:
+Hey there! Thank you for signing up to be a part of the Buddy Project :speech_balloon: . You’ve been paired with <@${
+  match.id
+}>} (${
+  match.username + "#" + match.discriminator
+}). If it's unclear on how to contact this person, please ask for help in <#701717612001886228> :grin:. This is where your Buddy Project journey starts! :grin:  First, you’ll have to get in touch with your Buddy. In every pair, one of the two people have been designated to be the “initiator” of the conversation. This responsibility falls on you! Message your buddy to start talking by searching up their username through the find function at the top left-hand corner of your screen, then start the chat! :heart:
 Most importantly, here’s your list of questions:
 
 ${
@@ -71,7 +75,9 @@ export async function BuddyProjectSignup(member: GuildMember): Promise<string> {
   const dmChannel = await member.createDM();
   const buddyEntries = await BuddyProjectEntryRepository();
   let memberEntry = await buddyEntries.findOne(member.id);
-  let output = `New attempted entry from ${member.toString()}: ${discord_user ? "**DISCORD USER**" : "**WEBSITE USER**"}`;
+  let output = `New attempted entry from ${member.toString()}: ${
+    discord_user ? "**DISCORD USER**" : "**WEBSITE USER**"
+  }`;
   const addOutput = (arg: string) => (output = output.concat(`\n${arg}`));
 
   if (memberEntry) {
@@ -234,11 +240,10 @@ export const buddyProjectMatch = async (
 };
 
 export const checkEntry = async (user: User): Promise<string> => {
-
-  if(!user) {
-    return "Bad user"
+  if (!user) {
+    return "Bad user";
   }
-  
+
   const buddyEntries = await BuddyProjectEntryRepository();
   const userEntry = await buddyEntries.findOne(user.id);
   const output = `__**Entry details for ${user.toString()}:**__
