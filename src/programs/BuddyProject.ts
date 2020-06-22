@@ -104,7 +104,7 @@ export async function BuddyProjectSignup(member: GuildMember): Promise<string> {
     member.roles.add(bpRole);
 
   const successMessage = discord_user
-    ? "Woo! You just signed up to the buddy project, exciting right? I'll message you again momentarily with your buddy and what you need to do next!"
+    ? "Yayyy! You just signed up to the Buddy Project :heart: I'll send you another message soon with the name of your Buddy, your set of questions, and more instructions on how to proceed :grin:"
     : "Thanks for signing up to the relaunch! This will work the same as last time, except this time you are guaranteed to get a new member.";
 
   dmChannel.send(successMessage);
