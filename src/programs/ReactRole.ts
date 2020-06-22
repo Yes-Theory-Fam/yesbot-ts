@@ -134,6 +134,8 @@ async function listReactRoleObjects(pMessage: Discord.Message) {
     }
   }
 
+  end = end <= start ? start + 5 : end;
+
   // Maybe this limits us to the last few items so we don't go out of bounds :)
   start = reactRoleObjects.length > start ? start : reactRoleObjects.length - 1;
   end = reactRoleObjects.length > end ? end : reactRoleObjects.length;
