@@ -70,8 +70,8 @@ class ReactionAdd {
       AdventureGame(this.user, this.guild, this.bot);
     }
     if (
-      this.channel.name === "buddy-project-tools" &&
-      this.pureEmoji === "🤓" &&
+      this.channel.name === "buddy-project" &&
+      this.pureEmoji === "🗨️" &&
       !this.user.bot
     ) {
       let outputChannel = <TextChannel>(
