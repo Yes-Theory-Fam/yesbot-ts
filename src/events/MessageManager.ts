@@ -109,7 +109,10 @@ class MessageManager {
           GroupManager(this.message, true);
         if (firstWord === "!profile") ProfileManager(this.message, 0);
         if (firstWord === "!birthday") BirthdayManager(this.message);
-        if (firstWord === "!voice") VoiceOnDemand(this.message);
+
+        //Shelved
+        // if (firstWord === "!voice") VoiceOnDemand(this.message);
+        
         break;
 
       case "polls":
