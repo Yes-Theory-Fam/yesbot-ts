@@ -47,9 +47,14 @@ export default async function ReactRole(message: Discord.Message) {
 }
 
 const searchForRole = async (roleSearchString: string, message: Message) => {
-  const foundRole = message.guild.roles.cache.find((role) =>
-    role.name.toLowerCase().includes(roleSearchString.toLowerCase())
+  let foundRole = message.guild.roles.cache.find(
+    (role) => role.name.toLowerCase() === roleSearchString.toLowerCase()
   );
+  if (!foundRole) {
+    foundRole = message.guild.roles.cache.find((role) =>
+      role.name.toLowerCase().includes(roleSearchString.toLowerCase())
+    );
+  }
   if (!foundRole) {
     message.reply("I couldn't find that role!");
   } else {
