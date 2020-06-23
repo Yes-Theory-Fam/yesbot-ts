@@ -39,7 +39,7 @@ export default async function ReactRole(message: Discord.Message) {
       deleteReactRoleObjects(words[1], message);
       break;
     case "search":
-      searchForRole(words[1], message);
+      searchForRole([...words.slice(1)].join(" "), message);
       break;
     default:
       break;
