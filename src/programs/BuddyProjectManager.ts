@@ -5,6 +5,7 @@ import {
   removeEntry,
   checkEntries,
   sendQuestions,
+  getBuddyId,
 } from "./BuddyProject";
 import Tools from "../common/tools";
 
@@ -60,6 +61,8 @@ export default async function BuddyProjectManager(
         )
         .then((sentMsg) => sentMsg.react("👻"));
       break;
+    case "buddy":
+      message.reply(`Your buddy is <@${await getBuddyId(message.author)}>.`);
     default:
       break;
   }
