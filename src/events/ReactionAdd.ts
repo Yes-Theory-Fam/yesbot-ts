@@ -23,6 +23,7 @@ import BuddyProjectGhost, {
   BuddyConfirmation,
 } from "../programs/BuddyProjectGhost";
 import { removeEntry, BuddyProjectSignup } from "../programs/BuddyProject";
+import { ReactionRoleRepository } from "../entities/ReactionRole";
 
 class ReactionAdd {
   bot: Discord.Client;
@@ -74,8 +75,10 @@ class ReactionAdd {
       this.pureEmoji === "💬" &&
       !this.user.bot
     ) {
-      const member = this.guild.members.cache.find(m => m.user === this.user);
-      const bpRole = this.guild.roles.cache.find(r => r.name === "Buddy Project 2020");
+      const member = this.guild.members.cache.find((m) => m.user === this.user);
+      const bpRole = this.guild.roles.cache.find(
+        (r) => r.name === "Buddy Project 2020"
+      );
       member.roles.add(bpRole);
       let outputChannel = <TextChannel>(
         this.guild.channels.cache.find((c) => c.name === "buddy-project-output")
@@ -87,34 +90,35 @@ class ReactionAdd {
         await BuddyProjectSignup(this.guild.member(this.user))
       );
     }
+    const reactionRoleRepository = await ReactionRoleRepository();
+    const reactRoleObjects = await reactionRoleRepository.find({
+      where: {
+        messageId: this.messageId,
+        channelId: this.channel.id,
+        reaction: this.reaction,
+      },
+    });
+    reactRoleObjects.forEach((reactionRole) => {
+      const guildMember = this.guild.members.cache.find(
+        (m) => m.id == this.user.id
+      );
+      const roleToAdd = this.guild.roles.cache.find(
+        (r) => r.id == reactionRole.roleId
+      );
 
-    const reactRoleObjects = await Tools.resolveFile("reactRoleObjects");
-    reactRoleObjects.forEach((element: any) => {
       if (
-        this.messageId === element.messageId &&
-        this.reaction === element.reaction
+        this.hasNitroColour(guildMember) &&
+        this.messageId == "637401981262102578"
       ) {
-        const guildMember = this.guild.members.cache.find(
-          (m) => m.id == this.user.id
-        );
-        const roleToAdd = this.guild.roles.cache.find(
-          (r) => r.id == element.roleId
-        );
-
-        if (
-          this.hasNitroColour(guildMember) &&
-          this.messageId == "637401981262102578"
-        ) {
-          guildMember
-            .createDM()
-            .then((dm) =>
-              dm.send(
-                "You can't assign yourself a new colour yet, please wait until the end of the month!"
-              )
-            );
-        } else {
-          guildMember.roles.add(roleToAdd);
-        }
+        guildMember
+          .createDM()
+          .then((dm) =>
+            dm.send(
+              "You can't assign yourself a new colour yet, please wait until the end of the month!"
+            )
+          );
+      } else {
+        guildMember.roles.add(roleToAdd);
       }
     });
 

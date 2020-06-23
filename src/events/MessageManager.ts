@@ -112,7 +112,7 @@ class MessageManager {
 
         //Shelved
         // if (firstWord === "!voice") VoiceOnDemand(this.message);
-        
+
         break;
 
       case "polls":

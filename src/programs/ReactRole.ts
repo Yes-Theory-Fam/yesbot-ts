@@ -2,6 +2,7 @@ import Discord, { Snowflake, TextChannel, Message } from "discord.js";
 import Tools from "../common/tools";
 import { MODERATOR_ROLE_NAME } from "../const";
 import { isAuthorModerator } from "../common/moderator";
+import { ReactionRoleRepository } from "../entities/ReactionRole";
 
 export default async function ReactRole(message: Discord.Message) {
   //! This comes to us in the format of "!roles [add|list] [messageId] [emoji] [roleId] [channelId]"
@@ -33,19 +34,27 @@ export default async function ReactRole(message: Discord.Message) {
       break;
     case "list":
       listReactRoleObjects(message);
+      break;
     case "delete":
       deleteReactRoleObjects(words[1], message);
+      break;
     case "search":
-      searchForRole(words[1], message);
+      searchForRole([...words.slice(1)].join(" "), message);
+      break;
     default:
       break;
   }
 }
 
 const searchForRole = async (roleSearchString: string, message: Message) => {
-  const foundRole = message.guild.roles.cache.find((role) =>
-    role.name.toLowerCase().includes(roleSearchString.toLowerCase())
+  let foundRole = message.guild.roles.cache.find(
+    (role) => role.name.toLowerCase() === roleSearchString.toLowerCase()
   );
+  if (!foundRole) {
+    foundRole = message.guild.roles.cache.find((role) =>
+      role.name.toLowerCase().includes(roleSearchString.toLowerCase())
+    );
+  }
   if (!foundRole) {
     message.reply("I couldn't find that role!");
   } else {
@@ -72,24 +81,29 @@ async function addReactRoleObject(
   let role = await Tools.getRoleById(roleId, pMessage.guild);
   message = <Discord.Message>message;
   if (message && channel) {
-    const reactRoleObject = {
+    const reactionRoleRepository = await ReactionRoleRepository();
+    const reactRoleObject = reactionRoleRepository.create({
       messageId: message.id,
-      reaction,
-      roleId: role.id,
       channelId: channelId,
-    };
-    if (Tools.updateFile("reactRoleObjects", reactRoleObject)) {
-      await message.react(reaction);
-      const successEmbed = new Discord.MessageEmbed()
-        .setColor("#ff6063")
-        .setTitle("Reaction role successfully added.")
-        .addField("\u200b", "\u200b")
-        .addField("Target Message:", message.cleanContent, true)
-        .addField("Target Channel:", channel, true)
-        .addField("Necessary Reaction:", reaction, true)
-        .addField("Reward Role:", role, true);
-      pMessage.channel.send(successEmbed);
+      roleId: roleId,
+      reaction,
+    });
+    try {
+      await reactionRoleRepository.save(reactRoleObject);
+    } catch (err) {
+      pMessage.reply(`Failed to create reaction role. Error message: ${err}`);
+      return;
     }
+    await message.react(reaction);
+    const successEmbed = new Discord.MessageEmbed()
+      .setColor("#ff6063")
+      .setTitle("Reaction role successfully added.")
+      .addField("\u200b", "\u200b")
+      .addField("Target Message:", message.cleanContent, true)
+      .addField("Target Channel:", channel, true)
+      .addField("Necessary Reaction:", reaction, true)
+      .addField("Reward Role:", role, true);
+    pMessage.channel.send(successEmbed);
   } else {
     pMessage.reply(
       "I couldn't find that message, please check the parameters of your `!roles add` and try again."
@@ -99,50 +113,98 @@ async function addReactRoleObject(
 
 async function listReactRoleObjects(pMessage: Discord.Message) {
   const guild = pMessage.guild;
-  const reactRoleObjects = await Tools.resolveFile("reactRoleObjects");
-  const reactRoleObjectsList = new Discord.MessageEmbed()
-    .setColor("#ff6063")
-    .setTitle("Reaction Role List:");
-  let index = 1;
-  let returnString = "**List of available role reactions**:\n\n";
+  const reactionRoleRepository = await ReactionRoleRepository();
+  const reactRoleObjects = await reactionRoleRepository.find({
+    order: { id: "ASC" },
+  });
+
+  // Quick fix for limiting the results.
+  let start = 0;
+  let end = 5;
+  const words = pMessage.content.split(" ");
+  if (words.length >= 3) {
+    start = parseInt(words[2]);
+    if (isNaN(start)) {
+      pMessage.reply(`Hey! '${words[2]}' isn't a number!`);
+      return;
+    }
+  }
+
+  if (words.length >= 4) {
+    end = parseInt(words[3]);
+    if (isNaN(start)) {
+      pMessage.reply(`Hey! '${words[3]}' isn't a number!`);
+      return;
+    }
+  }
+
+  end = end <= start ? start + 5 : end;
+
+  // Maybe this limits us to the last few items so we don't go out of bounds :)
+  start = reactRoleObjects.length > start ? start : reactRoleObjects.length - 1;
+  end = reactRoleObjects.length > end ? end : reactRoleObjects.length;
+
+  let returnString = `**List of available role reactions (use !role list [start] [end] to limit) - Limit: ${start} - ${end}**:\n\n`;
   try {
     await Promise.all(
-      reactRoleObjects.map(async (i: any) => {
-        let role = guild.roles.cache.find((r) => r.id == i.roleId);
+      reactRoleObjects.slice(start, end).map(async (reactionRoleObject) => {
+        let role = guild.roles.cache.find(
+          (r) => r.id == reactionRoleObject.roleId
+        );
         let [message, channel] = await Tools.getMessageById(
-          i.messageId,
+          reactionRoleObject.messageId,
           guild,
-          i.channelId
+          reactionRoleObject.channelId
         );
         message = <Discord.Message>message;
-        returnString += `__**${index}:**__\n**Message**: ${message.cleanContent}\n`;
+        returnString += `__**${reactionRoleObject.id}:**__\n**Message**: ${message?.cleanContent}\n`;
         returnString += `**Channel**: <#${channel}>\n`;
-        returnString += `**Reaction**: ${i.reaction}\n`;
+        returnString += `**Reaction**: ${reactionRoleObject.reaction}\n`;
         returnString += `**Reward Role**: <@&${role}>\n`;
         returnString += `\n`;
-        index++;
       })
     );
     pMessage.channel.send(returnString);
   } catch (error) {
     pMessage.channel.send(
-      "I couldn't find any reaction roles for this server."
+      `I couldn't find any reaction roles for this server. Error message: ${error}`
     );
   }
 }
 
 async function deleteReactRoleObjects(index: any, pMessage: Discord.Message) {
-  let reactRoleObjects = await Tools.resolveFile("reactRoleObjects");
-  const objectToRemove: any = reactRoleObjects[index - 1];
-  reactRoleObjects.splice(index - 1, 1);
-  Tools.updateFile("reactRoleObjects", reactRoleObjects).then(async () => {
-    let [message, channel] = await Tools.getMessageById(
+  const reactionRoleRepository = await ReactionRoleRepository();
+  const objectToRemove = await reactionRoleRepository.findOne({
+    where: {
+      id: index,
+    },
+  });
+  if (objectToRemove) {
+    try {
+      await reactionRoleRepository.delete(objectToRemove);
+    } catch (err) {
+      pMessage.channel.send(
+        `Failed to delete reaction role. Error message: ${err}`
+      );
+      return;
+    }
+    let [message, _] = await Tools.getMessageById(
       objectToRemove.messageId,
       pMessage.guild,
       objectToRemove.channelId
     );
     message = <Discord.Message>message;
-    message.reactions.removeAll();
+    try {
+      message.reactions.removeAll();
+    } catch (err) {
+      // We don't really care about the error, since the message/channel might have been removed.
+      // We log it for good measure.
+      console.log(
+        `Error while removing all reactions from a reactionRole message: Err ${err}`
+      );
+    }
     pMessage.channel.send("Successfully removed reaction role.");
-  });
+  } else {
+    pMessage.reply("I cannot find a role with that ID.");
+  }
 }

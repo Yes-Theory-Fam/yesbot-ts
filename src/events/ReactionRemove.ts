@@ -10,6 +10,7 @@ import bot from "../index";
 import Tools from "../common/tools";
 import { ChannelToggleRepository } from "../entities/ChannelToggle";
 import { textLog } from "../common/moderator";
+import { ReactionRoleRepository } from "../entities/ReactionRole";
 
 class ReactionRemove {
   bot: Discord.Client;
@@ -23,7 +24,6 @@ class ReactionRemove {
     messageReaction: Discord.MessageReaction,
     user: User | PartialUser
   ) {
-    Tools.resolveFile("reactRoleObjects");
     this.bot = bot;
     this.user = <User>user;
     this.messageId = messageReaction.message.id;
@@ -34,20 +34,22 @@ class ReactionRemove {
   }
 
   async main() {
-    const reactRoleObjects = await Tools.resolveFile("reactRoleObjects");
-    reactRoleObjects.forEach((element: any) => {
-      if (
-        this.messageId === element.messageId &&
-        this.reaction === element.reaction
-      ) {
-        const guildMember = this.guild.members.cache.find(
-          (m) => m.id == this.user.id
-        );
-        const roleToAdd = this.guild.roles.cache.find(
-          (r) => r.id == element.roleId
-        );
-        guildMember.roles.remove(roleToAdd);
-      }
+    const reactionRoleRepository = await ReactionRoleRepository();
+    const reactRoleObjects = await reactionRoleRepository.find({
+      where: {
+        messageId: this.messageId,
+        channelId: this.channel.id,
+        reaction: this.reaction,
+      },
+    });
+    reactRoleObjects.forEach((reactionRole) => {
+      const guildMember = this.guild.members.cache.find(
+        (m) => m.id == this.user.id
+      );
+      const roleToAdd = this.guild.roles.cache.find(
+        (r) => r.id == reactionRole.roleId
+      );
+      guildMember.roles.remove(roleToAdd);
     });
 
     this.handleChannelToggleReaction();
