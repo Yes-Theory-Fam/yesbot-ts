@@ -114,7 +114,7 @@ export async function BuddyProjectSignup(member: GuildMember): Promise<string> {
   if (member.roles.cache.find((r) => r.id === bpRole.id))
     member.roles.add([bpRole, badgeRole]);
 
-  const successMessage = discord_user
+  const successMessage = !discord_user
     ? "Yayyy! You just signed up to the Buddy Project :heart: I'll send you another message soon with the name of your Buddy, your set of questions, and more instructions on how to proceed :grin:"
     : "Thanks for signing up to the relaunch! This will work the same as last time, except this time you are guaranteed to get a new member.";
 
