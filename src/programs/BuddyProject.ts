@@ -68,7 +68,7 @@ Don’t let the questions limit you, let the conversation flow and just get to k
 Tip: do this in a video call for an even better experience!  :video_camera:
 `;
 
-export const DISCORD_MATCHING: boolean = false;
+export const DISCORD_MATCHING: boolean = true;
 
 export async function BuddyProjectSignup(member: GuildMember): Promise<string> {
   const discord_user =
