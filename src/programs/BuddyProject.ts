@@ -70,7 +70,10 @@ Tip: do this in a video call for an even better experience!  :video_camera:
 
 export const DISCORD_MATCHING: boolean = true;
 
-export async function BuddyProjectSignup(member: GuildMember): Promise<string> {
+export async function BuddyProjectSignup(
+  member: GuildMember,
+  sendSuccessMessage = true
+): Promise<string> {
   const discord_user =
     new Date(member.joinedAt.toDateString()) <
     new Date(new Date().toDateString());
@@ -114,11 +117,13 @@ export async function BuddyProjectSignup(member: GuildMember): Promise<string> {
   if (member.roles.cache.find((r) => r.id === bpRole.id))
     member.roles.add([bpRole, badgeRole]);
 
-  const successMessage = !discord_user
-    ? "Yayyy! You just signed up to the Buddy Project :heart: I'll send you another message soon with the name of your Buddy, your set of questions, and more instructions on how to proceed :grin:"
-    : "Thanks for signing up to the relaunch! This will work the same as last time, except this time you are guaranteed to get a new member.";
+  if (sendSuccessMessage) {
+    const successMessage = !discord_user
+      ? "Yayyy! You just signed up to the Buddy Project :heart: I'll send you another message soon with the name of your Buddy, your set of questions, and more instructions on how to proceed :grin:"
+      : "Thanks for signing up to the relaunch! This will work the same as last time, except this time you are guaranteed to get a new member.";
 
-  dmChannel.send(successMessage);
+    dmChannel.send(successMessage);
+  }
   addOutput("Successfully entered.");
 
   if (!BUDDY_PROJECT_MATCHING) {
