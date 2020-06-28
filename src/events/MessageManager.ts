@@ -168,7 +168,12 @@ class MessageManager {
       if (!isTextChannel(channel)) return;
 
       const allowedCategories = ["hobbies", "gaming"];
-      const allowedChannels = ["chat", "chat-too", "learning-spanish"];
+      const allowedChannels = [
+        "chat",
+        "chat-too",
+        "learning-spanish",
+        "voice-chat",
+      ];
 
       if (
         allowedCategories.some((category) =>
