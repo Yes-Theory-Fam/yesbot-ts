@@ -42,12 +42,19 @@ class GuildMemberUpdate {
     if (hasRole(oldMember, "Time Out") && !hasRole(newMember, "Time Out")) {
       resolvePerUserPermissions(newMember);
     }
-    const nitroRoles = ["636670666447388702", "636525712450256896", "636902084108615690", "636483478640132106", "636901944790876160"];
-    const nitroColor: Role = newMember.roles.cache.find(r => nitroRoles.includes(r.id));
-    if(nitroColor && !hasRole(newMember, "Nitro Booster")) {
+    const nitroRoles = [
+      "636670666447388702",
+      "636525712450256896",
+      "636902084108615690",
+      "636483478640132106",
+      "636901944790876160",
+    ];
+    const nitroColor: Role = newMember.roles.cache.find((r) =>
+      nitroRoles.includes(r.id)
+    );
+    if (nitroColor && !hasRole(newMember, "Nitro Booster")) {
       newMember.roles.remove(nitroColor);
     }
-    
   }
 }
 

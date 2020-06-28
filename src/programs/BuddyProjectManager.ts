@@ -63,7 +63,11 @@ export default async function BuddyProjectManager(
       break;
     case "buddy":
       const buddy = await getBuddyId(message.author);
-      message.reply( buddy ? `Your buddy is <@${await getBuddyId(message.author)}>.` : "You haven't entered the Buddy Project yet! Go to <#701153345620148335> and react on the post to enter. :grin:");
+      message.reply(
+        buddy
+          ? `Your buddy is <@${await getBuddyId(message.author)}>.`
+          : "You haven't entered the Buddy Project yet! Go to <#701153345620148335> and react on the post to enter. :grin:"
+      );
     default:
       break;
   }
