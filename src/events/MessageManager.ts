@@ -134,7 +134,7 @@ class MessageManager {
       case "buddy-project-tools":
         if (firstWord === "!ghost") BuddyProjectManager(this.message, "ghost");
         if (firstWord === "!retry") BuddyProjectManager(this.message, "retry");
-        
+
       case "buddy-project-chat":
         if (firstWord === "!buddy") BuddyProjectManager(this.message, "buddy");
     }
@@ -168,7 +168,12 @@ class MessageManager {
       if (!isTextChannel(channel)) return;
 
       const allowedCategories = ["hobbies", "gaming"];
-      const allowedChannels = ["chat", "chat-too", "learning-spanish"];
+      const allowedChannels = [
+        "chat",
+        "chat-too",
+        "learning-spanish",
+        "voice-chat",
+      ];
 
       if (
         allowedCategories.some((category) =>
