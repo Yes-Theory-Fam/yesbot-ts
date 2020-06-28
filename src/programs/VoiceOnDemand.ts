@@ -1,4 +1,10 @@
-import { Message, GuildMember, VoiceState, VoiceChannel } from "discord.js";
+import {
+  Message,
+  GuildMember,
+  VoiceState,
+  VoiceChannel,
+  Permissions,
+} from "discord.js";
 
 import { hasRole } from "../common/moderator";
 import { VoiceOnDemandRepository } from "../entities/VoiceOnDemandMapping";
@@ -72,6 +78,20 @@ const createOnDemand = async (message: Message, userLimit: number) => {
   });
 
   await channel.updateOverwrite(guild.roles.everyone, { STREAM: true });
+  await channel.overwritePermissions([
+    {
+      id: guild.roles.everyone,
+      allow: [],
+      deny: [Permissions.FLAGS.CONNECT],
+      type: "role",
+    },
+    {
+      id: member.id,
+      allow: [Permissions.FLAGS.CONNECT],
+      deny: [],
+      type: "member",
+    },
+  ]);
 
   const repo = await VoiceOnDemandRepository();
   const mapping = repo.create({
@@ -105,6 +125,42 @@ const limitOnDemand = async (message: Message, limit: number) => {
   });
 
   message.reply(`Successfully changed the limit of your room to ${limit}`);
+};
+
+export const voiceOnDemandPermissions = async (
+  oldState: VoiceState,
+  newState: VoiceState
+) => {
+  // User leaving voice channel or remaining in the same channel are not relevant
+  if (!newState.channel || oldState.channel === newState.channel) return;
+
+  // Because this should only trigger when the owner (as first person) joins, we can ignore
+  //  all joins where more than one person is in the room after a person joined
+  if (newState.channel.members.size > 1) return;
+  const repo = await VoiceOnDemandRepository();
+
+  const { channel } = newState;
+  const { id } = channel;
+  const mapping = await repo.findOne({ channelId: id });
+
+  if (!mapping) return;
+
+  const { guild } = channel;
+
+  channel.overwritePermissions([
+    {
+      id: guild.roles.everyone,
+      allow: [Permissions.FLAGS.STREAM],
+      deny: [],
+      type: "role",
+    },
+    {
+      id: mapping.userId,
+      allow: [Permissions.FLAGS.STREAM],
+      deny: [],
+      type: "member",
+    },
+  ]);
 };
 
 // I would like to keep the function here so everything belongs together as piece.
