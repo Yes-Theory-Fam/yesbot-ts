@@ -141,7 +141,7 @@ export default async function GroupManager(
       `**@${group.name}**: ` +
       group.members.map((member) => `<@${member.id}>`).join(", ");
 
-    message.channel.send(groupPingMessage);
+    message.channel.send(groupPingMessage, { split: { char: "," } });
 
     group.lastUsed = new Date();
     groupRepository.save(group);
