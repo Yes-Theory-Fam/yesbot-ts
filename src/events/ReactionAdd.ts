@@ -19,9 +19,7 @@ import { MessageRepository } from "../entities/Message";
 import { backfillReactions } from "../programs/GroupManager";
 import { hasRole } from "../common/moderator";
 import { GUILD_ID } from "../const";
-import BuddyProjectGhost, {
-  BuddyConfirmation,
-} from "../programs/BuddyProjectGhost";
+import BuddyProjectGhost from "../programs/BuddyProjectGhost";
 import { removeEntry, BuddyProjectSignup } from "../programs/BuddyProject";
 import { ReactionRoleRepository } from "../entities/ReactionRole";
 
@@ -63,9 +61,8 @@ class ReactionAdd {
       );
       const output = await BuddyProjectGhost(this.user, this.guild);
       outputChannel.send(output.message);
-      if (!output.success) {
-        this.messageReaction.users.remove(this.user);
-      }
+
+      this.messageReaction.users.remove(this.user);
     }
     if (this.pureEmoji === "🧙" && this.channel.name == "discord-disaster") {
       AdventureGame(this.user, this.guild, this.bot);
@@ -121,12 +118,6 @@ class ReactionAdd {
         guildMember.roles.add(roleToAdd);
       }
     });
-
-    if (this.channel instanceof DMChannel && this.pureEmoji === "✅") {
-      const guild = bot.guilds.resolve(GUILD_ID);
-      BuddyConfirmation(this.user, guild);
-      return;
-    }
 
     this.handleChannelToggleReaction();
   }

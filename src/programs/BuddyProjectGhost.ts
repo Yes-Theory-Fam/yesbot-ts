@@ -1,5 +1,9 @@
-import { User, Guild, MessageReaction } from "discord.js";
-import { BuddyProjectEntryRepository } from "../entities/BuddyProjectEntry";
+import { User, Guild, DMChannel } from "discord.js";
+import {
+  BuddyProjectEntryRepository,
+  BuddyProjectEntry,
+} from "../entities/BuddyProjectEntry";
+import { BuddyProjectSignup } from "./BuddyProject";
 
 export default async function BuddyProjectGhost(
   user: User,
@@ -42,14 +46,59 @@ export default async function BuddyProjectGhost(
     return result;
   }
 
-  if (entry.reportedGhostDate) {
+  if (!entry.reportedGhostDate) {
     userDm.send(
-      "You have already reported being ghosted. Please have some patience :grin:."
+      "I will send your buddy a message as well and they will have one week to respond to it (yes I know it's another week of waiting but we want to make sure they get their fair chance). If they didn't respond within the next 7 days, you can click the ghost again to get your new buddy :blush:"
     );
-    addOutput(`User has already reported being ghosted.`);
+    addOutput(`Recording ${new Date().toISOString()} as reported ghost date.`);
+
+    markAsGhosted(userDm, guild, user, entry, addOutput);
+
     return result;
   }
 
+  if (entry.reportedGhostDate > sevenDaysAgo) {
+    const timeRemaining =
+      entry.reportedGhostDate.getTime() - sevenDaysAgo.getTime();
+    const hoursRemaining = timeRemaining / 1000 / 60 / 60;
+    const daysRemaining = hoursRemaining / 24;
+
+    const remainingText =
+      daysRemaining > 0
+        ? `${daysRemaining} day${daysRemaining === 1 ? "" : "s"}`
+        : `${hoursRemaining} hour${hoursRemaining === 1 ? "" : "s"}`;
+
+    userDm.send(
+      `You have already reported being ghosted. Please have some patience :grin: You still have to wait around ${remainingText}; in the meantime try reaching out to your buddy a few more times, maybe you can catch them!`
+    );
+    addOutput(
+      `User has already reported being ghosted. Time remaining: around ${remainingText}`
+    );
+    return result;
+  }
+
+  // At this point the user is ghosted for more than seven days (I hope)
+  userDm.send(
+    "It's me again! I unfortunately got no reply from your Buddy :pensive: So I'm going to match you with someone else. I'll send you a message with the questions and the name of your new Buddy soon! Also, if you type !buddy in #buddy-project-chat, the name of your new Buddy will pop up once that's happened :grin:"
+  );
+  await repo.delete(entry.buddy_id);
+  addOutput("Deleted buddy entry.");
+  await repo.delete(entry.user_id);
+  addOutput("Deleted user entry.");
+  BuddyProjectSignup(guild.member(entry.user_id), false);
+  addOutput(`Signed up ${user} to the Buddy Project again`);
+
+  return result;
+}
+
+const markAsGhosted = async (
+  userDm: DMChannel,
+  guild: Guild,
+  user: User,
+  entry: BuddyProjectEntry,
+  addOutput: (arg: string) => void
+) => {
+  const repo = await BuddyProjectEntryRepository();
   const buddy = guild.member(entry.buddy_id);
 
   if (!buddy) {
@@ -67,53 +116,11 @@ export default async function BuddyProjectGhost(
     `Hey there! You signed up to the buddy project and got matched with <@${user.id}> (${user.tag}) but never responded to them. Please let them know what's going on! :grin:`
   );
 
-  // The listener for reactions like these is /events/ReactionAdd because they have to be long term (one week) which isn't feasible with awaitReactions
-  // The code running when this happens is in the function below.
-  //We will turn this off pending further discussion about automation
-  // buddyMessage.react("✅");
   entry.reportedGhostDate = new Date();
   await repo.save(entry);
   addOutput(`Reported user as being ghosted.`);
 
   userDm.send(
-    "Hey there! I contacted your buddy with a message asking them to contact you and confirm they received the message. If they didn't confirm that within the next week, you will be unmatched again."
+    "Hey there, sorry to hear that you couldn't reach out to your buddy! I contacted them with a message asking them to contact you. If they didn't get back to you after a week, click the ghost again to get a new buddy!"
   );
-  result.success = true;
-  return result;
-}
-
-export async function BuddyConfirmation(user: User, guild: Guild) {
-  if (user.bot) return;
-
-  const repo = await BuddyProjectEntryRepository();
-  const entry = await repo.findOne(user.id);
-
-  const userDm = await user.createDM();
-  if (!entry) {
-    userDm.send(
-      "Hey, thanks for the confirmation. Unfortunately you missed the 7 day period and have been unmatched. To reenter the project, click the speech bubble in buddy-project on the Yes Theory Fam Server twice and be sure to stick around so you don't miss your buddy!"
-    );
-    return;
-  }
-
-  const buddy = guild.member(entry.buddy_id);
-  const buddyDm = await buddy.createDM();
-  buddyDm.send(
-    "Looks like your buddy is there indeed! I have just gotten the reaction from them :) Please send them another DM to make it easier to reply."
-  );
-
-  userDm.send(
-    "Hey, thanks for confirming you are there :) Please, please contact your buddy! They should have sent you a message before so check if you can find that in your DMs. I also asked them to contact you again to make it easier for you to find the DMs with them."
-  );
-
-  repo
-    .createQueryBuilder()
-    .update()
-    .set({
-      reportedGhostDate: null,
-    })
-    .where({ user_id: entry.buddy_id })
-    .execute();
-
-  // Ideally we probably also want to remove the reaction by the other user that reported the buddy as ghosting but not sure if there is a super sensible way to do this other than resolving the channel, resolving the message, resolving the reaction, removing the user's reaction.
-}
+};
