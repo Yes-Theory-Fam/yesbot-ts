@@ -244,10 +244,12 @@ export const buddyProjectMatch = async (
   }
 };
 
-export const getBuddyId = async (user: User): Promise<string> => {
+export const getBuddyId = async (
+  user: User
+): Promise<{ entered: boolean; buddyId: string }> => {
   const buddyEntries = await BuddyProjectEntryRepository();
   const buddyEntry = await buddyEntries.findOne(user.id);
-  return buddyEntry?.buddy_id;
+  return { entered: !!buddyEntry, buddyId: buddyEntry?.buddy_id };
 };
 
 export const checkEntry = async (user: User): Promise<string> => {
