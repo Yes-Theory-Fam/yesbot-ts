@@ -65,7 +65,7 @@ export default async function BuddyProjectManager(
       const buddy = await getBuddyId(message.author);
       if (buddy.entered && buddy.buddyId === undefined) {
         message.reply(
-          "We're sorry but you have not yet received a buddy yet. Hold tight!"
+          "We're sorry but you have not yet received a buddy. Hold tight!"
         );
       } else if (buddy.buddyId) {
         message.reply(`Your buddy is <@${buddy}>.`);
