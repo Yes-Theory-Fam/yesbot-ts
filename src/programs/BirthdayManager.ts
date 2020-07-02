@@ -406,6 +406,9 @@ function timezonesFromRole(props: CountryWithRegion): readonly string[] {
     case "Czech Republic": {
       return getCountry("CZ").timezones;
     }
+    case "the UAE": {
+      return getCountry("AE").timezones;
+    }
   }
 
   // let's find what tz's are available for this country
