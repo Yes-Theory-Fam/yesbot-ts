@@ -406,6 +406,14 @@ function timezonesFromRole(props: CountryWithRegion): readonly string[] {
     case "Czech Republic": {
       return getCountry("CZ").timezones;
     }
+    case "Brazil": {
+      return [
+        "Brazil/Acre",
+        "Brazil/East",
+        "Brazil/West",
+        "America/Rio_Branco",
+        "America/Sao_Paulo",
+      ];
     case "the UAE": {
       return getCountry("AE").timezones;
     }
