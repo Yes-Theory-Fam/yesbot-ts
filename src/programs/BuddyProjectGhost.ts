@@ -35,20 +35,20 @@ export default async function BuddyProjectGhost(
     return result;
   }
 
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  const threeDaysAgo = new Date();
+  threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
 
-  if (entry.matchedDate > sevenDaysAgo) {
+  if (entry.matchedDate > threeDaysAgo) {
     userDm.send(
-      "Have some patience :wink: It's not even been one week since you have been matched!"
+      "Have some patience :wink: It's not even been 72 hours since you have been matched!"
     );
-    addOutput(`User has not waited 7 days since match.`);
+    addOutput(`User has not waited 3 days since match.`);
     return result;
   }
 
   if (!entry.reportedGhostDate) {
     userDm.send(
-      "I will send your buddy a message as well and they will have one week to respond to it (yes I know it's another week of waiting but we want to make sure they get their fair chance). If they didn't respond within the next 7 days, you can click the ghost again to get your new buddy :blush:"
+      "I will send your buddy a message as well and they will have 72 hours to respond to it (yes I know it's another three days of waiting but we want to make sure they get their fair chance). If they didn't respond within the next 3 days, you can click the ghost again to get your new buddy :blush:"
     );
     addOutput(`Recording ${new Date().toISOString()} as reported ghost date.`);
 
@@ -57,9 +57,9 @@ export default async function BuddyProjectGhost(
     return result;
   }
 
-  if (entry.reportedGhostDate > sevenDaysAgo) {
+  if (entry.reportedGhostDate > threeDaysAgo) {
     const timeRemaining =
-      entry.reportedGhostDate.getTime() - sevenDaysAgo.getTime();
+      entry.reportedGhostDate.getTime() - threeDaysAgo.getTime();
     const hoursRemaining = timeRemaining / 1000 / 60 / 60;
     const daysRemaining = hoursRemaining / 24;
 
@@ -77,7 +77,7 @@ export default async function BuddyProjectGhost(
     return result;
   }
 
-  // At this point the user is ghosted for more than seven days (I hope)
+  // At this point the user is ghosted for more than three days (I hope)
   userDm.send(
     "It's me again! I unfortunately got no reply from your Buddy :pensive: So I'm going to match you with someone else. I'll send you a message with the questions and the name of your new Buddy soon! Also, if you type !buddy in #buddy-project-chat, the name of your new Buddy will pop up once that's happened :grin:"
   );
