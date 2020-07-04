@@ -1,4 +1,4 @@
-import { User, Guild, DMChannel } from "discord.js";
+import { User, Guild, DMChannel, TextChannel } from "discord.js";
 import {
   BuddyProjectEntryRepository,
   BuddyProjectEntry,
@@ -85,8 +85,13 @@ export default async function BuddyProjectGhost(
   addOutput("Deleted buddy entry.");
   await repo.delete(entry.user_id);
   addOutput("Deleted user entry.");
-  BuddyProjectSignup(guild.member(entry.user_id), false);
-  addOutput(`Signed up ${user} to the Buddy Project again`);
+
+  const output = await BuddyProjectSignup(guild.member(entry.user_id), false);
+  const outputChannel = guild.channels.cache.find(
+    (channel) => channel.name === "buddy-project-ghosting"
+  ) as TextChannel;
+  outputChannel.send(output);
+  addOutput(`Signed up <@${user}> to the Buddy Project again`);
 
   return result;
 }
