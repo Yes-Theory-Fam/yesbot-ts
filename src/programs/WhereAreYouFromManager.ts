@@ -82,6 +82,11 @@ export const getRoleForCountry = (country: Country, guild: Guild): Role => {
     "Canada",
   ].find((each) => country.title.includes(each));
 
+  const regionOverrides: { [key: string]: string } = {
+    England: "I'm from the UK! (England)",
+    Scotland: "I'm from the UK! (Scotland)",
+  };
+
   switch (isOutlier) {
     case "Australia":
       return guild.roles.cache.find(
@@ -95,11 +100,13 @@ export const getRoleForCountry = (country: Country, guild: Guild): Role => {
       );
     case "Canada":
       return guild.roles.cache.find((role) => role.name === "I'm from Canada!");
+
     default:
       return guild.roles.cache.find(
         (role) =>
-          role.name.startsWith("I'm from") &&
-          role.name.toLowerCase().endsWith(country.name.toLowerCase() + "!")
+          role.name === regionOverrides[country.name] ||
+          (role.name.startsWith("I'm from") &&
+            role.name.toLowerCase().endsWith(country.name.toLowerCase() + "!"))
       );
   }
 };
