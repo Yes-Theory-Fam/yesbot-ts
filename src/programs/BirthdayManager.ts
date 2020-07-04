@@ -418,6 +418,9 @@ function timezonesFromRole(props: CountryWithRegion): readonly string[] {
     case "Argentina": {
       return ["America/Buenos_Aires"];
     }
+    case "Chile": {
+      return ["America/Santiago"];
+    }
     case "the UAE": {
       return getCountry("AE").timezones;
     }
