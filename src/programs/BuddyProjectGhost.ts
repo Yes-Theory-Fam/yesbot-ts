@@ -35,14 +35,14 @@ export default async function BuddyProjectGhost(
     return result;
   }
 
-  const threeDaysAgo = new Date();
-  threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-  if (entry.matchedDate > threeDaysAgo) {
+  if (entry.matchedDate > sevenDaysAgo) {
     userDm.send(
-      "Have some patience :wink: It's not even been 72 hours since you have been matched!"
+      "Have some patience :wink: It's not even been a week since you have been matched!"
     );
-    addOutput(`User has not waited 3 days since match.`);
+    addOutput(`User has not waited 7 days since match.`);
     return result;
   }
 
@@ -56,6 +56,9 @@ export default async function BuddyProjectGhost(
 
     return result;
   }
+
+  const threeDaysAgo = new Date();
+  threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
 
   if (entry.reportedGhostDate > threeDaysAgo) {
     const timeRemaining =
