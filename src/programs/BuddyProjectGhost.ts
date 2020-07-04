@@ -91,7 +91,7 @@ export default async function BuddyProjectGhost(
     (channel) => channel.name === "buddy-project-ghosting"
   ) as TextChannel;
   outputChannel.send(output);
-  addOutput(`Signed up ${user} to the Buddy Project again`);
+  addOutput(`Signed up <@${user}> to the Buddy Project again`);
 
   return result;
 }
