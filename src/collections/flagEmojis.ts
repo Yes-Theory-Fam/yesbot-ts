@@ -20,7 +20,7 @@ export const countries: Country[] = [
     "code": "AE",
     "emoji": "🇦🇪",
     "unicode": "U+1F1E6 U+1F1EA",
-    "name": "United Arab Emirates",
+    "name": "UAE",
     "title": "flag for United Arab Emirates",
 
   },
@@ -1651,6 +1651,13 @@ export const countries: Country[] = [
     "name": "Swaziland",
     "title": "flag for Swaziland",
 
+  },
+  {
+    "code": "UK-SC",
+    "emoji": "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+    "unicode": "U+1F3F4+U+E0067+U+E0062+U+E0073+U+E0063+U+E0074+U+E007F",
+    "name":"Scotland",
+    "title":"Scotland"
   },
   {
     "code": "TC",

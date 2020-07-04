@@ -15,6 +15,9 @@ const cases: Array<Testcase> = [
   ["romania", "Romania", "I'm from Romania!"],
   ["norway", "Norway", "I'm from Norway!"],
   ["🇺🇲", "USA", "I'm from the USA!"],
+  ["🇦🇪", "UAE", "I'm from the UAE!"],
+  ["England", "England", "I'm from the UK! (England)"],
+  ["Scotland", "Scotland", "I'm from the UK! (Scotland)"],
 ];
 
 const test = () => {
