@@ -60,8 +60,8 @@ export default async function BuddyProjectGhost(
   if (entry.reportedGhostDate > threeDaysAgo) {
     const timeRemaining =
       entry.reportedGhostDate.getTime() - threeDaysAgo.getTime();
-    const hoursRemaining = timeRemaining / 1000 / 60 / 60;
-    const daysRemaining = hoursRemaining / 24;
+    const hoursRemaining = Math.round(timeRemaining / 1000 / 60 / 60);
+    const daysRemaining = Math.round(hoursRemaining / 24);
 
     const remainingText =
       daysRemaining > 0
