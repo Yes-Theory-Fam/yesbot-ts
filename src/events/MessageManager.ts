@@ -57,7 +57,7 @@ class MessageManager {
   routeMessage() {
     const filteredWords = ["nigger", "nigga"];
 
-    const words = this.message.content.split(" ");
+    const words = this.message.content.split(/\s+/);
     const firstWord = words[0];
     const channel = <Discord.TextChannel>this.message.channel;
 
