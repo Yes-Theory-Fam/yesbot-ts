@@ -91,7 +91,7 @@ export default async function BuddyProjectGhost(
 
   const output = await BuddyProjectSignup(guild.member(entry.user_id), false);
   const outputChannel = guild.channels.cache.find(
-    (channel) => channel.name === "buddy-project-ghosting"
+    (channel) => channel.name === "buddy-project-output"
   ) as TextChannel;
   outputChannel.send(output);
   addOutput(`Signed up <@${user}> to the Buddy Project again`);
