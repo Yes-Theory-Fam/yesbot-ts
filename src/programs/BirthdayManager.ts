@@ -6,6 +6,7 @@ import {
   User,
   MessageReaction,
 } from "discord.js";
+import { zonedTimeToUtc } from "date-fns-tz";
 import { getAllCountries, getCountry } from "countries-and-timezones";
 
 import Tools from "../common/tools";
@@ -138,7 +139,7 @@ export default async function BirthdayManager(message: Message) {
       birthdate
     )} ${timezone}\``
   );
-  createBirthday(birthdayUser.id, birthdate);
+  createBirthday(birthdayUser.id, zonedTimeToUtc(birthdate, timezone));
 }
 
 async function createBirthday(id: string, birthdate: Date) {
