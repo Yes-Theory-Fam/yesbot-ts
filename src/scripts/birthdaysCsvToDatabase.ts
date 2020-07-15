@@ -17,6 +17,10 @@ interface CSVBirthday {
   [key: number]: string | number;
 }
 
+interface BirthdayCollection {
+  [key: string]: Birthday;
+}
+
 const debug = false;
 
 async function importBirthdaysCsvToDatabase(filename: string) {
@@ -98,19 +102,29 @@ async function importBirthdaysCsvToDatabase(filename: string) {
       })
   );
 
-  if (birthdays.length === 0) {
+  const toCreate = birthdays.reduce<BirthdayCollection>(
+    (prev, curr) => ({
+      ...prev,
+      [curr.userid]: curr,
+    }),
+    {}
+  );
+
+  if (Object.keys(toCreate).length === 0) {
     console.log("No new birthdays to insert.");
     return;
   }
 
-  console.log(`Creating ${birthdays.length} birthdays.`);
+  console.log(`Creating ${Object.keys(toCreate).length} birthdays.`);
 
   if (debug) {
-    [0, 1, 2, 3, 4].forEach((n) =>
-      console.debug(
-        `First row (parsed): ${birthdays[n].userid}:${birthdays[n].birthdate}`
-      )
-    );
+    Object.keys(toCreate)
+      .slice(0, 4)
+      .forEach((key) =>
+        console.debug(
+          `First row (parsed): ${toCreate[key].userid}:${toCreate[key].birthdate}`
+        )
+      );
   }
 
   try {
@@ -118,7 +132,11 @@ async function importBirthdaysCsvToDatabase(filename: string) {
       .createQueryBuilder()
       .insert()
       .into(Birthday)
-      .values(birthdays)
+      .values(
+        Object.keys(toCreate)
+          .map((key) => toCreate[key])
+          .reduce((prev, curr) => [...prev, curr], [])
+      )
       .execute();
   } catch (err) {
     console.log("Failed to mass-import birthdays. Error: ", err);
