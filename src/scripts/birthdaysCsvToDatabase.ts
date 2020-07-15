@@ -77,7 +77,8 @@ async function importBirthdaysCsvToDatabase(filename: string) {
         const year = 1970;
         const birthmonth = row[4] - 1;
         const birthdayofmonth = row[5];
-        const timezone = row[timezoneRow] as string;
+        const timezone =
+          timezoneRow !== -1 ? (row[timezoneRow] as string) : null;
         if (debug) {
           console.log(
             `creating bday with new Date(1970, ${birthmonth}, ${birthdayofmonth}) in ${timezone}`
@@ -97,7 +98,7 @@ async function importBirthdaysCsvToDatabase(filename: string) {
         return createBirthday(
           userid,
           new Date(year, birthmonth, birthdayofmonth),
-          timezone
+          timezoneRow === -1 ? null : timezone
         );
       })
   );
