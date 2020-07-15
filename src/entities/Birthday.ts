@@ -7,6 +7,9 @@ export class Birthday {
 
   @Column("timestamp with time zone")
   birthdate: Date;
+
+  @Column("text", { nullable: true })
+  timezone: string;
 }
 
 export const BirthdayRepository = async () =>
