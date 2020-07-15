@@ -6,11 +6,12 @@ import {
   User,
   MessageReaction,
 } from "discord.js";
+import { zonedTimeToUtc } from "date-fns-tz";
 import { getAllCountries, getCountry } from "countries-and-timezones";
 
 import Tools from "../common/tools";
 import { textLog, isAuthorModerator } from "../common/moderator";
-import { BirthdayRepository } from "../entities/Birthday";
+import { BirthdayRepository, Birthday } from "../entities/Birthday";
 import { ENGINEER_ROLE_NAME } from "../const";
 
 const IM_FROM = "I'm from ";
@@ -138,16 +139,25 @@ export default async function BirthdayManager(message: Message) {
       birthdate
     )} ${timezone}\``
   );
-  createBirthday(birthdayUser.id, birthdate);
+  saveBirthday(await createBirthday(birthdayUser.id, birthdate, timezone));
 }
 
-async function createBirthday(id: string, birthdate: Date) {
+export async function createBirthday(
+  id: string,
+  birthdate: Date,
+  timezone: string
+) {
   const birthdayRepository = await BirthdayRepository();
-  const birthday = birthdayRepository.create({
+  return birthdayRepository.create({
     userid: id,
-    birthdate,
+    birthdate: zonedTimeToUtc(birthdate, timezone),
+    timezone,
   });
-  await birthdayRepository.save(birthday);
+}
+
+export async function saveBirthday(birthday: Birthday) {
+  const birthdayRepository = await BirthdayRepository();
+  return birthdayRepository.save(birthday);
 }
 
 export function getUserBirthdate(message: string): Date | null {
