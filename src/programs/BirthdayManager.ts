@@ -6,7 +6,7 @@ import {
   User,
   MessageReaction,
 } from "discord.js";
-import { zonedTimeToUtc } from "date-fns-tz";
+import { zonedTimeToUtc, utcToZonedTime } from "date-fns-tz";
 import { getAllCountries, getCountry } from "countries-and-timezones";
 
 import Tools from "../common/tools";
@@ -460,7 +460,10 @@ export async function getUserBirthday(userId: string): Promise<Date | null> {
 
   return userExistingBirthday === undefined
     ? null
-    : userExistingBirthday.birthdate;
+    : utcToZonedTime(
+        userExistingBirthday.birthdate,
+        userExistingBirthday.timezone
+      );
 }
 
 export function formatBirthday(date: Date | null): string {
