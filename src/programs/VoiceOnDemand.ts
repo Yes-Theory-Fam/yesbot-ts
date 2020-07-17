@@ -4,11 +4,15 @@ import {
   VoiceState,
   VoiceChannel,
   Permissions,
+  Client,
 } from "discord.js";
 
 import { hasRole } from "../common/moderator";
+import state from "../common/state";
+import { GUILD_ID } from "../const";
 import { VoiceOnDemandRepository } from "../entities/VoiceOnDemandMapping";
 
+const emptyTime = 60000;
 const getChannelName = (m: GuildMember) => `• 🔈 ${m.displayName}'s Room`;
 
 const getVoiceChannel = async (member: GuildMember) => {
@@ -21,24 +25,22 @@ const getVoiceChannel = async (member: GuildMember) => {
 export default async function (message: Message) {
   if (!hasRole(message.member, "Yes Theory")) {
     message.reply(
-      `Hey, you need to have the ${message.guild.roles.cache
-        .find((r) => r.name === "Yes Theory")
-        .toString()} to use this command! You can get this by talking with others in our public voice chats :grin:`
+      `Hey, you need to have the Yes Theory role to use this command! You can get this by talking with others in our public voice chats :grin:`
     );
     return;
   }
 
   const [, command, limitArg = "10"] = message.content.split(" ");
   const requestedLimit = Number(limitArg);
-  const maxLimit = 10;
+  const maxLimit = 30;
 
   if (isNaN(requestedLimit)) {
-    message.reply("The limit has to be a number");
+    error(message, "The limit has to be a number");
     return;
   }
 
   if (requestedLimit < 2) {
-    message.reply("The limit has to be at least 2");
+    error(message, "The limit has to be at least 2");
     return;
   }
 
@@ -51,6 +53,8 @@ export default async function (message: Message) {
     case "limit":
       limitOnDemand(message, limit);
       break;
+    default:
+      error(message, "Wrong syntax! Use !voice <create|limit> [limit]");
   }
 }
 
@@ -59,9 +63,7 @@ const createOnDemand = async (message: Message, userLimit: number) => {
   const hasExisting = await getVoiceChannel(member);
 
   if (hasExisting) {
-    message
-      .reply("You already have an existing voice channel!")
-      .then((message) => message.delete({ timeout: 10000 }));
+    error(message, "You already have an existing voice channel!");
     return;
   }
 
@@ -104,7 +106,8 @@ const createOnDemand = async (message: Message, userLimit: number) => {
     `Your room was created with a limit of ${userLimit}, have fun! Don't forget, this channel will be deleted if there is noone in it. :smile:`
   );
 
-  setTimeout(() => deleteIfEmpty(channel), 60000);
+  const timeout = setTimeout(() => deleteIfEmpty(channel), emptyTime);
+  state.voiceChannels.set(channel.id, timeout);
 };
 
 const limitOnDemand = async (message: Message, limit: number) => {
@@ -112,11 +115,10 @@ const limitOnDemand = async (message: Message, limit: number) => {
   const memberVoiceChannel = await getVoiceChannel(member);
 
   if (!memberVoiceChannel) {
-    message
-      .reply(
-        "You don't have a voice channel. You can create one using `!voice create` and an optional limit"
-      )
-      .then((message) => message.delete({ timeout: 10000 }));
+    error(
+      message,
+      "You don't have a voice channel. You can create one using `!voice create` and an optional limit"
+    );
     return;
   }
 
@@ -154,13 +156,10 @@ export const voiceOnDemandPermissions = async (
       deny: [],
       type: "role",
     },
-    {
-      id: mapping.userId,
-      allow: [Permissions.FLAGS.STREAM],
-      deny: [],
-      type: "member",
-    },
   ]);
+
+  // We don't need this overwrite anymore
+  channel.permissionOverwrites.get(mapping.userId)?.delete();
 };
 
 // I would like to keep the function here so everything belongs together as piece.
@@ -172,16 +171,39 @@ export const voiceOnDemandReset = async (
   // If there is no old channel, the user didn't leave anything
   // If old and new channel are the same, the channel still has
   //  the same amount of users in so it's not relevant for our purpose
-  if (!oldState.channel || oldState.channel === newState.channel) return;
+  if (!oldState.channel || oldState.channelID === newState.channelID) return;
+
+  const channelId = oldState.channel.id;
+  const timeout = state.voiceChannels.get(channelId);
+  clearTimeout(timeout);
 
   const repo = await VoiceOnDemandRepository();
 
-  const channelId = oldState.channel.id;
   const hasMapping = await repo.findOne({ channelId });
 
   if (!hasMapping) return;
 
-  deleteIfEmpty(oldState.channel);
+  const newTimeout = setTimeout(
+    () => deleteIfEmpty(oldState.channel),
+    emptyTime
+  );
+  state.voiceChannels.set(channelId, newTimeout);
+};
+
+// To make sure voice channels are still cleaned up after a bot restart, we are looking through all stored channels
+//  adding a timeout task to clean up in case they are empty.
+export const voiceOnDemandReady = async (bot: Client) => {
+  const guild = bot.guilds.resolve(GUILD_ID);
+  const repo = await VoiceOnDemandRepository();
+  const mappings = await repo.find();
+  for (let i = 0; i < mappings.length; i++) {
+    const { channelId } = mappings[i];
+    const channel = guild.channels.resolve(channelId) as VoiceChannel;
+    if (channel.members.size === 0) {
+      const timeout = setTimeout(() => deleteIfEmpty(channel), emptyTime);
+      state.voiceChannels.set(channelId, timeout);
+    }
+  }
 };
 
 const deleteIfEmpty = async (channel: VoiceChannel) => {
@@ -193,4 +215,11 @@ const deleteIfEmpty = async (channel: VoiceChannel) => {
     const repo = await VoiceOnDemandRepository();
     repo.delete({ channelId: channel.id });
   }
+};
+
+const error = (message: Message, reply: string) => {
+  message.reply(reply).then((msg) => {
+    message.delete();
+    msg.delete({ timeout: 10000 });
+  });
 };
