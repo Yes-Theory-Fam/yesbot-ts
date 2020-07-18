@@ -33,3 +33,24 @@ export const seperatorOnRoleAdd = (
 
   newMember.roles.add(sorted[seperatorIndex]);
 };
+
+export const seperatorOnRoleRemove = (
+  oldMember: GuildMember | PartialGuildMember,
+  newMember: GuildMember | PartialGuildMember
+) => {
+  if (oldMember.roles.cache.size <= newMember.roles.cache.size) return;
+
+  const memberRolesSorted = newMember.roles.cache
+    .array()
+    .sort((a, b) => b.comparePositionTo(a));
+
+  // A seperator role can be removed if there is no role or another seperator role below it.
+  const seperatorsToRemove = memberRolesSorted.filter(
+    (role, index) =>
+      role.name.startsWith(seperatorStart) &&
+      (index === memberRolesSorted.length - 2 ||
+        memberRolesSorted[index + 1]?.name.startsWith(seperatorStart))
+  );
+
+  seperatorsToRemove.forEach((role) => newMember.roles.remove(role));
+};

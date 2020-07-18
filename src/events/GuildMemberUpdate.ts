@@ -10,7 +10,10 @@ import {
 import Tools from "../common/tools";
 import { hasRole } from "../common/moderator";
 import { BuddyProjectSignup } from "../programs/BuddyProject";
-import { seperatorOnRoleAdd } from "../programs/Seperators";
+import {
+  seperatorOnRoleAdd,
+  seperatorOnRoleRemove,
+} from "../programs/Seperators";
 
 class GuildMemberUpdate {
   bot: Client;
@@ -58,6 +61,7 @@ class GuildMemberUpdate {
     }
 
     seperatorOnRoleAdd(oldMember, newMember);
+    seperatorOnRoleRemove(oldMember, newMember);
   }
 }
 
