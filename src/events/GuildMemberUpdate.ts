@@ -10,6 +10,7 @@ import {
 import Tools from "../common/tools";
 import { hasRole } from "../common/moderator";
 import { BuddyProjectSignup } from "../programs/BuddyProject";
+import { seperatorOnRoleAdd } from "../programs/Seperators";
 
 class GuildMemberUpdate {
   bot: Client;
@@ -55,6 +56,8 @@ class GuildMemberUpdate {
     if (nitroColor && !hasRole(newMember, "Nitro Booster")) {
       newMember.roles.remove(nitroColor);
     }
+
+    seperatorOnRoleAdd(oldMember, newMember);
   }
 }
 
