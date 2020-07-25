@@ -63,7 +63,7 @@ export default async function BuddyProjectManager(
       break;
     case "buddy":
       const buddy = await getBuddyId(message.author);
-      if (buddy.entered && buddy.buddyId === undefined) {
+      if (buddy.entered && !buddy.buddyId) {
         message.reply(
           "We're sorry but you have not yet received a buddy. Hold tight!"
         );
