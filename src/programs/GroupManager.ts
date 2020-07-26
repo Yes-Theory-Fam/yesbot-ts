@@ -20,12 +20,26 @@ import {
 import { ILike } from "../lib/typeormILIKE";
 import { MessageRepository, getOrCreateMessage } from "../entities/Message";
 import { ChannelToggleRepository } from "../entities/ChannelToggle";
+import { Repository } from "typeorm";
 
-interface DiscordGroup {
-  name: String;
-  members: String[];
-  description: String;
+interface GroupInteractionSuccess {
+  groupName: string;
+  success: true;
 }
+
+interface GroupInteractionError {
+  groupName: string;
+  success: false;
+  message: string;
+}
+
+type GroupInteractionInformation =
+  | GroupInteractionSuccess
+  | GroupInteractionError;
+
+const isSuccess = (
+  result: GroupInteractionInformation
+): result is GroupInteractionSuccess => result.success;
 
 export default async function GroupManager(
   message: Discord.Message,
@@ -36,8 +50,8 @@ export default async function GroupManager(
   if (isConfig) {
     const words = Tools.stringToWords(content);
     words.shift();
-    const [action, requestName, ...descriptionWords] = words;
-    const description = descriptionWords.join(" ");
+    const [action, requestName, ...rest] = words;
+    const description = rest.join(" ");
 
     if (
       !action ||
@@ -62,7 +76,7 @@ export default async function GroupManager(
 
     switch (action) {
       case "join":
-        joinGroup(message, requestName, user);
+        joinGroup(message, [requestName, ...rest], user);
         break;
 
       case "toggle":
@@ -75,7 +89,7 @@ export default async function GroupManager(
         break;
 
       case "leave":
-        leaveGroup(message, requestName, user);
+        leaveGroup(message, [requestName, ...rest], user);
         break;
 
       case "search":
@@ -459,72 +473,169 @@ const changeCooldown = async (
 
 const joinGroup = async (
   message: Discord.Message,
-  requestedGroupName: string,
+  requestedGroupNames: string[],
   member: GuildMember
 ) => {
-  const groupRepository = await UserGroupRepository();
-  const userGroupMembershipRepository = await UserGroupMembershipRepository();
-
-  const newGroupMember = userGroupMembershipRepository.create({
-    id: member.id,
-  });
-
-  const group = await groupRepository.findOne({
-    where: {
-      name: ILike(requestedGroupName),
-    },
-    relations: ["members"],
-  });
-
-  if (group === undefined) {
-    message.reply("I couldn't find that group.");
-    return;
-  }
-
-  if (group.members.some((m: GroupMember) => m.id === member.id)) {
-    message.react("👎");
-    message.reply("You are already in that group!");
-    return;
-  }
-
-  const membership = await userGroupMembershipRepository.save(newGroupMember);
-  groupRepository.save({
-    ...group,
-    members: [...group.members, membership],
-  });
-
-  message.react("👍");
+  groupInteractionAndReport(
+    message,
+    requestedGroupNames,
+    member,
+    tryJoinGroups
+  );
 };
 
 const leaveGroup = async (
   message: Discord.Message,
-  requestedGroupName: string,
+  requestedGroupNames: string[],
   member: GuildMember
 ) => {
-  const groupRepository = await UserGroupRepository();
+  groupInteractionAndReport(
+    message,
+    requestedGroupNames,
+    member,
+    tryLeaveGroups
+  );
+};
 
-  const group = await groupRepository.findOne({
-    where: {
-      name: ILike(requestedGroupName),
-    },
-    relations: ["members"],
+const tryJoinGroups = async (
+  groups: UserGroup[],
+  member: GuildMember,
+  groupRepository: Repository<UserGroup>
+): Promise<GroupInteractionInformation[]> => {
+  const results: GroupInteractionInformation[] = [];
+  const userGroupMembershipRepository = await UserGroupMembershipRepository();
+  const newGroupMember = userGroupMembershipRepository.create({
+    id: member.id,
   });
 
-  if (group === undefined) {
-    message.reply("I couldn't find that group.");
+  for (let i = 0; i < groups.length; i++) {
+    const group = groups[i];
+
+    if (group.members.some((m: GroupMember) => m.id === member.id)) {
+      results.push({
+        groupName: group.name,
+        success: false,
+        message: "You are already in that group!",
+      });
+      continue;
+    }
+
+    const membership = await userGroupMembershipRepository.save(newGroupMember);
+    groupRepository.save({
+      ...group,
+      members: [...group.members, membership],
+    });
+
+    results.push({
+      groupName: group.name,
+      success: true,
+    });
+  }
+
+  return results;
+};
+
+const tryLeaveGroups = async (
+  groups: UserGroup[],
+  member: GuildMember,
+  groupRepository: Repository<UserGroup>
+): Promise<GroupInteractionInformation[]> => {
+  const results: GroupInteractionInformation[] = [];
+
+  for (let i = 0; i < groups.length; i++) {
+    const group = groups[i];
+
+    const updatedMemberList = group.members.filter(
+      (m: GroupMember) => m.id !== member.id
+    );
+
+    if (updatedMemberList.length === group.members.length) {
+      results.push({
+        success: false,
+        groupName: group.name,
+        message: "You are not in that group!",
+      });
+      continue;
+    }
+
+    groupRepository.save({
+      ...group,
+      members: updatedMemberList,
+    });
+
+    results.push({
+      groupName: group.name,
+      success: true,
+    });
+  }
+
+  return results;
+};
+
+const groupInteractionAndReport = async (
+  message: Discord.Message,
+  requestedGroupNames: string[],
+  member: GuildMember,
+  interaction: (
+    groups: UserGroup[],
+    member: GuildMember,
+    groupRepository: Repository<UserGroup>
+  ) => Promise<GroupInteractionInformation[]>
+) => {
+  if (requestedGroupNames.filter((name) => name).length === 0) {
+    message.react("👎");
+    message.reply("I need at least one group name to do that!");
     return;
   }
 
-  const updatedMemberList = group.members.filter(
-    (m: GroupMember) => m.id !== member.id
+  const sanitizedGroupNames = requestedGroupNames
+    .map((name) => name.replace(/,/g, "").trim())
+    .filter((name) => name);
+
+  const uniqueGroupNames = sanitizedGroupNames.filter(
+    (name, index) => sanitizedGroupNames.indexOf(name) === index
   );
-  groupRepository.save({
-    ...group,
-    members: updatedMemberList,
+
+  const groupRepository = await UserGroupRepository();
+
+  const whereCondition = uniqueGroupNames.map((groupName) => ({
+    name: ILike(groupName),
+  }));
+
+  const groups = await groupRepository.find({
+    where: whereCondition,
+    relations: ["members"],
   });
 
-  const removed = updatedMemberList.length < group.members.length;
+  if (groups === undefined || groups.length === 0) {
+    message.reply("I couldn't find any of the requested groups.");
+    return;
+  }
 
-  message.react(removed ? "👍" : "👎");
-  if (!removed) message.reply("You are not in that group!");
+  const tryResult = await interaction(groups, member, groupRepository);
+  if (tryResult.length === 1) {
+    const result = tryResult[0];
+
+    if (isSuccess(result)) {
+      message.react("👍");
+    } else {
+      message.react("👎");
+      message.reply(result.message);
+    }
+
+    return;
+  }
+
+  const report: string[] = [];
+  for (let i = 0; i < uniqueGroupNames.length; i++) {
+    const name = uniqueGroupNames[i];
+    const result = tryResult.filter(
+      (result) => result.groupName.toLowerCase() === name.toLowerCase()
+    )[0];
+    if (!result) report.push(`${name} - 👎 - I could not find that group.`);
+    else if (isSuccess(result)) report.push(`${name} - 👍`);
+    else report.push(`${name} - 👎 - ${result.message}`);
+  }
+
+  message.reply("\n" + report.join("\n"));
 };
