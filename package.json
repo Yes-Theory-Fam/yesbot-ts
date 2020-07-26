@@ -16,25 +16,25 @@
     "axios": "^0.19.2",
     "countries-and-timezones": "^2.2.0",
     "country-code-emoji": "^1.0.0",
-    "date-fns": "^2.12.0",
+    "date-fns": "^2.15.0",
     "date-fns-tz": "^1.0.10",
-    "discord.js": "^12.0.0",
-    "firebase": "^7.14.1",
+    "discord.js": "^12.2.0",
+    "firebase": "^7.17.1",
     "fs": "0.0.1-security",
     "path": "^0.12.7",
-    "pg": "^8.0.3",
+    "pg": "^8.3.0",
     "reflect-metadata": "^0.1.13",
-    "ts-node": "^8.8.2",
-    "typeorm": "^0.2.24",
+    "ts-node": "^8.10.2",
+    "typeorm": "^0.2.25",
     "typeorm-upsert": "^1.0.0",
-    "typescript": "^3.8.3"
+    "typescript": "^3.9.7"
   },
   "devDependencies": {
     "@yestheoryfam/prettier-config": "^1.0.0",
-    "@types/countries-and-timezones": "^2.0.2",
+    "@types/countries-and-timezones": "^2.0.3",
     "@types/node": "^13.11.1",
-    "@types/ws": "^7.2.4",
+    "@types/ws": "^7.2.6",
     "prettier": "^2.0.5",
-    "ts-node-dev": "^1.0.0-pre.44"
+    "ts-node-dev": "^1.0.0-pre.56"
   }
 }
