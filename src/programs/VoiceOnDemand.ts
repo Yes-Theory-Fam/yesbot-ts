@@ -30,9 +30,9 @@ export default async function (message: Message) {
     return;
   }
 
-  const [, command, limitArg = "10"] = message.content.split(" ");
+  const [, command, limitArg = "5"] = message.content.split(" ");
   const requestedLimit = Number(limitArg);
-  const maxLimit = 30;
+  const maxLimit = 10;
 
   if (isNaN(requestedLimit)) {
     error(message, "The limit has to be a number");
