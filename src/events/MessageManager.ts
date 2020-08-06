@@ -56,6 +56,13 @@ class MessageManager {
   }
   routeMessage() {
     const filteredWords = ["nigger", "nigga"];
+    const mentionedMembers = this.message.mentions.users.size
+    console.log(mentionedMembers)
+    if(mentionedMembers > 10) {
+      const timeoutRole = this.message.guild.roles.cache.find(r => r.name === "Time Out")
+      this.message.member.roles.add(timeoutRole)
+      textLog(`<@${this.message.author.id}> just tagged more than 10 people in a single message. The message has been deleted and they have beeen timed out.`);
+    }
 
     const words = this.message.content.split(/\s+/);
     const firstWord = words[0];
