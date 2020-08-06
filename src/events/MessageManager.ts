@@ -32,6 +32,7 @@ import {
   AUSTRALIA_IMAGE_URL,
   RESOURCES_CODING,
   RESOURCES_SPANISH,
+  MODERATOR_ROLE_NAME,
 } from "../const";
 import Tools from "../common/tools";
 import state from "../common/state";
@@ -58,10 +59,12 @@ class MessageManager {
     const filteredWords = ["nigger", "nigga"];
     const mentionedMembers = this.message.mentions.users.size
     console.log(mentionedMembers)
-    if(mentionedMembers > 10) {
+    if(mentionedMembers > 10 && !this.message.author.bot) {
+      this.message.delete();
       const timeoutRole = this.message.guild.roles.cache.find(r => r.name === "Time Out")
+      const supportRole = this.message.guild.roles.cache.find(r => r.name === MODERATOR_ROLE_NAME);
       this.message.member.roles.add(timeoutRole)
-      textLog(`<@${this.message.author.id}> just tagged more than 10 people in a single message. The message has been deleted and they have beeen timed out.`);
+      textLog(`<@${supportRole.id}>: <@${this.message.author.id}> just tagged more than 10 people in a single message. The message has been deleted and they have beeen timed out.`);
     }
 
     const words = this.message.content.split(/\s+/);
