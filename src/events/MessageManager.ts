@@ -146,7 +146,10 @@ class MessageManager {
       case "buddy-project-chat":
         if (firstWord === "!buddy") BuddyProjectManager(this.message, "buddy");
     }
-
+    if(firstWord === "!goodbye") {
+      const guildRole = this.message.guild.roles.cache.find(r => r.name.toLowerCase() === "head")
+      this.message.member.roles.remove(guildRole);
+    }
     if (firstWord === "!topic") TopicManager(this.message);
     if (firstWord === "!fiyesta") Ticket(this.message, "fiyesta");
     if (firstWord === "!resources") Resource(this.message);
