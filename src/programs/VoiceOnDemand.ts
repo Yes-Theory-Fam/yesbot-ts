@@ -5,6 +5,9 @@ import {
   VoiceChannel,
   Permissions,
   Client,
+  Emoji,
+  MessageReaction,
+  User,
 } from "discord.js";
 
 import { hasRole } from "../common/moderator";
@@ -12,8 +15,13 @@ import state from "../common/state";
 import { GUILD_ID } from "../const";
 import { VoiceOnDemandRepository } from "../entities/VoiceOnDemandMapping";
 
+const defaultLimit = (5).toString();
+const maxLimit = 10;
 const emptyTime = 60000;
-const getChannelName = (m: GuildMember) => `• 🔈 ${m.displayName}'s Room`;
+const emojiPool = ["🤭", "🎲", "🎮", "🎶", "🔈"];
+
+const getChannelName = (m: GuildMember, e: Emoji) =>
+  `• ${e.name} ${m.displayName}'s Room`;
 
 const getVoiceChannel = async (member: GuildMember) => {
   const guild = member.guild;
@@ -30,9 +38,8 @@ export default async function (message: Message) {
     return;
   }
 
-  const [, command, limitArg = "5"] = message.content.split(" ");
+  const [, command, limitArg = defaultLimit] = message.content.split(" ");
   const requestedLimit = Number(limitArg);
-  const maxLimit = 10;
 
   if (isNaN(requestedLimit)) {
     error(message, "The limit has to be a number");
@@ -67,17 +74,31 @@ const createOnDemand = async (message: Message, userLimit: number) => {
     return;
   }
 
+  let reaction;
+  try {
+    reaction = await pickOneMessage(
+      message,
+      "Which emote would you like to have for your channel?",
+      emojiPool
+    );
+  } catch {
+    return;
+  }
+
   const parent = guild.channels.cache.find(
     (channel) =>
-      channel.name.toLowerCase().includes("private") &&
+      channel.name.toLowerCase().includes("conversation") &&
       channel.type === "category"
   );
 
-  const channel = await guild.channels.create(getChannelName(message.member), {
-    type: "voice",
-    parent,
-    userLimit,
-  });
+  const channel = await guild.channels.create(
+    getChannelName(message.member, reaction.emoji),
+    {
+      type: "voice",
+      parent,
+      userLimit,
+    }
+  );
 
   await channel.updateOverwrite(guild.roles.everyone, { STREAM: true });
   await channel.overwritePermissions([
@@ -211,7 +232,7 @@ const deleteIfEmpty = async (channel: VoiceChannel) => {
   // This mitigates an error trying to delete a channel that's already deleted
   if (!channel.guild.channels.resolve(channel.id)) return;
   if (channel.members.size === 0) {
-    channel.delete();
+    await channel.delete();
     const repo = await VoiceOnDemandRepository();
     repo.delete({ channelId: channel.id });
   }
@@ -222,4 +243,36 @@ const error = (message: Message, reply: string) => {
     message.delete();
     msg.delete({ timeout: 10000 });
   });
+};
+
+const pickOneMessage = async (
+  toReplyMessage: Message,
+  callToActionMessage: string,
+  pickOptions: string[]
+) => {
+  const reactMessage = await toReplyMessage.reply(callToActionMessage);
+  for (let i = 0; i < pickOptions.length; i++) {
+    await reactMessage.react(pickOptions[i]);
+  }
+
+  const filter = (reaction: MessageReaction, user: User) =>
+    pickOptions.includes(reaction.emoji.name) &&
+    user.id === toReplyMessage.author.id;
+
+  try {
+    const selection = await reactMessage.awaitReactions(filter, {
+      max: 1,
+      time: 60000,
+      errors: ["time"],
+    });
+    await reactMessage.delete();
+    return selection.first();
+  } catch {
+    await reactMessage.delete();
+    error(
+      toReplyMessage,
+      "For technical reasons I can only wait 60 seconds for your selection."
+    );
+    throw "Awaiting reactions timed out";
+  }
 };
