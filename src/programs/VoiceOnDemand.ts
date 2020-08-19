@@ -264,6 +264,7 @@ const pickOneMessage = async (
       max: 1,
       time: 60000,
     });
+    await reactMessage.delete();
     return selection.first();
   } catch {
     await reactMessage.delete();
