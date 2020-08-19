@@ -1,5 +1,5 @@
 import Discord, { TextChannel } from "discord.js";
-import { DeadchatQuestion, DeadchatRepository } from "../entities/Deadchat";
+import { DeadchatQuestion, DeadchatRepository } from "../entities";
 
 export default async function Deadchat(pMessage: Discord.Message) {
   const isDead =

@@ -1,6 +1,6 @@
 import "../db"; // imported for side effect
 import Tools from "../common/tools";
-import { ReactionRoleRepository, ReactionRole } from "../entities/ReactionRole";
+import { ReactionRoleRepository, ReactionRole } from "../entities";
 import { setTimeout } from "timers";
 
 // // {"messageId":"668469840981393408","reaction":"🏗️","roleId":"668435737401753611","channelId":"668435977051570187"}

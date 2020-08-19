@@ -1,7 +1,7 @@
 import "../db"; // imported for side effect
 import fs from "fs";
-import { BirthdayRepository, Birthday } from "../entities/Birthday";
-import { createBirthday } from "../programs/BirthdayManager";
+import { BirthdayRepository, Birthday } from "../entities";
+import { BirthdayManagerTools } from "../programs";
 import { setTimeout } from "timers";
 import { zonedTimeToUtc } from "date-fns-tz";
 import { exit } from "process";
@@ -95,7 +95,7 @@ async function importBirthdaysCsvToDatabase(filename: string) {
             )
           );
         }
-        return createBirthday(
+        return BirthdayManagerTools.createBirthday(
           userid,
           new Date(year, birthmonth, birthdayofmonth),
           timezoneRow === -1 ? null : timezone

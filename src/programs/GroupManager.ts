@@ -1,25 +1,24 @@
 import Discord, {
-  Snowflake,
-  TextChannel,
+  Guild,
   GuildMember,
   Message,
   MessageEmbed,
   MessageReaction,
+  TextChannel,
   User,
-  Guild,
 } from "discord.js";
 import Tools from "../common/tools";
-import { MODERATOR_ROLE_NAME, ENGINEER_ROLE_NAME } from "../const";
+import { ENGINEER_ROLE_NAME } from "../const";
 import { isAuthorModerator } from "../common/moderator";
 import {
-  UserGroup,
-  UserGroupRepository,
-  UserGroupMembershipRepository,
+  ChannelToggleRepository,
+  getOrCreateMessage,
   GroupMember,
-} from "../entities/UserGroup";
+  UserGroup,
+  UserGroupMembershipRepository,
+  UserGroupRepository,
+} from "../entities";
 import { ILike } from "../lib/typeormILIKE";
-import { MessageRepository, getOrCreateMessage } from "../entities/Message";
-import { ChannelToggleRepository } from "../entities/ChannelToggle";
 import { Repository } from "typeorm";
 
 interface GroupInteractionSuccess {
@@ -67,7 +66,6 @@ export default async function GroupManager(
       ].includes(action)
     ) {
       const helpMessage = `Incorrect syntax, please use the following: \`!group join|leave|create|search|delete|update|changeCooldown\`. If you need additional help, react with 🛠️ below to tag a ${ENGINEER_ROLE_NAME}`;
-      const angryMessage = await message.reply(helpMessage);
       return;
     }
 

@@ -1,16 +1,13 @@
 import Discord, {
-  Snowflake,
-  User,
-  Channel,
   Guild,
-  TextChannel,
   PartialUser,
+  Snowflake,
+  TextChannel,
+  User,
 } from "discord.js";
 import bot from "../index";
-import Tools from "../common/tools";
-import { ChannelToggleRepository } from "../entities/ChannelToggle";
+import { ChannelToggleRepository, ReactionRoleRepository } from "../entities";
 import { textLog } from "../common/moderator";
-import { ReactionRoleRepository } from "../entities/ReactionRole";
 
 class ReactionRemove {
   bot: Discord.Client;

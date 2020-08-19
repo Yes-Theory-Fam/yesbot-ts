@@ -1,8 +1,7 @@
-import Discord, { Snowflake, TextChannel, Message } from "discord.js";
+import Discord, { Snowflake, Message } from "discord.js";
 import Tools from "../common/tools";
-import { MODERATOR_ROLE_NAME } from "../const";
 import { isAuthorModerator } from "../common/moderator";
-import { ReactionRoleRepository } from "../entities/ReactionRole";
+import { ReactionRoleRepository } from "../entities";
 
 export default async function ReactRole(message: Discord.Message) {
   //! This comes to us in the format of "!roles [add|list] [messageId] [emoji] [roleId] [channelId]"
@@ -12,9 +11,6 @@ export default async function ReactRole(message: Discord.Message) {
   const words = Tools.stringToWords(message.content);
   words.shift();
   const [action, messageId, reaction, roleId, channelId] = words;
-  const workingChannel: Discord.Channel = channelId
-    ? message.guild.channels.resolve(channelId)
-    : message.channel;
 
   if (!action || !["add", "list", "delete", "search"].includes(action)) {
     message.reply(
@@ -188,7 +184,7 @@ async function deleteReactRoleObjects(index: any, pMessage: Discord.Message) {
       );
       return;
     }
-    let [message, _] = await Tools.getMessageById(
+    let [message] = await Tools.getMessageById(
       objectToRemove.messageId,
       pMessage.guild,
       objectToRemove.channelId

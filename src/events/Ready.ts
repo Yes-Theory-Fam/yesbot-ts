@@ -1,6 +1,6 @@
 import Discord from "discord.js";
 import { GUILD_ID, OUTPUT_CHANNEL_ID } from "../const";
-import { voiceOnDemandReady } from "../programs/VoiceOnDemand";
+import { VoiceOnDemandTools } from "../programs";
 
 class Ready {
   bot: Discord.Client;
@@ -16,7 +16,7 @@ class Ready {
       outputChannel.send(`${bot.user.tag} - Online`);
     }
 
-    voiceOnDemandReady(bot);
+    VoiceOnDemandTools.voiceOnDemandReady(bot);
   }
 }
 

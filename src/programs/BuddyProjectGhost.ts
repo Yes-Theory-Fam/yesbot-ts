@@ -1,8 +1,5 @@
 import { User, Guild, DMChannel, TextChannel } from "discord.js";
-import {
-  BuddyProjectEntryRepository,
-  BuddyProjectEntry,
-} from "../entities/BuddyProjectEntry";
+import { BuddyProjectEntryRepository, BuddyProjectEntry } from "../entities";
 import { BuddyProjectSignup } from "./BuddyProject";
 
 export default async function BuddyProjectGhost(

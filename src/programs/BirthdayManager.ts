@@ -1,17 +1,17 @@
 import {
   CollectorFilter,
-  Message,
   GuildMember,
+  Message,
   MessageEmbed,
-  User,
   MessageReaction,
+  User,
 } from "discord.js";
 import { zonedTimeToUtc, utcToZonedTime } from "date-fns-tz";
 import { getAllCountries, getCountry } from "countries-and-timezones";
 
 import Tools from "../common/tools";
 import { textLog, isAuthorModerator } from "../common/moderator";
-import { BirthdayRepository, Birthday } from "../entities/Birthday";
+import { BirthdayRepository, Birthday } from "../entities";
 import { ENGINEER_ROLE_NAME } from "../const";
 
 const IM_FROM = "I'm from ";

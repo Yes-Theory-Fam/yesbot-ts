@@ -1,7 +1,10 @@
 import { GuildMember, PartialGuildMember } from "discord.js";
-import { BuddyProjectEntryRepository } from "../entities/BuddyProjectEntry";
-import { BirthdayRepository } from "../entities/Birthday";
-import { GroupMember, UserGroupRepository } from "../entities/UserGroup";
+import {
+  BirthdayRepository,
+  BuddyProjectEntryRepository,
+  GroupMember,
+  UserGroupRepository,
+} from "../entities";
 import { textLog } from "../common/moderator";
 import { ILike } from "../lib/typeormILIKE";
 
