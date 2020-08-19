@@ -263,6 +263,7 @@ const pickOneMessage = async (
     const selection = await reactMessage.awaitReactions(filter, {
       max: 1,
       time: 60000,
+      errors: ["time"],
     });
     await reactMessage.delete();
     return selection.first();
