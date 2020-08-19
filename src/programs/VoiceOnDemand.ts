@@ -4,7 +4,10 @@ import {
   VoiceState,
   VoiceChannel,
   Permissions,
-  Client, Emoji, MessageReaction, User,
+  Client,
+  Emoji,
+  MessageReaction,
+  User,
 } from "discord.js";
 
 import { hasRole } from "../common/moderator";
@@ -17,7 +20,8 @@ const maxLimit = 10;
 const emptyTime = 60000;
 const emojiPool = ["🤭", "🎲", "🎮", "🎶", "🔈"];
 
-const getChannelName = (m: GuildMember, e: Emoji) => `• ${e.name} ${m.displayName}'s Room`;
+const getChannelName = (m: GuildMember, e: Emoji) =>
+  `• ${e.name} ${m.displayName}'s Room`;
 
 const getVoiceChannel = async (member: GuildMember) => {
   const guild = member.guild;
@@ -72,7 +76,11 @@ const createOnDemand = async (message: Message, userLimit: number) => {
 
   let reaction;
   try {
-    reaction = await pickOneMessage(message, "Which emote would you like to have for your channel?", emojiPool);
+    reaction = await pickOneMessage(
+      message,
+      "Which emote would you like to have for your channel?",
+      emojiPool
+    );
   } catch {
     return;
   }
@@ -83,11 +91,14 @@ const createOnDemand = async (message: Message, userLimit: number) => {
       channel.type === "category"
   );
 
-  const channel = await guild.channels.create(getChannelName(message.member, reaction.emoji), {
-    type: "voice",
-    parent,
-    userLimit,
-  });
+  const channel = await guild.channels.create(
+    getChannelName(message.member, reaction.emoji),
+    {
+      type: "voice",
+      parent,
+      userLimit,
+    }
+  );
 
   await channel.updateOverwrite(guild.roles.everyone, { STREAM: true });
   await channel.overwritePermissions([
@@ -234,21 +245,32 @@ const error = (message: Message, reply: string) => {
   });
 };
 
-const pickOneMessage = async (toReplyMessage: Message, callToActionMessage: string, pickOptions: string[]) => {
+const pickOneMessage = async (
+  toReplyMessage: Message,
+  callToActionMessage: string,
+  pickOptions: string[]
+) => {
   const reactMessage = await toReplyMessage.reply(callToActionMessage);
   for (let i = 0; i < pickOptions.length; i++) {
     await reactMessage.react(pickOptions[i]);
   }
 
   const filter = (reaction: MessageReaction, user: User) =>
-    pickOptions.includes(reaction.emoji.name) && user.id === toReplyMessage.author.id;
+    pickOptions.includes(reaction.emoji.name) &&
+    user.id === toReplyMessage.author.id;
 
   try {
-    const selection = await reactMessage.awaitReactions(filter, { max: 1, time: 60000 });
+    const selection = await reactMessage.awaitReactions(filter, {
+      max: 1,
+      time: 60000,
+    });
     return selection.first();
   } catch {
     await reactMessage.delete();
-    error(toReplyMessage, "For technical reasons I can only wait 60 seconds for your selection.");
+    error(
+      toReplyMessage,
+      "For technical reasons I can only wait 60 seconds for your selection."
+    );
     throw "Awaiting reactions timed out";
   }
-}
+};

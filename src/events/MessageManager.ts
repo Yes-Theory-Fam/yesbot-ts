@@ -57,13 +57,19 @@ class MessageManager {
   }
   routeMessage() {
     const filteredWords = ["nigger", "nigga"];
-    const mentionedMembers = this.message.mentions.users.size
-    if(mentionedMembers > 10 && !this.message.author.bot) {
+    const mentionedMembers = this.message.mentions.users.size;
+    if (mentionedMembers > 10 && !this.message.author.bot) {
       this.message.delete();
-      const timeoutRole = this.message.guild.roles.cache.find(r => r.name === "Time Out")
-      const supportRole = this.message.guild.roles.cache.find(r => r.name === MODERATOR_ROLE_NAME);
-      this.message.member.roles.add(timeoutRole)
-      textLog(`<@&${supportRole.id}>: <@${this.message.author.id}> just tagged more than 10 people in a single message. The message has been deleted and they have beeen timed out.`);
+      const timeoutRole = this.message.guild.roles.cache.find(
+        (r) => r.name === "Time Out"
+      );
+      const supportRole = this.message.guild.roles.cache.find(
+        (r) => r.name === MODERATOR_ROLE_NAME
+      );
+      this.message.member.roles.add(timeoutRole);
+      textLog(
+        `<@&${supportRole.id}>: <@${this.message.author.id}> just tagged more than 10 people in a single message. The message has been deleted and they have beeen timed out.`
+      );
     }
 
     const words = this.message.content.split(/\s+/);
@@ -146,8 +152,10 @@ class MessageManager {
       case "buddy-project-chat":
         if (firstWord === "!buddy") BuddyProjectManager(this.message, "buddy");
     }
-    if(firstWord === "!goodbye") {
-      const guildRole = this.message.guild.roles.cache.find(r => r.name.toLowerCase() === "head")
+    if (firstWord === "!goodbye") {
+      const guildRole = this.message.guild.roles.cache.find(
+        (r) => r.name.toLowerCase() === "head"
+      );
       this.message.member.roles.remove(guildRole);
     }
     if (firstWord === "!topic") TopicManager(this.message);
