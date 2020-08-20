@@ -9,7 +9,6 @@ export default async function ProfileManager(pMessage: Discord.Message) {
   if (content.startsWith("!profile")) {
     const words = Tools.stringToWords(content);
     words.shift();
-    const [] = words;
 
     let requestedUser = pMessage.mentions.users.first();
     if (!requestedUser) requestedUser = pMessage.member.user;

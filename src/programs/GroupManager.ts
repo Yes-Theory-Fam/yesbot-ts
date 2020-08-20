@@ -66,6 +66,7 @@ export default async function GroupManager(
       ].includes(action)
     ) {
       const helpMessage = `Incorrect syntax, please use the following: \`!group join|leave|create|search|delete|update|changeCooldown\`. If you need additional help, react with 🛠️ below to tag a ${ENGINEER_ROLE_NAME}`;
+      await message.reply(helpMessage);
       return;
     }
 
