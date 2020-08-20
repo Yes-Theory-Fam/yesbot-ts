@@ -1,8 +1,5 @@
 import { GuildMember, User } from "discord.js";
-import {
-  BuddyProjectEntryRepository,
-  BuddyProjectEntry,
-} from "../entities/BuddyProjectEntry";
+import { BuddyProjectEntry, BuddyProjectEntryRepository } from "../entities";
 import { Not, getConnection } from "typeorm";
 import { BUDDY_PROJECT_MATCHING } from "../const";
 

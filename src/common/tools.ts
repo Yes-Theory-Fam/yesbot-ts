@@ -1,21 +1,16 @@
-import fs, { exists } from "fs";
-import { resolve } from "dns";
+import fs from "fs";
 import Discord, {
-  TextChannel,
-  Snowflake,
   Guild,
   GuildMember,
-  PartialGuildMember,
   Message,
+  PartialGuildMember,
+  Snowflake,
+  TextChannel,
   User,
 } from "discord.js";
-import { ChannelToggleRepository } from "../entities/ChannelToggle";
+import { ChannelToggleRepository } from "../entities";
 import { textLog } from "./moderator";
 
-interface LocalUser {
-  id: string;
-  groups: string[];
-}
 class Tools {
   static isProd(): boolean {
     return process.platform === "linux";
@@ -121,7 +116,7 @@ class Tools {
     );
   }
 
-  static censor(key: any, value: any) {
+  static censor(value: any) {
     if (value && typeof value === "object" && value.parent) {
       value.parent = value.parent.name;
     }

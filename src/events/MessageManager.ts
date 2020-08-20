@@ -4,40 +4,36 @@ import Discord, {
   Channel,
   CollectorFilter,
   MessageReaction,
-  Snowflake,
 } from "discord.js";
 import {
+  BirthdayManager,
   BuddyProjectManager,
-  TopicManager,
-  Someone,
+  Deadchat,
+  GroupManager,
+  PollsManager,
+  ProfileManager,
   ReactRole,
+  Someone,
   StateRoleFinder,
   Ticket,
-  Deadchat,
-  WhereAreYouFromManager,
-  GroupManager,
-  BirthdayManager,
+  TopicManager,
   Unassigned,
-  ProfileManager,
-  EasterEvent,
-  PollsManager,
   VoiceOnDemand,
+  ExportManager,
+  WhereAreYouFromManager,
+  Resource,
 } from "../programs";
 import bot from "../index";
-import ExportManager from "../programs/ExportManager";
 import {
   USA_IMAGE_URL,
   CANADA_IMAGE_URL,
   UK_IMAGE_URL,
   AUSTRALIA_IMAGE_URL,
-  RESOURCES_CODING,
-  RESOURCES_SPANISH,
   MODERATOR_ROLE_NAME,
 } from "../const";
 import Tools from "../common/tools";
 import state from "../common/state";
 import { hasRole, textLog, getMember } from "../common/moderator";
-import Resource from "../programs/ResourceManager";
 
 class MessageManager {
   message: Discord.Message;
@@ -113,7 +109,7 @@ class MessageManager {
           !this.message.content.toLowerCase().startsWith("!group toggle")
         )
           GroupManager(this.message, true);
-        if (firstWord === "!profile") ProfileManager(this.message, 0);
+        if (firstWord === "!profile") ProfileManager(this.message);
         break;
 
       case "bot-commands":
@@ -122,7 +118,7 @@ class MessageManager {
           !this.message.content.toLowerCase().startsWith("!group toggle")
         )
           GroupManager(this.message, true);
-        if (firstWord === "!profile") ProfileManager(this.message, 0);
+        if (firstWord === "!profile") ProfileManager(this.message);
         if (firstWord === "!birthday") BirthdayManager(this.message);
 
         if (firstWord === "!voice") VoiceOnDemand(this.message);
@@ -275,7 +271,7 @@ class MessageManager {
     );
     const message = `Username: ${this.message.author.toString()} would like to rename to "${name}". Allow?`;
     const sentMessage = await textLog(message);
-    sentMessage.react("✅").then((message) => sentMessage.react("🚫"));
+    sentMessage.react("✅").then(() => sentMessage.react("🚫"));
     sentMessage
       .awaitReactions(
         (reaction: any, user: User) => {

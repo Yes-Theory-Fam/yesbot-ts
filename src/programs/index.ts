@@ -1,35 +1,53 @@
-import ReactRole from "./ReactRole";
-import StateRoleFinder from "./StateRoleFinder";
-import Ticket from "./Ticket";
+import * as BuddyProject from "./BuddyProject";
+import * as GroupManagerTools from "./GroupManager";
+import * as Separators from "./Seperators";
+import AdventureGame from "./AdventureGame";
+import BirthdayManager from "./BirthdayManager";
+import * as BirthdayManagerTools from "./BirthdayManager";
+import BuddyProjectGhost from "./BuddyProjectGhost";
+import BuddyProjectManager from "./BuddyProjectManager";
 import Deadchat from "./Deadchat";
-import Someone from "./Someone";
-import WhereAreYouFromManager from "./WhereAreYouFromManager";
+import EasterEvent from "./EasterEvent";
+import ExportManager from "./ExportManager";
 import GroupManager from "./GroupManager";
 import InitialiseTestEnvironment from "./InitialiseTestEnvironment";
-import Unassigned from "./Unassigned";
-import ProfileManager from "./ProfileManager";
-import EasterEvent from "./EasterEvent";
-import BirthdayManager from "./BirthdayManager";
 import PollsManager from "./PollsManager";
+import ProfileManager from "./ProfileManager";
+import ReactRole from "./ReactRole";
+import Resource from "./ResourceManager";
+import Someone from "./Someone";
+import StateRoleFinder from "./StateRoleFinder";
+import Ticket from "./Ticket";
 import TopicManager from "./TopicManager";
-import BuddyProjectManager from "./BuddyProjectManager";
+import Unassigned from "./Unassigned";
 import VoiceOnDemand from "./VoiceOnDemand";
+import * as VoiceOnDemandTools from "./VoiceOnDemand";
+import WhereAreYouFromManager from "./WhereAreYouFromManager";
 
 export {
-  BuddyProjectManager,
-  TopicManager,
-  Someone,
+  AdventureGame,
   BirthdayManager,
+  BirthdayManagerTools,
+  BuddyProject,
+  BuddyProjectGhost,
+  BuddyProjectManager,
+  Deadchat,
   EasterEvent,
+  ExportManager,
+  GroupManager,
+  GroupManagerTools,
+  InitialiseTestEnvironment,
+  PollsManager,
+  ProfileManager,
   ReactRole,
+  Resource,
+  Separators,
+  Someone,
   StateRoleFinder,
   Ticket,
-  Deadchat,
-  WhereAreYouFromManager,
-  GroupManager,
-  InitialiseTestEnvironment,
+  TopicManager,
   Unassigned,
-  ProfileManager,
-  PollsManager,
   VoiceOnDemand,
+  VoiceOnDemandTools,
+  WhereAreYouFromManager,
 };

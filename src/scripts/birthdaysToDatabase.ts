@@ -1,7 +1,7 @@
 import "../db"; // imported for side effect
 import Tools from "../common/tools";
-import { BirthdayRepository, Birthday } from "../entities/Birthday";
-import { getUserBirthdate } from "../programs/BirthdayManager";
+import { BirthdayRepository, Birthday } from "../entities";
+import { BirthdayManagerTools } from "../programs";
 import { setTimeout } from "timers";
 
 interface JSONBirthday {
@@ -23,7 +23,7 @@ async function importBirthdaysToDatabase() {
     .map(({ id, date }) =>
       birthdayRepository.create({
         userid: id,
-        birthdate: getUserBirthdate(date),
+        birthdate: BirthdayManagerTools.getUserBirthdate(date),
       })
     );
 

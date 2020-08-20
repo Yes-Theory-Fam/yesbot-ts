@@ -1,30 +1,14 @@
-import Discord, {
-  Snowflake,
-  TextChannel,
-  GuildMember,
-  Message,
-  MessageEmbed,
-} from "discord.js";
+import Discord, { GuildMember, Message, MessageEmbed } from "discord.js";
 import Tools from "../common/tools";
-import { MODERATOR_ROLE_NAME } from "../const";
-import { UserGroupRepository } from "../entities/UserGroup";
+import { UserGroupRepository } from "../entities";
 import { formatBirthday, getUserBirthday } from "./BirthdayManager";
 
-interface DiscordGroup {
-  name: String;
-  members: String[];
-}
-
-export default async function ProfileManager(
-  pMessage: Discord.Message,
-  commandIndex: number
-) {
+export default async function ProfileManager(pMessage: Discord.Message) {
   const { content } = pMessage;
 
   if (content.startsWith("!profile")) {
     const words = Tools.stringToWords(content);
     words.shift();
-    const [requestedProfileUser] = words;
 
     let requestedUser = pMessage.mentions.users.first();
     if (!requestedUser) requestedUser = pMessage.member.user;
@@ -39,10 +23,6 @@ export default async function ProfileManager(
     const profileEmbed = await getProfileEmbed(requestedMember, pMessage);
     pMessage.channel.send(profileEmbed);
   }
-}
-interface Birthday {
-  id: string;
-  date: string;
 }
 
 const getProfileEmbed = async (

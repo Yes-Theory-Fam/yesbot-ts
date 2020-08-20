@@ -1,19 +1,15 @@
 import {
-  GuildChannel,
   CategoryChannel,
-  TextChannel,
-  PartialGuildMember,
-  GuildMember,
   Client,
+  GuildChannel,
+  GuildMember,
+  PartialGuildMember,
   Role,
+  TextChannel,
 } from "discord.js";
 import Tools from "../common/tools";
 import { hasRole } from "../common/moderator";
-import { BuddyProjectSignup } from "../programs/BuddyProject";
-import {
-  seperatorOnRoleAdd,
-  seperatorOnRoleRemove,
-} from "../programs/Seperators";
+import { Separators } from "../programs";
 
 class GuildMemberUpdate {
   bot: Client;
@@ -60,8 +56,8 @@ class GuildMemberUpdate {
       newMember.roles.remove(nitroColor);
     }
 
-    seperatorOnRoleAdd(oldMember, newMember);
-    seperatorOnRoleRemove(oldMember, newMember);
+    Separators.seperatorOnRoleAdd(oldMember, newMember);
+    Separators.seperatorOnRoleRemove(oldMember, newMember);
   }
 }
 

@@ -1,9 +1,9 @@
-import Discord, { User, Channel, TextChannel, GuildMember } from "discord.js";
+import Discord, { GuildMember, TextChannel, User } from "discord.js";
 import Tools from "../common/tools";
 import axios from "axios";
 import { isAfter, addHours } from "date-fns";
 
-import { SomeoneRepository } from "../entities/Someone";
+import { SomeoneRepository } from "../entities";
 
 const QUESTION_LINK: string =
   "https://spreadsheets.google.com/feeds/cells/1J7DlkcWzhcm9CXiWCB-dQloCqIHjVpupyvMqBPlJ7Mk/1/public/full?alt=json";
@@ -66,7 +66,6 @@ const sendMessage = async (
   const webhook = await channel.createWebhook(author.displayName, {
     avatar: author.user.avatarURL(),
   });
-  const message = await webhook.send(`Hey <@${target.id}>, ${question}`);
   await webhook.delete();
 };
 

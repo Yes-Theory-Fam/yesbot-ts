@@ -1,19 +1,19 @@
 import {
-  Message,
-  GuildMember,
-  VoiceState,
-  VoiceChannel,
-  Permissions,
   Client,
   Emoji,
+  GuildMember,
+  Message,
   MessageReaction,
+  Permissions,
   User,
+  VoiceChannel,
+  VoiceState,
 } from "discord.js";
 
-import { hasRole } from "../common/moderator";
-import state from "../common/state";
 import { GUILD_ID } from "../const";
-import { VoiceOnDemandRepository } from "../entities/VoiceOnDemandMapping";
+import { hasRole } from "../common/moderator";
+import { VoiceOnDemandRepository } from "../entities";
+import state from "../common/state";
 
 const defaultLimit = (5).toString();
 const maxLimit = 10;

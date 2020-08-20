@@ -1,27 +1,23 @@
 import Discord, {
-  Snowflake,
-  User,
-  Channel,
   Guild,
-  TextChannel,
-  Emoji,
-  GuildCreateChannelOptions,
-  PartialUser,
-  Message,
   GuildMember,
+  Message,
   MessageReaction,
-  DMChannel,
+  PartialUser,
+  Snowflake,
+  TextChannel,
+  User,
 } from "discord.js";
 import bot from "../index";
 import Tools from "../common/tools";
-import AdventureGame from "../programs/AdventureGame";
-import { MessageRepository } from "../entities/Message";
-import { backfillReactions } from "../programs/GroupManager";
+import {
+  AdventureGame,
+  BuddyProject,
+  BuddyProjectGhost,
+  GroupManagerTools,
+} from "../programs";
+import { MessageRepository, ReactionRoleRepository } from "../entities";
 import { hasRole } from "../common/moderator";
-import { GUILD_ID } from "../const";
-import BuddyProjectGhost from "../programs/BuddyProjectGhost";
-import { removeEntry, BuddyProjectSignup } from "../programs/BuddyProject";
-import { ReactionRoleRepository } from "../entities/ReactionRole";
 
 class ReactionAdd {
   bot: Discord.Client;
@@ -84,7 +80,7 @@ class ReactionAdd {
         `<@${this.user}> is signing up again for the relaunch.`
       );
       outputChannel.send(
-        await BuddyProjectSignup(this.guild.member(this.user))
+        await BuddyProject.BuddyProjectSignup(this.guild.member(this.user))
       );
     }
     const reactionRoleRepository = await ReactionRoleRepository();
@@ -170,7 +166,11 @@ class ReactionAdd {
         channel: this.channel.id,
       });
       this.message.react(this.reaction);
-      backfillReactions(this.messageId, this.channel.id, this.guild);
+      GroupManagerTools.backfillReactions(
+        this.messageId,
+        this.channel.id,
+        this.guild
+      );
     }
 
     Tools.addPerUserPermissions(

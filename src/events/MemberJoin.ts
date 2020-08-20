@@ -3,8 +3,7 @@ import Discord, {
   TextChannel,
   PartialGuildMember,
 } from "discord.js";
-import bot from "../index";
-import { BuddyProjectSignup } from "../programs/BuddyProject";
+import { BuddyProject } from "../programs";
 
 class MemberJoin {
   bot: Discord.Client;
@@ -16,7 +15,7 @@ class MemberJoin {
           (c) => c.name === "buddy-project-output"
         )
       );
-      BuddyProjectSignup(member as GuildMember).then((output) =>
+      BuddyProject.BuddyProjectSignup(member as GuildMember).then((output) =>
         bpOutputChannel.send(output)
       );
     }

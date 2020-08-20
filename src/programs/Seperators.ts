@@ -1,4 +1,4 @@
-import { Guild, GuildMember, PartialGuildMember } from "discord.js";
+import { GuildMember, PartialGuildMember } from "discord.js";
 
 const seperatorStart = "\u2063";
 
