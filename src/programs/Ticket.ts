@@ -37,8 +37,8 @@ export default async function Ticket(pMessage: Discord.Message, type: string) {
       categoryId = pMessage.guild.channels.cache.find((c) =>
         c.name.toLowerCase().includes("application")
       ).id;
-      moderatorRoleId = pMessage.guild.roles.cache.find((r) =>
-        r.name.toLowerCase().includes("server engineer")
+      moderatorRoleId = pMessage.guild.roles.cache.find(
+        (r) => r.id === ENGINEER_ROLE_ID
       ).id;
       ticketMessage = `Hi ${pMessage.member.toString()}, please list the details of your proposed FiYESta below and read the <#502198786441871381> while you wait.`;
       break;
@@ -47,8 +47,8 @@ export default async function Ticket(pMessage: Discord.Message, type: string) {
       categoryId = pMessage.guild.channels.cache.find((c) =>
         c.name.toLowerCase().includes("validation")
       ).id;
-      moderatorRoleId = pMessage.guild.roles.cache.find((r) =>
-        r.name.toLowerCase().includes("server coordinator")
+      moderatorRoleId = pMessage.guild.roles.cache.find(
+        (r) => r.id === COORDINATOR_ROLE_ID
       ).id;
       ticketMessage = `Hi ${pMessage.member.toString()}, please list the details of your shoutout below.`;
       break;
@@ -108,6 +108,10 @@ export default async function Ticket(pMessage: Discord.Message, type: string) {
           id: pMessage.author.id,
           allow: ["VIEW_CHANNEL", "READ_MESSAGE_HISTORY", "SEND_MESSAGES"],
           deny: ["ADD_REACTIONS"],
+        },
+        {
+          id: moderatorRoleId,
+          allow: ["VIEW_CHANNEL", "READ_MESSAGE_HISTORY", "SEND_MESSAGES"],
         },
       ],
       parent: categoryId,
