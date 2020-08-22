@@ -1,12 +1,4 @@
-import Discord, {
-  OverwriteResolvable,
-  SnowflakeUtil,
-  TextChannel,
-  GuildMember,
-  User,
-  UserFlags,
-} from "discord.js";
-import Tools from "../common/tools";
+import Discord, { TextChannel, User } from "discord.js";
 import {
   ENGINEER_ROLE_NAME,
   COORDINATOR_ROLE_NAME,
@@ -156,22 +148,6 @@ async function createOutput(
 ): Promise<string> {
   let text: string = "**Ticket Log below for <@" + m.id + ">**\n";
   let lastDate = "";
-  const output = (await c.messages.fetch())
-    .map((message) => {
-      let [year, month, date, hour, min] = timeConverter(
-        message.createdTimestamp
-      );
-      let dateHeader = `** ____________${date} ${month} ${year}____________**\n`;
-      if (lastDate != dateHeader) {
-        text = text + dateHeader;
-        lastDate = dateHeader;
-      }
-      year = year.toString().length == 1 ? `0${year}` : year;
-      min = min.toString().length == 1 ? `0${min}` : min;
-      return `*[${hour}:${min}]* **${message.author.username}**: ${message.cleanContent}`;
-    })
-    .reverse()
-    .forEach((line) => (text = text + line + "\n"));
   return text;
 }
 
@@ -238,17 +214,5 @@ function timeConverter(UNIX_timestamp: number) {
   var hour = a.getHours();
   var min = a.getMinutes();
   var sec = a.getSeconds();
-  var time =
-    date + " " + month + " " + year + " " + hour + ":" + min + ":" + sec;
   return [year, month, date, hour, min, sec];
-}
-
-interface TextChannelOptions {
-  topic?: string;
-  nsfw?: boolean;
-  type?: "text";
-  parent?: Discord.ChannelResolvable;
-  permissionOverwrites?: Array<OverwriteResolvable>;
-  options?: number;
-  reason?: string;
 }
