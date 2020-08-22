@@ -5,6 +5,7 @@ import {
   MODERATOR_ROLE_NAME,
 } from "../const";
 import { isAuthorModerator } from "../common/moderator";
+import { TextChannelOptions } from "../common/interfaces";
 
 export default async function Ticket(pMessage: Discord.Message, type: string) {
   const guild_name = pMessage.guild.name;
@@ -148,6 +149,22 @@ async function createOutput(
 ): Promise<string> {
   let text: string = "**Ticket Log below for <@" + m.id + ">**\n";
   let lastDate = "";
+  (await c.messages.fetch())
+    .map((message) => {
+      let [year, month, date, hour, min] = timeConverter(
+        message.createdTimestamp
+      );
+      let dateHeader = `** ____________${date} ${month} ${year}____________**\n`;
+      if (lastDate != dateHeader) {
+        text = text + dateHeader;
+        lastDate = dateHeader;
+      }
+      year = year.toString().length == 1 ? `0${year}` : year;
+      min = min.toString().length == 1 ? `0${min}` : min;
+      return `*[${hour}:${min}]* **${message.author.username}**: ${message.cleanContent}`;
+    })
+    .reverse()
+    .forEach((line) => (text = text + line + "\n"));
   return text;
 }
 
