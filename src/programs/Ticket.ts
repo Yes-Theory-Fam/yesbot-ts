@@ -210,8 +210,8 @@ async function createCloseMessage(
 }
 
 function timeConverter(UNIX_timestamp: number) {
-  var a = new Date(UNIX_timestamp);
-  var months = [
+  const a = new Date(UNIX_timestamp);
+  const months = [
     "Jan",
     "Feb",
     "Mar",
@@ -225,11 +225,11 @@ function timeConverter(UNIX_timestamp: number) {
     "Nov",
     "Dec",
   ];
-  var year = a.getFullYear();
-  var month = months[a.getMonth()];
-  var date = a.getDate();
-  var hour = a.getHours();
-  var min = a.getMinutes();
-  var sec = a.getSeconds();
+  const year = a.getFullYear();
+  const month = months[a.getMonth()];
+  const date = a.getDate();
+  const hour = a.getHours();
+  const min = a.getMinutes();
+  const sec = a.getSeconds();
   return [year, month, date, hour, min, sec];
 }
