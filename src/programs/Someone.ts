@@ -76,7 +76,6 @@ async function updateLastMessage(message: Discord.Message) {
   });
 
   try {
-    console.info("@someone: Updating database record");
     someones.save({
       ...someone,
       time: new Date(),

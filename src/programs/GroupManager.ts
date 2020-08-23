@@ -359,10 +359,7 @@ const searchGroup = async (
       if (first.emoji.name === "➡️") {
         flip(currentPage + 1, pagedMessage, first);
       }
-    } catch (error) {
-      if (error !== "time") console.log(JSON.stringify(error));
-      else console.log("Knew it...");
-    }
+    } catch (error) {}
   };
 
   const sentMessagePromise = message.channel.send(
