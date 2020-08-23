@@ -1,18 +1,11 @@
-import Discord, {
-  OverwriteResolvable,
-  SnowflakeUtil,
-  TextChannel,
-  GuildMember,
-  User,
-  UserFlags,
-} from "discord.js";
-import Tools from "../common/tools";
+import Discord, { TextChannel, User } from "discord.js";
 import {
   ENGINEER_ROLE_NAME,
   COORDINATOR_ROLE_NAME,
   MODERATOR_ROLE_NAME,
 } from "../const";
 import { isAuthorModerator } from "../common/moderator";
+import { TextChannelOptions } from "../common/interfaces";
 
 export default async function Ticket(pMessage: Discord.Message, type: string) {
   const guild_name = pMessage.guild.name;
@@ -37,8 +30,8 @@ export default async function Ticket(pMessage: Discord.Message, type: string) {
       categoryId = pMessage.guild.channels.cache.find((c) =>
         c.name.toLowerCase().includes("application")
       ).id;
-      moderatorRoleId = pMessage.guild.roles.cache.find((r) =>
-        r.name.toLowerCase().includes("server engineer")
+      moderatorRoleId = pMessage.guild.roles.cache.find(
+        (r) => r.id === ENGINEER_ROLE_ID
       ).id;
       ticketMessage = `Hi ${pMessage.member.toString()}, please list the details of your proposed FiYESta below and read the <#502198786441871381> while you wait.`;
       break;
@@ -47,8 +40,8 @@ export default async function Ticket(pMessage: Discord.Message, type: string) {
       categoryId = pMessage.guild.channels.cache.find((c) =>
         c.name.toLowerCase().includes("validation")
       ).id;
-      moderatorRoleId = pMessage.guild.roles.cache.find((r) =>
-        r.name.toLowerCase().includes("server coordinator")
+      moderatorRoleId = pMessage.guild.roles.cache.find(
+        (r) => r.id === COORDINATOR_ROLE_ID
       ).id;
       ticketMessage = `Hi ${pMessage.member.toString()}, please list the details of your shoutout below.`;
       break;
@@ -109,6 +102,10 @@ export default async function Ticket(pMessage: Discord.Message, type: string) {
           allow: ["VIEW_CHANNEL", "READ_MESSAGE_HISTORY", "SEND_MESSAGES"],
           deny: ["ADD_REACTIONS"],
         },
+        {
+          id: moderatorRoleId,
+          allow: ["VIEW_CHANNEL", "READ_MESSAGE_HISTORY", "SEND_MESSAGES"],
+        },
       ],
       parent: categoryId,
     };
@@ -152,7 +149,7 @@ async function createOutput(
 ): Promise<string> {
   let text: string = "**Ticket Log below for <@" + m.id + ">**\n";
   let lastDate = "";
-  const output = (await c.messages.fetch())
+  (await c.messages.fetch())
     .map((message) => {
       let [year, month, date, hour, min] = timeConverter(
         message.createdTimestamp
@@ -213,8 +210,8 @@ async function createCloseMessage(
 }
 
 function timeConverter(UNIX_timestamp: number) {
-  var a = new Date(UNIX_timestamp);
-  var months = [
+  const a = new Date(UNIX_timestamp);
+  const months = [
     "Jan",
     "Feb",
     "Mar",
@@ -228,23 +225,11 @@ function timeConverter(UNIX_timestamp: number) {
     "Nov",
     "Dec",
   ];
-  var year = a.getFullYear();
-  var month = months[a.getMonth()];
-  var date = a.getDate();
-  var hour = a.getHours();
-  var min = a.getMinutes();
-  var sec = a.getSeconds();
-  var time =
-    date + " " + month + " " + year + " " + hour + ":" + min + ":" + sec;
+  const year = a.getFullYear();
+  const month = months[a.getMonth()];
+  const date = a.getDate();
+  const hour = a.getHours();
+  const min = a.getMinutes();
+  const sec = a.getSeconds();
   return [year, month, date, hour, min, sec];
-}
-
-interface TextChannelOptions {
-  topic?: string;
-  nsfw?: boolean;
-  type?: "text";
-  parent?: Discord.ChannelResolvable;
-  permissionOverwrites?: Array<OverwriteResolvable>;
-  options?: number;
-  reason?: string;
 }
