@@ -18,7 +18,7 @@ import state from "../common/state";
 const defaultLimit = (5).toString();
 const maxLimit = 10;
 const emptyTime = 60000;
-const emojiPool = ["🤭", "🎲", "🎮", "🎶", "🔈"];
+const emojiPool = ["🐼", "🐨", "🐶", "🐵", "🐯"];
 
 const getChannelName = (m: GuildMember, e: Emoji) =>
   `• ${e.name} ${m.displayName}'s Room`;
