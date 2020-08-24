@@ -59,7 +59,7 @@ class MessageManager {
     if (mentionedMembers > 20 && !this.message.author.bot) {
       this.author.createDM().then((dm: DMChannel) => {
         dm.send(
-          "Hey there! You tagged more than 10 people in a single message. The message has been deleted and you have beeen timed out. Here is the message sent: "
+          "Hey there! You tagged more than 20 people in a single message. The message has been deleted and you have beeen timed out. Here is the message sent: "
         );
         dm.send(this.message.content);
       });
@@ -72,7 +72,7 @@ class MessageManager {
       );
       this.message.member.roles.add(timeoutRole);
       textLog(
-        `<@&${supportRole.id}>: <@${this.message.author.id}> just tagged more than 10 people in a single message. The message has been deleted and they have beeen timed out.`
+        `<@&${supportRole.id}>: <@${this.message.author.id}> just tagged more than 20 people in a single message. The message has been deleted and they have beeen timed out.`
       );
     }
 
