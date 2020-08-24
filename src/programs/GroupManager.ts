@@ -1,4 +1,5 @@
 import Discord, {
+  Channel,
   Guild,
   GuildMember,
   Message,
@@ -18,19 +19,12 @@ import {
   UserGroupMembershipRepository,
   UserGroupRepository,
 } from "../entities";
+import {
+  GroupInteractionError,
+  GroupInteractionSuccess,
+} from "../common/interfaces";
 import { ILike } from "../lib/typeormILIKE";
 import { Repository } from "typeorm";
-
-interface GroupInteractionSuccess {
-  groupName: string;
-  success: true;
-}
-
-interface GroupInteractionError {
-  groupName: string;
-  success: false;
-  message: string;
-}
 
 type GroupInteractionInformation =
   | GroupInteractionSuccess
@@ -112,6 +106,9 @@ export default async function GroupManager(
       }
     }
   } else {
+    if (!isChannelAllowed(message.channel)) {
+      return;
+    }
     const lines = content.split("\n");
     const unquoted = lines.filter((line) => !line.startsWith(">")).join("\n");
     const hasUnquotedGroupPing = unquoted.includes("@group");
@@ -634,4 +631,28 @@ const groupInteractionAndReport = async (
   }
 
   message.reply("\n" + report.join("\n"));
+};
+
+const isChannelAllowed = (channel: Channel): boolean => {
+  const isTextChannel = (channel: Channel): channel is TextChannel =>
+    (channel as TextChannel).name && !!(channel as TextChannel).parent;
+  if (!isTextChannel(channel)) return;
+
+  const allowedCategories = ["hobbies", "gaming"];
+  const allowedChannels = [
+    "449984633908625409", //Chat
+    "623565093166252052", // Chat-too
+    "508918747533410304", // learning-spanish
+    "450187015221280769", // voice-chat
+    "747189756302983199", // 4th-chat
+  ];
+
+  if (
+    allowedCategories.some((category) =>
+      channel.parent?.name?.toLowerCase()?.includes(category)
+    )
+  )
+    return true;
+
+  return allowedChannels.includes(channel.id);
 };

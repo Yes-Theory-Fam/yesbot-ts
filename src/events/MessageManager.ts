@@ -184,31 +184,7 @@ class MessageManager {
     if (this.message.content.toLowerCase().startsWith("!group toggle"))
       GroupManager(this.message, true);
 
-    const isChannelAllowed = (channel: Channel): boolean => {
-      const isTextChannel = (channel: Channel): channel is TextChannel =>
-        (channel as TextChannel).name && !!(channel as TextChannel).parent;
-      if (!isTextChannel(channel)) return;
-
-      const allowedCategories = ["hobbies", "gaming"];
-      const allowedChannels = [
-        "chat",
-        "chat-too",
-        "learning-spanish",
-        "voice-chat",
-      ];
-
-      if (
-        allowedCategories.some((category) =>
-          channel.parent?.name?.toLowerCase()?.includes(category)
-        )
-      )
-        return true;
-
-      return allowedChannels.includes(channel.name.toLowerCase());
-    };
-
-    if (words.includes("@group") && isChannelAllowed(this.message.channel))
-      GroupManager(this.message, false);
+    if (words.includes("@group")) GroupManager(this.message, false);
   }
 
   async routeDm() {
