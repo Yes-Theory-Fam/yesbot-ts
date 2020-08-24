@@ -8,21 +8,26 @@ import {
   User,
   VoiceChannel,
   VoiceState,
+  TextChannel,
 } from "discord.js";
 
 import { GUILD_ID } from "../const";
 import { hasRole } from "../common/moderator";
-import { VoiceOnDemandRepository } from "../entities";
+import { VoiceOnDemandRepository, VoiceOnDemandMapping } from "../entities";
 import state from "../common/state";
 import Tools from "../common/tools";
+import { Repository } from "typeorm";
 
 const defaultLimit = (5).toString();
 const maxLimit = 10;
+// Time the room has to be empty to get removed
 const emptyTime = 60000;
+// Time the owner of the room has left before allowing a transfer
+const transferDelay = 60000;
 const emojiPool = ["🐼", "🐨", "🐶", "🐵", "🐯"];
 
-const getChannelName = (m: GuildMember, e: Emoji) =>
-  `• ${e.name} ${m.displayName}'s Room`;
+const getChannelName = (m: GuildMember, e: string) =>
+  `• ${e} ${m.displayName}'s Room`;
 
 const getVoiceChannel = async (member: GuildMember) => {
   const guild = member.guild;
@@ -99,7 +104,7 @@ const createOnDemand = async (message: Message, userLimit: number) => {
   );
 
   const channel = await guild.channels.create(
-    getChannelName(message.member, reaction.emoji),
+    getChannelName(message.member, reaction.emoji.name),
     {
       type: "voice",
       parent,
@@ -200,17 +205,20 @@ export const voiceOnDemandReset = async (
   // If old and new channel are the same, the channel still has
   //  the same amount of users in so it's not relevant for our purpose
   if (!oldState.channel || oldState.channelID === newState.channelID) return;
-  if (oldState.channel.members.size > 0) return;
-
-  const channelId = oldState.channel.id;
-  const timeout = state.voiceChannels.get(channelId);
-  if (timeout) clearTimeout(timeout);
 
   const repo = await VoiceOnDemandRepository();
+  const channelId = oldState.channel.id;
+  const mapping = await repo.findOne({ channelId });
+  if (!mapping) return;
+  if (mapping.userId === newState.member.id)
+    setTimeout(
+      () => requestOwnershipTransfer(oldState.channel, repo),
+      transferDelay
+    );
+  if (oldState.channel.members.size > 0) return;
 
-  const hasMapping = await repo.findOne({ channelId });
-
-  if (!hasMapping) return;
+  const timeout = state.voiceChannels.get(channelId);
+  if (timeout) clearTimeout(timeout);
 
   const newTimeout = setTimeout(
     () => deleteIfEmpty(oldState.channel),
@@ -244,6 +252,73 @@ const deleteIfEmpty = async (channel: VoiceChannel) => {
     const repo = await VoiceOnDemandRepository();
     repo.delete({ channelId: channel.id });
   }
+};
+
+const requestOwnershipTransfer = async (
+  channel: VoiceChannel,
+  repo: Repository<VoiceOnDemandMapping>
+) => {
+  if (!channel.guild.channels.resolve(channel.id) || channel.members.size === 0)
+    return;
+
+  const claimEmoji = "☝";
+  const requestMessageText =
+    "Hey, the owner of your room left! I need one of you to claim ownership of the room in the next minute, otherwise I have to delete the room. You can claim ownership by clicking the ☝!";
+
+  // Functions to get the most recent values whenever needed (so you cannot leave the channel and claim ownership)
+  const getMemberIds = () => channel.members.map((member) => member.id);
+  const getPingAll = () =>
+    getMemberIds()
+      .map((id) => `<@${id}>`)
+      .join(", ") + " ";
+
+  const botCommands = channel.guild.channels.cache.find(
+    (channel) => channel.name === "bot-commands"
+  ) as TextChannel;
+  const transferMessage = await botCommands.send(
+    getPingAll() + requestMessageText
+  );
+  await transferMessage.react(claimEmoji);
+
+  const filter = (reaction: MessageReaction, user: User) =>
+    reaction.emoji.name === claimEmoji && getMemberIds().includes(user.id);
+  const claim = (
+    await transferMessage.awaitReactions(filter, {
+      max: 1,
+      time: 60000,
+    })
+  ).first();
+
+  await transferMessage.delete();
+  if (!claim) {
+    await botCommands.send(
+      getPingAll() +
+        "None of you claimed ownership of the room so I am removing it."
+    );
+    await channel.delete();
+    return;
+  }
+
+  const claimingUser = claim.users.cache.filter((user) => !user.bot).first();
+  await botCommands.send(
+    `<@${claimingUser}>, you claimed the room! You can now change the limit of it using \`!voice limit\`.`
+  );
+
+  repo
+    .createQueryBuilder()
+    .update()
+    .set({ userId: claimingUser.id })
+    .where("channel_id = :id", { id: channel.id })
+    .execute();
+
+  // Little hack but what can you do (aside from properly adding the emoji in the database that is...)
+  const emojiRegex = /• (.*?) /;
+  const emoji = channel.name.match(emojiRegex)[1];
+  const newChannelName = getChannelName(
+    channel.guild.member(claimingUser),
+    emoji
+  );
+  channel.setName(newChannelName);
 };
 
 const pickOneMessage = async (
