@@ -40,7 +40,7 @@ export default async function (message: Message) {
   }
 
   const [, command, limitArg = defaultLimit] = message.content.split(" ");
-  const requestedLimit = Number(limitArg);
+  const requestedLimit = Math.floor(Number(limitArg));
 
   if (isNaN(requestedLimit)) {
     Tools.handleUserError(message, "The limit has to be a number");
