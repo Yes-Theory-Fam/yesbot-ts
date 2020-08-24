@@ -643,11 +643,11 @@ const isChannelAllowed = (channel: Channel): boolean => {
 
   const allowedCategories = ["hobbies", "gaming"];
   const allowedChannels = [
-    "449984633908625409",
-    "623565093166252052",
-    "508918747533410304",
-    "450187015221280769",
-    "747189756302983199",
+    "449984633908625409", //Chat
+    "623565093166252052", // Chat-too
+    "508918747533410304", // learning-spanish
+    "450187015221280769", // voice-chat
+    "747189756302983199", // 4th-chat
   ];
 
   if (
