@@ -200,10 +200,11 @@ export const voiceOnDemandReset = async (
   // If old and new channel are the same, the channel still has
   //  the same amount of users in so it's not relevant for our purpose
   if (!oldState.channel || oldState.channelID === newState.channelID) return;
+  if (oldState.channel.members.size > 0) return;
 
   const channelId = oldState.channel.id;
   const timeout = state.voiceChannels.get(channelId);
-  clearTimeout(timeout);
+  if (timeout) clearTimeout(timeout);
 
   const repo = await VoiceOnDemandRepository();
 
