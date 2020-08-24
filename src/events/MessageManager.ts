@@ -182,12 +182,12 @@ class MessageManager {
       this.message.content.toLowerCase().endsWith("?")
     )
       randomReply(this.message);
-    if (
-      this.message.content.toLowerCase().includes("abooz") ||
-      this.message.content.toLowerCase().includes("mod abuse")
-    ) {
-      // replyWithEmoji(this.message, ":mod_abooz:");
-    }
+    // if (
+    //   this.message.content.toLowerCase().includes("abooz") ||
+    //   this.message.content.toLowerCase().includes("mod abuse")
+    // ) {
+    //   // replyWithEmoji(this.message, ":mod_abooz:");
+    // }
     if (this.message.content.toLowerCase().startsWith("!group toggle"))
       GroupManager(this.message, true);
 
