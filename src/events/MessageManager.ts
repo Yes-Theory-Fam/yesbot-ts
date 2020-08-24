@@ -34,6 +34,7 @@ import {
 import Tools from "../common/tools";
 import state from "../common/state";
 import { hasRole, textLog, getMember } from "../common/moderator";
+import { sendLove, randomReply, replyWithEmoji } from "../common/CustomMethods";
 
 class MessageManager {
   message: Discord.Message;
@@ -168,12 +169,18 @@ class MessageManager {
         this.message.content.toLowerCase()
       )
     )
-      this.sendLove();
+      sendLove(this.message);
     if (
       this.message.content.toLowerCase().startsWith("yesbot") &&
       this.message.content.toLowerCase().endsWith("?")
     )
-      this.randomReply();
+      randomReply(this.message);
+    if (
+      this.message.content.toLowerCase().includes("abooz") ||
+      this.message.content.toLowerCase().includes("mod abuse")
+    ) {
+      replyWithEmoji(this.message, ":mod_abooz:");
+    }
     if (this.message.content.toLowerCase().startsWith("!group toggle"))
       GroupManager(this.message, true);
 
@@ -327,25 +334,6 @@ class MessageManager {
         .then(() => messageToVote.react("👎"));
   };
 
-  randomReply() {
-    let replies = [
-      "yes.",
-      "probably.",
-      "doubtful.",
-      "i'm afraid I don't know that one",
-      "absolutely not.",
-      "not a chance.",
-      "definitely.",
-      "very very very unlikely",
-    ];
-    this.message.reply(replies[Math.floor(Math.random() * replies.length)]);
-  }
-  sendLove() {
-    this.message.reply(
-      "I love you too! (Although I'm not entirely sure what love is but this experience I'm feeling is probably some iteration of love.)"
-    );
-    this.message.react("😍");
-  }
   SendMap(country: string) {
     this.message.delete();
     const image = new Discord.MessageAttachment(
