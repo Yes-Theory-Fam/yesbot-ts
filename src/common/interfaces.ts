@@ -9,3 +9,14 @@ export interface TextChannelOptions {
   options?: number;
   reason?: string;
 }
+
+export interface GroupInteractionSuccess {
+  groupName: string;
+  success: true;
+}
+
+export interface GroupInteractionError {
+  groupName: string;
+  success: false;
+  message: string;
+}
