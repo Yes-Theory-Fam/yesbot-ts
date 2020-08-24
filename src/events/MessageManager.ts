@@ -4,6 +4,7 @@ import Discord, {
   Channel,
   CollectorFilter,
   MessageReaction,
+  DMChannel,
 } from "discord.js";
 import {
   BirthdayManager,
@@ -55,7 +56,13 @@ class MessageManager {
   routeMessage() {
     const filteredWords = ["nigger", "nigga"];
     const mentionedMembers = this.message.mentions.users.size;
-    if (mentionedMembers > 10 && !this.message.author.bot) {
+    if (mentionedMembers > 20 && !this.message.author.bot) {
+      this.author.createDM().then((dm: DMChannel) => {
+        dm.send(
+          "Hey there! You tagged more than 10 people in a single message. The message has been deleted and you have beeen timed out. Here is the message sent: "
+        );
+        dm.send(this.message.content);
+      });
       this.message.delete();
       const timeoutRole = this.message.guild.roles.cache.find(
         (r) => r.name === "Time Out"
