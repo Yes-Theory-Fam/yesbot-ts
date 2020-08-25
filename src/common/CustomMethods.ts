@@ -34,6 +34,6 @@ export const randomReply = (message: Message) => {
   message.reply(`${replies[Math.floor(Math.random() * replies.length)]}`);
 };
 
-export const replyWithEmoji = (message: Message, emoji: string) => {
-  message.channel.send(emoji);
+export const reactWithEmoji = (message: Message, emoji: string) => {
+  message.react(emoji);
 };

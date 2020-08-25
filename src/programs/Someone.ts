@@ -66,6 +66,7 @@ const sendMessage = async (
   const webhook = await channel.createWebhook(author.displayName, {
     avatar: author.user.avatarURL(),
   });
+  await webhook.send(`<@${target.id}> ${question}`);
   await webhook.delete();
 };
 
