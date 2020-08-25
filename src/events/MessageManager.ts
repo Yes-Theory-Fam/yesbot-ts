@@ -35,7 +35,7 @@ import {
 import Tools from "../common/tools";
 import state from "../common/state";
 import { hasRole, textLog, getMember } from "../common/moderator";
-import { sendLove, randomReply, replyWithEmoji } from "../common/CustomMethods";
+import { sendLove, randomReply, reactWithEmoji } from "../common/CustomMethods";
 
 class MessageManager {
   message: Discord.Message;
@@ -182,12 +182,12 @@ class MessageManager {
       this.message.content.toLowerCase().endsWith("?")
     )
       randomReply(this.message);
-    // if (
-    //   this.message.content.toLowerCase().includes("abooz") ||
-    //   this.message.content.toLowerCase().includes("mod abuse")
-    // ) {
-    //   // replyWithEmoji(this.message, ":mod_abooz:");
-    // }
+    if (
+      this.message.content.toLowerCase().includes("abooz") ||
+      this.message.content.toLowerCase().includes("mod abuse")
+    ) {
+      reactWithEmoji(this.message, ":mod_abooz:");
+    }
     if (this.message.content.toLowerCase().startsWith("!group toggle"))
       GroupManager(this.message, true);
 
