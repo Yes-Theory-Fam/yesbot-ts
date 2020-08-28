@@ -1,6 +1,5 @@
 import {
   Client,
-  Emoji,
   GuildMember,
   Message,
   MessageReaction,
@@ -244,11 +243,23 @@ export const voiceOnDemandReady = async (bot: Client) => {
   for (let i = 0; i < mappings.length; i++) {
     const { channelId } = mappings[i];
     const channel = guild.channels.resolve(channelId) as VoiceChannel;
+
+    // Fallback if a channel in the DB was already deleted manually
+    if (channel === null) {
+      removeMapping(channelId);
+      return;
+    }
+
     if (channel.members.size === 0) {
       const timeout = setTimeout(() => deleteIfEmpty(channel), emptyTime);
       state.voiceChannels.set(channelId, timeout);
     }
   }
+};
+
+const removeMapping = async (channelId: string) => {
+  const repo = await VoiceOnDemandRepository();
+  repo.delete({ channelId });
 };
 
 const deleteIfEmpty = async (channel: VoiceChannel) => {
@@ -312,7 +323,7 @@ const requestOwnershipTransfer = async (
     `<@${claimingUser}>, you claimed the room! You can now change the limit of it using \`!voice limit\`.`
   );
 
-  repo
+  await repo
     .createQueryBuilder()
     .update()
     .set({ userId: claimingUser.id })
@@ -326,7 +337,8 @@ const requestOwnershipTransfer = async (
     channel.guild.member(claimingUser),
     emoji
   );
-  channel.setName(newChannelName);
+
+  await channel.setName(newChannelName);
 };
 
 const pickOneMessage = async (
