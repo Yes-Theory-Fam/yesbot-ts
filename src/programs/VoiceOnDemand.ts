@@ -217,21 +217,26 @@ export const voiceOnDemandReset = async (
   const channelId = oldState.channel.id;
   const mapping = await repo.findOne({ channelId });
   if (!mapping) return;
-  if (mapping.userId === newState.member.id)
-    setTimeout(
+
+  type TimeoutFunction = () => void;
+  const updateTimeout = (newFunction: TimeoutFunction, newDuration: number) => {
+    const timeout = state.voiceChannels.get(channelId);
+    if (timeout) clearTimeout(timeout);
+
+    const newTimeout = setTimeout(newFunction, newDuration);
+    state.voiceChannels.set(channelId, newTimeout);
+  };
+
+  if (mapping.userId === newState.member.id) {
+    updateTimeout(
       () => requestOwnershipTransfer(oldState.channel, repo),
       transferDelay
     );
+  }
+
   if (oldState.channel.members.size > 0) return;
 
-  const timeout = state.voiceChannels.get(channelId);
-  if (timeout) clearTimeout(timeout);
-
-  const newTimeout = setTimeout(
-    () => deleteIfEmpty(oldState.channel),
-    emptyTime
-  );
-  state.voiceChannels.set(channelId, newTimeout);
+  updateTimeout(() => deleteIfEmpty(oldState.channel), emptyTime);
 };
 
 // To make sure voice channels are still cleaned up after a bot restart, we are looking through all stored channels
@@ -281,8 +286,7 @@ const requestOwnershipTransfer = async (
     return;
 
   const claimEmoji = "☝";
-  const requestMessageText =
-    "Hey, the owner of your room left! I need one of you to claim ownership of the room in the next minute, otherwise I have to delete the room. You can claim ownership by clicking the ☝!";
+  const requestMessageText = `Hey, the owner of your room left! I need one of you to claim ownership of the room in the next minute, otherwise I have to delete the room. You can claim ownership by clicking the ${claimEmoji}!`;
 
   // Functions to get the most recent values whenever needed (so you cannot leave the channel and claim ownership)
   const getMemberIds = () => channel.members.map((member) => member.id);
@@ -345,7 +349,7 @@ const pickOneMessage = async (
   toReplyMessage: Message,
   callToActionMessage: string,
   pickOptions: string[]
-) => {
+): Promise<MessageReaction> => {
   const reactMessage = await toReplyMessage.reply(callToActionMessage);
   for (let i = 0; i < pickOptions.length; i++) {
     await reactMessage.react(pickOptions[i]);
