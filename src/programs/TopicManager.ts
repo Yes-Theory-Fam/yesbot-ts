@@ -2,7 +2,7 @@ import Discord, { TextChannel } from "discord.js";
 import axios from "axios";
 
 const QUESTION_LINK: string =
-  "https://spreadsheets.google.com/feeds/cells/1wJWtBLmG5RBwVLsS1fhUEL5MdGy9kKHu7Q8-AunZDu8/1/public/full?alt=json";
+  "https://spreadsheets.google.com/feeds/cells/1xUIqCaSrjyQzJeJfnXR0Hix6mDkaFhVauFmJb8Pzkj0/1/public/full?alt=json";
 const MAKEUP_CHALLENGE_PICTURE_URL =
   "https://cdn.discordapp.com/attachments/698545400075780147/712491981158481940/image0.png";
 
