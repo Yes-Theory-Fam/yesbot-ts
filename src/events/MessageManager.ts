@@ -94,6 +94,9 @@ class MessageManager {
     switch (channel.name) {
       case "where-are-you-from":
       case "welcome-chat":
+        if (firstWord === "!video") {
+          this.message.reply("https://youtu.be/v-JOe-xqPN0");
+        }
       case "flag-drop":
         if (firstWord == "!usa") this.SendMap("usa");
         if (firstWord == "!canada") this.SendMap("canada");
@@ -130,7 +133,9 @@ class MessageManager {
         if (firstWord === "!birthday") BirthdayManager(this.message);
 
         if (firstWord === "!voice") VoiceOnDemand(this.message);
-
+        if (firstWord === "!video") {
+          this.message.reply("https://youtu.be/v-JOe-xqPN0");
+        }
         break;
 
       case "polls":
