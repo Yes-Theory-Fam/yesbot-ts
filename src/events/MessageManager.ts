@@ -108,6 +108,7 @@ class MessageManager {
 
       case "chat":
       case "chat-too":
+      case "4th-chat":
         if (firstWord === "@someone") Someone(this.message);
         if (firstWord === "!deadchat") Deadchat(this.message);
         break;
@@ -168,7 +169,7 @@ class MessageManager {
       this.message.member.roles.remove(guildRole);
     }
     if (firstWord === "!topic") TopicManager(this.message);
-    if (firstWord === "!fiyesta") Ticket(this.message, "fiyesta");
+    // if (firstWord === "!fiyesta") Ticket(this.message, "fiyesta");
     if (firstWord === "!resources") Resource(this.message);
     if (firstWord === "!shoutout") Ticket(this.message, "shoutout");
     if (firstWord === "!vote") this.addVote();
