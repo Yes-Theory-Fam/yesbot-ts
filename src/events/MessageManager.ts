@@ -108,6 +108,7 @@ class MessageManager {
 
       case "chat":
       case "chat-too":
+      case '4th-chat':
         if (firstWord === "@someone") Someone(this.message);
         if (firstWord === "!deadchat") Deadchat(this.message);
         break;
@@ -328,10 +329,10 @@ class MessageManager {
       country === "usa"
         ? USA_IMAGE_URL
         : country === "canada"
-        ? CANADA_IMAGE_URL
-        : country === "australia"
-        ? AUSTRALIA_IMAGE_URL
-        : UK_IMAGE_URL
+          ? CANADA_IMAGE_URL
+          : country === "australia"
+            ? AUSTRALIA_IMAGE_URL
+            : UK_IMAGE_URL
     );
     this.message.channel.send(image);
   }
