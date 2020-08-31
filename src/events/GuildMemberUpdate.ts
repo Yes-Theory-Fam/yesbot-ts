@@ -96,6 +96,13 @@ const resolvePerUserPermissions = async (
     .array()
     .filter(isText)
     .filter((channel) => listChannels.some((name) => channel.name === name));
+
+  await Promise.all(
+    selectionChannels.map((channel) =>
+      channel.messages.fetch({ limit: 1 }, true)
+    )
+  );
+
   const selectionMessages = selectionChannels.map(
     (channel: TextChannel) => channel.messages.cache.array()[0]
   );
