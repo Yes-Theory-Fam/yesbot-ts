@@ -131,6 +131,7 @@ const createOnDemand = async (message: Message, userLimit: number) => {
   const mapping = repo.create({
     userId: member.id,
     channelId: channel.id,
+    emoji: reaction.emoji.name,
   });
   await repo.save(mapping);
 
@@ -229,7 +230,7 @@ export const voiceOnDemandReset = async (
 
   if (mapping.userId === newState.member.id) {
     updateTimeout(
-      () => requestOwnershipTransfer(oldState.channel, repo),
+      () => requestOwnershipTransfer(oldState.channel, repo, mapping),
       transferDelay
     );
   }
@@ -280,7 +281,8 @@ const deleteIfEmpty = async (channel: VoiceChannel) => {
 
 const requestOwnershipTransfer = async (
   channel: VoiceChannel,
-  repo: Repository<VoiceOnDemandMapping>
+  repo: Repository<VoiceOnDemandMapping>,
+  mapping: VoiceOnDemandMapping
 ) => {
   if (!channel.guild.channels.resolve(channel.id) || channel.members.size === 0)
     return;
@@ -334,9 +336,7 @@ const requestOwnershipTransfer = async (
     .where("channel_id = :id", { id: channel.id })
     .execute();
 
-  // Little hack but what can you do (aside from properly adding the emoji in the database that is...)
-  const emojiRegex = /• (.*?) /;
-  const emoji = channel.name.match(emojiRegex)[1];
+  const { emoji } = mapping;
   const newChannelName = getChannelName(
     channel.guild.member(claimingUser),
     emoji
