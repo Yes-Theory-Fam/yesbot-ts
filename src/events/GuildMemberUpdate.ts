@@ -53,7 +53,8 @@ class GuildMemberUpdate {
       nitroRoles.includes(r.id)
     );
     if (
-      (nitroColor && !hasRole(newMember, "Nitro Booster")) ||
+      nitroColor &&
+      !hasRole(newMember, "Nitro Booster") &&
       !hasRole(newMember, "Support")
     ) {
       newMember.roles.remove(nitroColor);
