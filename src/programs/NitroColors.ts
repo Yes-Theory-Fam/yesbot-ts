@@ -31,7 +31,7 @@ export const removeColorIfNotAllowed = async (
   member: GuildMember | PartialGuildMember
 ) => {
   // At least one is required for a nitro color
-  const roleRequirements = ["Nitro Booster"];
+  const roleRequirements = ["Nitro Booster", "Support"];
 
   const nitroColor: Role = member.roles.cache.find((r) =>
     nitroRolesCache.some((role) => role.id === r.id)
