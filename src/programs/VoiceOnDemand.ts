@@ -247,7 +247,7 @@ export const voiceOnDemandReady = async (bot: Client) => {
   const repo = await VoiceOnDemandRepository();
   const mappings = await repo.find();
   for (let i = 0; i < mappings.length; i++) {
-    const { channelId } = mappings[i];
+    const { channelId, userId } = mappings[i];
     const channel = guild.channels.resolve(channelId) as VoiceChannel;
 
     // Fallback if a channel in the DB was already deleted manually
@@ -258,6 +258,12 @@ export const voiceOnDemandReady = async (bot: Client) => {
 
     if (channel.members.size === 0) {
       const timeout = setTimeout(() => deleteIfEmpty(channel), emptyTime);
+      state.voiceChannels.set(channelId, timeout);
+    } else if (channel.members.every((member) => member.id !== userId)) {
+      const timeout = setTimeout(
+        () => requestOwnershipTransfer(channel, repo, mappings[i]),
+        transferDelay
+      );
       state.voiceChannels.set(channelId, timeout);
     }
   }
@@ -286,6 +292,9 @@ const requestOwnershipTransfer = async (
 ) => {
   if (!channel.guild.channels.resolve(channel.id) || channel.members.size === 0)
     return;
+
+  // Owner returned
+  if (channel.members.some((member) => member.id === mapping.userId)) return;
 
   const claimEmoji = "☝";
   const requestMessageText = `Hey, the owner of your room left! I need one of you to claim ownership of the room in the next minute, otherwise I have to delete the room. You can claim ownership by clicking the ${claimEmoji}!`;
@@ -321,6 +330,7 @@ const requestOwnershipTransfer = async (
         "None of you claimed ownership of the room so I am removing it."
     );
     await channel.delete();
+    await repo.delete(mapping);
     return;
   }
 
