@@ -1,6 +1,6 @@
 import Discord from "discord.js";
 import { GUILD_ID, OUTPUT_CHANNEL_ID } from "../const";
-import { VoiceOnDemandTools } from "../programs";
+import { VoiceOnDemandTools, NitroColors } from "../programs";
 
 class Ready {
   bot: Discord.Client;
@@ -16,6 +16,7 @@ class Ready {
       outputChannel.send(`${bot.user.tag} - Online`);
     }
 
+    NitroColors.cacheNitroColors(GUILD_ID);
     VoiceOnDemandTools.voiceOnDemandReady(bot);
   }
 }

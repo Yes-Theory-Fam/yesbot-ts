@@ -14,7 +14,7 @@ export default async function ReactRole(message: Discord.Message) {
 
   if (!action || !["add", "list", "delete", "search"].includes(action)) {
     message.reply(
-      `Incorrect syntax, please use the following: \`!roles add|list|delete\``
+      `Incorrect syntax, please use the following: \`!role add|list|delete\``
     );
     return;
   }
@@ -22,7 +22,7 @@ export default async function ReactRole(message: Discord.Message) {
     case "add":
       if (!messageId || !reaction || !roleId || !message) {
         message.reply(
-          `Incorrect syntax, please use the following: \`!roles add messageId reaction roleId <channelId>\``
+          `Incorrect syntax, please use the following: \`!role add messageId reaction roleId <channelId>\``
         );
         return;
       }
