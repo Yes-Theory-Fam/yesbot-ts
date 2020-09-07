@@ -15,6 +15,7 @@ import {
   BuddyProject,
   BuddyProjectGhost,
   GroupManagerTools,
+  NitroColors,
 } from "../programs";
 import { MessageRepository, ReactionRoleRepository } from "../entities";
 import { hasRole } from "../common/moderator";
@@ -100,8 +101,8 @@ class ReactionAdd {
       );
 
       if (
-        this.hasNitroColour(guildMember) &&
-        this.messageId == "637401981262102578"
+        NitroColors.isColorSelectionMessage(this.messageId) &&
+        NitroColors.memberHasNitroColor(guildMember)
       ) {
         guildMember
           .createDM()
@@ -110,6 +111,8 @@ class ReactionAdd {
               "You can't assign yourself a new colour yet, please wait until the end of the month!"
             )
           );
+
+        this.messageReaction.users.remove(guildMember);
       } else {
         guildMember.roles.add(roleToAdd);
       }
@@ -117,23 +120,6 @@ class ReactionAdd {
 
     this.handleChannelToggleReaction();
   }
-
-  hasNitroColour = (member: GuildMember): boolean => {
-    const nitroColours: string[] = [
-      "636122019183722496",
-      "636902084108615690",
-      "636901944790876160",
-      "636525712450256896",
-      "636670666447388702",
-    ];
-    let hasColour = false;
-    nitroColours.forEach((colour) => {
-      if (member.roles.cache.find((role) => role.id === colour)) {
-        hasColour = true;
-      }
-    });
-    return hasColour;
-  };
 
   async handleChannelToggleReaction() {
     const messageRepository = await MessageRepository();

@@ -11,6 +11,7 @@ import EasterEvent from "./EasterEvent";
 import ExportManager from "./ExportManager";
 import GroupManager from "./GroupManager";
 import InitialiseTestEnvironment from "./InitialiseTestEnvironment";
+import * as NitroColors from "./NitroColors";
 import PollsManager from "./PollsManager";
 import ProfileManager from "./ProfileManager";
 import ReactRole from "./ReactRole";
@@ -37,6 +38,7 @@ export {
   GroupManager,
   GroupManagerTools,
   InitialiseTestEnvironment,
+  NitroColors,
   PollsManager,
   ProfileManager,
   ReactRole,

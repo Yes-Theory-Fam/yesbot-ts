@@ -9,7 +9,7 @@ import {
 } from "discord.js";
 import Tools from "../common/tools";
 import { hasRole } from "../common/moderator";
-import { Separators } from "../programs";
+import { Separators, NitroColors } from "../programs";
 
 class GuildMemberUpdate {
   bot: Client;
@@ -42,24 +42,8 @@ class GuildMemberUpdate {
     if (hasRole(oldMember, "Time Out") && !hasRole(newMember, "Time Out")) {
       resolvePerUserPermissions(newMember);
     }
-    const nitroRoles = [
-      "636670666447388702",
-      "636525712450256896",
-      "636902084108615690",
-      "636483478640132106",
-      "636901944790876160",
-    ];
-    const nitroColor: Role = newMember.roles.cache.find((r) =>
-      nitroRoles.includes(r.id)
-    );
-    if (
-      nitroColor &&
-      !hasRole(newMember, "Nitro Booster") &&
-      !hasRole(newMember, "Support")
-    ) {
-      newMember.roles.remove(nitroColor);
-    }
 
+    NitroColors.removeColorIfNotAllowed(newMember);
     Separators.seperatorOnRoleAdd(oldMember, newMember);
     Separators.seperatorOnRoleRemove(oldMember, newMember);
   }
