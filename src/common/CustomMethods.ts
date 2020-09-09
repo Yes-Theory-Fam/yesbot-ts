@@ -138,4 +138,4 @@ export const SendMap = (country: string, botMessage: Message) => {
       : UK_IMAGE_URL
   );
   botMessage.channel.send(image);
-}
+};
