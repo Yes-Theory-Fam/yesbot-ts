@@ -1,6 +1,5 @@
 import Discord, {
   Guild,
-  GuildMember,
   Message,
   MessageReaction,
   PartialUser,
@@ -22,14 +21,14 @@ import { hasRole } from "../common/moderator";
 
 class ReactionAdd {
   bot: Discord.Client;
-  message: Message;
-  messageId: Snowflake;
-  user: User;
-  reaction: string;
   channel: TextChannel;
   guild: Guild;
-  pureEmoji: any;
+  message: Message;
+  messageId: Snowflake;
   messageReaction: MessageReaction;
+  pureEmoji: any;
+  reaction: string;
+  user: User;
 
   constructor(
     messageReaction: Discord.MessageReaction,

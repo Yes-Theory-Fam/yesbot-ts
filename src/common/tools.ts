@@ -10,6 +10,7 @@ import Discord, {
 } from "discord.js";
 import { ChannelToggleRepository } from "../entities";
 import { textLog } from "./moderator";
+import { Logger } from "./Logger";
 
 class Tools {
   static isProd(): boolean {
@@ -49,6 +50,7 @@ class Tools {
       } catch (error) {
         const reason =
           "FAILED TO READ FILE " + `./src/collections/${filename}.json`;
+        Logger("tools", "resolveFile", reason);
         reject(reason);
       }
     });
@@ -70,50 +72,62 @@ class Tools {
   ): Promise<boolean> {
     if (options > 5) return false;
     for (let index = 1; index < options; index++) {
-      await message.react(
-        options === 1
-          ? "1️⃣"
-          : options === 2
-          ? "2️⃣"
-          : options === 3
-          ? "3️⃣"
-          : options === 4
-          ? "4️⃣"
-          : options === 5
-          ? "5️⃣"
-          : null
-      );
+      try {
+        await message.react(
+          options === 1
+            ? "1️⃣"
+            : options === 2
+            ? "2️⃣"
+            : options === 3
+            ? "3️⃣"
+            : options === 4
+            ? "4️⃣"
+            : options === 5
+            ? "5️⃣"
+            : null
+        );
+      } catch (err) {
+        Logger("tools", "addNumberReactions", err);
+      }
     }
   }
 
   static async writeFile(filename: string, data: any) {
-    fs.writeFile(
-      `./src/collections/${filename}.json`,
-      JSON.stringify(data),
-      () => {
-        return true;
-      }
-    );
+    try {
+      fs.writeFile(
+        `./src/collections/${filename}.json`,
+        JSON.stringify(data),
+        () => {
+          return true;
+        }
+      );
+    } catch (err) {
+      Logger("tools", "writeFile", err);
+    }
   }
 
   static async updateFile(filename: string, data: any) {
-    fs.readFile(
-      `./src/collections/${filename}.json`,
-      "utf-8",
-      (err, string) => {
-        let existingArray = JSON.parse(string);
+    try {
+      fs.readFile(
+        `./src/collections/${filename}.json`,
+        "utf-8",
+        (err, string) => {
+          let existingArray = JSON.parse(string);
 
-        existingArray.push(data);
+          existingArray.push(data);
 
-        fs.writeFile(
-          `./src/collections/${filename}.json`,
-          JSON.stringify(existingArray),
-          () => {
-            return true;
-          }
-        );
-      }
-    );
+          fs.writeFile(
+            `./src/collections/${filename}.json`,
+            JSON.stringify(existingArray),
+            () => {
+              return true;
+            }
+          );
+        }
+      );
+    } catch (err) {
+      Logger("tools", "updateFile", err);
+    }
   }
 
   static censor(value: any) {
@@ -128,7 +142,6 @@ class Tools {
     guild: Discord.Guild,
     channelId: string
   ) {
-    //? Return [Message, Channel]
     try {
       const channel: TextChannel = <TextChannel>(
         guild.channels.cache.find((c) => c.id == channelId)
@@ -136,6 +149,7 @@ class Tools {
       const message = await channel.messages.fetch(messageId);
       return [message, channel];
     } catch (error) {
+      Logger("tools", "getMessageById", error);
       return [null, null];
     }
   }
@@ -150,28 +164,32 @@ class Tools {
     guild: Guild,
     user: GuildMember | PartialGuildMember
   ) {
-    const channelToggleRepository = await ChannelToggleRepository();
-    const toggle = await channelToggleRepository.findOne({
-      where: {
-        emoji: reactionName,
-        message: messageId,
-      },
-    });
-
-    if (toggle !== undefined) {
-      const channel = guild.channels.cache.find(
-        (channel) => channel.id === toggle.channel
-      );
-      if (channel === undefined) {
-        textLog(
-          `I can't find this channel <#${channel.id}>. Has it been deleted?`
-        );
-        return;
-      }
-
-      await channel.updateOverwrite(user.id, {
-        VIEW_CHANNEL: true,
+    try {
+      const channelToggleRepository = await ChannelToggleRepository();
+      const toggle = await channelToggleRepository.findOne({
+        where: {
+          emoji: reactionName,
+          message: messageId,
+        },
       });
+
+      if (toggle !== undefined) {
+        const channel = guild.channels.cache.find(
+          (channel) => channel.id === toggle.channel
+        );
+        if (channel === undefined) {
+          textLog(
+            `I can't find this channel <#${channel.id}>. Has it been deleted?`
+          );
+          return;
+        }
+
+        await channel.updateOverwrite(user.id, {
+          VIEW_CHANNEL: true,
+        });
+      }
+    } catch (err) {
+      Logger("tools", "addUserPermissions", err);
     }
   }
 }
