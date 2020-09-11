@@ -194,7 +194,7 @@ class MessageManager {
       this.message.content.toLowerCase().includes("abooz") ||
       this.message.content.toLowerCase().includes("mod abuse")
     ) {
-      reactWithEmoji(this.message, ":eyes:");
+      reactWithEmoji(this.message, "👀");
     }
     if (this.message.content.toLowerCase().startsWith("!group toggle"))
       GroupManager(this.message, true);
@@ -253,11 +253,6 @@ class MessageManager {
       proposeNameChange(requestedName, this.message);
       await requestMessage.delete();
     } catch (err) {
-      Logger(
-        "MessageManager",
-        "routeDM",
-        `Timed out wait for a reaction: ${err}`
-      );
       removeIgnore();
       // Time's up; nothing to do here, really
       dmChannel.send(

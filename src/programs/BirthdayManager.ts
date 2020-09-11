@@ -89,7 +89,6 @@ export default async function BirthdayManager(message: Message) {
       errors: ["time"],
     });
   } catch (err) {
-    Logger("BirthdayManager", "birthdayAccepted", err);
     // timeout probably
     return;
   }
@@ -313,7 +312,6 @@ async function getUserTimezone(message: Message): Promise<string> {
       errors: ["time"],
     });
   } catch (err) {
-    Logger("BirthdayManager", "getUserTimezone - awaitReactions", err);
     if (err.toString() === "[object Map]") {
       await sentMessage.delete();
       throw new Error("time expired");
