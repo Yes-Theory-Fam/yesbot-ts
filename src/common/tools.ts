@@ -145,6 +145,19 @@ class Tools {
     return guild.roles.resolve(roleId);
   }
 
+  static getRoleByName(roleName: string, guild: Guild) {
+    return guild.roles.cache.find(
+      (r) => r.name.toLowerCase() === roleName.toLowerCase()
+    );
+  }
+
+  static async handleUserError(message: Message, reply: string) {
+    message.reply(reply).then((msg) => {
+      message.delete();
+      msg.delete({ timeout: 10000 });
+    });
+  }
+
   static async addPerUserPermissions(
     reactionName: string,
     messageId: string,

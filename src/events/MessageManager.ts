@@ -64,11 +64,10 @@ class MessageManager {
         dm.send(this.message.content);
       });
       this.message.delete();
-      const timeoutRole = this.message.guild.roles.cache.find(
-        (r) => r.name === "Time Out"
-      );
-      const supportRole = this.message.guild.roles.cache.find(
-        (r) => r.name === MODERATOR_ROLE_NAME
+      const timeoutRole = Tools.getRoleByName("Time Out", this.message.guild);
+      const supportRole = Tools.getRoleByName(
+        MODERATOR_ROLE_NAME,
+        this.message.guild
       );
       this.message.member.roles.add(timeoutRole);
       textLog(

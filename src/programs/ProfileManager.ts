@@ -10,14 +10,15 @@ export default async function ProfileManager(pMessage: Discord.Message) {
     const words = Tools.stringToWords(content);
     words.shift();
 
-    let requestedUser = pMessage.mentions.users.first();
-    if (!requestedUser) requestedUser = pMessage.member.user;
-    const requestedMember = pMessage.guild.members.cache.find(
-      (m) => m.user === requestedUser
-    );
+    const requestedUser =
+      pMessage.mentions.users.first() || pMessage.member.user;
+    const requestedMember = pMessage.guild.member(requestedUser);
 
     if (!requestedMember) {
-      pMessage.reply("I couldn't find that member in this server!");
+      Tools.handleUserError(
+        pMessage,
+        "I couldn't find that member in this server!"
+      );
       return;
     }
     const profileEmbed = await getProfileEmbed(requestedMember, pMessage);

@@ -78,7 +78,11 @@ export default async function GroupManager(
 
       case "create":
         if (moderator) createGroup(message, requestName, user, description);
-        else message.reply("You do not have permission to use this command.");
+        else
+          Tools.handleUserError(
+            message,
+            "You do not have permission to use this command."
+          );
         break;
 
       case "leave":
@@ -91,18 +95,28 @@ export default async function GroupManager(
 
       case "delete":
         if (moderator) deleteGroup(message, requestName);
-        else message.reply("You do not have permission to use this command.");
+        else
+          Tools.handleUserError(
+            message,
+            "You do not have permission to use this command."
+          );
         break;
 
       case "update": {
         moderator
           ? updateGroup(message, requestName, description)
-          : message.reply("You do not have permission to use this command.");
+          : Tools.handleUserError(
+              message,
+              "You do not have permission to use this command."
+            );
       }
       case "changeCooldown": {
         moderator
           ? changeCooldown(message, requestName, description)
-          : message.reply("You do not have permission to use this command.");
+          : Tools.handleUserError(
+              message,
+              "You do not have permission to use this command."
+            );
       }
     }
   } else {
@@ -140,10 +154,10 @@ export default async function GroupManager(
 
     if (timeDifference < group.cooldown) {
       const remainingCooldown = group.cooldown - Math.round(timeDifference);
-      const denyMessage = await message.reply(
+      Tools.handleUserError(
+        message,
         `Sorry, this group was already pinged within the last ${group.cooldown} minutes; it's about ${remainingCooldown} minutes left until you can ping it again.`
       );
-      denyMessage.delete({ timeout: 10000 });
       return;
     }
 
@@ -445,10 +459,10 @@ const changeCooldown = async (
 ) => {
   const cooldownNumber = Number(newCooldown);
   if (isNaN(cooldownNumber)) {
-    const complaint = await message.reply(
+    Tools.handleUserError(
+      message,
       "Please write a number for the new cooldown! It will be interpreted as minutes before the group can be pinged again."
     );
-    complaint.delete({ timeout: 10000 });
     return;
   }
 
@@ -576,8 +590,10 @@ const groupInteractionAndReport = async (
   ) => Promise<GroupInteractionInformation[]>
 ) => {
   if (requestedGroupNames.filter((name) => name).length === 0) {
-    message.react("👎");
-    message.reply("I need at least one group name to do that!");
+    Tools.handleUserError(
+      message,
+      "I need at least one group name to do that!"
+    );
     return;
   }
 
@@ -640,7 +656,7 @@ const isChannelAllowed = (channel: Channel): boolean => {
 
   const allowedCategories = ["hobbies", "gaming"];
   const allowedChannels = [
-    "449984633908625409", //Chat
+    "449984633908625409", // Chat
     "623565093166252052", // Chat-too
     "508918747533410304", // learning-spanish
     "450187015221280769", // voice-chat

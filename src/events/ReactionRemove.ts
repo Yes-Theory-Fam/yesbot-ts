@@ -40,12 +40,8 @@ class ReactionRemove {
       },
     });
     reactRoleObjects.forEach((reactionRole) => {
-      const guildMember = this.guild.members.cache.find(
-        (m) => m.id == this.user.id
-      );
-      const roleToAdd = this.guild.roles.cache.find(
-        (r) => r.id == reactionRole.roleId
-      );
+      const guildMember = this.guild.member(this.user);
+      const roleToAdd = this.guild.roles.resolve(reactionRole.roleId);
       guildMember.roles.remove(roleToAdd);
     });
 

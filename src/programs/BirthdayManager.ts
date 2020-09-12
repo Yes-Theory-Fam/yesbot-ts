@@ -34,7 +34,8 @@ export default async function BirthdayManager(message: Message) {
   const words = Tools.stringToWords(message.content);
 
   if (words.length < 2) {
-    message.channel.send(
+    Tools.handleUserError(
+      message,
       "Please type !birthday and your birthday. I prefer if you use a name for the month :robot:"
     );
     return;
@@ -48,7 +49,8 @@ export default async function BirthdayManager(message: Message) {
   const userExistingBirthday = await getUserBirthday(birthdayUser.id);
 
   if (userExistingBirthday !== null) {
-    message.channel.send(
+    Tools.handleUserError(
+      message,
       `I have already stored your birthday as ${formatBirthday(
         userExistingBirthday
       )} :tada:`
@@ -59,7 +61,8 @@ export default async function BirthdayManager(message: Message) {
   const birthdate = getUserBirthdate(message.content);
 
   if (birthdate === null) {
-    message.channel.send(
+    Tools.handleUserError(
+      message,
       "I'm unable to understand that date. Could you please specify it in month-date form? Like this: `!birthday december-24`. Thank you!"
     );
     return;
@@ -97,20 +100,22 @@ export default async function BirthdayManager(message: Message) {
       "Okay, please be more specific and try again, or hang around for a Support to help you out! :grin:"
     );
     return;
-  } else {
-    // Clean up
-    await birthdayMessage.delete();
   }
+
+  // Clean up
+  await birthdayMessage.delete();
 
   let timezone;
   try {
     timezone = await getUserTimezone(message);
   } catch (err) {
     if (err.message === "Too many available time zones") {
-      const engineerRole = message.guild.roles.cache.find(
-        (r) => r.name === ENGINEER_ROLE_NAME
+      const engineerRole = Tools.getRoleByName(
+        ENGINEER_ROLE_NAME,
+        message.guild
       );
-      message.channel.send(
+      Tools.handleUserError(
+        message,
         "Ouch, it seems like you have an extreme amounts of timezones available!" +
           "\nPlease wait while I call for my masters. :grin:" +
           `\nBeep boop ${engineerRole.toString()}? :telephone:`

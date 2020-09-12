@@ -14,13 +14,13 @@ export default async function ReactRole(message: Discord.Message) {
 
   if (!action || !["add", "list", "delete", "search"].includes(action)) {
     message.reply(
-      `Incorrect syntax, please use the following: \`!role add|list|delete\``
+      `Incorrect syntax, please use the following: \`!role add|list|delete|search\``
     );
     return;
   }
   switch (action) {
     case "add":
-      if (!messageId || !reaction || !roleId || !message) {
+      if (!messageId || !reaction || !roleId) {
         message.reply(
           `Incorrect syntax, please use the following: \`!role add messageId reaction roleId <channelId>\``
         );
@@ -43,9 +43,7 @@ export default async function ReactRole(message: Discord.Message) {
 }
 
 const searchForRole = async (roleSearchString: string, message: Message) => {
-  let foundRole = message.guild.roles.cache.find(
-    (role) => role.name.toLowerCase() === roleSearchString.toLowerCase()
-  );
+  let foundRole = Tools.getRoleByName(roleSearchString, message.guild);
   if (!foundRole) {
     foundRole = message.guild.roles.cache.find((role) =>
       role.name.toLowerCase().includes(roleSearchString.toLowerCase())

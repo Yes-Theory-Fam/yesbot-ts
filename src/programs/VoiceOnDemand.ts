@@ -14,6 +14,7 @@ import { GUILD_ID } from "../const";
 import { hasRole } from "../common/moderator";
 import { VoiceOnDemandRepository } from "../entities";
 import state from "../common/state";
+import Tools from "../common/tools";
 
 const defaultLimit = (5).toString();
 const maxLimit = 10;
@@ -42,12 +43,12 @@ export default async function (message: Message) {
   const requestedLimit = Number(limitArg);
 
   if (isNaN(requestedLimit)) {
-    error(message, "The limit has to be a number");
+    Tools.handleUserError(message, "The limit has to be a number");
     return;
   }
 
   if (requestedLimit < 2) {
-    error(message, "The limit has to be at least 2");
+    Tools.handleUserError(message, "The limit has to be at least 2");
     return;
   }
 
@@ -61,7 +62,10 @@ export default async function (message: Message) {
       limitOnDemand(message, limit);
       break;
     default:
-      error(message, "Wrong syntax! Use !voice <create|limit> [limit]");
+      Tools.handleUserError(
+        message,
+        "Wrong syntax! Use !voice <create|limit> [limit]"
+      );
   }
 }
 
@@ -70,7 +74,10 @@ const createOnDemand = async (message: Message, userLimit: number) => {
   const hasExisting = await getVoiceChannel(member);
 
   if (hasExisting) {
-    error(message, "You already have an existing voice channel!");
+    Tools.handleUserError(
+      message,
+      "You already have an existing voice channel!"
+    );
     return;
   }
 
@@ -136,7 +143,7 @@ const limitOnDemand = async (message: Message, limit: number) => {
   const memberVoiceChannel = await getVoiceChannel(member);
 
   if (!memberVoiceChannel) {
-    error(
+    Tools.handleUserError(
       message,
       "You don't have a voice channel. You can create one using `!voice create` and an optional limit"
     );
@@ -238,13 +245,6 @@ const deleteIfEmpty = async (channel: VoiceChannel) => {
   }
 };
 
-const error = (message: Message, reply: string) => {
-  message.reply(reply).then((msg) => {
-    message.delete();
-    msg.delete({ timeout: 10000 });
-  });
-};
-
 const pickOneMessage = async (
   toReplyMessage: Message,
   callToActionMessage: string,
@@ -269,7 +269,7 @@ const pickOneMessage = async (
     return selection.first();
   } catch {
     await reactMessage.delete();
-    error(
+    Tools.handleUserError(
       toReplyMessage,
       "For technical reasons I can only wait 60 seconds for your selection."
     );
