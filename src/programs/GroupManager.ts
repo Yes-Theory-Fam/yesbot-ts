@@ -1,4 +1,4 @@
-import Discord, {
+import {
   Channel,
   Guild,
   GuildMember,
@@ -35,7 +35,7 @@ const isSuccess = (
 ): result is GroupInteractionSuccess => result.success;
 
 export default async function GroupManager(
-  message: Discord.Message,
+  message: Message,
   isConfig: boolean
 ) {
   const content = message.content;
@@ -172,7 +172,7 @@ export default async function GroupManager(
   }
 }
 
-const toggleGroup = async (words: string[], message: Discord.Message) => {
+const toggleGroup = async (words: string[], message: Message) => {
   if (!isAuthorModerator(message)) {
     message.react("👎");
     return;
@@ -265,7 +265,7 @@ export async function backfillReactions(
 }
 
 const deleteGroup = async (
-  message: Discord.Message,
+  message: Message,
   requestedGroupName: string = ""
 ) => {
   if (!requestedGroupName) {
@@ -290,7 +290,7 @@ const deleteGroup = async (
 };
 
 const searchGroup = async (
-  message: Discord.Message,
+  message: Message,
   requestedGroupName: string = ""
 ) => {
   const groupRepository = await UserGroupRepository();
@@ -389,7 +389,7 @@ const searchGroup = async (
 };
 
 const createGroup = async (
-  message: Discord.Message,
+  message: Message,
   requestedGroupName: string,
   member: GuildMember,
   description: string
@@ -421,7 +421,7 @@ const createGroup = async (
 };
 
 const updateGroup = async (
-  message: Discord.Message,
+  message: Message,
   requestedGroupName: string,
   description: string
 ) => {
@@ -453,7 +453,7 @@ const updateGroup = async (
 };
 
 const changeCooldown = async (
-  message: Discord.Message,
+  message: Message,
   requestedGroupName: string,
   newCooldown: string
 ) => {
@@ -479,7 +479,7 @@ const changeCooldown = async (
 };
 
 const joinGroup = async (
-  message: Discord.Message,
+  message: Message,
   requestedGroupNames: string[],
   member: GuildMember
 ) => {
@@ -492,7 +492,7 @@ const joinGroup = async (
 };
 
 const leaveGroup = async (
-  message: Discord.Message,
+  message: Message,
   requestedGroupNames: string[],
   member: GuildMember
 ) => {
@@ -580,7 +580,7 @@ const tryLeaveGroups = async (
 };
 
 const groupInteractionAndReport = async (
-  message: Discord.Message,
+  message: Message,
   requestedGroupNames: string[],
   member: GuildMember,
   interaction: (

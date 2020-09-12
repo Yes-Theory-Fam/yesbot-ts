@@ -1,10 +1,12 @@
-import Discord, {
+import {
+  Client,
+  CollectorFilter,
+  DMChannel,
+  Message,
+  MessageReaction,
+  MessageAttachment,
   TextChannel,
   User,
-  Channel,
-  CollectorFilter,
-  MessageReaction,
-  DMChannel,
 } from "discord.js";
 import {
   BirthdayManager,
@@ -38,12 +40,12 @@ import { hasRole, textLog, getMember } from "../common/moderator";
 import { sendLove, randomReply, reactWithEmoji } from "../common/CustomMethods";
 
 class MessageManager {
-  message: Discord.Message;
-  author: Discord.User;
-  bot: Discord.Client;
+  message: Message;
+  author: User;
+  bot: Client;
   logs: boolean;
 
-  constructor(msg: Discord.Message) {
+  constructor(msg: Message) {
     this.message = msg;
     this.author = msg.author;
     this.bot = bot;
@@ -77,7 +79,7 @@ class MessageManager {
 
     const words = this.message.content.split(/\s+/);
     const firstWord = words[0];
-    const channel = <Discord.TextChannel>this.message.channel;
+    const channel = <TextChannel>this.message.channel;
 
     const isFiltered = words.some((r) => filteredWords.indexOf(r) !== -1);
     if (isFiltered) {
@@ -324,7 +326,7 @@ class MessageManager {
 
   SendMap(country: string) {
     this.message.delete();
-    const image = new Discord.MessageAttachment(
+    const image = new MessageAttachment(
       country === "usa"
         ? USA_IMAGE_URL
         : country === "canada"

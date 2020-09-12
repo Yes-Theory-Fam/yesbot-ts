@@ -1,9 +1,9 @@
-import Discord, { Snowflake, Message } from "discord.js";
+import { Message, Snowflake, MessageEmbed } from "discord.js";
 import Tools from "../common/tools";
 import { isAuthorModerator } from "../common/moderator";
 import { ReactionRoleRepository } from "../entities";
 
-export default async function ReactRole(message: Discord.Message) {
+export default async function ReactRole(message: Message) {
   //! This comes to us in the format of "!roles [add|list] [messageId] [emoji] [roleId] [channelId]"
   //! So first we need to establish if it is add or list
   if (!isAuthorModerator(message)) return;
@@ -63,7 +63,7 @@ async function addReactRoleObject(
   reaction: string,
   roleId: Snowflake,
   channelId: Snowflake,
-  pMessage: Discord.Message
+  pMessage: Message
 ) {
   if (roleId.startsWith("<")) roleId = roleId.substring(3, 21);
 
@@ -73,7 +73,6 @@ async function addReactRoleObject(
     channelId
   );
   let role = await Tools.getRoleById(roleId, pMessage.guild);
-  message = <Discord.Message>message;
   if (message && channel) {
     const reactionRoleRepository = await ReactionRoleRepository();
     const reactRoleObject = reactionRoleRepository.create({
@@ -89,7 +88,7 @@ async function addReactRoleObject(
       return;
     }
     await message.react(reaction);
-    const successEmbed = new Discord.MessageEmbed()
+    const successEmbed = new MessageEmbed()
       .setColor("#ff6063")
       .setTitle("Reaction role successfully added.")
       .addField("\u200b", "\u200b")
@@ -105,7 +104,7 @@ async function addReactRoleObject(
   }
 }
 
-async function listReactRoleObjects(pMessage: Discord.Message) {
+async function listReactRoleObjects(pMessage: Message) {
   const guild = pMessage.guild;
   const reactionRoleRepository = await ReactionRoleRepository();
   const reactRoleObjects = await reactionRoleRepository.find({
@@ -150,7 +149,6 @@ async function listReactRoleObjects(pMessage: Discord.Message) {
           guild,
           reactionRoleObject.channelId
         );
-        message = <Discord.Message>message;
         returnString += `__**${reactionRoleObject.id}:**__\n**Message**: ${message?.cleanContent}\n`;
         returnString += `**Channel**: <#${channel}>\n`;
         returnString += `**Reaction**: ${reactionRoleObject.reaction}\n`;
@@ -166,7 +164,7 @@ async function listReactRoleObjects(pMessage: Discord.Message) {
   }
 }
 
-async function deleteReactRoleObjects(index: any, pMessage: Discord.Message) {
+async function deleteReactRoleObjects(index: any, pMessage: Message) {
   const reactionRoleRepository = await ReactionRoleRepository();
   const objectToRemove = await reactionRoleRepository.findOne({
     where: {
@@ -187,7 +185,6 @@ async function deleteReactRoleObjects(index: any, pMessage: Discord.Message) {
       pMessage.guild,
       objectToRemove.channelId
     );
-    message = <Discord.Message>message;
     try {
       message.reactions.removeAll();
     } catch (err) {

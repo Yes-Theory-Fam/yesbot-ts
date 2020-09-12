@@ -1,9 +1,9 @@
-import Discord, { GuildMember, Message, MessageEmbed } from "discord.js";
+import { GuildMember, Message, MessageEmbed } from "discord.js";
 import Tools from "../common/tools";
 import { UserGroupRepository } from "../entities";
 import { formatBirthday, getUserBirthday } from "./BirthdayManager";
 
-export default async function ProfileManager(pMessage: Discord.Message) {
+export default async function ProfileManager(pMessage: Message) {
   const { content } = pMessage;
 
   if (content.startsWith("!profile")) {

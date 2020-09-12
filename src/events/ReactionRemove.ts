@@ -1,5 +1,7 @@
-import Discord, {
+import {
+  Client,
   Guild,
+  MessageReaction,
   PartialUser,
   Snowflake,
   TextChannel,
@@ -10,17 +12,14 @@ import { ChannelToggleRepository, ReactionRoleRepository } from "../entities";
 import { textLog } from "../common/moderator";
 
 class ReactionRemove {
-  bot: Discord.Client;
+  bot: Client;
   messageId: Snowflake;
   user: User;
   reaction: string;
   channel: TextChannel;
   guild: Guild;
 
-  constructor(
-    messageReaction: Discord.MessageReaction,
-    user: User | PartialUser
-  ) {
+  constructor(messageReaction: MessageReaction, user: User | PartialUser) {
     this.bot = bot;
     this.user = <User>user;
     this.messageId = messageReaction.message.id;

@@ -1,12 +1,12 @@
-import Discord, {
+import {
   Guild,
-  GuildMember,
   Message,
   MessageReaction,
   PartialUser,
   Snowflake,
   TextChannel,
   User,
+  Client,
 } from "discord.js";
 import bot from "../index";
 import Tools from "../common/tools";
@@ -21,7 +21,7 @@ import { MessageRepository, ReactionRoleRepository } from "../entities";
 import { hasRole } from "../common/moderator";
 
 class ReactionAdd {
-  bot: Discord.Client;
+  bot: Client;
   message: Message;
   messageId: Snowflake;
   user: User;
@@ -31,10 +31,7 @@ class ReactionAdd {
   pureEmoji: any;
   messageReaction: MessageReaction;
 
-  constructor(
-    messageReaction: Discord.MessageReaction,
-    user: User | PartialUser
-  ) {
+  constructor(messageReaction: MessageReaction, user: User | PartialUser) {
     this.bot = bot;
     this.user = <User>user;
     this.message = messageReaction.message;

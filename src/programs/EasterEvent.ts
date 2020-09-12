@@ -1,12 +1,11 @@
-import Discord, { TextChannel, User, Channel } from "discord.js";
-import Tools from "../common/tools";
+import { Channel, Message, TextChannel, User } from "discord.js";
 
 const EGG_DELAY_SECONDS = 37 * 60;
 
 let eggcount = 2;
 let totalCount = 32;
 
-export default async function EasterEvent(msg: Discord.Message) {
+export default async function EasterEvent(msg: Message) {
   const sendEgg = async () => {
     const enabledChannels = [
       "chat",

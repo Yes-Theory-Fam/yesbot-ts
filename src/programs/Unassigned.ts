@@ -1,7 +1,7 @@
-import Discord, { TextChannel, GuildMember } from "discord.js";
+import { Message, TextChannel } from "discord.js";
 import { MODERATOR_ROLE_NAME } from "../const";
 
-export default function Unassigned(message: Discord.Message) {
+export default function Unassigned(message: Message) {
   const guild = message.guild;
 
   const UnassignedRole = guild.roles.cache.find(

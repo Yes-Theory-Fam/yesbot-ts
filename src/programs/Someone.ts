@@ -1,4 +1,4 @@
-import Discord, { GuildMember, TextChannel, User } from "discord.js";
+import { GuildMember, Message, TextChannel, User } from "discord.js";
 import Tools from "../common/tools";
 import axios from "axios";
 import { isAfter, addHours } from "date-fns";
@@ -8,7 +8,7 @@ import { SomeoneRepository } from "../entities";
 const QUESTION_LINK: string =
   "https://spreadsheets.google.com/feeds/cells/1J7DlkcWzhcm9CXiWCB-dQloCqIHjVpupyvMqBPlJ7Mk/1/public/full?alt=json";
 
-async function Someone(message: Discord.Message) {
+async function Someone(message: Message) {
   message.delete();
   const allow = await isAllowed(message.author);
 
@@ -66,7 +66,7 @@ const sendMessage = async (
   await webhook.delete();
 };
 
-async function updateLastMessage(message: Discord.Message) {
+async function updateLastMessage(message: Message) {
   const someones = await SomeoneRepository();
   const someone = someones.create({
     id: message.author.id,
@@ -85,7 +85,7 @@ async function updateLastMessage(message: Discord.Message) {
   return true;
 }
 
-async function isAllowed(user: Discord.User) {
+async function isAllowed(user: User) {
   const someoneRepository = await SomeoneRepository();
   const someone = await someoneRepository.findOne({ id: user.id });
 
@@ -96,7 +96,7 @@ async function isAllowed(user: Discord.User) {
   return isAfter(new Date(), addHours(someone.time, 24));
 }
 
-async function getTarget(arg: string, message: Discord.Message) {
+async function getTarget(arg: string, message: Message) {
   if (message) {
     const sdRole = Tools.getRoleByName("Seek Discomfort", message.guild);
     if (!sdRole) {

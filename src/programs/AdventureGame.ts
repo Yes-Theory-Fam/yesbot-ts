@@ -1,4 +1,4 @@
-import Discord, {
+import {
   TextChannel,
   GuildCreateChannelOptions,
   User,

@@ -1,20 +1,8 @@
-import Discord, {
-  Snowflake,
-  TextChannel,
-  GuildMember,
-  Message,
-  MessageEmbed,
-  Guild,
-} from "discord.js";
+import { Guild, GuildMember, Message } from "discord.js";
 import Tools from "../common/tools";
 import { MODERATOR_ROLE_NAME } from "../const";
 
-interface DiscordGroup {
-  name: String;
-  members: String[];
-}
-
-export default async function ExportManager(message: Discord.Message) {
+export default async function ExportManager(message: Message) {
   const words = Tools.stringToWords(message.content);
   const [command, toExportType, toExport] = words;
 
@@ -37,11 +25,7 @@ export default async function ExportManager(message: Discord.Message) {
   }
 }
 
-const exportRole = (
-  toExport: string,
-  guild: Guild,
-  message: Discord.Message
-) => {
+const exportRole = (toExport: string, guild: Guild, message: Message) => {
   // toExport = toExport.match()
   const foundRole = guild.roles.cache.find(
     (role) => role.name.toLowerCase() === toExport.toLowerCase()

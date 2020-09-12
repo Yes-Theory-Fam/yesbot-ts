@@ -1,8 +1,8 @@
-import Discord, { TextChannel } from "discord.js";
+import { Message, TextChannel } from "discord.js";
 import { DeadchatQuestion, DeadchatRepository } from "../entities";
 import Tools from "../common/tools";
 
-export default async function Deadchat(pMessage: Discord.Message) {
+export default async function Deadchat(pMessage: Message) {
   const isDead =
     Date.now() -
       (await pMessage.channel.messages.fetch({ limit: 2 })).array()[1]
