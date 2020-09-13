@@ -28,11 +28,11 @@ const emojiPool = ["🐼", "🐨", "🐶", "🐵", "🐯"];
 const getChannelName = (m: GuildMember, e: string) =>
   `• ${e} ${m.displayName}'s Room`;
 
-const getVoiceChannel = async (member: GuildMember) => {
+const getVoiceChannel = async (member: GuildMember): Promise<VoiceChannel> => {
   const guild = member.guild;
   const repo = await VoiceOnDemandRepository();
   const mapping = await repo.findOne(member.id);
-  return guild.channels.resolve(mapping?.channelId);
+  return guild.channels.resolve(mapping?.channelId) as VoiceChannel;
 };
 
 export default async function (message: Message) {
@@ -43,6 +43,24 @@ export default async function (message: Message) {
     return;
   }
 
+  const [, command] = message.content.split(" ");
+
+  switch (command) {
+    case "create":
+    case "limit":
+      handleLimitCommand(message);
+      break;
+    case "host":
+      changeHostOnDemand(message);
+    default:
+      Tools.handleUserError(
+        message,
+        "Wrong syntax! Use !voice <create|limit> [limit] or !voice host @newHost"
+      );
+  }
+}
+
+const handleLimitCommand = (message: Message) => {
   const [, command, limitArg = defaultLimit] = message.content.split(" ");
   const requestedLimit = Math.floor(Number(limitArg));
 
@@ -65,13 +83,8 @@ export default async function (message: Message) {
     case "limit":
       limitOnDemand(message, limit);
       break;
-    default:
-      Tools.handleUserError(
-        message,
-        "Wrong syntax! Use !voice <create|limit> [limit]"
-      );
   }
-}
+};
 
 const createOnDemand = async (message: Message, userLimit: number) => {
   const { guild, member } = message;
@@ -160,6 +173,48 @@ const limitOnDemand = async (message: Message, limit: number) => {
   });
 
   message.reply(`Successfully changed the limit of your room to ${limit}`);
+};
+
+const changeHostOnDemand = async (message: Message) => {
+  const { member } = message;
+  const memberVoiceChannel = await getVoiceChannel(member);
+
+  if (!memberVoiceChannel) {
+    Tools.handleUserError(
+      message,
+      "You don't have a voice channel. You can create one using `!voice create` and an optional limit"
+    );
+    return;
+  }
+
+  const mentionedUser = message.mentions.users.first();
+  if (!mentionedUser) {
+    Tools.handleUserError(
+      message,
+      "You have to mention the user you want to take on ownership of your room."
+    );
+    return;
+  }
+
+  if (mentionedUser.id === message.author.id) {
+    Tools.handleUserError(message, "Errrrr... That's yourself 🤨");
+    return;
+  }
+
+  const mentionedUserInVoiceChannel = memberVoiceChannel.members.has(
+    mentionedUser.id
+  );
+
+  if (!mentionedUserInVoiceChannel) {
+    Tools.handleUserError(message, "That user is not in your voice channel");
+    return;
+  }
+
+  const repo = await VoiceOnDemandRepository();
+  const mapping = await repo.findOne(message.author.id);
+  await transferOwnership(repo, mapping, mentionedUser, memberVoiceChannel);
+
+  message.reply(`I transfered ownership of your room to <@${mentionedUser}>!`);
 };
 
 export const voiceOnDemandPermissions = async (
@@ -339,6 +394,15 @@ const requestOwnershipTransfer = async (
     `<@${claimingUser}>, you claimed the room! You can now change the limit of it using \`!voice limit\`.`
   );
 
+  transferOwnership(repo, mapping, claimingUser, channel);
+};
+
+const transferOwnership = async (
+  repo: Repository<VoiceOnDemandMapping>,
+  mapping: VoiceOnDemandMapping,
+  claimingUser: User,
+  channel: VoiceChannel
+) => {
   await repo
     .createQueryBuilder()
     .update()
