@@ -74,7 +74,7 @@ class MessageManager {
       );
       this.message.member.roles.add(timeoutRole);
       textLog(
-        `<@&${supportRole.id}>: <@${this.message.author.id}> just tagged more than 20 people in a single message. The message has been deleted and they have beeen timed out.`
+        `<@&${supportRole.id}>: <@${this.message.author.id}> just tagged more than 20 people in a single message in <#${this.message.channel.id}>. The message has been deleted and they have beeen timed out.`
       );
     }
 

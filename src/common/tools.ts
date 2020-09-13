@@ -79,14 +79,14 @@ class Tools {
           options === 1
             ? "1️⃣"
             : options === 2
-              ? "2️⃣"
-              : options === 3
-                ? "3️⃣"
-                : options === 4
-                  ? "4️⃣"
-                  : options === 5
-                    ? "5️⃣"
-                    : null
+            ? "2️⃣"
+            : options === 3
+            ? "3️⃣"
+            : options === 4
+            ? "4️⃣"
+            : options === 5
+            ? "5️⃣"
+            : null
         );
       } catch (err) {
         Logger("tools", "addNumberReactions", err);
