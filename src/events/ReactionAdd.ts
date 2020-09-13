@@ -22,14 +22,14 @@ import { hasRole } from "../common/moderator";
 
 class ReactionAdd {
   bot: Client;
-  message: Message;
-  messageId: Snowflake;
-  user: User;
-  reaction: string;
   channel: TextChannel;
   guild: Guild;
-  pureEmoji: any;
+  message: Message;
+  messageId: Snowflake;
   messageReaction: MessageReaction;
+  pureEmoji: any;
+  reaction: string;
+  user: User;
 
   constructor(messageReaction: MessageReaction, user: User | PartialUser) {
     this.bot = bot;

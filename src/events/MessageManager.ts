@@ -4,7 +4,6 @@ import {
   DMChannel,
   Message,
   MessageReaction,
-  MessageAttachment,
   TextChannel,
   User,
 } from "discord.js";
@@ -12,32 +11,34 @@ import {
   BirthdayManager,
   BuddyProjectManager,
   Deadchat,
+  ExportManager,
   GroupManager,
   PollsManager,
   ProfileManager,
   ReactRole,
+  Resource,
   Someone,
   StateRoleFinder,
   Ticket,
   TopicManager,
   Unassigned,
   VoiceOnDemand,
-  ExportManager,
   WhereAreYouFromManager,
-  Resource,
 } from "../programs";
 import bot from "../index";
-import {
-  USA_IMAGE_URL,
-  CANADA_IMAGE_URL,
-  UK_IMAGE_URL,
-  AUSTRALIA_IMAGE_URL,
-  MODERATOR_ROLE_NAME,
-} from "../const";
-import Tools from "../common/tools";
+import { MODERATOR_ROLE_NAME } from "../const";
 import state from "../common/state";
 import { hasRole, textLog, getMember } from "../common/moderator";
-import { sendLove, randomReply, reactWithEmoji } from "../common/CustomMethods";
+import {
+  addVote,
+  deleteMessages,
+  proposeNameChange,
+  randomReply,
+  reactWithEmoji,
+  sendLove,
+  SendMap,
+} from "../common/CustomMethods";
+import Tools from "../common/tools";
 
 class MessageManager {
   message: Message;
@@ -73,7 +74,7 @@ class MessageManager {
       );
       this.message.member.roles.add(timeoutRole);
       textLog(
-        `<@&${supportRole.id}>: <@${this.message.author.id}> just tagged more than 20 people in a single message. The message has been deleted and they have beeen timed out.`
+        `<@&${supportRole.id}>: <@${this.message.author.id}> just tagged more than 20 people in a single message in <#${this.message.channel.id}>. The message has been deleted and they have beeen timed out.`
       );
     }
 
@@ -99,10 +100,10 @@ class MessageManager {
           this.message.reply("https://youtu.be/v-JOe-xqPN0");
         }
       case "flag-drop":
-        if (firstWord == "!usa") this.SendMap("usa");
-        if (firstWord == "!canada") this.SendMap("canada");
-        if (firstWord == "!australia") this.SendMap("australia");
-        if (firstWord == "!uk") this.SendMap("uk");
+        if (firstWord == "!usa") SendMap("usa", this.message);
+        if (firstWord == "!canada") SendMap("canada", this.message);
+        if (firstWord == "!australia") SendMap("australia", this.message);
+        if (firstWord == "!uk") SendMap("uk", this.message);
         WhereAreYouFromManager(this.message);
         if (firstWord === "!state") StateRoleFinder(this.message);
         break;
@@ -173,9 +174,11 @@ class MessageManager {
     // if (firstWord === "!fiyesta") Ticket(this.message, "fiyesta");
     if (firstWord === "!resources") Resource(this.message);
     if (firstWord === "!shoutout") Ticket(this.message, "shoutout");
-    if (firstWord === "!vote") this.addVote();
+    if (firstWord === "!vote") addVote(this.message);
     if (firstWord === "!delete")
-      hasRole(this.message.member, "Support") ? this.deleteMessages() : null;
+      hasRole(this.message.member, "Support")
+        ? deleteMessages(this.message)
+        : null;
     if (firstWord === "!role") ReactRole(this.message);
     if (firstWord === "F") this.message.react("🇫");
     if (
@@ -193,7 +196,7 @@ class MessageManager {
       this.message.content.toLowerCase().includes("abooz") ||
       this.message.content.toLowerCase().includes("mod abuse")
     ) {
-      reactWithEmoji(this.message, ":mod_abooz:");
+      reactWithEmoji(this.message, "👀");
     }
     if (this.message.content.toLowerCase().startsWith("!group toggle"))
       GroupManager(this.message, true);
@@ -249,9 +252,9 @@ class MessageManager {
       }
 
       const requestedName = nameMessage.first().content;
-      this.proposeNameChange(requestedName);
+      proposeNameChange(requestedName, this.message);
       await requestMessage.delete();
-    } catch {
+    } catch (err) {
       removeIgnore();
       // Time's up; nothing to do here, really
       dmChannel.send(
@@ -260,82 +263,6 @@ class MessageManager {
     }
 
     await nameChangeMessage.delete();
-  }
-
-  proposeNameChange = async (name: string) => {
-    this.message.reply(
-      "Perfect! I've sent your name request to the mods, hopefully they answer soon! In the meantime, you're free to roam around the server and explore. Maybe post an introduction to get started? :grin:"
-    );
-    const message = `Username: ${this.message.author.toString()} would like to rename to "${name}". Allow?`;
-    const sentMessage = await textLog(message);
-    sentMessage.react("✅").then(() => sentMessage.react("🚫"));
-    sentMessage
-      .awaitReactions(
-        (reaction: any, user: User) => {
-          return !user.bot;
-        },
-        { max: 1, time: 6000000, errors: ["time"] }
-      )
-      .then((collected) => {
-        const reaction = collected.first();
-        switch (reaction.emoji.toString()) {
-          case "✅":
-            const member = getMember(this.message.author.id);
-            member.setNickname(name);
-            sentMessage.delete();
-            textLog(
-              `${this.message.author.toString()} was renamed to ${name}.`
-            );
-            break;
-          case "🚫":
-            sentMessage.delete();
-            textLog(
-              `${this.message.author.toString()} was *not* renamed to ${name}.`
-            );
-            break;
-
-          default:
-            break;
-        }
-      });
-  };
-
-  deleteMessages = async () => {
-    const words = Tools.stringToWords(this.message.content);
-    words.shift();
-    const messagesToDelete = Number(words[0]);
-    if (messagesToDelete !== NaN) {
-      this.message.channel.bulkDelete(messagesToDelete);
-    }
-  };
-
-  addVote = async () => {
-    const words = Tools.stringToWords(this.message.content);
-    words.shift();
-    const messageId = words[0];
-    const messageToVote = await this.message.channel.messages.resolve(
-      messageId
-    );
-    if (!messageToVote) this.message.react("👎");
-    else
-      this.message
-        .delete()
-        .then(() => messageToVote.react("👍"))
-        .then(() => messageToVote.react("👎"));
-  };
-
-  SendMap(country: string) {
-    this.message.delete();
-    const image = new MessageAttachment(
-      country === "usa"
-        ? USA_IMAGE_URL
-        : country === "canada"
-        ? CANADA_IMAGE_URL
-        : country === "australia"
-        ? AUSTRALIA_IMAGE_URL
-        : UK_IMAGE_URL
-    );
-    this.message.channel.send(image);
   }
 }
 export default MessageManager;

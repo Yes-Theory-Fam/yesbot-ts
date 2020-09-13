@@ -4,12 +4,12 @@ import {
   GuildChannel,
   GuildMember,
   PartialGuildMember,
-  Role,
   TextChannel,
 } from "discord.js";
 import Tools from "../common/tools";
 import { hasRole } from "../common/moderator";
 import { Separators, NitroColors } from "../programs";
+import { Logger } from "../common/Logger";
 
 class GuildMemberUpdate {
   bot: Client;
@@ -85,11 +85,15 @@ const resolvePerUserPermissions = async (
     .filter(isText)
     .filter((channel) => listChannels.some((name) => channel.name === name));
 
-  await Promise.all(
-    selectionChannels.map((channel) =>
-      channel.messages.fetch({ limit: 1 }, true)
-    )
-  );
+  try {
+    await Promise.all(
+      selectionChannels.map((channel) =>
+        channel.messages.fetch({ limit: 1 }, true)
+      )
+    );
+  } catch (err) {
+    Logger("GuildMemberUpdate", "resolveUserPermissions", err);
+  }
 
   const selectionMessages = selectionChannels.map(
     (channel: TextChannel) => channel.messages.cache.array()[0]
