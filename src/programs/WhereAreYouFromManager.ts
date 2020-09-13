@@ -1,12 +1,9 @@
-import Discord, { TextChannel, Guild, Role, User } from "discord.js";
-import Tools from "../common/tools";
+import { Guild, Message, Role, TextChannel, User } from "discord.js";
 import { isRegistered, textLog } from "../common/moderator";
 import { Country, countries } from "../collections/flagEmojis";
 import { MODERATOR_ROLE_NAME } from "../const";
 
-export default async function WhereAreYouFromManager(
-  pMessage: Discord.Message
-) {
+export default async function WhereAreYouFromManager(pMessage: Message) {
   const newUser = !isRegistered(pMessage.member);
 
   if (newUser) {

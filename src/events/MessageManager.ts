@@ -1,7 +1,10 @@
-import Discord, {
+import {
+  Client,
   CollectorFilter,
   DMChannel,
+  Message,
   MessageReaction,
+  TextChannel,
   User,
 } from "discord.js";
 import {
@@ -35,15 +38,15 @@ import {
   sendLove,
   SendMap,
 } from "../common/CustomMethods";
-import { Logger } from "../common/Logger";
+import Tools from "../common/tools";
 
 class MessageManager {
-  message: Discord.Message;
-  author: Discord.User;
-  bot: Discord.Client;
+  message: Message;
+  author: User;
+  bot: Client;
   logs: boolean;
 
-  constructor(msg: Discord.Message) {
+  constructor(msg: Message) {
     this.message = msg;
     this.author = msg.author;
     this.bot = bot;
@@ -64,11 +67,10 @@ class MessageManager {
         dm.send(this.message.content);
       });
       this.message.delete();
-      const timeoutRole = this.message.guild.roles.cache.find(
-        (r) => r.name === "Time Out"
-      );
-      const supportRole = this.message.guild.roles.cache.find(
-        (r) => r.name === MODERATOR_ROLE_NAME
+      const timeoutRole = Tools.getRoleByName("Time Out", this.message.guild);
+      const supportRole = Tools.getRoleByName(
+        MODERATOR_ROLE_NAME,
+        this.message.guild
       );
       this.message.member.roles.add(timeoutRole);
       textLog(
@@ -78,7 +80,7 @@ class MessageManager {
 
     const words = this.message.content.split(/\s+/);
     const firstWord = words[0];
-    const channel = <Discord.TextChannel>this.message.channel;
+    const channel = <TextChannel>this.message.channel;
 
     const isFiltered = words.some((r) => filteredWords.indexOf(r) !== -1);
     if (isFiltered) {

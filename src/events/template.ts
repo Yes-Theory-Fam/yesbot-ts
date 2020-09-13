@@ -1,8 +1,8 @@
-import Discord from "discord.js";
+import { Client } from "discord.js";
 import bot from "../index";
 
 class Template {
-  bot: Discord.Client;
+  bot: Client;
 
   constructor() {
     this.bot = bot;

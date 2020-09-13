@@ -1,4 +1,4 @@
-import Discord, {
+import {
   Channel,
   Guild,
   GuildMember,
@@ -35,7 +35,7 @@ const isSuccess = (
 ): result is GroupInteractionSuccess => result.success;
 
 export default async function GroupManager(
-  message: Discord.Message,
+  message: Message,
   isConfig: boolean
 ) {
   const content = message.content;
@@ -78,7 +78,11 @@ export default async function GroupManager(
 
       case "create":
         if (moderator) createGroup(message, requestName, user, description);
-        else message.reply("You do not have permission to use this command.");
+        else
+          Tools.handleUserError(
+            message,
+            "You do not have permission to use this command."
+          );
         break;
 
       case "leave":
@@ -91,18 +95,28 @@ export default async function GroupManager(
 
       case "delete":
         if (moderator) deleteGroup(message, requestName);
-        else message.reply("You do not have permission to use this command.");
+        else
+          Tools.handleUserError(
+            message,
+            "You do not have permission to use this command."
+          );
         break;
 
       case "update": {
         moderator
           ? updateGroup(message, requestName, description)
-          : message.reply("You do not have permission to use this command.");
+          : Tools.handleUserError(
+              message,
+              "You do not have permission to use this command."
+            );
       }
       case "changeCooldown": {
         moderator
           ? changeCooldown(message, requestName, description)
-          : message.reply("You do not have permission to use this command.");
+          : Tools.handleUserError(
+              message,
+              "You do not have permission to use this command."
+            );
       }
     }
   } else {
@@ -140,10 +154,10 @@ export default async function GroupManager(
 
     if (timeDifference < group.cooldown) {
       const remainingCooldown = group.cooldown - Math.round(timeDifference);
-      const denyMessage = await message.reply(
+      Tools.handleUserError(
+        message,
         `Sorry, this group was already pinged within the last ${group.cooldown} minutes; it's about ${remainingCooldown} minutes left until you can ping it again.`
       );
-      denyMessage.delete({ timeout: 10000 });
       return;
     }
 
@@ -158,7 +172,7 @@ export default async function GroupManager(
   }
 }
 
-const toggleGroup = async (words: string[], message: Discord.Message) => {
+const toggleGroup = async (words: string[], message: Message) => {
   if (!isAuthorModerator(message)) {
     message.react("👎");
     return;
@@ -251,7 +265,7 @@ export async function backfillReactions(
 }
 
 const deleteGroup = async (
-  message: Discord.Message,
+  message: Message,
   requestedGroupName: string = ""
 ) => {
   if (!requestedGroupName) {
@@ -276,7 +290,7 @@ const deleteGroup = async (
 };
 
 const searchGroup = async (
-  message: Discord.Message,
+  message: Message,
   requestedGroupName: string = ""
 ) => {
   const groupRepository = await UserGroupRepository();
@@ -375,7 +389,7 @@ const searchGroup = async (
 };
 
 const createGroup = async (
-  message: Discord.Message,
+  message: Message,
   requestedGroupName: string,
   member: GuildMember,
   description: string
@@ -407,7 +421,7 @@ const createGroup = async (
 };
 
 const updateGroup = async (
-  message: Discord.Message,
+  message: Message,
   requestedGroupName: string,
   description: string
 ) => {
@@ -439,16 +453,16 @@ const updateGroup = async (
 };
 
 const changeCooldown = async (
-  message: Discord.Message,
+  message: Message,
   requestedGroupName: string,
   newCooldown: string
 ) => {
   const cooldownNumber = Number(newCooldown);
   if (isNaN(cooldownNumber)) {
-    const complaint = await message.reply(
+    Tools.handleUserError(
+      message,
       "Please write a number for the new cooldown! It will be interpreted as minutes before the group can be pinged again."
     );
-    complaint.delete({ timeout: 10000 });
     return;
   }
 
@@ -465,7 +479,7 @@ const changeCooldown = async (
 };
 
 const joinGroup = async (
-  message: Discord.Message,
+  message: Message,
   requestedGroupNames: string[],
   member: GuildMember
 ) => {
@@ -478,7 +492,7 @@ const joinGroup = async (
 };
 
 const leaveGroup = async (
-  message: Discord.Message,
+  message: Message,
   requestedGroupNames: string[],
   member: GuildMember
 ) => {
@@ -566,7 +580,7 @@ const tryLeaveGroups = async (
 };
 
 const groupInteractionAndReport = async (
-  message: Discord.Message,
+  message: Message,
   requestedGroupNames: string[],
   member: GuildMember,
   interaction: (
@@ -576,8 +590,10 @@ const groupInteractionAndReport = async (
   ) => Promise<GroupInteractionInformation[]>
 ) => {
   if (requestedGroupNames.filter((name) => name).length === 0) {
-    message.react("👎");
-    message.reply("I need at least one group name to do that!");
+    Tools.handleUserError(
+      message,
+      "I need at least one group name to do that!"
+    );
     return;
   }
 
@@ -640,7 +656,7 @@ const isChannelAllowed = (channel: Channel): boolean => {
 
   const allowedCategories = ["hobbies", "gaming"];
   const allowedChannels = [
-    "449984633908625409", //Chat
+    "449984633908625409", // Chat
     "623565093166252052", // Chat-too
     "508918747533410304", // learning-spanish
     "450187015221280769", // voice-chat

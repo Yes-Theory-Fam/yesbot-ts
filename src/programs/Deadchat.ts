@@ -1,7 +1,8 @@
-import Discord, { TextChannel } from "discord.js";
+import { Message, TextChannel } from "discord.js";
 import { DeadchatQuestion, DeadchatRepository } from "../entities";
+import Tools from "../common/tools";
 
-export default async function Deadchat(pMessage: Discord.Message) {
+export default async function Deadchat(pMessage: Message) {
   const isDead =
     Date.now() -
       (await pMessage.channel.messages.fetch({ limit: 2 })).array()[1]
@@ -11,26 +12,15 @@ export default async function Deadchat(pMessage: Discord.Message) {
     (pMessage.channel as TextChannel).name
   );
   if (!isChat) {
-    pMessage.delete();
-    pMessage.reply("you can't use this command here.").then((message) => {
-      setTimeout(() => {
-        message.delete();
-      }, 10000);
-    });
+    Tools.handleUserError(pMessage, "You can't use this command here.");
     return;
   }
 
   if (!isDead) {
-    pMessage.delete();
-    pMessage
-      .reply(
-        "Chat is not dead! You can use this command if there have been no messages in the last 30 minutes."
-      )
-      .then((m) => {
-        setTimeout(() => {
-          m.delete();
-        }, 10000);
-      });
+    Tools.handleUserError(
+      pMessage,
+      "Chat is not dead! You can use this command if there have been no messages in the last 30 minutes."
+    );
     return;
   }
 

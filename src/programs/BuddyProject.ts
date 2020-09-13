@@ -2,6 +2,7 @@ import { GuildMember, User } from "discord.js";
 import { BuddyProjectEntry, BuddyProjectEntryRepository } from "../entities";
 import { Not, getConnection } from "typeorm";
 import { BUDDY_PROJECT_MATCHING } from "../const";
+import Tools from "../common/tools";
 
 export const getMatchText = (match: User, set: number): string => `
 Hey there! Thank you for signing up to be a part of the Buddy Project :speech_balloon: . You’ve been paired with <@${
@@ -105,14 +106,8 @@ export async function BuddyProjectSignup(
   });
   await buddyEntries.save(memberEntry);
 
-  const bpRole = member.guild.roles.cache.find(
-    (r) => r.name === "Buddy Project 2020"
-  );
-  const badgeRole = member.guild.roles.cache.find(
-    (r) => r.id === "602491468795478036"
-  );
-  if (member.roles.cache.find((r) => r.id === bpRole.id))
-    member.roles.add([bpRole, badgeRole]);
+  const bpRole = Tools.getRoleByName("Buddy Project 2020", member.guild);
+  member.roles.add(bpRole);
 
   if (sendSuccessMessage) {
     const successMessage = !discord_user

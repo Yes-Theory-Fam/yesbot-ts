@@ -1,5 +1,7 @@
-import Discord, {
+import {
+  Client,
   Guild,
+  MessageReaction,
   PartialUser,
   Snowflake,
   TextChannel,
@@ -10,17 +12,14 @@ import { ChannelToggleRepository, ReactionRoleRepository } from "../entities";
 import { textLog } from "../common/moderator";
 
 class ReactionRemove {
-  bot: Discord.Client;
+  bot: Client;
   messageId: Snowflake;
   user: User;
   reaction: string;
   channel: TextChannel;
   guild: Guild;
 
-  constructor(
-    messageReaction: Discord.MessageReaction,
-    user: User | PartialUser
-  ) {
+  constructor(messageReaction: MessageReaction, user: User | PartialUser) {
     this.bot = bot;
     this.user = <User>user;
     this.messageId = messageReaction.message.id;
@@ -40,12 +39,8 @@ class ReactionRemove {
       },
     });
     reactRoleObjects.forEach((reactionRole) => {
-      const guildMember = this.guild.members.cache.find(
-        (m) => m.id == this.user.id
-      );
-      const roleToAdd = this.guild.roles.cache.find(
-        (r) => r.id == reactionRole.roleId
-      );
+      const guildMember = this.guild.member(this.user);
+      const roleToAdd = this.guild.roles.resolve(reactionRole.roleId);
       guildMember.roles.remove(roleToAdd);
     });
 

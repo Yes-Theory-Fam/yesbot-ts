@@ -1,5 +1,6 @@
 import fs from "fs";
-import Discord, {
+import {
+  Client,
   Guild,
   GuildMember,
   Message,
@@ -7,6 +8,7 @@ import Discord, {
   Snowflake,
   TextChannel,
   User,
+  Channel,
 } from "discord.js";
 import { ChannelToggleRepository } from "../entities";
 import { textLog } from "./moderator";
@@ -25,7 +27,7 @@ class Tools {
     return <string[]>inputStr.split(" ");
   }
 
-  static getYesGuild(bot: Discord.Client) {
+  static getYesGuild(bot: Client) {
     const guild = bot.guilds.cache.find(
       (g) => g.name === process.env.PROD_GUILD_NAME
     );
@@ -77,14 +79,14 @@ class Tools {
           options === 1
             ? "1️⃣"
             : options === 2
-            ? "2️⃣"
-            : options === 3
-            ? "3️⃣"
-            : options === 4
-            ? "4️⃣"
-            : options === 5
-            ? "5️⃣"
-            : null
+              ? "2️⃣"
+              : options === 3
+                ? "3️⃣"
+                : options === 4
+                  ? "4️⃣"
+                  : options === 5
+                    ? "5️⃣"
+                    : null
         );
       } catch (err) {
         Logger("tools", "addNumberReactions", err);
@@ -139,9 +141,9 @@ class Tools {
 
   static async getMessageById(
     messageId: Snowflake,
-    guild: Discord.Guild,
+    guild: Guild,
     channelId: string
-  ) {
+  ): Promise<[Message, Channel]> {
     try {
       const channel: TextChannel = <TextChannel>(
         guild.channels.cache.find((c) => c.id == channelId)
@@ -154,8 +156,21 @@ class Tools {
     }
   }
 
-  static async getRoleById(roleId: Snowflake, guild: Discord.Guild) {
-    return guild.roles.cache.find((r) => r.id == roleId);
+  static async getRoleById(roleId: Snowflake, guild: Guild) {
+    return guild.roles.resolve(roleId);
+  }
+
+  static getRoleByName(roleName: string, guild: Guild) {
+    return guild.roles.cache.find(
+      (r) => r.name.toLowerCase() === roleName.toLowerCase()
+    );
+  }
+
+  static async handleUserError(message: Message, reply: string) {
+    message.reply(reply).then((msg) => {
+      message.delete();
+      msg.delete({ timeout: 10000 });
+    });
   }
 
   static async addPerUserPermissions(

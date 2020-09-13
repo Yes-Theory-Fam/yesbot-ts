@@ -1,7 +1,7 @@
-import Discord, { TextChannel } from "discord.js";
+import { Message } from "discord.js";
 import Tools from "../common/tools";
 
-export default async function ChessManager(message: Discord.Message) {
+export default async function ChessManager(message: Message) {
   message.channel.send(
     `Adding ${message.member.toString()} to the current game queue...`
   );

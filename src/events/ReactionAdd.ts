@@ -1,4 +1,4 @@
-import Discord, {
+import {
   Guild,
   Message,
   MessageReaction,
@@ -6,6 +6,7 @@ import Discord, {
   Snowflake,
   TextChannel,
   User,
+  Client,
 } from "discord.js";
 import bot from "../index";
 import Tools from "../common/tools";
@@ -20,7 +21,7 @@ import { MessageRepository, ReactionRoleRepository } from "../entities";
 import { hasRole } from "../common/moderator";
 
 class ReactionAdd {
-  bot: Discord.Client;
+  bot: Client;
   channel: TextChannel;
   guild: Guild;
   message: Message;
@@ -30,10 +31,7 @@ class ReactionAdd {
   reaction: string;
   user: User;
 
-  constructor(
-    messageReaction: Discord.MessageReaction,
-    user: User | PartialUser
-  ) {
+  constructor(messageReaction: MessageReaction, user: User | PartialUser) {
     this.bot = bot;
     this.user = <User>user;
     this.message = messageReaction.message;
@@ -69,9 +67,7 @@ class ReactionAdd {
       !this.user.bot
     ) {
       const member = this.guild.members.cache.find((m) => m.user === this.user);
-      const bpRole = this.guild.roles.cache.find(
-        (r) => r.name === "Buddy Project 2020"
-      );
+      const bpRole = Tools.getRoleByName("Buddy Project 2020", this.guild);
       member.roles.add(bpRole);
       let outputChannel = <TextChannel>(
         this.guild.channels.cache.find((c) => c.name === "buddy-project-output")
@@ -92,12 +88,8 @@ class ReactionAdd {
       },
     });
     reactRoleObjects.forEach((reactionRole) => {
-      const guildMember = this.guild.members.cache.find(
-        (m) => m.id == this.user.id
-      );
-      const roleToAdd = this.guild.roles.cache.find(
-        (r) => r.id == reactionRole.roleId
-      );
+      const guildMember = this.guild.member(this.user);
+      const roleToAdd = this.guild.roles.resolve(reactionRole.roleId);
 
       if (
         NitroColors.isColorSelectionMessage(this.messageId) &&

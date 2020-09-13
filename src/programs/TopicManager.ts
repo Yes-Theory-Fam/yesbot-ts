@@ -1,4 +1,4 @@
-import Discord, { TextChannel } from "discord.js";
+import { Message, TextChannel, MessageAttachment } from "discord.js";
 import axios from "axios";
 
 const QUESTION_LINK: string =
@@ -6,7 +6,7 @@ const QUESTION_LINK: string =
 const MAKEUP_CHALLENGE_PICTURE_URL =
   "https://cdn.discordapp.com/attachments/698545400075780147/712491981158481940/image0.png";
 
-export default async function TopicManager(message: Discord.Message) {
+export default async function TopicManager(message: Message) {
   const channel: TextChannel = <TextChannel>message.channel;
 
   switch (channel.name) {
@@ -25,7 +25,7 @@ export default async function TopicManager(message: Discord.Message) {
       break;
 
     case "beauty-and-fashion":
-      const image = new Discord.MessageAttachment(MAKEUP_CHALLENGE_PICTURE_URL);
+      const image = new MessageAttachment(MAKEUP_CHALLENGE_PICTURE_URL);
       message.channel.send(image);
 
     default:

@@ -1,4 +1,5 @@
-import Discord, {
+import {
+  Client,
   GuildMember,
   TextChannel,
   PartialGuildMember,
@@ -6,7 +7,7 @@ import Discord, {
 import { BuddyProject } from "../programs";
 
 class MemberJoin {
-  bot: Discord.Client;
+  bot: Client;
 
   constructor(member: GuildMember | PartialGuildMember) {
     if (member.roles.cache.find((r) => r.name === "Buddy Project 2020")) {

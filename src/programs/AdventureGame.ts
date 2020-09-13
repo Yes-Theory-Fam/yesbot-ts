@@ -1,4 +1,4 @@
-import Discord, {
+import {
   TextChannel,
   GuildCreateChannelOptions,
   User,
@@ -7,7 +7,6 @@ import Discord, {
   GuildMember,
   MessageAttachment,
 } from "discord.js";
-import Tools from "../common/tools";
 
 export default async function AdventureGame(
   user: User,

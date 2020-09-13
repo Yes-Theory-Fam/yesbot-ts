@@ -1,6 +1,6 @@
-import Discord, { TextChannel } from "discord.js";
+import { Message, TextChannel } from "discord.js";
 
-async function Resource(message: Discord.Message) {
+async function Resource(message: Message) {
   const channel = message.channel as TextChannel;
   switch (channel.name) {
     case "coding":

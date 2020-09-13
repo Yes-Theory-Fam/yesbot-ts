@@ -1,8 +1,8 @@
-import Discord from "discord.js";
+import { Message } from "discord.js";
 import Tools from "../common/tools";
 import { MODERATOR_ROLE_NAME } from "../const";
 
-export default async function StateRoleFinder(pMessage: Discord.Message) {
+export default async function StateRoleFinder(pMessage: Message) {
   //! This comes to us in the format of "!state [stateName]"
 
   const args = <string[]>pMessage.content.split(" ");

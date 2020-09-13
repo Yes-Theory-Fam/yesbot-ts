@@ -1,4 +1,4 @@
-import Discord, { TextChannel, User } from "discord.js";
+import { Message, TextChannel, User } from "discord.js";
 import {
   ENGINEER_ROLE_NAME,
   COORDINATOR_ROLE_NAME,
@@ -7,7 +7,7 @@ import {
 import { isAuthorModerator } from "../common/moderator";
 import { TextChannelOptions } from "../common/interfaces";
 
-export default async function Ticket(pMessage: Discord.Message, type: string) {
+export default async function Ticket(pMessage: Message, type: string) {
   const guild_name = pMessage.guild.name;
 
   const TICKET_LOG_CHANNEL = `${type}-logs`;
@@ -73,7 +73,7 @@ export default async function Ticket(pMessage: Discord.Message, type: string) {
   );
 
   if (isClose) {
-    const ticketChannel = <Discord.TextChannel>pMessage.channel;
+    const ticketChannel = <TextChannel>pMessage.channel;
     if (ticketChannel.name.startsWith(type)) {
       if (isAuthorModerator(pMessage))
         createCloseMessage(ticketChannel, pMessage.author, TICKET_LOG_CHANNEL);
@@ -82,7 +82,7 @@ export default async function Ticket(pMessage: Discord.Message, type: string) {
   }
 
   if (isForceClose) {
-    const ticketChannel = <Discord.TextChannel>pMessage.channel;
+    const ticketChannel = <TextChannel>pMessage.channel;
     if (ticketChannel.name.startsWith(type)) {
       if (isAuthorModerator(pMessage))
         closeTicket(ticketChannel, pMessage.author, TICKET_LOG_CHANNEL);
@@ -131,25 +131,25 @@ export default async function Ticket(pMessage: Discord.Message, type: string) {
 }
 
 async function closeTicket(
-  c: Discord.TextChannel,
-  m: Discord.User,
-  lc: string
+  channel: TextChannel,
+  member: User,
+  logChannelName: string
 ) {
-  const text = await createOutput(c, m);
+  const text = await createOutput(channel, member);
   const logChannel = <TextChannel>(
-    c.guild.channels.cache.find((c) => c.name.startsWith(lc))
+    channel.guild.channels.cache.find((c) => c.name.startsWith(logChannelName))
   );
   logChannel.send(text, { split: true });
-  c.delete("Closed Ticket");
+  channel.delete("Closed Ticket");
 }
 
 async function createOutput(
-  c: Discord.TextChannel,
-  m: Discord.User
+  channel: TextChannel,
+  member: User
 ): Promise<string> {
-  let text: string = "**Ticket Log below for <@" + m.id + ">**\n";
+  let text: string = "**Ticket Log below for <@" + member.id + ">**\n";
   let lastDate = "";
-  (await c.messages.fetch())
+  (await channel.messages.fetch())
     .map((message) => {
       let [year, month, date, hour, min] = timeConverter(
         message.createdTimestamp
@@ -169,11 +169,11 @@ async function createOutput(
 }
 
 async function createCloseMessage(
-  c: TextChannel,
-  m: User,
+  channel: TextChannel,
+  member: User,
   TICKET_LOG_CHANNEL: string
 ) {
-  let message = await c.send(
+  let message = await channel.send(
     "This ticket is now closing, please react with ✅ to close this issue. If you would like to also receive logs of this conversation, please react with :bookmark_tabs:"
   );
 
@@ -198,7 +198,7 @@ async function createCloseMessage(
         user
           .createDM()
           .then(async (dm) =>
-            dm.send(await createOutput(c, m), { split: true })
+            dm.send(await createOutput(channel, member), { split: true })
           );
       }
       closeTicket(

@@ -1,10 +1,10 @@
-import Discord, { OverwriteResolvable } from "discord.js";
+import { OverwriteResolvable, ChannelResolvable } from "discord.js";
 
 export interface TextChannelOptions {
   topic?: string;
   nsfw?: boolean;
   type?: "text";
-  parent?: Discord.ChannelResolvable;
+  parent?: ChannelResolvable;
   permissionOverwrites?: Array<OverwriteResolvable>;
   options?: number;
   reason?: string;
