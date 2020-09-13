@@ -37,7 +37,8 @@ const getVoiceChannel = async (member: GuildMember): Promise<VoiceChannel> => {
 
 export default async function (message: Message) {
   if (!hasRole(message.member, "Yes Theory")) {
-    message.reply(
+    Tools.handleUserError(
+      message,
       `Hey, you need to have the Yes Theory role to use this command! You can get this by talking with others in our public voice chats :grin:`
     );
     return;
@@ -52,6 +53,7 @@ export default async function (message: Message) {
       break;
     case "host":
       changeHostOnDemand(message);
+      break;
     default:
       Tools.handleUserError(
         message,
