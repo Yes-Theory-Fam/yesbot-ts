@@ -9,7 +9,6 @@ const QUESTION_LINK: string =
   "https://spreadsheets.google.com/feeds/cells/1J7DlkcWzhcm9CXiWCB-dQloCqIHjVpupyvMqBPlJ7Mk/1/public/full?alt=json";
 
 async function Someone(message: Message) {
-  message.delete();
   const allow = await isAllowed(message.author);
 
   if (!allow) {
@@ -52,6 +51,8 @@ async function Someone(message: Message) {
       sendMessage(member, target, question, message.channel as TextChannel);
     }
   }
+
+  message.delete();
 }
 
 const sendMessage = async (
