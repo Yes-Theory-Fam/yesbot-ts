@@ -36,10 +36,10 @@ async function Someone(message: Message) {
   const words = Tools.stringToWords(message.content);
   const arg = words[1];
 
-  if (arg === "everyone" || "here")
-    message.channel.send("Please enter a real user");
-  else if (arg && arg != "online")
-    message.channel.send(`Unknown argument "${arg}". Did you mean "online"?`);
+  if (arg && arg != "online")
+    message.channel.send(
+      `Unknown argument "${arg.slice(1)}". Did you mean "online"?`
+    );
   else {
     const { member } = message;
     const target = await getTarget(arg, message);
