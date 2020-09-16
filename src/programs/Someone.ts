@@ -38,7 +38,7 @@ async function Someone(message: Message) {
 
   if (arg === "everyone" || "here")
     message.channel.send("Please enter a real user");
-  else if (arg && arg != "online")
+  if (arg && arg != "online")
     message.channel.send(`Unknown argument "${arg}". Did you mean "online"?`);
   else {
     const { member } = message;
