@@ -39,7 +39,7 @@ async function Someone(message: Message) {
     message.channel.send(
       `Unknown argument "${arg.slice(1)}". Did you mean "online"?`
     );
-  if (arg && arg != "online")
+  else if (arg && arg != "online")
     message.channel.send(`Unknown argument "${arg}". Did you mean "online"?`);
   else {
     const { member } = message;
