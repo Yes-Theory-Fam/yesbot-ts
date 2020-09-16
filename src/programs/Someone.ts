@@ -33,11 +33,12 @@ async function Someone(message: Message) {
     return;
   }
 
-  const words = Tools.stringToWords(message.content);
+  const words = Tools.stringToWords(message.cleanContent);
   const arg = words[1];
-
-  if (arg && arg != "online")
-    message.channel.send(`Unknown argument "${arg}". Did you mean "online"?`);
+  if (arg && arg !== "online")
+    message.channel.send(`Unknown argument "${arg}". Did you mean "online"?`, {
+      disableMentions: "all",
+    });
   else {
     const { member } = message;
     const target = await getTarget(arg, message);
