@@ -35,12 +35,10 @@ async function Someone(message: Message) {
 
   const words = Tools.stringToWords(message.content);
   const arg = words[1];
-  if (arg.startsWith("@"))
-    message.channel.send(
-      `Unknown argument "${arg}". Did you mean "online". Hi lea `
-    );
   if (arg && arg != "online")
-    message.channel.send(`Unknown argument "${arg}". Did you mean "online"?`);
+    message.channel.send(
+      `Unknown argument "${arg.replace("@", "")}". Did you mean "online"?`
+    );
   else {
     const { member } = message;
     const target = await getTarget(arg, message);
