@@ -12,10 +12,10 @@ async function Someone(message: Message) {
   message.delete();
   const allow = await isAllowed(message.author);
 
-  if (!allow) {
-    Tools.handleUserError(message, "You have already used this command today!");
-    return;
-  }
+  // if (!allow) {
+  //   Tools.handleUserError(message, "You have already used this command today!");
+  //   return;
+  // }
 
   const seekDiscormfortRole = Tools.getRoleByName(
     "Seek Discomfort",
