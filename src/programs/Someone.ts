@@ -12,10 +12,10 @@ async function Someone(message: Message) {
   message.delete();
   const allow = await isAllowed(message.author);
 
-  if (!allow) {
-    Tools.handleUserError(message, "You have already used this command today!");
-    return;
-  }
+  // if (!allow) {
+  //   Tools.handleUserError(message, "You have already used this command today!");
+  //   return;
+  // }
 
   const seekDiscormfortRole = Tools.getRoleByName(
     "Seek Discomfort",
@@ -35,11 +35,11 @@ async function Someone(message: Message) {
 
   const words = Tools.stringToWords(message.content);
   const arg = words[1];
-  if (arg.includes("@"))
+  if (arg.startsWith("@"))
     message.channel.send(
-      `Unknown argument "${arg.slice(1)}". Did you mean "online"?`
+      `Unknown argument "${arg}". Did you mean "online". Hi lea `
     );
-  else if (arg && arg != "online")
+  if (arg && arg != "online")
     message.channel.send(`Unknown argument "${arg}". Did you mean "online"?`);
   else {
     const { member } = message;
