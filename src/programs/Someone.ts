@@ -37,9 +37,12 @@ async function Someone(message: Message) {
   const arg = words[1];
 
   if (arg && arg != "online")
-    message.channel.send(`Unknown argument "${arg}". Did you mean "online"?`, {
-      disableMentions: "everyone",
-    });
+    message.channel.send(
+      `Unknown argument "${arg}". im update. Did you mean "online"?`,
+      {
+        disableMentions: "everyone",
+      }
+    );
   else {
     const { member } = message;
     const target = await getTarget(arg, message);
