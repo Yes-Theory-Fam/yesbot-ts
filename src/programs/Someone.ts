@@ -37,7 +37,9 @@ async function Someone(message: Message) {
   const arg = words[1];
 
   if (arg.includes("@"))
-    message.channel.send(`Unknown argument "${arg.slice(1)}"`);
+    message.channel.send(
+      `Unknown argument "${arg.slice(1)}". Did you mean "online"?`
+    );
   else if (arg && arg != "online")
     message.channel.send(`Unknown argument "${arg}". Did you mean "online"?`);
   else {
