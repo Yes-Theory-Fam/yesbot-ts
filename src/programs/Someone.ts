@@ -37,10 +37,7 @@ async function Someone(message: Message) {
   const arg = words[1];
   if (arg && arg !== "online")
     message.channel.send(
-      `Unknown argument "${arg.replace(
-        /@/gi,
-        `${arg}`
-      )}". Did you mean "online"?`
+      `Unknown argument "${arg.replace(/@/gi, "")}". Did you mean "online"?`
     );
   else {
     const { member } = message;
