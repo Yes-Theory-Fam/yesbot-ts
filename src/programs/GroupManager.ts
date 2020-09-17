@@ -660,6 +660,7 @@ const isChannelAllowed = (channel: Channel): boolean => {
     "623565093166252052", // Chat-too
     "508918747533410304", // learning-spanish
     "450187015221280769", // voice-chat
+    "747198251349966977", // voice-chat-2
     "747189756302983199", // 4th-chat
   ];
 
