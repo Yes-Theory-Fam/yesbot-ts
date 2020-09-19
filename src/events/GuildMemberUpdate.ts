@@ -98,18 +98,21 @@ const resolvePerUserPermissions = async (
   const selectionMessages = selectionChannels.map(
     (channel: TextChannel) => channel.messages.cache.array()[0]
   );
+
   for (let i = 0; i < selectionMessages.length; i++) {
     const reactions = selectionMessages[i].reactions.cache;
-    reactions
-      .filter((reaction) => !!reaction.users.resolve(newMember.id))
-      .forEach((reaction) =>
-        Tools.addPerUserPermissions(
-          reaction.emoji.name,
-          selectionMessages[i].id,
-          newMember.guild,
-          newMember
-        )
+
+    for (const [_, reaction] of reactions) {
+      const users = await reaction.users.fetch();
+      if (!users.has(newMember.id)) continue;
+
+      Tools.addPerUserPermissions(
+        reaction.emoji.name,
+        selectionMessages[i].id,
+        newMember.guild,
+        newMember
       );
+    }
   }
 };
 
