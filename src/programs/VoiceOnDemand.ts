@@ -239,19 +239,24 @@ export const voiceOnDemandPermissions = async (
 
   const { guild } = channel;
 
-  const timeoutRole = guild.roles.cache.find(
-    (role) => role.name.toLowerCase() === "time out"
-  );
+  const timeoutRole = Tools.getRoleByName("Time Out", guild);
+  const breakRole = Tools.getRoleByName("Break", guild);
 
   channel.overwritePermissions([
-    {
-      id: timeoutRole.id,
-      deny: [Permissions.FLAGS.CONNECT],
-    },
     {
       id: guild.roles.everyone,
       allow: [Permissions.FLAGS.STREAM],
       deny: [],
+      type: "role",
+    },
+    {
+      id: timeoutRole.id,
+      deny: [Permissions.FLAGS.CONNECT],
+      type: "role",
+    },
+    {
+      id: breakRole.id,
+      deny: [Permissions.FLAGS.VIEW_CHANNEL],
       type: "role",
     },
   ]);
