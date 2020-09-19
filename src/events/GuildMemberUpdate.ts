@@ -35,11 +35,17 @@ class GuildMemberUpdate {
       newMember.roles.remove(generalRole);
     }
 
-    if (!hasRole(oldMember, "Time Out") && hasRole(newMember, "Time Out")) {
+    if (
+      gainedRole(oldMember, newMember, "Time Out") ||
+      gainedRole(oldMember, newMember, "Break")
+    ) {
       revokePerUserPermissions(newMember);
     }
 
-    if (hasRole(oldMember, "Time Out") && !hasRole(newMember, "Time Out")) {
+    if (
+      lostRole(oldMember, newMember, "Time Out") ||
+      lostRole(oldMember, newMember, "Break")
+    ) {
       resolvePerUserPermissions(newMember);
     }
 
@@ -48,6 +54,18 @@ class GuildMemberUpdate {
     Separators.seperatorOnRoleRemove(oldMember, newMember);
   }
 }
+
+const gainedRole = (
+  oldMember: GuildMember | PartialGuildMember,
+  newMember: GuildMember | PartialGuildMember,
+  roleName: string
+) => !hasRole(oldMember, roleName) && hasRole(newMember, roleName);
+
+const lostRole = (
+  oldMember: GuildMember | PartialGuildMember,
+  newMember: GuildMember | PartialGuildMember,
+  roleName: string
+) => hasRole(oldMember, roleName) && !hasRole(newMember, roleName);
 
 const revokePerUserPermissions = async (
   newMember: GuildMember | PartialGuildMember
