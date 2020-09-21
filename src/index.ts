@@ -24,9 +24,9 @@ import {
   Ready,
   MemberJoin,
   GuildMemberUpdate,
-  VoiceStateUpdate
+  VoiceStateUpdate,
 } from "./events";
-import { BOT_TOKEN, GUILD_ID } from "./const";
+import { BOT_TOKEN } from "./const";
 import Firebase from "./collections/firebaseConnection";
 // Imported for DB side-effects.
 import "./db";
@@ -122,7 +122,9 @@ bot.on(
 );
 bot.on(
   "voiceStateUpdate",
-  (oldMember: VoiceState, newMember: VoiceState) => new VoiceStateUpdate(oldMember, newMember));
+  (oldMember: VoiceState, newMember: VoiceState) =>
+    new VoiceStateUpdate(oldMember, newMember)
+);
 bot.on("warn", (info: string) => null);
 bot.on("webhookUpdate", (channel: TextChannel) => null);
 //! ================= /EVENT HANDLERS ===================
