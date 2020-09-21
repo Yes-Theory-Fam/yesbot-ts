@@ -21,8 +21,8 @@ export const cacheNitroColors = async (guildId: Snowflake) => {
     ) as TextChannel;
 
   colorSelectionMessage = await pickYourColorChannel.messages
-    .fetch({ limit: 1 })
-    .then((messages) => messages.first());
+    .fetch({ limit: 10 })
+    .then((messages) => messages.array().reverse()[0]);
 
   nitroRolesCache = colorSelectionMessage.mentions.roles;
 };
