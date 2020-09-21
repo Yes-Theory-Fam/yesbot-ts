@@ -110,7 +110,6 @@ export default async function BirthdayManager(message: Message) {
   try {
     timezone = await getUserTimezone(message);
   } catch (err) {
-    Logger("BirthdayManager", "timezone", err);
     if (err.message === "Too many available time zones") {
       const engineerRole = Tools.getRoleByName(
         ENGINEER_ROLE_NAME,
@@ -125,7 +124,7 @@ export default async function BirthdayManager(message: Message) {
     } else if (err.message === "time expired") {
       message.react("⏰");
     } else {
-      console.error("birthday err", err);
+      Logger("BirthdayManager", "timezone", err);
       message.channel.send(
         "Hmm, something went wrong. Please contact my engineers if this seems unreasonable. :nerd:"
       );
