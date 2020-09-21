@@ -40,10 +40,7 @@ class GuildMemberUpdate {
       revokePerUserPermissions(newMember);
     }
 
-    if (
-      lostRole(oldMember, newMember, "Time Out") ||
-      lostRole(oldMember, newMember, "Break")
-    ) {
+    if (resolvePerUserCondition(oldMember, newMember)) {
       resolvePerUserPermissions(newMember);
     }
 
@@ -52,6 +49,25 @@ class GuildMemberUpdate {
     Separators.seperatorOnRoleRemove(oldMember, newMember);
   }
 }
+
+// A users per-user permissions shall be restored if they have lost one of the switch roles and every role they have is none of the switchRoles
+const resolvePerUserCondition = (
+  oldMember: GuildMember | PartialGuildMember,
+  newMember: GuildMember | PartialGuildMember
+): boolean => {
+  const switchRoles = ["Time Out", "Break"];
+
+  const lostRevokeRole = switchRoles.some((role) =>
+    lostRole(oldMember, newMember, role)
+  );
+  if (!lostRevokeRole) {
+    return false;
+  }
+
+  return newMember.roles.cache.every(
+    (role) => !switchRoles.includes(role.name)
+  );
+};
 
 const gainedRole = (
   oldMember: GuildMember | PartialGuildMember,
