@@ -1,7 +1,5 @@
 import {
-  CategoryChannel,
   Client,
-  GuildChannel,
   GuildMember,
   PartialGuildMember,
   TextChannel,
@@ -9,7 +7,7 @@ import {
 import Tools from "../common/tools";
 import { hasRole } from "../common/moderator";
 import { Separators, NitroColors } from "../programs";
-import { Logger } from "../common/Logger";
+import { ChannelToggleRepository, ChannelToggle } from "../entities";
 
 class GuildMemberUpdate {
   bot: Client;
@@ -70,63 +68,74 @@ const lostRole = (
 const revokePerUserPermissions = async (
   newMember: GuildMember | PartialGuildMember
 ) => {
-  const isCategory = (channel: GuildChannel): channel is CategoryChannel =>
-    !!(channel as CategoryChannel).children;
-  const perUserCategories = ["learning languages", "hobbies", "gaming"];
-  const categoryChannels = newMember.guild.channels.cache
-    .array()
-    .filter(isCategory);
-  const perUserCategoryChannels = categoryChannels.filter((channel) =>
-    perUserCategories.some((name) => channel.name.toLowerCase().endsWith(name))
+  const guild = newMember.guild;
+  const repo = await ChannelToggleRepository();
+  const perUserChannelIds = await repo.find({ select: ["channel"] });
+  const targetChannels = perUserChannelIds
+    .map((toggle) => toggle.channel)
+    .map((id) => guild.channels.resolve(id))
+    .filter((x) => x); // This filter is mainly to help in development because bots might have channels of multiple servers in their db
+
+  targetChannels.forEach((channel) =>
+    channel.permissionOverwrites.get(newMember.id)?.delete()
   );
-  for (let i = 0; i < perUserCategoryChannels.length; i++) {
-    const category = perUserCategoryChannels[i];
-    const channels = category.children;
-    channels.forEach((channel) =>
-      channel.permissionOverwrites.get(newMember.id)?.delete()
-    );
+};
+
+type ChannelAccessToggleMessages = {
+  [key: string]: { channelId: string; toggles: string[] };
+};
+
+const getChannelAccessToggleMessages = async (): Promise<
+  ChannelAccessToggleMessages
+> => {
+  const repo = await ChannelToggleRepository();
+  const toggles = (await repo
+    .createQueryBuilder("toggle")
+    .distinct(true)
+    .innerJoinAndSelect("toggle.message", "message")
+    .getMany()) as ChannelToggle[];
+
+  const messageToggleList: {
+    [key: string]: { channelId: string; toggles: string[] };
+  } = {};
+  for (const toggle of toggles) {
+    const messageId = toggle.message.id;
+    if (messageToggleList[messageId]) {
+      messageToggleList[messageId].toggles.push(toggle.emoji);
+      continue;
+    }
+
+    messageToggleList[messageId] = {
+      channelId: toggle.message.channel,
+      toggles: [toggle.emoji],
+    };
   }
+
+  return messageToggleList;
 };
 
 const resolvePerUserPermissions = async (
   newMember: GuildMember | PartialGuildMember
 ) => {
-  const isText = (channel: GuildChannel): channel is TextChannel =>
-    !!(channel as TextChannel).messages;
-  const listChannels = [
-    "list-of-languages",
-    "list-of-games",
-    "list-of-hobbies",
-  ];
-  const selectionChannels = newMember.guild.channels.cache
-    .array()
-    .filter(isText)
-    .filter((channel) => listChannels.some((name) => channel.name === name));
+  const messageToggleList = await getChannelAccessToggleMessages();
+  for (const messageId in messageToggleList) {
+    const { channelId, toggles } = messageToggleList[messageId];
+    const channel = newMember.guild.channels.resolve(channelId);
+    if (!channel || !(channel instanceof TextChannel)) continue;
 
-  try {
-    await Promise.all(
-      selectionChannels.map((channel) =>
-        channel.messages.fetch({ limit: 1 }, true)
-      )
+    const message = await channel.messages.fetch(messageId);
+
+    const relevantReactions = message.reactions.cache.filter((reaction) =>
+      toggles.includes(reaction.emoji.name)
     );
-  } catch (err) {
-    Logger("GuildMemberUpdate", "resolveUserPermissions", err);
-  }
 
-  const selectionMessages = selectionChannels.map(
-    (channel: TextChannel) => channel.messages.cache.array()[0]
-  );
-
-  for (let i = 0; i < selectionMessages.length; i++) {
-    const reactions = selectionMessages[i].reactions.cache;
-
-    for (const [_, reaction] of reactions) {
+    for (const [_, reaction] of relevantReactions) {
       const users = await reaction.users.fetch();
       if (!users.has(newMember.id)) continue;
 
       Tools.addPerUserPermissions(
         reaction.emoji.name,
-        selectionMessages[i].id,
+        messageId,
         newMember.guild,
         newMember
       );
