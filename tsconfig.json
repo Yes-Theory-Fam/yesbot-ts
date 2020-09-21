@@ -61,7 +61,10 @@
     "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
 
     /* Advanced Options */
-    "forceConsistentCasingInFileNames": true  /* Disallow inconsistently-cased references to the same file. */
+    "forceConsistentCasingInFileNames": true,  /* Disallow inconsistently-cased references to the same file. */
+    "lib": [
+      "ES2019.Array",
+    ]
   },
   "include": [
     "./index.d.ts",
@@ -70,5 +73,5 @@
   "exclude": [
     "node_modules",
     "build"
-  ]
+  ],
 }

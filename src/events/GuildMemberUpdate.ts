@@ -3,6 +3,10 @@ import {
   GuildMember,
   PartialGuildMember,
   TextChannel,
+  Guild,
+  CategoryChannel,
+  Permissions,
+  GuildChannel,
 } from "discord.js";
 import Tools from "../common/tools";
 import { hasRole } from "../common/moderator";
@@ -42,6 +46,14 @@ class GuildMemberUpdate {
 
     if (resolvePerUserCondition(oldMember, newMember)) {
       resolvePerUserPermissions(newMember);
+    }
+
+    if (gainedRole(oldMember, newMember, "Break")) {
+      lockCountryChannels(newMember);
+    }
+
+    if (lostRole(oldMember, newMember, "Break")) {
+      unlockCountryChannels(newMember);
     }
 
     NitroColors.removeColorIfNotAllowed(newMember);
@@ -157,6 +169,53 @@ const resolvePerUserPermissions = async (
       );
     }
   }
+};
+
+const getCountryChannels = (guild: Guild) => {
+  const countryCategories = [
+    "africa",
+    "north america",
+    "asia",
+    "europe",
+    "south america",
+    "oceania",
+  ];
+
+  const countryCategoryChannels = guild.channels.cache.filter(
+    (channel) =>
+      channel instanceof CategoryChannel &&
+      countryCategories.some((category: string) =>
+        channel.name.toLowerCase().endsWith(category)
+      )
+  );
+
+  return countryCategoryChannels
+    .array()
+    .map((category) => (category as CategoryChannel).children.array())
+    .flat();
+};
+
+const lockCountryChannels = (member: GuildMember | PartialGuildMember) => {
+  const hasReadPermissions = (channel: GuildChannel) =>
+    channel.permissionsFor(member.id).has(Permissions.FLAGS.VIEW_CHANNEL);
+
+  getCountryChannels(member.guild)
+    .filter(hasReadPermissions)
+    .forEach((channel) =>
+      channel.overwritePermissions([
+        {
+          id: member.id,
+          deny: [Permissions.FLAGS.VIEW_CHANNEL],
+          type: "member",
+        },
+      ])
+    );
+};
+
+const unlockCountryChannels = (member: GuildMember | PartialGuildMember) => {
+  getCountryChannels(member.guild).forEach((channel) =>
+    channel.permissionOverwrites.get(member.id)?.delete()
+  );
 };
 
 export default GuildMemberUpdate;
