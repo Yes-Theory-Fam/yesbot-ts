@@ -1,6 +1,5 @@
 import {
   Client,
-  Emoji,
   GuildMember,
   Message,
   MessageReaction,
@@ -8,39 +7,64 @@ import {
   User,
   VoiceChannel,
   VoiceState,
+  TextChannel,
 } from "discord.js";
 
 import { GUILD_ID } from "../const";
 import { hasRole } from "../common/moderator";
-import { VoiceOnDemandRepository } from "../entities";
+import { VoiceOnDemandRepository, VoiceOnDemandMapping } from "../entities";
 import state from "../common/state";
 import Tools from "../common/tools";
+import { Repository } from "typeorm";
 
 const defaultLimit = (5).toString();
 const maxLimit = 10;
+// Time the room has to be empty to get removed
 const emptyTime = 60000;
+// Time the owner of the room has left before allowing a transfer
+const transferDelay = 60000;
 const emojiPool = ["🐼", "🐨", "🐶", "🐵", "🐯"];
 
-const getChannelName = (m: GuildMember, e: Emoji) =>
-  `• ${e.name} ${m.displayName}'s Room`;
+const getChannelName = (m: GuildMember, e: string) =>
+  `• ${e} ${m.displayName}'s Room`;
 
-const getVoiceChannel = async (member: GuildMember) => {
+const getVoiceChannel = async (member: GuildMember): Promise<VoiceChannel> => {
   const guild = member.guild;
   const repo = await VoiceOnDemandRepository();
   const mapping = await repo.findOne(member.id);
-  return guild.channels.resolve(mapping?.channelId);
+  return guild.channels.resolve(mapping?.channelId) as VoiceChannel;
 };
 
 export default async function (message: Message) {
   if (!hasRole(message.member, "Yes Theory")) {
-    message.reply(
+    Tools.handleUserError(
+      message,
       `Hey, you need to have the Yes Theory role to use this command! You can get this by talking with others in our public voice chats :grin:`
     );
     return;
   }
 
+  const [, command] = message.content.split(" ");
+
+  switch (command) {
+    case "create":
+    case "limit":
+      handleLimitCommand(message);
+      break;
+    case "host":
+      changeHostOnDemand(message);
+      break;
+    default:
+      Tools.handleUserError(
+        message,
+        "Wrong syntax! Use !voice <create|limit> [limit] or !voice host @newHost"
+      );
+  }
+}
+
+const handleLimitCommand = (message: Message) => {
   const [, command, limitArg = defaultLimit] = message.content.split(" ");
-  const requestedLimit = Number(limitArg);
+  const requestedLimit = Math.floor(Number(limitArg));
 
   if (isNaN(requestedLimit)) {
     Tools.handleUserError(message, "The limit has to be a number");
@@ -61,13 +85,8 @@ export default async function (message: Message) {
     case "limit":
       limitOnDemand(message, limit);
       break;
-    default:
-      Tools.handleUserError(
-        message,
-        "Wrong syntax! Use !voice <create|limit> [limit]"
-      );
   }
-}
+};
 
 const createOnDemand = async (message: Message, userLimit: number) => {
   const { guild, member } = message;
@@ -99,7 +118,7 @@ const createOnDemand = async (message: Message, userLimit: number) => {
   );
 
   const channel = await guild.channels.create(
-    getChannelName(message.member, reaction.emoji),
+    getChannelName(message.member, reaction.emoji.name),
     {
       type: "voice",
       parent,
@@ -127,6 +146,7 @@ const createOnDemand = async (message: Message, userLimit: number) => {
   const mapping = repo.create({
     userId: member.id,
     channelId: channel.id,
+    emoji: reaction.emoji.name,
   });
   await repo.save(mapping);
 
@@ -157,6 +177,48 @@ const limitOnDemand = async (message: Message, limit: number) => {
   message.reply(`Successfully changed the limit of your room to ${limit}`);
 };
 
+const changeHostOnDemand = async (message: Message) => {
+  const { member } = message;
+  const memberVoiceChannel = await getVoiceChannel(member);
+
+  if (!memberVoiceChannel) {
+    Tools.handleUserError(
+      message,
+      "You don't have a voice channel. You can create one using `!voice create` and an optional limit"
+    );
+    return;
+  }
+
+  const mentionedUser = message.mentions.users.first();
+  if (!mentionedUser) {
+    Tools.handleUserError(
+      message,
+      "You have to mention the user you want to take on ownership of your room."
+    );
+    return;
+  }
+
+  if (mentionedUser.id === message.author.id) {
+    Tools.handleUserError(message, "Errrrr... That's yourself 🤨");
+    return;
+  }
+
+  const mentionedUserInVoiceChannel = memberVoiceChannel.members.has(
+    mentionedUser.id
+  );
+
+  if (!mentionedUserInVoiceChannel) {
+    Tools.handleUserError(message, "That user is not in your voice channel");
+    return;
+  }
+
+  const repo = await VoiceOnDemandRepository();
+  const mapping = await repo.findOne(message.author.id);
+  await transferOwnership(repo, mapping, mentionedUser, memberVoiceChannel);
+
+  message.reply(`I transfered ownership of your room to <@${mentionedUser}>!`);
+};
+
 export const voiceOnDemandPermissions = async (
   oldState: VoiceState,
   newState: VoiceState
@@ -177,7 +239,15 @@ export const voiceOnDemandPermissions = async (
 
   const { guild } = channel;
 
+  const timeoutRole = guild.roles.cache.find(
+    (role) => role.name.toLowerCase() === "time out"
+  );
+
   channel.overwritePermissions([
+    {
+      id: timeoutRole.id,
+      deny: [Permissions.FLAGS.CONNECT],
+    },
     {
       id: guild.roles.everyone,
       allow: [Permissions.FLAGS.STREAM],
@@ -201,21 +271,30 @@ export const voiceOnDemandReset = async (
   //  the same amount of users in so it's not relevant for our purpose
   if (!oldState.channel || oldState.channelID === newState.channelID) return;
 
-  const channelId = oldState.channel.id;
-  const timeout = state.voiceChannels.get(channelId);
-  clearTimeout(timeout);
-
   const repo = await VoiceOnDemandRepository();
+  const channelId = oldState.channel.id;
+  const mapping = await repo.findOne({ channelId });
+  if (!mapping) return;
 
-  const hasMapping = await repo.findOne({ channelId });
+  type TimeoutFunction = () => void;
+  const updateTimeout = (newFunction: TimeoutFunction, newDuration: number) => {
+    const timeout = state.voiceChannels.get(channelId);
+    if (timeout) clearTimeout(timeout);
 
-  if (!hasMapping) return;
+    const newTimeout = setTimeout(newFunction, newDuration);
+    state.voiceChannels.set(channelId, newTimeout);
+  };
 
-  const newTimeout = setTimeout(
-    () => deleteIfEmpty(oldState.channel),
-    emptyTime
-  );
-  state.voiceChannels.set(channelId, newTimeout);
+  if (mapping.userId === newState.member.id) {
+    updateTimeout(
+      () => requestOwnershipTransfer(oldState.channel, repo, mapping),
+      transferDelay
+    );
+  }
+
+  if (oldState.channel.members.size > 0) return;
+
+  updateTimeout(() => deleteIfEmpty(oldState.channel), emptyTime);
 };
 
 // To make sure voice channels are still cleaned up after a bot restart, we are looking through all stored channels
@@ -225,13 +304,31 @@ export const voiceOnDemandReady = async (bot: Client) => {
   const repo = await VoiceOnDemandRepository();
   const mappings = await repo.find();
   for (let i = 0; i < mappings.length; i++) {
-    const { channelId } = mappings[i];
+    const { channelId, userId } = mappings[i];
     const channel = guild.channels.resolve(channelId) as VoiceChannel;
+
+    // Fallback if a channel in the DB was already deleted manually
+    if (channel === null) {
+      removeMapping(channelId);
+      return;
+    }
+
     if (channel.members.size === 0) {
       const timeout = setTimeout(() => deleteIfEmpty(channel), emptyTime);
       state.voiceChannels.set(channelId, timeout);
+    } else if (channel.members.every((member) => member.id !== userId)) {
+      const timeout = setTimeout(
+        () => requestOwnershipTransfer(channel, repo, mappings[i]),
+        transferDelay
+      );
+      state.voiceChannels.set(channelId, timeout);
     }
   }
+};
+
+const removeMapping = async (channelId: string) => {
+  const repo = await VoiceOnDemandRepository();
+  repo.delete({ channelId });
 };
 
 const deleteIfEmpty = async (channel: VoiceChannel) => {
@@ -245,11 +342,90 @@ const deleteIfEmpty = async (channel: VoiceChannel) => {
   }
 };
 
+const requestOwnershipTransfer = async (
+  channel: VoiceChannel,
+  repo: Repository<VoiceOnDemandMapping>,
+  mapping: VoiceOnDemandMapping
+) => {
+  if (!channel.guild.channels.resolve(channel.id) || channel.members.size === 0)
+    return;
+
+  // Owner returned
+  if (channel.members.some((member) => member.id === mapping.userId)) return;
+
+  const claimEmoji = "☝";
+  const requestMessageText = `Hey, the owner of your room left! I need one of you to claim ownership of the room in the next minute, otherwise I have to delete the room. You can claim ownership by clicking the ${claimEmoji}!`;
+
+  // Functions to get the most recent values whenever needed (so you cannot leave the channel and claim ownership)
+  const getMemberIds = () => channel.members.map((member) => member.id);
+  const getPingAll = () =>
+    getMemberIds()
+      .map((id) => `<@${id}>`)
+      .join(", ") + " ";
+
+  const botCommands = channel.guild.channels.cache.find(
+    (channel) => channel.name === "bot-commands"
+  ) as TextChannel;
+  const transferMessage = await botCommands.send(
+    getPingAll() + requestMessageText
+  );
+  await transferMessage.react(claimEmoji);
+
+  const filter = (reaction: MessageReaction, user: User) =>
+    reaction.emoji.name === claimEmoji && getMemberIds().includes(user.id);
+  const claim = (
+    await transferMessage.awaitReactions(filter, {
+      max: 1,
+      time: 60000,
+    })
+  ).first();
+
+  await transferMessage.delete();
+  if (!claim) {
+    await botCommands.send(
+      getPingAll() +
+        "None of you claimed ownership of the room so I am removing it."
+    );
+    await channel.delete();
+    await repo.delete(mapping);
+    return;
+  }
+
+  const claimingUser = claim.users.cache.filter((user) => !user.bot).first();
+  await botCommands.send(
+    `<@${claimingUser}>, you claimed the room! You can now change the limit of it using \`!voice limit\`.`
+  );
+
+  transferOwnership(repo, mapping, claimingUser, channel);
+};
+
+const transferOwnership = async (
+  repo: Repository<VoiceOnDemandMapping>,
+  mapping: VoiceOnDemandMapping,
+  claimingUser: User,
+  channel: VoiceChannel
+) => {
+  await repo
+    .createQueryBuilder()
+    .update()
+    .set({ userId: claimingUser.id })
+    .where("channel_id = :id", { id: channel.id })
+    .execute();
+
+  const { emoji } = mapping;
+  const newChannelName = getChannelName(
+    channel.guild.member(claimingUser),
+    emoji
+  );
+
+  await channel.setName(newChannelName);
+};
+
 const pickOneMessage = async (
   toReplyMessage: Message,
   callToActionMessage: string,
   pickOptions: string[]
-) => {
+): Promise<MessageReaction> => {
   const reactMessage = await toReplyMessage.reply(callToActionMessage);
   for (let i = 0; i < pickOptions.length; i++) {
     await reactMessage.react(pickOptions[i]);

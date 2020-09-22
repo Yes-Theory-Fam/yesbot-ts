@@ -7,6 +7,9 @@ export class VoiceOnDemandMapping {
 
   @Column({ name: "channel_id" })
   channelId: string;
+
+  @Column()
+  emoji: string;
 }
 
 export const VoiceOnDemandRepository = async () => {
