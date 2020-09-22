@@ -355,8 +355,13 @@ const requestOwnershipTransfer = async (
   if (!channel.guild.channels.resolve(channel.id) || channel.members.size === 0)
     return;
 
-  // Owner returned
-  if (channel.members.some((member) => member.id === mapping.userId)) return;
+  // Gotta fetch the most recent one to make sure potential updates through !voice host are still in here
+  const currentMapping = await repo.findOne(mapping.userId);
+  if (!currentMapping) return;
+
+  // Owner is in there
+  if (channel.members.some((member) => member.id === currentMapping.userId))
+    return;
 
   const claimEmoji = "☝";
   const requestMessageText = `Hey, the owner of your room left! I need one of you to claim ownership of the room in the next minute, otherwise I have to delete the room. You can claim ownership by clicking the ${claimEmoji}!`;
@@ -392,7 +397,7 @@ const requestOwnershipTransfer = async (
         "None of you claimed ownership of the room so I am removing it."
     );
     await channel.delete();
-    await repo.delete(mapping);
+    await repo.delete(currentMapping);
     return;
   }
 
@@ -401,7 +406,7 @@ const requestOwnershipTransfer = async (
     `<@${claimingUser}>, you claimed the room! You can now change the limit of it using \`!voice limit\`.`
   );
 
-  transferOwnership(repo, mapping, claimingUser, channel);
+  transferOwnership(repo, currentMapping, claimingUser, channel);
 };
 
 const transferOwnership = async (
