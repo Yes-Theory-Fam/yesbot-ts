@@ -202,13 +202,9 @@ const lockCountryChannels = (member: GuildMember | PartialGuildMember) => {
   getCountryChannels(member.guild)
     .filter(hasReadPermissions)
     .forEach((channel) =>
-      channel.overwritePermissions([
-        {
-          id: member.id,
-          deny: [Permissions.FLAGS.VIEW_CHANNEL],
-          type: "member",
-        },
-      ])
+      channel.updateOverwrite(member.id, {
+        VIEW_CHANNEL: false,
+      })
     );
 };
 
