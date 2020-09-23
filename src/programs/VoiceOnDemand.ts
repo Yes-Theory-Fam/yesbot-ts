@@ -257,6 +257,7 @@ export const voiceOnDemandPermissions = async (
     STREAM: true,
   });
 
+  // Comment to restart
   // We don't need this overwrite anymore
   channel.permissionOverwrites.get(mapping.userId)?.delete();
 };
@@ -293,7 +294,8 @@ export const voiceOnDemandReset = async (
     );
   }
 
-  if (oldState.channel.members.size > 0) return;
+  // This condition is doubled from the top but required because discord.js...
+  if (!oldState.channel || oldState.channel.members.size > 0) return;
 
   updateTimeout(() => deleteIfEmpty(oldState.channel), emptyTime);
 };
@@ -335,7 +337,7 @@ const removeMapping = async (channelId: string) => {
 const deleteIfEmpty = async (channel: VoiceChannel) => {
   // If the channel was already deleted before the 60 seconds are over, this condition is true
   // This mitigates an error trying to delete a channel that's already deleted
-  if (!channel.guild.channels.resolve(channel.id)) return;
+  if (!channel || !channel.guild.channels.resolve(channel.id)) return;
   if (channel.members.size === 0) {
     await channel.delete();
     const repo = await VoiceOnDemandRepository();
@@ -386,7 +388,9 @@ const requestOwnershipTransfer = async (
     })
   ).first();
 
-  await transferMessage.delete();
+  // Commented for now to make sure people just miss this and it's actually sent :)
+  // await transferMessage.delete();
+
   if (!claim) {
     await botCommands.send(
       getPingAll() +
@@ -433,13 +437,22 @@ const pickOneMessage = async (
   pickOptions: string[]
 ): Promise<MessageReaction> => {
   const reactMessage = await toReplyMessage.reply(callToActionMessage);
-  for (let i = 0; i < pickOptions.length; i++) {
-    await reactMessage.react(pickOptions[i]);
-  }
 
   const filter = (reaction: MessageReaction, user: User) =>
     pickOptions.includes(reaction.emoji.name) &&
     user.id === toReplyMessage.author.id;
+
+  const addReactions = async () => {
+    try {
+      for (let emoji of pickOptions) {
+        await reactMessage.react(emoji);
+      }
+    } catch {
+      // Skip - Comes up when a reaction is tried to be added to a message that was deleted because the user already selected
+    }
+  };
+
+  addReactions(); // No await because we don't want to wait
 
   try {
     const selection = await reactMessage.awaitReactions(filter, {
