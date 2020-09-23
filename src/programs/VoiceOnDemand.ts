@@ -394,16 +394,15 @@ const requestOwnershipTransfer = async (
   if (!claim) {
     await botCommands.send(
       getPingAll() +
-        "None of you claimed ownership of the room so I am removing it."
+        "None of you claimed ownership of the room so I shall assign someone randomly!"
     );
-    await channel.delete();
-    await repo.delete(currentMapping);
-    return;
   }
 
-  const claimingUser = claim.users.cache.filter((user) => !user.bot).first();
+  const claimingUser = claim
+    ? claim.users.cache.filter((user) => !user.bot).first()
+    : channel.members.random().user;
   await botCommands.send(
-    `<@${claimingUser}>, you claimed the room! You can now change the limit of it using \`!voice limit\`.`
+    `<@${claimingUser}>, is now the new owner of the room! You can now change the limit of it using \`!voice limit\`.`
   );
 
   transferOwnership(repo, currentMapping, claimingUser, channel);
