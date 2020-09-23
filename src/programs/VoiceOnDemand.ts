@@ -126,12 +126,25 @@ const createOnDemand = async (message: Message, userLimit: number) => {
     }
   );
 
+  const timeoutRole = Tools.getRoleByName("Time Out", guild);
+  const breakRole = Tools.getRoleByName("Break", guild);
+
   await channel.updateOverwrite(guild.roles.everyone, { STREAM: true });
   await channel.overwritePermissions([
     {
       id: guild.roles.everyone,
       allow: [],
       deny: [Permissions.FLAGS.CONNECT],
+      type: "role",
+    },
+    {
+      id: timeoutRole.id,
+      deny: [Permissions.FLAGS.CONNECT],
+      type: "role",
+    },
+    {
+      id: breakRole.id,
+      deny: [Permissions.FLAGS.VIEW_CHANNEL],
       type: "role",
     },
     {
@@ -239,27 +252,10 @@ export const voiceOnDemandPermissions = async (
 
   const { guild } = channel;
 
-  const timeoutRole = Tools.getRoleByName("Time Out", guild);
-  const breakRole = Tools.getRoleByName("Break", guild);
-
-  channel.overwritePermissions([
-    {
-      id: guild.roles.everyone,
-      allow: [Permissions.FLAGS.STREAM],
-      deny: [],
-      type: "role",
-    },
-    {
-      id: timeoutRole.id,
-      deny: [Permissions.FLAGS.CONNECT],
-      type: "role",
-    },
-    {
-      id: breakRole.id,
-      deny: [Permissions.FLAGS.VIEW_CHANNEL],
-      type: "role",
-    },
-  ]);
+  channel.updateOverwrite(guild.roles.everyone, {
+    CONNECT: true,
+    STREAM: true,
+  });
 
   // We don't need this overwrite anymore
   channel.permissionOverwrites.get(mapping.userId)?.delete();
