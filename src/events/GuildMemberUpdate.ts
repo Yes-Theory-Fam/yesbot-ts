@@ -145,6 +145,8 @@ const getChannelAccessToggleMessages = async (): Promise<
 const resolvePerUserPermissions = async (
   newMember: GuildMember | PartialGuildMember
 ) => {
+  const after = (BigInt(newMember.id) - BigInt(5)).toString();
+
   const messageToggleList = await getChannelAccessToggleMessages();
   for (const messageId in messageToggleList) {
     const { channelId, toggles } = messageToggleList[messageId];
@@ -158,7 +160,10 @@ const resolvePerUserPermissions = async (
     );
 
     for (const [_, reaction] of relevantReactions) {
-      const users = await reaction.users.fetch();
+      const users = await reaction.users.fetch({
+        after,
+        limit: 10,
+      });
       if (!users.has(newMember.id)) continue;
 
       Tools.addPerUserPermissions(

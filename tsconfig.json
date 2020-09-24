@@ -64,6 +64,7 @@
     "forceConsistentCasingInFileNames": true,  /* Disallow inconsistently-cased references to the same file. */
     "lib": [
       "ES2019.Array",
+      "ES2020.BigInt",
     ]
   },
   "include": [
