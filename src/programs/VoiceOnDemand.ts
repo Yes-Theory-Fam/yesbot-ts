@@ -254,6 +254,7 @@ export const voiceOnDemandPermissions = async (
 
   channel.updateOverwrite(guild.roles.everyone, {
     STREAM: true,
+    CONNECT: null,
   });
 
   // Comment to restart
