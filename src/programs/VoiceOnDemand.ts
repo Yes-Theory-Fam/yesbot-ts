@@ -253,7 +253,6 @@ export const voiceOnDemandPermissions = async (
   const { guild } = channel;
 
   channel.updateOverwrite(guild.roles.everyone, {
-    CONNECT: true,
     STREAM: true,
   });
 
