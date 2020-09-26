@@ -16,9 +16,11 @@ import {
   BuddyProjectGhost,
   GroupManagerTools,
   NitroColors,
+  PollsManager,
 } from "../programs";
 import { MessageRepository, ReactionRoleRepository } from "../entities";
 import { hasRole } from "../common/moderator";
+import { ModeratorPollMirror } from "../programs/PollsManager";
 
 class ReactionAdd {
   bot: Client;
@@ -110,6 +112,7 @@ class ReactionAdd {
     });
 
     this.handleChannelToggleReaction();
+    ModeratorPollMirror(this.messageReaction, this.user);
   }
 
   async handleChannelToggleReaction() {
