@@ -822,7 +822,7 @@ export const countries: Country[] = [
     "code": "IO",
     "emoji": "🇮🇴",
     "unicode": "U+1F1EE U+1F1F4",
-    "name": "British Indian Ocean Territory",
+    "name": "UK",
     "title": "flag for British Indian Ocean Territory",
 
   },
@@ -1092,7 +1092,7 @@ export const countries: Country[] = [
     "code": "MF",
     "emoji": "🇲🇫",
     "unicode": "U+1F1F2 U+1F1EB",
-    "name": "Saint Martin (French Part)",
+    "name": "France",
     "title": "flag for Saint Martin (French Part)",
 
   },
@@ -1415,7 +1415,7 @@ export const countries: Country[] = [
     "code": "PS",
     "emoji": "🇵🇸",
     "unicode": "U+1F1F5 U+1F1F8",
-    "name": "Palestinian Territory",
+    "name": "Palestine",
     "title": "flag for Palestinian Territory",
 
   },
@@ -1640,7 +1640,7 @@ export const countries: Country[] = [
     "code": "SY",
     "emoji": "🇸🇾",
     "unicode": "U+1F1F8 U+1F1FE",
-    "name": "Syrian Arab Republic",
+    "name": "Syria",
     "title": "flag for Syrian Arab Republic",
 
   },
