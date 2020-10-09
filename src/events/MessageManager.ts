@@ -21,7 +21,6 @@ import {
   StateRoleFinder,
   Ticket,
   TopicManager,
-  Unassigned,
   VoiceOnDemand,
   WhereAreYouFromManager,
 } from "../programs";
@@ -117,7 +116,6 @@ class MessageManager {
 
       case "permanent-testing":
         if (firstWord === "!export") ExportManager(this.message);
-        if (firstWord === "!unassigned") Unassigned(this.message);
         if (
           firstWord === "!group" &&
           !this.message.content.toLowerCase().startsWith("!group toggle")
