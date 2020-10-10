@@ -107,7 +107,8 @@ const main = async () => {
 
     for (let i = 0; i < guildMembers.length; i++) {
       const m = guildMembers[i];
-      console.log(`Migrating users... Progress: ${i}/${guildMembers.length}`);
+      if (i % 20 === 0 && i !== 0)
+        console.log(`Migrating users... Progress: ${i}/${guildMembers.length}`);
       await m.roles.add(unassignedRole);
     }
 
