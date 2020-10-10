@@ -8,7 +8,10 @@ import { writeFile, readFile } from "fs";
 import { get, RequestOptions } from "https";
 
 const [, , guildId, roleId, token, limit] = process.argv;
-const bot = new Client({ ws: { intents: ["GUILD_MEMBERS"] } });
+const bot = new Client({
+  ws: { intents: ["GUILD_MEMBERS"] },
+  presence: { status: "invisible" },
+});
 
 interface StoredInformation {
   lastMaxUserId: string;
