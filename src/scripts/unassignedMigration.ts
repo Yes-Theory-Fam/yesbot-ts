@@ -3,9 +3,16 @@
  * The code in this file is ran as single scheduled job and is fully self-contained.
  */
 
-import { Client, PartialGuildMember, Guild, Snowflake } from "discord.js";
+import {
+  Client,
+  PartialGuildMember,
+  Guild,
+  Snowflake,
+  TextChannel,
+} from "discord.js";
 import { writeFile, readFile } from "fs";
 import { get, RequestOptions } from "https";
+import { exec } from "child_process";
 
 const [, , guildId, roleId, token, limit] = process.argv;
 const bot = new Client({
@@ -34,6 +41,40 @@ const saveStoredInformation = (info: StoredInformation) => {
   );
 };
 
+const stopScheduling = (reason: string) => {
+  const guild = bot.guilds.resolve(guildId);
+  const output = guild.channels.cache.find((c) => c.name === "bot-output");
+  const engineer = guild.roles.cache.find((r) => r.name === "Server Engineer");
+  const engPing = `<@${engineer}>`;
+
+  if (!(output instanceof TextChannel)) return;
+
+  const disableCommand =
+    "sudo /bin/systemctl disable unassigned-migration.timer";
+  const stopCommand = "sudo /bin/systemctl stop unassigned-migration";
+
+  const failureMessage = `Failed to stop scheduling the migration! Please run the following commands in the cloud instance:
+  ${disableCommand}
+  ${stopCommand}
+  ${engPing}`;
+
+  exec(disableCommand, (err) => {
+    if (err) {
+      output.send(failureMessage);
+    } else {
+      exec(stopCommand, (err) => {
+        if (err) {
+          output.send(failureMessage);
+        } else {
+          output.send(
+            `Scheduling was stopped with the reason ${reason}! ${engPing}`
+          );
+        }
+      });
+    }
+  });
+};
+
 const getMembers = async (lastId: String) => {
   const query = `?limit=${limit}&after=${lastId}`;
   const path = `/api/guilds/${guildId}/members${query}`;
@@ -54,8 +95,19 @@ const getMembers = async (lastId: String) => {
       response.on("data", (datum) => (data += datum));
       response.on("end", () => {
         console.log("Request completed with statuscode", response.statusCode);
-        if (response.statusCode === 200) res(JSON.parse(data));
-        else rej({ statusCode: response.statusCode, error: data });
+        if (response.statusCode === 200) return res(JSON.parse(data));
+        if (response.statusCode === 429) {
+          console.error(data);
+          stopScheduling(
+            "Received 429! Check logs for backoff time, adjust the timer and re-enable it"
+          );
+        } else {
+          stopScheduling(
+            "Received unexpected status code! Check logs for more detail."
+          );
+        }
+
+        rej({ statusCode: response.statusCode, error: data });
       });
     });
 
@@ -123,8 +175,7 @@ const main = async () => {
         lastMaxUserId: maxUserId,
       });
     } else {
-      // TODO: Disable scheduling and notify support to double check
-      console.log("Completed!");
+      stopScheduling("Operation completed!");
     }
   } finally {
     console.log("Closing down bot!");
