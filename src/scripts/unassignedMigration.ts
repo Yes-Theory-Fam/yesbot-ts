@@ -83,6 +83,10 @@ const main = async () => {
   console.log(`Loaded ${countryRoles.length} country roles`);
 
   const unassignedRole = guild.roles.resolve(roleId);
+  if (!unassignedRole) {
+    throw new Error("Couldn't find role with id " + roleId);
+  }
+
   const { lastMaxUserId } = await loadStoredInformation();
 
   console.log("Loaded lastMaxUserId:", lastMaxUserId);
