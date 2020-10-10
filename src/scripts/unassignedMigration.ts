@@ -11,7 +11,7 @@ import {
   TextChannel,
 } from "discord.js";
 import { writeFile, readFile } from "fs";
-import { get, RequestOptions } from "https";
+import { get, request, RequestOptions } from "https";
 import { exec } from "child_process";
 
 const [, , guildId, roleId, token, limit] = process.argv;
@@ -56,7 +56,9 @@ const stopScheduling = (reason: string) => {
   const failureMessage = `Failed to stop scheduling the migration! Please run the following commands in the cloud instance:
   ${disableCommand}
   ${stopCommand}
-  ${engPing}`;
+  ${engPing}
+  
+  Reason for stopping was: ${reason}`;
 
   exec(disableCommand, (err) => {
     if (err) {
@@ -96,17 +98,6 @@ const getMembers = async (lastId: String) => {
       response.on("end", () => {
         console.log("Request completed with statuscode", response.statusCode);
         if (response.statusCode === 200) return res(JSON.parse(data));
-        if (response.statusCode === 429) {
-          console.error(data);
-          stopScheduling(
-            "Received 429! Check logs for backoff time, adjust the timer and re-enable it"
-          );
-        } else {
-          stopScheduling(
-            "Received unexpected status code! Check logs for more detail."
-          );
-        }
-
         rej({ statusCode: response.statusCode, error: data });
       });
     });
@@ -121,6 +112,34 @@ const getCountryRoles = async (guild: Guild): Promise<Snowflake[]> => {
   return updatedManager.cache
     .filter((role) => role.name.startsWith(prefix))
     .map((role) => role.id);
+};
+
+const assignRole = async (userId: Snowflake) => {
+  const path = `/api/guilds/${guildId}/members/${userId}/roles/${roleId}`;
+
+  const options: RequestOptions = {
+    host: "discord.com",
+    path,
+    headers: {
+      Authorization: "Bot " + token,
+    },
+    method: "put",
+  };
+
+  return new Promise((res, rej) => {
+    const req = request(options, (response) => {
+      let data = "";
+      response.on("data", (datum) => (data += datum));
+
+      response.on("end", () => {
+        if (response.statusCode === 204) res();
+        else rej({ statusCode: response.statusCode, error: data });
+      });
+    });
+
+    req.on("error", rej);
+    req.end();
+  });
 };
 
 const main = async () => {
@@ -153,15 +172,19 @@ const main = async () => {
       )
       .map((member) => member.user.id);
 
-    const guildMembers = (
-      await guild.members.fetch({ user: filteredMembers })
-    ).array();
+    for (let i = 0; i < filteredMembers.length; i++) {
+      const userId = filteredMembers[i];
+      if (i % 10 === 0 && i !== 0) {
+        console.log(
+          "Migrated 10 users; pausing for 11 seconds against rate limits"
+        );
+        await new Promise((res) => setTimeout(res, 11000));
+      }
 
-    for (let i = 0; i < guildMembers.length; i++) {
-      const m = guildMembers[i];
-      if (i % 20 === 0 && i !== 0)
-        console.log(`Migrating users... Progress: ${i}/${guildMembers.length}`);
-      await m.roles.add(unassignedRole);
+      console.log(
+        `Migrating users... Progress: ${i}/${filteredMembers.length}`
+      );
+      await assignRole(userId);
     }
 
     console.log(
@@ -177,6 +200,10 @@ const main = async () => {
     } else {
       stopScheduling("Operation completed!");
     }
+  } catch (e) {
+    stopScheduling(
+      "Error occured migrating! Stringified error: " + JSON.stringify(e)
+    );
   } finally {
     console.log("Closing down bot!");
     setTimeout(() => bot.destroy(), 3000);
