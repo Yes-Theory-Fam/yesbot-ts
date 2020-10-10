@@ -20,7 +20,7 @@ import Someone from "./Someone";
 import StateRoleFinder from "./StateRoleFinder";
 import Ticket from "./Ticket";
 import TopicManager from "./TopicManager";
-import Unassigned from "./Unassigned";
+import * as Unassigned from "./Unassigned";
 import VoiceOnDemand from "./VoiceOnDemand";
 import * as VoiceOnDemandTools from "./VoiceOnDemand";
 import WhereAreYouFromManager from "./WhereAreYouFromManager";

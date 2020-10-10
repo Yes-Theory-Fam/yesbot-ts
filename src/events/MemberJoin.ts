@@ -4,12 +4,13 @@ import {
   TextChannel,
   PartialGuildMember,
 } from "discord.js";
-import { BuddyProject } from "../programs";
+import { BuddyProject, Unassigned } from "../programs";
 
 class MemberJoin {
   bot: Client;
 
   constructor(member: GuildMember | PartialGuildMember) {
+    Unassigned.UnassignedMemberJoin(member);
     if (member.roles.cache.find((r) => r.name === "Buddy Project 2020")) {
       const bpOutputChannel = <TextChannel>(
         member.guild.channels.cache.find(
