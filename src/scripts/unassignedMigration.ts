@@ -165,10 +165,12 @@ const main = async () => {
   try {
     const members = (await getMembers(lastMaxUserId)) as PartialGuildMember[];
     const filteredMembers = members
-      .filter((member) =>
-        ((member.roles as unknown) as string[]).every(
-          (roleId) => !countryRoles.includes(roleId)
-        )
+      .filter(
+        (member) =>
+          !member.user.bot &&
+          ((member.roles as unknown) as string[]).every(
+            (roleId) => !countryRoles.includes(roleId)
+          )
       )
       .map((member) => member.user.id);
 
