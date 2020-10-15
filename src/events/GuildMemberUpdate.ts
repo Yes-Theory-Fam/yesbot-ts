@@ -56,6 +56,8 @@ class GuildMemberUpdate {
       unlockCountryChannels(newMember);
     }
 
+    if (gainedRole(oldMember, newMember, "Unassigned")) return;
+
     NitroColors.removeColorIfNotAllowed(newMember);
     Separators.seperatorOnRoleAdd(oldMember, newMember);
     Separators.seperatorOnRoleRemove(oldMember, newMember);
