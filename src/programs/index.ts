@@ -1,6 +1,6 @@
 import * as BuddyProject from "./BuddyProject";
 import * as GroupManagerTools from "./GroupManager";
-import * as Separators from "./Seperators";
+import * as Separators from "./Separators";
 import AdventureGame from "./AdventureGame";
 import BirthdayManager from "./BirthdayManager";
 import * as BirthdayManagerTools from "./BirthdayManager";
