@@ -59,8 +59,8 @@ class GuildMemberUpdate {
     if (gainedRole(oldMember, newMember, "Unassigned")) return;
 
     NitroColors.removeColorIfNotAllowed(newMember);
-    Separators.seperatorOnRoleAdd(oldMember, newMember);
-    Separators.seperatorOnRoleRemove(oldMember, newMember);
+    Separators.separatorOnRoleAdd(oldMember, newMember);
+    Separators.separatorOnRoleRemove(oldMember, newMember);
   }
 }
 
