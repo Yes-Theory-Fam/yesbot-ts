@@ -16,7 +16,7 @@ import { exec } from "child_process";
 
 const [, , guildId, roleId, token, limit] = process.argv;
 const bot = new Client({
-  ws: { intents: ["GUILD_MEMBERS"] },
+  ws: { intents: ["GUILDS", "GUILD_MEMBERS"] },
   presence: { status: "invisible" },
 });
 
@@ -41,11 +41,13 @@ const saveStoredInformation = (info: StoredInformation) => {
   );
 };
 
-const stopScheduling = (reason: string) => {
+const stopScheduling = (reason: string): Promise<void> => {
+  console.log("Stopping scheduling with reason: " + reason);
+
   const guild = bot.guilds.resolve(guildId);
   const output = guild.channels.cache.find((c) => c.name === "bot-output");
   const engineer = guild.roles.cache.find((r) => r.name === "Server Engineer");
-  const engPing = `<@${engineer}>`;
+  const engPing = `<@&${engineer}>`;
 
   if (!(output instanceof TextChannel)) return;
 
@@ -60,20 +62,24 @@ const stopScheduling = (reason: string) => {
   
   Reason for stopping was: ${reason}`;
 
-  exec(disableCommand, (err) => {
-    if (err) {
-      output.send(failureMessage);
-    } else {
-      exec(stopCommand, (err) => {
-        if (err) {
-          output.send(failureMessage);
-        } else {
-          output.send(
-            `Scheduling was stopped with the reason ${reason}! ${engPing}`
-          );
-        }
-      });
-    }
+  return new Promise((res) => {
+    exec(disableCommand, (err) => {
+      if (err) {
+        output.send(failureMessage).then((_) => res());
+      } else {
+        exec(stopCommand, (err) => {
+          if (err) {
+            output.send(failureMessage).then((_) => res());
+          } else {
+            output
+              .send(
+                `Scheduling was stopped with the reason ${reason}! ${engPing}`
+              )
+              .then((_) => res());
+          }
+        });
+      }
+    });
   });
 };
 
@@ -200,10 +206,10 @@ const main = async () => {
         lastMaxUserId: maxUserId,
       });
     } else {
-      stopScheduling("Operation completed!");
+      await stopScheduling("Operation completed!");
     }
   } catch (e) {
-    stopScheduling(
+    await stopScheduling(
       "Error occured migrating! Stringified error: " + JSON.stringify(e)
     );
   } finally {
