@@ -198,8 +198,9 @@ class MessageManager {
     }
 
     if (
-      this.message.content.toLowerCase().includes("oo") ||
-      this.message.content.toLowerCase().includes(":halloween2020:")
+      (this.message.content.toLowerCase().includes("oo") ||
+        this.message.content.toLowerCase().includes(":halloween2020:")) &&
+      Math.random() < 0.01
     ) {
       reactWithEmoji(this.message, "👻");
     }
