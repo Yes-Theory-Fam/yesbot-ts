@@ -196,6 +196,13 @@ class MessageManager {
     ) {
       reactWithEmoji(this.message, "👀");
     }
+
+    if (
+      this.message.content.toLowerCase().includes("oo") ||
+      this.message.content.toLowerCase().includes(":halloween2020:")
+    ) {
+      reactWithEmoji(this.message, "👻");
+    }
     if (this.message.content.toLowerCase().startsWith("!group toggle"))
       GroupManager(this.message, true);
 
