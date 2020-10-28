@@ -362,7 +362,7 @@ const requestOwnershipTransfer = async (
     return;
 
   const claimEmoji = "☝";
-  const requestMessageText = `Hey, the owner of your room left! I need one of you to claim ownership of the room in the next minute, otherwise I have to delete the room. You can claim ownership by clicking the ${claimEmoji}!`;
+  const requestMessageText = `Hey, the owner of your room left! I need one of you to claim ownership of the room in the next minute, otherwise I'll pick someone randomly. You can claim ownership by clicking the ${claimEmoji}!`;
 
   // Functions to get the most recent values whenever needed (so you cannot leave the channel and claim ownership)
   const getMemberIds = () => channel.members.map((member) => member.id);
