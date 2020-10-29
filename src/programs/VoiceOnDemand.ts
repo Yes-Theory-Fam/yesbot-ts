@@ -257,6 +257,8 @@ const knockOnDemand = async (message: Message) => {
     })
   ).first();
 
+  accessMessage.delete();
+
   if (!vote) {
     message.reply(
       `<@${message.author.id}>, sorry but ${member.displayName} didn't respond.`
@@ -271,6 +273,8 @@ const knockOnDemand = async (message: Message) => {
     return;
   }
 
+  // Blatant hack to abuse existing API
+  message.author = owner;
   updateLimit(message, getUpLimit);
 };
 
