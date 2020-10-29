@@ -51,6 +51,14 @@ export default async function (message: Message) {
     case "limit":
       handleLimitCommand(message);
       break;
+    case "shrink":
+    case "up":
+    case "down":
+      handleLimitUpdateCommand(message, command);
+      break;
+    case "knock":
+      knockOnDemand(message);
+      break;
     case "host":
       changeHostOnDemand(message);
       break;
@@ -87,6 +95,30 @@ const handleLimitCommand = (message: Message) => {
       break;
   }
 };
+
+const handleLimitUpdateCommand = (message: Message, command: string) => {
+  const getGetLimit = () => {
+    switch (command) {
+      case "shrink":
+        return getShrinkLimit;
+      case "up":
+        return getUpLimit;
+      case "down":
+        return getDownLimit;
+    }
+  };
+
+  updateLimit(message, getGetLimit());
+};
+
+const getShrinkLimit = (channel: VoiceChannel) =>
+  Math.max(2, channel.members.size);
+
+const getUpLimit = (channel: VoiceChannel) =>
+  Math.min(maxLimit, channel.userLimit + 1);
+
+const getDownLimit = (channel: VoiceChannel) =>
+  Math.max(2, channel.userLimit - 1);
 
 const createOnDemand = async (message: Message, userLimit: number) => {
   const { guild, member } = message;
@@ -172,6 +204,80 @@ const createOnDemand = async (message: Message, userLimit: number) => {
 };
 
 const limitOnDemand = async (message: Message, limit: number) => {
+  updateLimit(message, () => limit);
+};
+
+const knockOnDemand = async (message: Message) => {
+  const owner = message.mentions.users.first();
+  if (!owner) {
+    return Tools.handleUserError(
+      message,
+      "You have to ping the user you want to join!"
+    );
+  }
+
+  const member = message.guild.member(owner);
+  const channel = await getVoiceChannel(member);
+
+  if (!channel) {
+    return Tools.handleUserError(message, "That user doesn't have a channel!");
+  }
+
+  if (channel.members.some((member) => member.user.id === message.author.id)) {
+    return Tools.handleUserError(message, "You just knocked from inside!");
+  }
+
+  if (channel.members.size < channel.userLimit) {
+    return Tools.handleUserError(
+      message,
+      "That channel has free space; you can just join!"
+    );
+  }
+
+  if (channel.members.size === maxLimit) {
+    return Tools.handleUserError(
+      message,
+      "That channel is already at the maximum limit, sorry!"
+    );
+  }
+
+  const accessMessage = await message.channel.send(
+    `<@${owner.id}>, <@${message.author.id}> wants to join your voice channel. Allow?`
+  );
+
+  const options = ["👍", "👎"];
+  accessMessage.react("👍").then(() => accessMessage.react("👎"));
+
+  const filter = (reaction: MessageReaction, user: User) =>
+    user.id === owner.id && options.includes(reaction.emoji.name);
+  const vote = (
+    await accessMessage.awaitReactions(filter, {
+      max: 1,
+      time: 60000,
+    })
+  ).first();
+
+  if (!vote) {
+    message.reply(
+      `<@${message.author.id}>, sorry but ${member.displayName} didn't respond.`
+    );
+    return;
+  }
+
+  if (vote.emoji.name === "👎") {
+    message.reply(
+      `<@${message.author.id}>, sorry but ${member.displayName} doesn't seem to like you. Shame.`
+    );
+    return;
+  }
+
+  updateLimit(message, getUpLimit);
+};
+
+const updateLimit = async (
+  message: Message,
+  getLimit: (channel: VoiceChannel) => Promise<number> | number
+) => {
   const { member } = message;
   const memberVoiceChannel = await getVoiceChannel(member);
 
@@ -182,6 +288,8 @@ const limitOnDemand = async (message: Message, limit: number) => {
     );
     return;
   }
+
+  const limit = await getLimit(memberVoiceChannel);
 
   memberVoiceChannel.edit({
     userLimit: limit,
