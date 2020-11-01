@@ -38,6 +38,7 @@ import {
   SendMap,
 } from "../common/CustomMethods";
 import Tools from "../common/tools";
+import { DailyChallenge } from "../entities/DailyChallenge";
 
 class MessageManager {
   message: Message;
@@ -113,7 +114,9 @@ class MessageManager {
         if (firstWord === "@someone") Someone(this.message);
         if (firstWord === "!deadchat") Deadchat(this.message);
         break;
-
+      case "daily-challenge":
+        if (firstWord === "!topic") SendFromDB(this.message);
+        break;
       case "permanent-testing":
         if (firstWord === "!export") ExportManager(this.message);
         if (
