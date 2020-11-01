@@ -268,6 +268,10 @@ class MessageManager {
       );
     }
 
+          case "bot-commands":
+            if (firstWord === "!voice knock knock") {
+          this.message.reply("Who's there? 👀");
+    
     await nameChangeMessage.delete();
   }
 }
