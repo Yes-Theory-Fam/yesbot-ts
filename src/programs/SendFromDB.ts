@@ -1,39 +1,61 @@
-import { Message, TextChannel } from "discord.js";
-import { DeadchatQuestion, DeadchatRepository } from "../entities";
-import Tools from "../common/tools";
+import Discord, { Client, Message, TextChannel } from "discord.js";
+import { DailyChallenge, DailyChallengeRepository } from "../entities";
 
-export default async function Deadchat(pMessage: Message) {
-  const isDead =
-    Date.now() -
-      (await pMessage.channel.messages.fetch({ limit: 2 })).array()[1]
-        .createdTimestamp >
-    1800000; //|| pMessage.guild.name != "Yes Theory Fam";
-  const isChat = ["chat", "chat-too"].includes(
-    (pMessage.channel as TextChannel).name
-  );
-  if (!isChat) {
-    Tools.handleUserError(pMessage, "You can't use this command here.");
-    return;
+export default async function SendFromDB(
+  pMessage: Message,
+  channelName: string
+) {
+  let repo = undefined;
+  if (channelName === "daily-challenge") {
+    repo = await DailyChallengeRepository();
   }
 
-  if (!isDead) {
-    Tools.handleUserError(
-      pMessage,
-      "Chat is not dead! You can use this command if there have been no messages in the last 30 minutes."
+  if (repo) {
+    const res = await repo
+      .createQueryBuilder("topic")
+      .where("topic.last_used = :currentDate", { currentDate: new Date() })
+      .getOne();
+
+    pMessage.channel.send(res.result);
+  } else {
+    pMessage.reply(
+      `We're sorry, Yesbot had a hiccup. Here's a cookie instead: 🍪`
     );
-    return;
   }
-
-  const deadchatRepo = await DeadchatRepository();
-  const question: DeadchatQuestion = await deadchatRepo
-    .createQueryBuilder()
-    .select()
-    .andWhere("random() < 0.5 OR id = 1") // To get a random-ish question (strongly biased towards the top few questions but good enough I guess)
-    .orderBy("last_used", "ASC")
-    .limit(1)
-    .getOne();
-
-  pMessage.channel.send(question.question);
-  question.lastUsed = new Date();
-  deadchatRepo.save(question);
 }
+
+export const postDailyMessage = async (bot: Client) => {
+  const messageChannel = <TextChannel>(
+    bot.channels.resolve("474197374684758025")
+  );
+  const repo = await DailyChallengeRepository();
+  if (messageChannel) {
+    const res = await repo
+      .createQueryBuilder()
+      .select()
+      .andWhere("random() < 0.5 OR id = 1")
+      .orderBy("last_used", "ASC")
+      .limit(1)
+      .getOne();
+    if (res) {
+      const embed = new Discord.MessageEmbed()
+        .setColor("BLUE")
+        .setTitle("YesFam Daily Challenge!")
+        .setDescription(res.result);
+
+      res.lastUsed = new Date();
+      repo.save(res);
+      messageChannel.send(embed);
+    }
+  }
+};
+
+export const saveToDb = async (tableName: string, info: string) => {
+  let repo = undefined;
+  if (tableName === "daily-challenge") {
+    repo = await DailyChallengeRepository();
+    let res = new DailyChallenge();
+    res.result = info;
+    repo.create(res);
+  }
+};

@@ -6,12 +6,15 @@ export class DailyChallenge {
   id: string;
 
   @Column()
-  challenge: string;
+  result: string;
 
-  @Column({ default: new Date(), name: "last_used" })
+  @Column({
+    default: new Date(),
+    name: "last_used",
+  })
   lastUsed: Date;
 }
 
-export const DeadchatRepository = async () => {
+export const DailyChallengeRepository = async () => {
   return getConnection().getRepository(DailyChallenge);
 };

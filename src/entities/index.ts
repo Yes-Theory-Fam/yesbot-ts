@@ -1,6 +1,7 @@
 export * from "./Birthday";
 export * from "./BuddyProjectEntry";
 export * from "./ChannelToggle";
+export * from "./DailyChallenge";
 export * from "./Deadchat";
 export * from "./Message";
 export * from "./ReactionRole";
