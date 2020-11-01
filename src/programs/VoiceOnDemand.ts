@@ -36,15 +36,19 @@ const getVoiceChannel = async (member: GuildMember): Promise<VoiceChannel> => {
 };
 
 export default async function (message: Message) {
-  if (!hasRole(message.member, "Yes Theory")) {
+  const [, command] = message.content.split(" ");
+  const notYesTheoryExclusiveCommands = ["knock"];
+
+  if (
+    !notYesTheoryExclusiveCommands.includes(command) &&
+    !hasRole(message.member, "Yes Theory")
+  ) {
     Tools.handleUserError(
       message,
       `Hey, you need to have the Yes Theory role to use this command! You can get this by talking with others in our public voice chats :grin:`
     );
     return;
   }
-
-  const [, command] = message.content.split(" ");
 
   switch (command) {
     case "create":
@@ -334,6 +338,14 @@ const changeHostOnDemand = async (message: Message) => {
 
   if (!mentionedUserInVoiceChannel) {
     Tools.handleUserError(message, "That user is not in your voice channel");
+    return;
+  }
+
+  if (!hasRole(member, "Yes Theory")) {
+    Tools.handleUserError(
+      message,
+      "That user doesn't have the Yes Theory role required to control the room. Pick someone else or get a Support to give them the Yes Theory role."
+    );
     return;
   }
 
