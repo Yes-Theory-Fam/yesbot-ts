@@ -39,6 +39,8 @@ import {
   SendMap,
 } from "../common/CustomMethods";
 import Tools from "../common/tools";
+import { separatorOnRoleRemove } from "../programs/Separators";
+import { saveToDb } from "../programs/SendFromDB";
 
 class MessageManager {
   message: Message;
@@ -80,6 +82,7 @@ class MessageManager {
 
     const words = this.message.content.split(/\s+/);
     const firstWord = words[0];
+    const restOfMessage = words.slice(1).join(" ");
     const channel = <TextChannel>this.message.channel;
 
     const isFiltered = words.some((r) => filteredWords.indexOf(r) !== -1);
@@ -126,6 +129,9 @@ class MessageManager {
           GroupManager(this.message, true);
         if (firstWord === "!profile") ProfileManager(this.message);
         break;
+      case "permanent-channel":
+        if (firstWord === "!addChallenge")
+          saveToDb("daily-challenge", restOfMessage);
 
       case "bot-commands":
         if (
