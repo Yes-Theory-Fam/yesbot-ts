@@ -35,6 +35,7 @@ import {
   randomReply,
   reactWithEmoji,
   sendLove,
+  abuseMe,
   SendMap,
 } from "../common/CustomMethods";
 import Tools from "../common/tools";
@@ -112,6 +113,7 @@ class MessageManager {
       case "4th-chat":
         if (firstWord === "@someone") Someone(this.message);
         if (firstWord === "!deadchat") Deadchat(this.message);
+        if (firstWord === "!abuseme") abuseMe(this.message);
         break;
 
       case "permanent-testing":

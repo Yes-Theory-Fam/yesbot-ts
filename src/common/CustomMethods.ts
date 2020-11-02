@@ -47,6 +47,19 @@ export const reactWithEmoji = (message: Message, emoji: string) => {
   message.react(emoji);
 };
 
+export const abuseMe = (message: Message) => {
+  let replies = [
+    'You are as useless as the "ueue" in "Queue".',
+    "You are a bitch",
+    "I'd agree with you but then we'd both be wrong",
+    "If I had a dollar for everytime you said something smart, I'd be broke.",
+    "Yesbot does not love you specifically",
+    "Maybe you need to be on timeout",
+    "Do you think before you speak or is thinking a rare event in your life?",
+  ];
+  message.reply(`${replies[Math.floor(Math.random() * replies.length)]}`);
+};
+
 export const proposeNameChange = async (name: string, botMessage: Message) => {
   botMessage.reply(
     "Perfect! I've sent your name request to the mods, hopefully they answer soon! In the meantime, you're free to roam around the server and explore. Maybe post an introduction to get started? :grin:"
