@@ -129,7 +129,7 @@ class MessageManager {
           GroupManager(this.message, true);
         if (firstWord === "!profile") ProfileManager(this.message);
         break;
-      case "permanent-channel":
+      case "permanent-testing":
         if (firstWord === "!addChallenge")
           saveToDb("daily-challenge", restOfMessage, this.message);
 
