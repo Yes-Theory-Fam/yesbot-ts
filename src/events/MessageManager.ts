@@ -113,7 +113,7 @@ class MessageManager {
       case "4th-chat":
         if (firstWord === "@someone") Someone(this.message);
         if (firstWord === "!deadchat") Deadchat(this.message);
-        if (firstWord === "!abuseme") abuseMe(this.message);
+        if (firstWord === "!translate") abuseMe(this.message);
         break;
 
       case "permanent-testing":
