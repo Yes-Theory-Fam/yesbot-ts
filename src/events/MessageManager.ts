@@ -131,7 +131,7 @@ class MessageManager {
         break;
       case "permanent-channel":
         if (firstWord === "!addChallenge")
-          saveToDb("daily-challenge", restOfMessage);
+          saveToDb("daily-challenge", restOfMessage, this.message);
 
       case "bot-commands":
         if (

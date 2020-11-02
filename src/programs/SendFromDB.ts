@@ -50,12 +50,16 @@ export const postDailyMessage = async (bot: Client) => {
   }
 };
 
-export const saveToDb = async (tableName: string, info: string) => {
+export const saveToDb = async (tableName: string, info: string, pMessage: Message) => {
   let repo = undefined;
   if (tableName === "daily-challenge") {
     repo = await DailyChallengeRepository();
     let res = new DailyChallenge();
     res.result = info;
-    repo.create(res);
+    repo.save(res).then(() => {
+      pMessage.react(':+1:')
+    }).catch(() => {
+      pMessage.react(':-1:')
+    });
   }
 };
