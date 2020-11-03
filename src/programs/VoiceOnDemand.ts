@@ -249,11 +249,10 @@ const knockOnDemand = async (message: Message) => {
     `<@${owner.id}>, <@${message.author.id}> wants to join your voice channel. Allow?`
   );
 
-  const options = ["👍", "👎"];
-  accessMessage.react("👍").then(() => accessMessage.react("👎"));
+  await accessMessage.react("👍");
 
   const filter = (reaction: MessageReaction, user: User) =>
-    user.id === owner.id && options.includes(reaction.emoji.name);
+    user.id === owner.id && reaction.emoji.name === "👍";
   const vote = (
     await accessMessage.awaitReactions(filter, {
       max: 1,
@@ -266,13 +265,6 @@ const knockOnDemand = async (message: Message) => {
   if (!vote) {
     message.reply(
       `<@${message.author.id}>, sorry but ${member.displayName} didn't respond.`
-    );
-    return;
-  }
-
-  if (vote.emoji.name === "👎") {
-    message.reply(
-      `<@${message.author.id}>, sorry but ${member.displayName} doesn't seem to like you. Shame.`
     );
     return;
   }
