@@ -18,6 +18,7 @@ import ReactRole from "./ReactRole";
 import Resource from "./ResourceManager";
 import Someone from "./Someone";
 import StateRoleFinder from "./StateRoleFinder";
+import TemplateMode from "./TemplateMode";
 import Ticket from "./Ticket";
 import TopicManager from "./TopicManager";
 import * as Unassigned from "./Unassigned";
@@ -46,6 +47,7 @@ export {
   Separators,
   Someone,
   StateRoleFinder,
+  TemplateMode,
   Ticket,
   TopicManager,
   Unassigned,

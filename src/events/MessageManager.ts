@@ -19,6 +19,7 @@ import {
   Resource,
   Someone,
   StateRoleFinder,
+  TemplateMode,
   Ticket,
   TopicManager,
   VoiceOnDemand,
@@ -124,6 +125,7 @@ class MessageManager {
         )
           GroupManager(this.message, true);
         if (firstWord === "!profile") ProfileManager(this.message);
+        if (firstWord === "!templateMode") TemplateMode(this.message);
         break;
 
       case "bot-commands":
