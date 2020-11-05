@@ -89,8 +89,10 @@ class ReactionAdd {
         reaction: this.reaction,
       },
     });
-    reactRoleObjects.forEach((reactionRole) => {
-      const guildMember = this.guild.member(this.user);
+    reactRoleObjects.forEach(async (reactionRole) => {
+      const guildMember =
+        this.guild.member(this.user) ??
+        (await this.guild.members.fetch(this.user));
       const roleToAdd = this.guild.roles.resolve(reactionRole.roleId);
 
       if (
