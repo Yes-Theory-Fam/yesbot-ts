@@ -79,12 +79,8 @@ class MessageManager {
       );
     }
 
-    const words = this.message.content.split(/\s+/);
-    const firstWord = words[0];
-    const channel = <TextChannel>this.message.channel;
-
-    const isFiltered = words.some((r) => filteredWords.indexOf(r) !== -1);
-    if (isFiltered) {
+    const lowerCaseMessage = this.message.content.toLowerCase();
+    if (filteredWords.some(word => lowerCaseMessage.includes(word))) {
       this.message.delete();
       this.message.author
         .createDM()
@@ -93,7 +89,14 @@ class MessageManager {
             `Usage of the N word is absolutely banned within this server. Please refer to the <#450102410262609943>.`
           )
         );
+
+      return;
     }
+    
+    const words = this.message.content.split(/\s+/);
+    const channel = <TextChannel>this.message.channel;
+    const firstWord = words[0];
+
     switch (channel.name) {
       case "where-are-you-from":
       case "welcome-chat":
