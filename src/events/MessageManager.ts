@@ -80,7 +80,7 @@ class MessageManager {
     }
 
     const lowerCaseMessage = this.message.content.toLowerCase();
-    if (filteredWords.some(word => lowerCaseMessage.includes(word))) {
+    if (filteredWords.some((word) => lowerCaseMessage.includes(word))) {
       this.message.delete();
       this.message.author
         .createDM()
@@ -92,7 +92,7 @@ class MessageManager {
 
       return;
     }
-    
+
     const words = this.message.content.split(/\s+/);
     const channel = <TextChannel>this.message.channel;
     const firstWord = words[0];
