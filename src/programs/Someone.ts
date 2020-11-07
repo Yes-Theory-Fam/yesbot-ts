@@ -40,7 +40,7 @@ async function Someone(message: Message) {
     });
   else {
     const { member } = message;
-    const target = await getTarget(arg, message);
+    const target = getTarget(arg, message);
     const question = await getQuestion();
     if (target === undefined)
       message.reply(
@@ -98,27 +98,35 @@ async function isAllowed(user: User) {
   return isAfter(new Date(), addHours(someone.time, 24));
 }
 
-async function getTarget(arg: string, message: Message) {
-  if (message) {
-    const sdRole = Tools.getRoleByName("Seek Discomfort", message.guild);
-    if (!sdRole) {
-      message.channel.send("There is no Seek Discomfort role in this server!");
-      return;
-    }
-    let target = sdRole.members.random().user;
-    let targetFound = false;
-    if (arg) {
-      for (let count = 0; count < 100; count++) {
-        if (
-          target.presence.status !== "online" ||
-          target.id == message.author.id
-        )
-          target = sdRole.members.random().user;
-        else targetFound = true;
-        if (targetFound) return target;
-      }
-    } else return target;
+function getTarget(arg: string, message: Message): User {
+  if (!message) return;
+
+  const sdRole = Tools.getRoleByName("Seek Discomfort", message.guild);
+  if (!sdRole) {
+    message.channel.send("There is no Seek Discomfort role in this server!");
+    return;
   }
+
+  const targetCollection =
+    arg && arg === "online"
+      ? sdRole.members.filter(
+          (member) => member.user.presence.status === "online"
+        )
+      : sdRole.members;
+
+  if (
+    targetCollection.size === 0 ||
+    (targetCollection.size === 1 &&
+      targetCollection.first().user.id === message.author.id)
+  )
+    return;
+
+  let randomUser;
+  do {
+    randomUser = targetCollection.random().user;
+  } while (randomUser.id === message.author.id);
+
+  return randomUser;
 }
 
 async function getQuestion() {
