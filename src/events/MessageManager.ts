@@ -24,6 +24,7 @@ import {
   TopicManager,
   VoiceOnDemand,
   WhereAreYouFromManager,
+  MapTools,
 } from "../programs";
 import bot from "../index";
 import { MODERATOR_ROLE_NAME } from "../const";
@@ -141,6 +142,8 @@ class MessageManager {
         if (firstWord === "!video") {
           this.message.reply("https://youtu.be/v-JOe-xqPN0");
         }
+        if (firstWord === "!map") MapTools.map(this.message);
+        if (firstWord === "!mapadd") MapTools.mapAdd(this.message);
         break;
 
       case "polls":
