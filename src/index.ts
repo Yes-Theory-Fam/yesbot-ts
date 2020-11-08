@@ -27,15 +27,12 @@ import {
   VoiceStateUpdate,
 } from "./events";
 import { BOT_TOKEN } from "./const";
-import Firebase from "./collections/firebaseConnection";
 // Imported for DB side-effects.
 import "./db";
 import { MemberLeave } from "./events/MemberLeave";
 
 const bot = new Client({ partials: ["REACTION", "MESSAGE"] });
 bot.login(BOT_TOKEN);
-
-export const db = new Firebase();
 
 //! ================= EVENT HANDLERS ====================
 bot.on("channelCreate", (channelType: Channel) => null);

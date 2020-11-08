@@ -5,9 +5,6 @@ To run, set up a src/const.ts file with these variables:
 ```
 export const BOT_TOKEN = "",
   GUILD_ID = "",
-  FIREBASE_API_KEY = "",
-  FIREBASE_AUTH_DOMAIN = "",
-  FIREBASE_PROJECT = "",
   AUSTRALIA_IMAGE_URL = "",
   CANADA_IMAGE_URL = "",
   UK_IMAGE_URL = "",

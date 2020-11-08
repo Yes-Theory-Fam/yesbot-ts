@@ -19,8 +19,6 @@
     "date-fns": "^2.15.0",
     "date-fns-tz": "^1.0.10",
     "discord.js": "^12.4.1",
-    "firebase": "^7.17.1",
-    "fs": "0.0.1-security",
     "path": "^0.12.7",
     "pg": "^8.3.0",
     "reflect-metadata": "^0.1.13",
