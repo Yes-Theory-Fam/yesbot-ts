@@ -3,7 +3,7 @@ import { Message } from "discord.js";
 import Tools from "../common/tools";
 
 export const map = (message: Message) => {
-  message.reply("you can find the map here: " + MAP_LINK);
+  message.reply("you can find the map here: " + MAP_LINK + "\nIf you want to be added to it, type !mapadd");
 };
 
 export const mapAdd = async (message: Message) => {
