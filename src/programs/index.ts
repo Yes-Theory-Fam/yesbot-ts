@@ -11,6 +11,7 @@ import EasterEvent from "./EasterEvent";
 import ExportManager from "./ExportManager";
 import GroupManager from "./GroupManager";
 import InitialiseTestEnvironment from "./InitialiseTestEnvironment";
+import * as MapTools from "./Map";
 import * as NitroColors from "./NitroColors";
 import PollsManager from "./PollsManager";
 import ProfileManager from "./ProfileManager";
@@ -39,6 +40,7 @@ export {
   GroupManager,
   GroupManagerTools,
   InitialiseTestEnvironment,
+  MapTools,
   NitroColors,
   PollsManager,
   ProfileManager,
