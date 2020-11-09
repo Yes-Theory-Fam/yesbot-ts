@@ -1,4 +1,10 @@
-import { Message, User, MessageAttachment } from "discord.js";
+import {
+  Message,
+  User,
+  MessageAttachment,
+  TextBasedChannel,
+  DMChannel,
+} from "discord.js";
 import { Logger } from "./Logger";
 import { textLog, getMember } from "./moderator";
 import {
@@ -133,7 +139,10 @@ export const deleteMessages = async (botMessage: Message) => {
     const words = Tools.stringToWords(botMessage.content);
     words.shift();
     const messagesToDelete = Number(words[0]);
-    if (messagesToDelete !== NaN) {
+    if (
+      messagesToDelete !== NaN &&
+      !(botMessage.channel instanceof DMChannel)
+    ) {
       botMessage.channel.bulkDelete(messagesToDelete);
     }
   } catch (err) {
