@@ -42,7 +42,7 @@ const getProfileEmbed = async (
       countryString = countryString + role.name + "\n";
     }
   });
-  const yesEmoji = member.guild.emojis.cache.find((e) => e.name == "yes_yf");
+  const yesEmoji = member.guild.emojis.cache.find((e) => e.name == "yes");
   const birthdayString = formatBirthday(await getUserBirthday(member.user.id));
   if (!countryRole) {
     message.reply("That user isn't registered here!");
