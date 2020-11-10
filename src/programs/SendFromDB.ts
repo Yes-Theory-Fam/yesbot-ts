@@ -1,4 +1,7 @@
+import Axios from "axios";
 import Discord, { Client, Message, TextChannel } from "discord.js";
+import { Repository } from "typeorm";
+import { Logger } from "../common/Logger";
 import { DailyChallenge, DailyChallengeRepository } from "../entities";
 
 export default async function SendFromDB(
@@ -44,22 +47,64 @@ export const postDailyMessage = async (bot: Client) => {
         .setDescription(res.result);
 
       res.lastUsed = new Date();
-      repo.save(res);
+      try {
+        await repo.save(res);
+      } catch (err) {
+        Logger(
+          "SendFromDB",
+          "postDailyMessage",
+          "There was an error posting Daily Challenge: " + err
+        );
+      }
       messageChannel.send(embed);
     }
   }
 };
 
-export const saveToDb = async (tableName: string, info: string, pMessage: Message) => {
-  let repo = undefined;
+export const saveToDb = async (
+  tableName: string,
+  info: string,
+  pMessage: Message
+) => {
+  let repo: Repository<DailyChallenge> = undefined;
   if (tableName === "daily-challenge") {
     repo = await DailyChallengeRepository();
-    let res = new DailyChallenge();
-    res.result = info;
-    repo.save(res).then(() => {
-      pMessage.react(':+1:')
-    }).catch(() => {
-      pMessage.react(':-1:')
-    });
+
+    // Check if its an attachment:
+    const attachment = pMessage.attachments?.first();
+    if (attachment) {
+      try {
+        const file = await Axios.get(attachment.url);
+        const bulkChallenges: [] = file.data.split(",");
+        bulkChallenges.forEach(async (challenge: string, idx: number) => {
+          let res = new DailyChallenge();
+          res.result = challenge.trim();
+          await save(repo, res, pMessage);
+          if (idx === bulkChallenges.length) {
+            pMessage.react("👍");
+          }
+        });
+      } catch (err) {
+        console.log(
+          "[ERROR] SendFromDB - There was an error getting the attached file: ",
+          err
+        );
+        pMessage.react("👎");
+      }
+    } else {
+      let res = new DailyChallenge();
+      res.result = info;
+      await save(repo, res, pMessage);
+      pMessage.react("👍");
+    }
+  }
+};
+
+const save = async (repo: any, res: any, pMessage: Message) => {
+  try {
+    await repo.save(res);
+  } catch (err) {
+    Logger("SendFromDB", "save", "There was an error saving to DB: " + err);
+    pMessage.react("👎");
   }
 };

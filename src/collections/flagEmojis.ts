@@ -378,6 +378,13 @@ export const countries: Country[] = [
     "title": "flag for Colombia",
   },
   {
+    "code": "CP",
+    "emoji": "🇨🇵",
+    "unicode": "U+1F1E8 U+1F1F5",
+    "name": "France",
+    "title": "flag for France",
+  },
+  {
     "code": "CR",
     "emoji": "🇨🇷",
     "unicode": "U+1F1E8 U+1F1F7",
@@ -473,6 +480,13 @@ export const countries: Country[] = [
     "name": "Algeria",
     "title": "flag for Algeria",
 
+  },
+  {
+    "code": "EA",
+    "emoji": "🇪🇦",
+    "unicode": "U+1F1EA U+1F1E6",
+    "name": "Spain",
+    "title": "flag for Spain",
   },
   {
     "code": "EC",

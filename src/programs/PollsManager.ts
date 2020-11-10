@@ -22,8 +22,8 @@ export const ModeratorPollMirror = async (
   const member = channel.guild.member(user.id);
 
   if (!hasRole(member, "Support")) return;
-  const { count } = await reaction.fetch();
-  if (count > 1) return;
+  const fetched = await reaction.users.fetch();
+  if (fetched.size > 1) return;
 
   message.react(reaction.emoji);
   reaction.users.remove(user.id);

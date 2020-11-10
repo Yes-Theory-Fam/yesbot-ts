@@ -36,7 +36,13 @@ const getVoiceChannel = async (member: GuildMember): Promise<VoiceChannel> => {
 };
 
 export default async function (message: Message) {
-  if (!hasRole(message.member, "Yes Theory")) {
+  const [, command] = message.content.split(" ");
+  const notYesTheoryExclusiveCommands = ["knock"];
+
+  if (
+    !notYesTheoryExclusiveCommands.includes(command) &&
+    !hasRole(message.member, "Yes Theory")
+  ) {
     Tools.handleUserError(
       message,
       `Hey, you need to have the Yes Theory role to use this command! You can get this by talking with others in our public voice chats :grin:`
@@ -44,12 +50,18 @@ export default async function (message: Message) {
     return;
   }
 
-  const [, command] = message.content.split(" ");
-
   switch (command) {
     case "create":
     case "limit":
       handleLimitCommand(message);
+      break;
+    case "shrink":
+    case "up":
+    case "down":
+      handleLimitUpdateCommand(message, command);
+      break;
+    case "knock":
+      knockOnDemand(message);
       break;
     case "host":
       changeHostOnDemand(message);
@@ -87,6 +99,30 @@ const handleLimitCommand = (message: Message) => {
       break;
   }
 };
+
+const handleLimitUpdateCommand = (message: Message, command: string) => {
+  const getGetLimit = () => {
+    switch (command) {
+      case "shrink":
+        return getShrinkLimit;
+      case "up":
+        return getUpLimit;
+      case "down":
+        return getDownLimit;
+    }
+  };
+
+  updateLimit(message, getGetLimit());
+};
+
+const getShrinkLimit = (channel: VoiceChannel) =>
+  Math.max(2, channel.members.size);
+
+const getUpLimit = (channel: VoiceChannel) =>
+  Math.min(maxLimit, channel.userLimit + 1);
+
+const getDownLimit = (channel: VoiceChannel) =>
+  Math.max(2, channel.userLimit - 1);
 
 const createOnDemand = async (message: Message, userLimit: number) => {
   const { guild, member } = message;
@@ -172,6 +208,76 @@ const createOnDemand = async (message: Message, userLimit: number) => {
 };
 
 const limitOnDemand = async (message: Message, limit: number) => {
+  updateLimit(message, () => limit);
+};
+
+const knockOnDemand = async (message: Message) => {
+  const owner = message.mentions.users.first();
+  if (!owner) {
+    return Tools.handleUserError(
+      message,
+      "You have to ping the user you want to join!"
+    );
+  }
+
+  const member = message.guild.member(owner);
+  const channel = await getVoiceChannel(member);
+
+  if (!channel) {
+    return Tools.handleUserError(message, "That user doesn't have a channel!");
+  }
+
+  if (channel.members.some((member) => member.user.id === message.author.id)) {
+    return Tools.handleUserError(message, "You just knocked from inside!");
+  }
+
+  if (channel.members.size < channel.userLimit) {
+    return Tools.handleUserError(
+      message,
+      "That channel has free space; you can just join!"
+    );
+  }
+
+  if (channel.members.size === maxLimit) {
+    return Tools.handleUserError(
+      message,
+      "That channel is already at the maximum limit, sorry!"
+    );
+  }
+
+  const accessMessage = await message.channel.send(
+    `<@${owner.id}>, <@${message.author.id}> wants to join your voice channel. Allow?`
+  );
+
+  await accessMessage.react("👍");
+
+  const filter = (reaction: MessageReaction, user: User) =>
+    user.id === owner.id && reaction.emoji.name === "👍";
+  const vote = (
+    await accessMessage.awaitReactions(filter, {
+      max: 1,
+      time: 60000,
+    })
+  ).first();
+
+  accessMessage.delete();
+
+  if (!vote) {
+    message.reply(
+      `<@${message.author.id}>, sorry but ${member.displayName} didn't respond.`
+    );
+    return;
+  }
+
+  // Blatant hack to abuse existing API
+  message.author = owner;
+  updateLimit(message, getUpLimit);
+};
+
+const updateLimit = async (
+  message: Message,
+  getLimit: (channel: VoiceChannel) => Promise<number> | number
+) => {
   const { member } = message;
   const memberVoiceChannel = await getVoiceChannel(member);
 
@@ -182,6 +288,8 @@ const limitOnDemand = async (message: Message, limit: number) => {
     );
     return;
   }
+
+  const limit = await getLimit(memberVoiceChannel);
 
   memberVoiceChannel.edit({
     userLimit: limit,
@@ -222,6 +330,14 @@ const changeHostOnDemand = async (message: Message) => {
 
   if (!mentionedUserInVoiceChannel) {
     Tools.handleUserError(message, "That user is not in your voice channel");
+    return;
+  }
+
+  if (!hasRole(member, "Yes Theory")) {
+    Tools.handleUserError(
+      message,
+      "That user doesn't have the Yes Theory role required to control the room. Pick someone else or get a Support to give them the Yes Theory role."
+    );
     return;
   }
 
@@ -391,7 +507,7 @@ const requestOwnershipTransfer = async (
   // Commented for now to make sure people just miss this and it's actually sent :)
   // await transferMessage.delete();
 
-  if (!claim) {
+  if (!claim && getMemberIds().length > 1) {
     await botCommands.send(
       getPingAll() +
         "None of you claimed ownership of the room so I shall assign someone randomly!"

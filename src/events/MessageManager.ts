@@ -20,10 +20,12 @@ import {
   SendFromDB,
   Someone,
   StateRoleFinder,
+  TemplateMode,
   Ticket,
   TopicManager,
   VoiceOnDemand,
   WhereAreYouFromManager,
+  MapTools,
 } from "../programs";
 import bot from "../index";
 import { MODERATOR_ROLE_NAME } from "../const";
@@ -36,10 +38,10 @@ import {
   randomReply,
   reactWithEmoji,
   sendLove,
+  abuseMe,
   SendMap,
 } from "../common/CustomMethods";
 import Tools from "../common/tools";
-import { separatorOnRoleRemove } from "../programs/Separators";
 import { saveToDb } from "../programs/SendFromDB";
 
 class MessageManager {
@@ -80,13 +82,8 @@ class MessageManager {
       );
     }
 
-    const words = this.message.content.split(/\s+/);
-    const firstWord = words[0];
-    const restOfMessage = words.slice(1).join(" ");
-    const channel = <TextChannel>this.message.channel;
-
-    const isFiltered = words.some((r) => filteredWords.indexOf(r) !== -1);
-    if (isFiltered) {
+    const lowerCaseMessage = this.message.content.toLowerCase();
+    if (filteredWords.some((word) => lowerCaseMessage.includes(word))) {
       this.message.delete();
       this.message.author
         .createDM()
@@ -95,13 +92,22 @@ class MessageManager {
             `Usage of the N word is absolutely banned within this server. Please refer to the <#450102410262609943>.`
           )
         );
+
+      return;
     }
+
+    const words = this.message.content.split(/\s+/);
+    const channel = <TextChannel>this.message.channel;
+    const firstWord = words[0];
+    const restOfMessage = words.slice(1).join(" ");
+
     switch (channel.name) {
       case "where-are-you-from":
       case "welcome-chat":
         if (firstWord === "!video") {
           this.message.reply("https://youtu.be/v-JOe-xqPN0");
         }
+        break;
       case "flag-drop":
         if (firstWord == "!usa") SendMap("usa", this.message);
         if (firstWord == "!canada") SendMap("canada", this.message);
@@ -116,6 +122,7 @@ class MessageManager {
       case "4th-chat":
         if (firstWord === "@someone") Someone(this.message);
         if (firstWord === "!deadchat") Deadchat(this.message);
+        if (firstWord === "!translate") abuseMe(this.message);
         break;
       case "daily-challenge":
         if (firstWord === "!topic") SendFromDB(this.message, channel.name);
@@ -128,11 +135,10 @@ class MessageManager {
         )
           GroupManager(this.message, true);
         if (firstWord === "!profile") ProfileManager(this.message);
-        break;
-      case "permanent-testing":
+        if (firstWord === "!templateMode") TemplateMode(this.message);
         if (firstWord === "!addChallenge")
           saveToDb("daily-challenge", restOfMessage, this.message);
-
+        break;
       case "bot-commands":
         if (
           firstWord === "!group" &&
@@ -146,6 +152,8 @@ class MessageManager {
         if (firstWord === "!video") {
           this.message.reply("https://youtu.be/v-JOe-xqPN0");
         }
+        if (firstWord === "!map") MapTools.map(this.message);
+        if (firstWord === "!mapadd") MapTools.mapAdd(this.message);
         break;
 
       case "polls":
@@ -206,13 +214,6 @@ class MessageManager {
       reactWithEmoji(this.message, "👀");
     }
 
-    if (
-      (this.message.content.toLowerCase().includes("oo") ||
-        this.message.content.toLowerCase().includes(":halloween2020:")) &&
-      Math.random() < 0.3
-    ) {
-      reactWithEmoji(this.message, "👻");
-    }
     if (this.message.content.toLowerCase().startsWith("!group toggle"))
       GroupManager(this.message, true);
 

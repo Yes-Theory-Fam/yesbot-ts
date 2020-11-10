@@ -1,6 +1,7 @@
 import * as BirthdayManagerTools from "./BirthdayManager";
 import * as BuddyProject from "./BuddyProject";
 import * as GroupManagerTools from "./GroupManager";
+import * as MapTools from "./Map";
 import * as NitroColors from "./NitroColors";
 import * as Separators from "./Separators";
 import * as Unassigned from "./Unassigned";
@@ -21,6 +22,7 @@ import Resource from "./ResourceManager";
 import SendFromDB from './SendFromDB';
 import Someone from "./Someone";
 import StateRoleFinder from "./StateRoleFinder";
+import TemplateMode from "./TemplateMode";
 import Ticket from "./Ticket";
 import TopicManager from "./TopicManager";
 import VoiceOnDemand from "./VoiceOnDemand";
@@ -39,6 +41,7 @@ export {
   GroupManager,
   GroupManagerTools,
   InitialiseTestEnvironment,
+  MapTools,
   NitroColors,
   PollsManager,
   ProfileManager,
@@ -48,6 +51,7 @@ export {
   Separators,
   Someone,
   StateRoleFinder,
+  TemplateMode,
   Ticket,
   TopicManager,
   Unassigned,
