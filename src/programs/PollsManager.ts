@@ -43,6 +43,7 @@ export default async function PollsManager(pMessage: Message) {
       "Error adding poll reaction: " + err.message
     );
   }
+  return;
 }
 
 export const ModeratorPollMirror = async (
