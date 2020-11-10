@@ -44,7 +44,7 @@ export const initDailyChallenge = async (discordClient: Client) => {
   let firstRun = new Date();
   firstRun.setUTCHours(8, 0, 0, 0);
   if (now.getUTCHours() >= 8) {
-    // schedule for the next day
+    // schedule for the next day - 8AM
     firstRun.setUTCDate(firstRun.getUTCDate() + 1);
   }
   let timeDiff = firstRun.getTime() - Date.now();
