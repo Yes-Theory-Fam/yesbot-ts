@@ -5,11 +5,44 @@ import {
   User,
   PartialUser,
 } from "discord.js";
+import { Logger } from "../common/Logger";
 import { hasRole } from "../common/moderator";
 
 export default async function PollsManager(pMessage: Message) {
-  await pMessage.react("🇦");
-  await pMessage.react("🅱️");
+  try {
+    await pMessage.react("🇦");
+    await pMessage.react("🅱️");
+    if (pMessage.cleanContent.toLowerCase().includes("🇨")) {
+      await pMessage.react("🇨");
+    }
+    if (pMessage.content.toLowerCase().includes("🇩")) {
+      await pMessage.react("🇩");
+    }
+    if (pMessage.content.toLowerCase().includes("🇪")) {
+      await pMessage.react("🇪");
+    }
+    if (pMessage.content.toLowerCase().includes("🇫")) {
+      await pMessage.react("🇫");
+    }
+    if (pMessage.content.toLowerCase().includes("🇬")) {
+      await pMessage.react("🇬");
+    }
+    if (pMessage.content.toLowerCase().includes("🇭")) {
+      await pMessage.react("🇭");
+    }
+    if (pMessage.content.toLowerCase().includes("🇮")) {
+      await pMessage.react("🇮");
+    }
+    if (pMessage.content.toLowerCase().includes("🇯")) {
+      await pMessage.react("🇯");
+    }
+  } catch (err) {
+    Logger(
+      "PollsManager",
+      "Default",
+      "Error adding poll reaction: " + err.message
+    );
+  }
 }
 
 export const ModeratorPollMirror = async (
