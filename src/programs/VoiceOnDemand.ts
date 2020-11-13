@@ -269,6 +269,8 @@ const knockOnDemand = async (message: Message) => {
     return;
   }
 
+  message.reply("you were let in!");
+
   // Blatant hack to abuse existing API
   message.author = owner;
   updateLimit(message, getUpLimit);
