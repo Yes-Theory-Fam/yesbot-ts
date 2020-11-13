@@ -1,9 +1,13 @@
+import * as BirthdayManagerTools from "./BirthdayManager";
 import * as BuddyProject from "./BuddyProject";
 import * as GroupManagerTools from "./GroupManager";
+import * as MapTools from "./Map";
+import * as NitroColors from "./NitroColors";
 import * as Separators from "./Separators";
+import * as Unassigned from "./Unassigned";
+import * as VoiceOnDemandTools from "./VoiceOnDemand";
 import AdventureGame from "./AdventureGame";
 import BirthdayManager from "./BirthdayManager";
-import * as BirthdayManagerTools from "./BirthdayManager";
 import BuddyProjectGhost from "./BuddyProjectGhost";
 import BuddyProjectManager from "./BuddyProjectManager";
 import Deadchat from "./Deadchat";
@@ -11,20 +15,17 @@ import EasterEvent from "./EasterEvent";
 import ExportManager from "./ExportManager";
 import GroupManager from "./GroupManager";
 import InitialiseTestEnvironment from "./InitialiseTestEnvironment";
-import * as MapTools from "./Map";
-import * as NitroColors from "./NitroColors";
 import PollsManager from "./PollsManager";
 import ProfileManager from "./ProfileManager";
 import ReactRole from "./ReactRole";
 import Resource from "./ResourceManager";
+import SendFromDB from './SendFromDB';
 import Someone from "./Someone";
 import StateRoleFinder from "./StateRoleFinder";
 import TemplateMode from "./TemplateMode";
 import Ticket from "./Ticket";
 import TopicManager from "./TopicManager";
-import * as Unassigned from "./Unassigned";
 import VoiceOnDemand from "./VoiceOnDemand";
-import * as VoiceOnDemandTools from "./VoiceOnDemand";
 import WhereAreYouFromManager from "./WhereAreYouFromManager";
 
 export {
@@ -46,6 +47,7 @@ export {
   ProfileManager,
   ReactRole,
   Resource,
+  SendFromDB,
   Separators,
   Someone,
   StateRoleFinder,

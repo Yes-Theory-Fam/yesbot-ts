@@ -14,17 +14,21 @@ let nitroRolesCache: Collection<Snowflake, Role>;
 let colorSelectionMessage: Message;
 
 export const cacheNitroColors = async (guildId: Snowflake) => {
-  const pickYourColorChannel = bot.guilds
-    .resolve(guildId)
-    .channels.cache.find(
-      (channel) => channel.name === "pick-your-color"
-    ) as TextChannel;
+  try {
+    const pickYourColorChannel = bot.guilds
+      .resolve(guildId)
+      .channels.cache.find(
+        (channel) => channel.name === "pick-your-color"
+      ) as TextChannel;
 
-  colorSelectionMessage = await pickYourColorChannel.messages
-    .fetch({ limit: 10 })
-    .then((messages) => messages.array().reverse()[0]);
+    colorSelectionMessage = await pickYourColorChannel.messages
+      .fetch({ limit: 10 })
+      .then((messages) => messages.array().reverse()[0]);
 
-  nitroRolesCache = colorSelectionMessage.mentions.roles;
+    nitroRolesCache = colorSelectionMessage.mentions.roles;
+  } catch (err) {
+    console.log("Cache Nitro Colors Error: ", err.message);
+  }
 };
 
 export const removeColorIfNotAllowed = async (
