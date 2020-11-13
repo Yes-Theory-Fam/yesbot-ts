@@ -121,6 +121,11 @@ class MessageManager {
         if (firstWord === "!translate") abuseMe(this.message);
         break;
 
+      case "trends":
+        if (firstWord === "!trend") TopicManager(this.message);
+        if (firstWord === "!trendSet") TopicManager(this.message, true);
+        break;
+
       case "permanent-testing":
         if (firstWord === "!export") ExportManager(this.message);
         if (
