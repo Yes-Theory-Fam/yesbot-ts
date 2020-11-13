@@ -52,7 +52,8 @@ export default async function TopicManager(
           .select("topic")
           .where('trend.channel = "trends"')
           .orderBy("trend.id", "DESC")
-          .limit(1);
+          .limit(1)
+          .execute();
         if (currentTrend) {
           message.reply(`Current Trend: ${currentTrend}`);
         } else {
