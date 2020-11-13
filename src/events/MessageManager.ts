@@ -13,11 +13,11 @@ import {
   Deadchat,
   ExportManager,
   GroupManager,
+  MapTools,
   PollsManager,
   ProfileManager,
   ReactRole,
   Resource,
-  SendFromDB,
   Someone,
   StateRoleFinder,
   TemplateMode,
@@ -25,24 +25,23 @@ import {
   TopicManager,
   VoiceOnDemand,
   WhereAreYouFromManager,
-  MapTools,
 } from "../programs";
 import bot from "../index";
 import { MODERATOR_ROLE_NAME } from "../const";
 import state from "../common/state";
 import { hasRole, textLog, getMember } from "../common/moderator";
 import {
+  abuseMe,
   addVote,
   deleteMessages,
   proposeNameChange,
   randomReply,
   reactWithEmoji,
   sendLove,
-  abuseMe,
   SendMap,
 } from "../common/CustomMethods";
 import Tools from "../common/tools";
-import { saveToDb } from "../programs/SendFromDB";
+import SendFromDB, { postDailyMessage, saveToDb } from "../programs/SendFromDB";
 
 class MessageManager {
   message: Message;
@@ -138,6 +137,8 @@ class MessageManager {
         if (firstWord === "!templateMode") TemplateMode(this.message);
         if (firstWord === "!addChallenge")
           saveToDb("daily-challenge", restOfMessage, this.message);
+        if (firstWord === "!todayChallenge")
+          postDailyMessage(this.bot, this.message);
         break;
       case "bot-commands":
         if (

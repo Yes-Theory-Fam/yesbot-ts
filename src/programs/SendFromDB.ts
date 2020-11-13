@@ -27,36 +27,37 @@ export default async function SendFromDB(
   }
 }
 
-export const postDailyMessage = async (bot: Client) => {
-  const messageChannel = <TextChannel>(
-    bot.channels.resolve("474197374684758025")
-  );
+export const postDailyMessage = async (bot: Client, message?: Message) => {
+  let messageChannel = <TextChannel>bot.channels.resolve("474197374684758025");
   const repo = await DailyChallengeRepository();
-  if (messageChannel) {
-    const res = await repo
-      .createQueryBuilder()
-      .select()
-      .andWhere("random() < 0.5 OR id = 1")
-      .orderBy("last_used", "ASC")
-      .limit(1)
-      .getOne();
-    if (res) {
-      const embed = new Discord.MessageEmbed()
-        .setColor("BLUE")
-        .setTitle("YesFam Daily Challenge!")
-        .setDescription(res.result);
+  const res = await repo
+    .createQueryBuilder()
+    .select()
+    .andWhere("random() < 0.5 OR id = 1")
+    .orderBy("last_used", "ASC")
+    .limit(1)
+    .getOne();
+  if (res) {
+    const embed = new Discord.MessageEmbed()
+      .setColor("BLUE")
+      .setTitle("YesFam Daily Challenge!")
+      .setDescription(res.result);
 
-      res.lastUsed = new Date();
-      try {
-        await repo.save(res);
-      } catch (err) {
-        Logger(
-          "SendFromDB",
-          "postDailyMessage",
-          "There was an error posting Daily Challenge: " + err
-        );
-      }
+    res.lastUsed = new Date();
+    try {
+      await repo.save(res);
+    } catch (err) {
+      Logger(
+        "SendFromDB",
+        "postDailyMessage",
+        "There was an error posting Daily Challenge: " + err
+      );
+    }
+    if (messageChannel) {
       messageChannel.send(embed);
+    }
+    if (message) {
+      message.reply(embed);
     }
   }
 };
