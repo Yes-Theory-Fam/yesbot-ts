@@ -9,7 +9,7 @@ export class DailyChallenge {
   result: string;
 
   @Column({
-    default: new Date(),
+    default: new Date(1970, 0, 1),
     name: "last_used",
   })
   lastUsed: Date;

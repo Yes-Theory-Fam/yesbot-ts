@@ -4,6 +4,8 @@ import { Repository } from "typeorm";
 import { Logger } from "../common/Logger";
 import { DailyChallenge, DailyChallengeRepository } from "../entities";
 
+export const dailyChallengeChannelId = "474197374684758025";
+
 export default async function SendFromDB(
   pMessage: Message,
   channelName: string
@@ -14,12 +16,26 @@ export default async function SendFromDB(
   }
 
   if (repo) {
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
+    const yesterday = new Date();
+    yesterday.setUTCHours(0, 0, 0, 0);
+    yesterday.setDate(today.getDate() - 1);
+
     const res = await repo
-      .createQueryBuilder("topic")
-      .where("topic.last_used = :currentDate", { currentDate: new Date() })
+      .createQueryBuilder()
+      .select()
+      .where("last_used = :today", {
+        today: today.toISOString(),
+      })
+      .orWhere("last_used = :yesterday", {
+        yesterday: yesterday.toISOString(),
+      })
       .getOne();
 
-    pMessage.channel.send(res.result);
+    pMessage.channel.send(
+      res?.result ?? "We don't have a challenge for today, come back tomorrow!"
+    );
   } else {
     pMessage.reply(
       `We're sorry, Yesbot had a hiccup. Here's a cookie instead: 🍪`
@@ -27,8 +43,14 @@ export default async function SendFromDB(
   }
 }
 
-export const postDailyMessage = async (bot: Client, message?: Message) => {
-  let messageChannel = <TextChannel>bot.channels.resolve("474197374684758025");
+export const postDailyMessage = async (
+  bot: Client,
+  message?: Message,
+  withPing: boolean = false
+) => {
+  let messageChannel = <TextChannel>(
+    bot.channels.resolve(dailyChallengeChannelId)
+  );
   const repo = await DailyChallengeRepository();
   const res = await repo
     .createQueryBuilder()
@@ -43,7 +65,10 @@ export const postDailyMessage = async (bot: Client, message?: Message) => {
       .setTitle("YesFam Daily Challenge!")
       .setDescription(res.result);
 
-    res.lastUsed = new Date();
+    const used = new Date();
+    used.setUTCHours(0, 0, 0, 0);
+    res.lastUsed = used;
+
     try {
       await repo.save(res);
     } catch (err) {
@@ -53,11 +78,13 @@ export const postDailyMessage = async (bot: Client, message?: Message) => {
         "There was an error posting Daily Challenge: " + err
       );
     }
-    if (messageChannel) {
-      messageChannel.send(embed);
-    }
     if (message) {
       message.reply(embed);
+    } else if (messageChannel) {
+      if (withPing) {
+        messageChannel.send("@group dailychallenge");
+      }
+      messageChannel.send(embed);
     }
   }
 };
@@ -76,12 +103,12 @@ export const saveToDb = async (
     if (attachment) {
       try {
         const file = await Axios.get(attachment.url);
-        const bulkChallenges: [] = file.data.split(",");
+        const bulkChallenges: [] = file.data.split("\n");
         bulkChallenges.forEach(async (challenge: string, idx: number) => {
           let res = new DailyChallenge();
           res.result = challenge.trim();
           await save(repo, res, pMessage);
-          if (idx === bulkChallenges.length) {
+          if (idx === bulkChallenges.length - 1) {
             pMessage.react("👍");
           }
         });

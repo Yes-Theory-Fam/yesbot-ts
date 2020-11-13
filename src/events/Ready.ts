@@ -51,13 +51,13 @@ export const initDailyChallenge = async (discordClient: Client) => {
 
   setTimeout(
     (discordClient: Client) => {
-      postDailyMessage(discordClient);
+      postDailyMessage(discordClient, undefined, true);
       // Set an interval for each next day
       setInterval(
         (discordClient) => {
-          postDailyMessage(discordClient);
+          postDailyMessage(discordClient, undefined, true);
         },
-        86400000, //24h
+        48 * 60 * 60 * 1000, // 48h
         discordClient
       );
     },

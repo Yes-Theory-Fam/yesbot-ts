@@ -124,7 +124,7 @@ class MessageManager {
         if (firstWord === "!translate") abuseMe(this.message);
         break;
       case "daily-challenge":
-        if (firstWord === "!topic") SendFromDB(this.message, channel.name);
+        if (firstWord === "!challenge") SendFromDB(this.message, channel.name);
         break;
       case "permanent-testing":
         if (firstWord === "!export") ExportManager(this.message);
