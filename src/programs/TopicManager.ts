@@ -49,13 +49,13 @@ export default async function TopicManager(
       if (!addition) {
         const currentTrend = await topicRepo
           .createQueryBuilder("trend")
-          .select("topic")
+          .select()
           .where('trend.channel = "trends"')
           .orderBy("trend.id", "DESC")
           .limit(1)
-          .execute();
+          .getOne();
         if (currentTrend) {
-          message.reply(`Current Trend: ${currentTrend}`);
+          message.reply(`Current Trend: ${currentTrend.topic}`);
         } else {
           message.reply("There are no current trends, create one!");
         }
