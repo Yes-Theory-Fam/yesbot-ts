@@ -50,7 +50,7 @@ export default async function TopicManager(
         const currentTrend = await topicRepo
           .createQueryBuilder("trend")
           .select()
-          .where('trend.channel = "trends"')
+          .where("trend.channel = :channel", { channel: "trends" })
           .orderBy("trend.id", "DESC")
           .limit(1)
           .getOne();
