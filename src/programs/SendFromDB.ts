@@ -16,20 +16,14 @@ export default async function SendFromDB(
   }
 
   if (repo) {
-    const today = new Date();
-    today.setUTCHours(0, 0, 0, 0);
-    const yesterday = new Date();
-    yesterday.setUTCHours(0, 0, 0, 0);
-    yesterday.setDate(today.getDate() - 1);
+    const compare = new Date();
+    compare.setUTCHours(compare.getUTCHours() - 48 - 8);
 
     const res = await repo
       .createQueryBuilder()
       .select()
-      .where("last_used = :today", {
-        today: today.toISOString(),
-      })
-      .orWhere("last_used = :yesterday", {
-        yesterday: yesterday.toISOString(),
+      .where("last_used > :today", {
+        today: compare.toISOString(),
       })
       .getOne();
 
