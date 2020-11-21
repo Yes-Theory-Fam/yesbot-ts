@@ -1,6 +1,11 @@
 import { Client, TextChannel } from "discord.js";
 import { GUILD_ID, OUTPUT_CHANNEL_ID } from "../const";
-import { VoiceOnDemandTools, NitroColors, DailyChallenge } from "../programs";
+import {
+  DailyChallenge,
+  Game,
+  NitroColors,
+  VoiceOnDemandTools,
+} from "../programs";
 
 class Ready {
   bot: Client;
@@ -24,6 +29,7 @@ class Ready {
       await NitroColors.cacheNitroColors(GUILD_ID);
       await VoiceOnDemandTools.voiceOnDemandReady(bot);
       await DailyChallenge.initialize(this.bot);
+      Game.initGameHub(guild);
       const readyMessage = await outputChannel?.send(
         readyMessageString("Fetching members.")
       );

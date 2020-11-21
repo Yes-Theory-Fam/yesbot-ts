@@ -138,7 +138,7 @@ const assignRole = async (userId: Snowflake) => {
       response.on("data", (datum) => (data += datum));
 
       response.on("end", () => {
-        if (response.statusCode === 204) res();
+        if (response.statusCode === 204) res(undefined);
         else rej({ statusCode: response.statusCode, error: data });
       });
     });

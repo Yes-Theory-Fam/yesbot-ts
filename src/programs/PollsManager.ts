@@ -8,12 +8,10 @@ import {
   User,
 } from "discord.js";
 import { hasRole } from "../common/moderator";
+import { unicodeEmojiRegex } from "../common/tools";
 
 // Resolves emojis (unicode and discord) at the start of a line
 const getEmojis = (lines: string[], bot: Client): string[] => {
-  // From http://www.unicode.org/reports/tr51/tr51-18.html#EBNF_and_Regex
-  const unicodeEmojiRegex = /^(\p{RI}\p{RI}|\p{Emoji}(\p{Emoji_Modifier_Base}|\uFE0F\u20E3?|[\u{E0020}-\u{E007E}]+\u{E007F})?(\u{200D}\p{Emoji}(\p{Emoji_Modifier_Base}|\uFE0F\u20E3?|[\u{E0020}-\u{E007E}]+\u{E007F})?)*)/gu;
-
   const isAvailableDiscordEmoji = (id: string) => bot.emojis.cache.has(id);
   const discordEmojiRegex = /^<:.*?:(.*?)>/;
 

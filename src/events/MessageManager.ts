@@ -6,6 +6,7 @@ import {
   MessageReaction,
   TextChannel,
   User,
+  GuildChannel,
 } from "discord.js";
 import {
   BirthdayManager,
@@ -25,6 +26,8 @@ import {
   Valentine,
   VoiceOnDemand,
   WhereAreYouFromManager,
+  Game,
+  DMMenu,
 } from "../programs";
 import bot from "../index";
 import { MODERATOR_ROLE_NAME } from "../const";
@@ -44,6 +47,7 @@ import {
   postDailyMessage,
   saveToDb,
 } from "../programs/DailyChallenge";
+import { GameHub } from "../games";
 
 class MessageManager {
   message: Message;
@@ -175,6 +179,10 @@ class MessageManager {
         this.message.react("👍").then(() => this.message.react("👎"));
         break;
 
+      case "bot-games":
+        if (firstWord === "!game") Game.showGameEmbed(this.message);
+        break;
+
       case "buddy-project-output":
         if (firstWord === "!match") BuddyProjectManager(this.message, "match");
         if (firstWord === "!check") BuddyProjectManager(this.message, "check");
@@ -190,6 +198,15 @@ class MessageManager {
       case "buddy-project-chat":
         if (firstWord === "!buddy") BuddyProjectManager(this.message, "buddy");
     }
+
+    const parentChannel = (this.message.channel as GuildChannel).parent;
+    if (
+      parentChannel &&
+      parentChannel.name.toLowerCase().endsWith("bot games")
+    ) {
+      Game.handleGameInput(this.message);
+    }
+
     if (firstWord === "!goodbye") {
       const guildRole = this.message.guild.roles.cache.find(
         (r) => r.name.toLowerCase() === "head"
@@ -243,53 +260,17 @@ class MessageManager {
     }
 
     if (state.ignoredGroupDMs.includes(dmChannel.id)) return;
-    const removeIgnore = () => {
-      const index = state.ignoredGroupDMs.indexOf(dmChannel.id);
-      if (index > -1) {
-        state.ignoredGroupDMs.splice(index, 1);
-      }
-    };
 
-    const nameChangeMessage = await this.message.reply(
-      "Hey, I'm just a bot! Most of what I can do, I do on the YesFam discord, so talk to me there instead! I can help you change your name, though, if you're new around here. Click the :baby: if you want to change your name!"
-    );
-    await nameChangeMessage.react("👶");
-    const filter: CollectorFilter = (reaction: MessageReaction, user: User) =>
-      reaction.emoji.name === "👶" && !user.bot;
-    try {
-      const reactions = await nameChangeMessage.awaitReactions(filter, {
-        time: 60000,
-        max: 1,
-      });
-      if (reactions.size === 0) throw "No reactions";
-
-      const requestMessage = await dmChannel.send(
-        "Okay, what's your name then? Please only respond with your name like Henry or Julie, that makes things easier for the Supports! :upside_down:"
-      );
-      state.ignoredGroupDMs.push(dmChannel.id);
-      const nameMessage = await dmChannel.awaitMessages(
-        (_, user: User) => !user.bot,
-        { time: 60000, max: 1 }
-      );
-      removeIgnore();
-
-      if (nameMessage.size === 0) {
-        requestMessage.delete();
-        throw "No response";
-      }
-
-      const requestedName = nameMessage.first().content;
-      proposeNameChange(requestedName, this.message);
-      await requestMessage.delete();
-    } catch (err) {
-      removeIgnore();
-      // Time's up; nothing to do here, really
-      dmChannel.send(
-        "Because of technical reasons I can only wait 60 seconds for a reaction. I removed the other message to not confuse you. If you need anything from me, just drop me a message!"
-      );
+    const command = this.message.content.split(" ")[0];
+    switch (command) {
+      case "!menu":
+        DMMenu.showMenu(this.message);
+        break;
+      // When nothing else makes sense we just guess that they are playing a game.
+      // handleGameInput will drop the message if it doesn't understand either.
+      default:
+        Game.handleGameInput(this.message);
     }
-
-    await nameChangeMessage.delete();
   }
 }
 export default MessageManager;
