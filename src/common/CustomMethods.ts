@@ -1,4 +1,4 @@
-import { Message, User, DMChannel } from "discord.js";
+import { Message, User, DMChannel, GuildChannel } from "discord.js";
 import { Logger } from "./Logger";
 import { textLog, getMember } from "./moderator";
 import Tools from "./tools";
@@ -135,6 +135,11 @@ export const deleteMessages = async (botMessage: Message) => {
 };
 
 export const addVote = async (botMessage: Message) => {
+  const channel = botMessage.channel as GuildChannel;
+  if (channel.parent?.name.toLowerCase().endsWith("bot games")) {
+    return;
+  }
+
   try {
     const words = Tools.stringToWords(botMessage.content);
     words.shift();

@@ -1,6 +1,8 @@
 import * as BirthdayManagerTools from "./BirthdayManager";
 import * as BuddyProject from "./BuddyProject";
 import * as DailyChallenge from "./DailyChallenge";
+import * as DMMenu from "./DMMenu";
+import * as Game from "./Game";
 import * as GroupManagerTools from "./GroupManager";
 import * as MapTools from "./Map";
 import * as NitroColors from "./NitroColors";
@@ -35,8 +37,10 @@ export {
   BuddyProjectGhost,
   BuddyProjectManager,
   Deadchat,
+  DMMenu,
   EasterEvent,
   ExportManager,
+  Game,
   GroupManager,
   GroupManagerTools,
   MapTools,

@@ -138,10 +138,11 @@ const createOnDemand = async (message: Message, userLimit: number) => {
 
   let reaction;
   try {
-    reaction = await pickOneMessage(
+    reaction = await Tools.createVoteMessage(
       message,
       "Which emote would you like to have for your channel?",
-      emojiPool
+      emojiPool,
+      true
     );
   } catch {
     return;
@@ -547,45 +548,4 @@ const transferOwnership = async (
   );
 
   await channel.setName(newChannelName);
-};
-
-const pickOneMessage = async (
-  toReplyMessage: Message,
-  callToActionMessage: string,
-  pickOptions: string[]
-): Promise<MessageReaction> => {
-  const reactMessage = await toReplyMessage.reply(callToActionMessage);
-
-  const filter = (reaction: MessageReaction, user: User) =>
-    pickOptions.includes(reaction.emoji.name) &&
-    user.id === toReplyMessage.author.id;
-
-  const addReactions = async () => {
-    try {
-      for (let emoji of pickOptions) {
-        await reactMessage.react(emoji);
-      }
-    } catch {
-      // Skip - Comes up when a reaction is tried to be added to a message that was deleted because the user already selected
-    }
-  };
-
-  addReactions(); // No await because we don't want to wait
-
-  try {
-    const selection = await reactMessage.awaitReactions(filter, {
-      max: 1,
-      time: 60000,
-      errors: ["time"],
-    });
-    await reactMessage.delete();
-    return selection.first();
-  } catch {
-    await reactMessage.delete();
-    Tools.handleUserError(
-      toReplyMessage,
-      "For technical reasons I can only wait 60 seconds for your selection."
-    );
-    throw "Awaiting reactions timed out";
-  }
 };
