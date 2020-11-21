@@ -263,9 +263,7 @@ const knockOnDemand = async (message: Message) => {
   accessMessage.delete();
 
   if (!vote) {
-    message.reply(
-      `<@${message.author.id}>, sorry but ${member.displayName} didn't respond.`
-    );
+    message.reply(`sorry but ${member.displayName} didn't respond.`);
     return;
   }
 
