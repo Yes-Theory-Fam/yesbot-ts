@@ -506,10 +506,13 @@ const requestOwnershipTransfer = async (
     })
   ).first();
 
-  // Commented for now to make sure people just miss this and it's actually sent :)
-  // await transferMessage.delete();
+  await transferMessage.delete();
 
-  if (!claim && getMemberIds().length > 1) {
+  if (getMemberIds().length < 1) {
+    return;
+  }
+
+  if (!claim) {
     await botCommands.send(
       getPingAll() +
         "None of you claimed ownership of the room so I shall assign someone randomly!"
