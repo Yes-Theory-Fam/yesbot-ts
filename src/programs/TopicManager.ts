@@ -3,6 +3,7 @@ import axios from "axios";
 import { TopicRepo } from "../entities/Topic";
 import { Logger } from "../common/Logger";
 import { isAuthorModerator } from "../common/moderator";
+import { createTextSpanFromBounds } from "typescript";
 
 const QUESTION_LINK: string =
   "https://spreadsheets.google.com/feeds/cells/1xUIqCaSrjyQzJeJfnXR0Hix6mDkaFhVauFmJb8Pzkj0/1/public/full?alt=json";
@@ -60,17 +61,22 @@ export default async function TopicManager(message: Message) {
 }
 
 export const setTopic = async (message: Message) => {
+  const channel: TextChannel = <TextChannel>message.channel;
+
   const topicRepo = await TopicRepo();
   if (!isAuthorModerator(message)) {
     message.react("👎");
     return;
   }
   const cleanMessage = message.cleanContent.split(/\s+/);
+  const attachment =
+    message.attachments.size > 0 ? message.attachments.array()[0].url : "";
   cleanMessage.shift();
+  cleanMessage.push(attachment);
   const joinedMsg = cleanMessage.join(" ");
   const newTopic = topicRepo.create({
     topic: joinedMsg,
-    channel: "trends",
+    channel: channel.name,
     created: new Date(),
   });
 
@@ -81,7 +87,7 @@ export const setTopic = async (message: Message) => {
   } catch (e) {
     Logger(
       "TopicManager",
-      "default",
+      "setTopic",
       `There was an error inserting a topic into the Topicrepo: ${e.message}.`
     );
   }
