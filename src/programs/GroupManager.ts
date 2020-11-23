@@ -25,6 +25,7 @@ import {
 } from "../common/interfaces";
 import { ILike } from "../lib/typeormILIKE";
 import { Repository } from "typeorm";
+import { dailyChallengeChannelId } from "./SendFromDB";
 
 type GroupInteractionInformation =
   | GroupInteractionSuccess
@@ -662,6 +663,7 @@ const isChannelAllowed = (channel: Channel): boolean => {
     "450187015221280769", // voice-chat
     "747198251349966977", // voice-chat-2
     "747189756302983199", // 4th-chat
+    dailyChallengeChannelId,
   ];
 
   if (

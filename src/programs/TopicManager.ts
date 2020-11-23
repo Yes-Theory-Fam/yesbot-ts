@@ -1,9 +1,6 @@
 import { Message, TextChannel, MessageAttachment } from "discord.js";
 import axios from "axios";
-import {
-  TopicManagerRepo,
-  TopicManagerEntity,
-} from "../entities/TopicManager.entity";
+import { TopicRepo } from "../entities/Topic";
 import { Logger } from "../common/Logger";
 import { isAuthorModerator } from "../common/moderator";
 
@@ -14,10 +11,7 @@ const MAKEUP_CHALLENGE_PICTURE_URL =
 const INKTOBER_IMAGE_URL =
   "https://media.discordapp.net/attachments/689589403189772291/761243856946987078/2020promptlist.png";
 
-export default async function TopicManager(
-  message: Message,
-  addition?: boolean
-) {
+export default async function TopicManager(message: Message) {
   const channel: TextChannel = <TextChannel>message.channel;
 
   switch (channel.name) {
@@ -45,51 +39,18 @@ export default async function TopicManager(
       break;
 
     case "trends":
-      const topicRepo = await TopicManagerRepo();
-      if (!addition) {
-        const currentTrend = await topicRepo
-          .createQueryBuilder("trend")
-          .select()
-          .where("trend.channel = :channel", { channel: "trends" })
-          .orderBy("trend.id", "DESC")
-          .limit(1)
-          .getOne();
-        if (currentTrend) {
-          message.reply(`Current Trend: ${currentTrend.topic}`);
-        } else {
-          message.reply("There are no current trends, create one!");
-        }
+      const topicRepo = await TopicRepo();
+      const currentTrend = await topicRepo
+        .createQueryBuilder("topic")
+        .select()
+        .where("topic.channel = :channel", { channel: "trends" })
+        .orderBy("topic.id", "DESC")
+        .limit(1)
+        .getOne();
+      if (currentTrend) {
+        message.reply(`Current Trend is ${currentTrend.topic}`);
       } else {
-        if (!isAuthorModerator(message)) {
-          message.react("👎");
-          return;
-        }
-        const cleanMessage = message.cleanContent.split(/\s+/);
-        cleanMessage.shift();
-        const joinedMsg = cleanMessage.join(" ");
-        const newTopic = topicRepo.create({
-          topic: joinedMsg,
-          channel: "trends",
-          lastUsed: new Date(),
-        });
-
-        try {
-          await topicRepo
-            .createQueryBuilder()
-            .insert()
-            .into(TopicManagerEntity)
-            .values([newTopic])
-            .execute()
-            .then(() => {
-              message.react("👍");
-            });
-        } catch (e) {
-          Logger(
-            "TopicManager",
-            "default",
-            `There was an error inserting a topic into the Topicrepo: ${e.message}.`
-          );
-        }
+        message.reply("There are no current trends, create one! :eyes: ");
       }
       break;
 
@@ -97,3 +58,31 @@ export default async function TopicManager(
       break;
   }
 }
+
+export const setTopic = async (message: Message) => {
+  const topicRepo = await TopicRepo();
+  if (!isAuthorModerator(message)) {
+    message.react("👎");
+    return;
+  }
+  const cleanMessage = message.cleanContent.split(/\s+/);
+  cleanMessage.shift();
+  const joinedMsg = cleanMessage.join(" ");
+  const newTopic = topicRepo.create({
+    topic: joinedMsg,
+    channel: "trends",
+    created: new Date(),
+  });
+
+  try {
+    await topicRepo.save(newTopic).then(() => {
+      message.react("👍");
+    });
+  } catch (e) {
+    Logger(
+      "TopicManager",
+      "default",
+      `There was an error inserting a topic into the Topicrepo: ${e.message}.`
+    );
+  }
+};

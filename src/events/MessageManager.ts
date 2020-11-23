@@ -13,6 +13,7 @@ import {
   Deadchat,
   ExportManager,
   GroupManager,
+  MapTools,
   PollsManager,
   ProfileManager,
   ReactRole,
@@ -24,23 +25,23 @@ import {
   TopicManager,
   VoiceOnDemand,
   WhereAreYouFromManager,
-  MapTools,
 } from "../programs";
 import bot from "../index";
 import { MODERATOR_ROLE_NAME } from "../const";
 import state from "../common/state";
 import { hasRole, textLog, getMember } from "../common/moderator";
 import {
+  abuseMe,
   addVote,
   deleteMessages,
   proposeNameChange,
   randomReply,
   reactWithEmoji,
   sendLove,
-  abuseMe,
   SendMap,
 } from "../common/CustomMethods";
 import Tools from "../common/tools";
+import SendFromDB, { postDailyMessage, saveToDb } from "../programs/SendFromDB";
 
 class MessageManager {
   message: Message;
@@ -97,6 +98,7 @@ class MessageManager {
     const words = this.message.content.split(/\s+/);
     const channel = <TextChannel>this.message.channel;
     const firstWord = words[0];
+    const restOfMessage = words.slice(1).join(" ");
 
     switch (channel.name) {
       case "where-are-you-from":
@@ -104,6 +106,7 @@ class MessageManager {
         if (firstWord === "!video") {
           this.message.reply("https://youtu.be/v-JOe-xqPN0");
         }
+        break;
       case "flag-drop":
         if (firstWord == "!usa") SendMap("usa", this.message);
         if (firstWord == "!canada") SendMap("canada", this.message);
@@ -122,10 +125,13 @@ class MessageManager {
         break;
 
       case "trends":
-        if (firstWord === "!trend") TopicManager(this.message);
-        if (firstWord === "!trendSet") TopicManager(this.message, true);
+        if (firstWord === "!trend") TopicManager.default(this.message);
+        if (firstWord === "!trendSet") TopicManager.setTopic(this.message);
         break;
 
+      case "daily-challenge":
+        if (firstWord === "!challenge") SendFromDB(this.message, channel.name);
+        break;
       case "permanent-testing":
         if (firstWord === "!export") ExportManager(this.message);
         if (
@@ -135,8 +141,11 @@ class MessageManager {
           GroupManager(this.message, true);
         if (firstWord === "!profile") ProfileManager(this.message);
         if (firstWord === "!templateMode") TemplateMode(this.message);
+        if (firstWord === "!addChallenge")
+          saveToDb("daily-challenge", restOfMessage, this.message);
+        if (firstWord === "!todayChallenge")
+          postDailyMessage(this.bot, this.message);
         break;
-
       case "bot-commands":
         if (
           firstWord === "!group" &&
@@ -183,7 +192,7 @@ class MessageManager {
       );
       this.message.member.roles.remove(guildRole);
     }
-    if (firstWord === "!topic") TopicManager(this.message);
+    if (firstWord === "!topic") TopicManager.default(this.message);
     // if (firstWord === "!fiyesta") Ticket(this.message, "fiyesta");
     if (firstWord === "!resources") Resource(this.message);
     if (firstWord === "!shoutout") Ticket(this.message, "shoutout");
