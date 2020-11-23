@@ -1,5 +1,9 @@
 import { Message, TextChannel, MessageAttachment } from "discord.js";
 import axios from "axios";
+import { TopicRepo } from "../entities/Topic";
+import { Logger } from "../common/Logger";
+import { isAuthorModerator } from "../common/moderator";
+import { createTextSpanFromBounds } from "typescript";
 
 const QUESTION_LINK: string =
   "https://spreadsheets.google.com/feeds/cells/1xUIqCaSrjyQzJeJfnXR0Hix6mDkaFhVauFmJb8Pzkj0/1/public/full?alt=json";
@@ -35,7 +39,56 @@ export default async function TopicManager(message: Message) {
       message.channel.send(new MessageAttachment(INKTOBER_IMAGE_URL));
       break;
 
+    case "trends":
+      const topicRepo = await TopicRepo();
+      const currentTrend = await topicRepo
+        .createQueryBuilder("topic")
+        .select()
+        .where("topic.channel = :channel", { channel: "trends" })
+        .orderBy("topic.id", "DESC")
+        .limit(1)
+        .getOne();
+      if (currentTrend) {
+        message.reply(`Current Trend is ${currentTrend.topic}`);
+      } else {
+        message.reply("There are no current trends, create one! :eyes: ");
+      }
+      break;
+
     default:
       break;
   }
 }
+
+export const setTopic = async (message: Message) => {
+  const channel: TextChannel = <TextChannel>message.channel;
+
+  const topicRepo = await TopicRepo();
+  if (!isAuthorModerator(message)) {
+    message.react("👎");
+    return;
+  }
+  const cleanMessage = message.cleanContent.split(/\s+/);
+  const attachment =
+    message.attachments.size > 0 ? message.attachments.array()[0].url : "";
+  cleanMessage.shift();
+  cleanMessage.push(attachment);
+  const joinedMsg = cleanMessage.join(" ");
+  const newTopic = topicRepo.create({
+    topic: joinedMsg,
+    channel: channel.name,
+    created: new Date(),
+  });
+
+  try {
+    await topicRepo.save(newTopic).then(() => {
+      message.react("👍");
+    });
+  } catch (e) {
+    Logger(
+      "TopicManager",
+      "setTopic",
+      `There was an error inserting a topic into the Topicrepo: ${e.message}.`
+    );
+  }
+};

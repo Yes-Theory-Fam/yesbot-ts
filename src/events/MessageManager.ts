@@ -123,6 +123,12 @@ class MessageManager {
         if (firstWord === "!deadchat") Deadchat(this.message);
         if (firstWord === "!translate") abuseMe(this.message);
         break;
+
+      case "trends":
+        if (firstWord === "!trend") TopicManager.default(this.message);
+        if (firstWord === "!trendSet") TopicManager.setTopic(this.message);
+        break;
+
       case "daily-challenge":
         if (firstWord === "!challenge") SendFromDB(this.message, channel.name);
         break;
@@ -186,7 +192,7 @@ class MessageManager {
       );
       this.message.member.roles.remove(guildRole);
     }
-    if (firstWord === "!topic") TopicManager(this.message);
+    if (firstWord === "!topic") TopicManager.default(this.message);
     // if (firstWord === "!fiyesta") Ticket(this.message, "fiyesta");
     if (firstWord === "!resources") Resource(this.message);
     if (firstWord === "!shoutout") Ticket(this.message, "shoutout");
