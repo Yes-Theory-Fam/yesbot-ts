@@ -82,8 +82,8 @@ export default async function PollsManager(pMessage: Message) {
     return;
   }
 
-  const lines = pMessage.content.split("\n");
-  const resolvedEmojis = resolveEmojis(lines, pMessage.client);
+  const lines = pMessage.cleanContent.split("\n");
+  const resolvedEmojis = resolveEmojis(lines.map(removeSpecialCharactersFromBeginning), pMessage.client);
   const unique = resolvedEmojis.filter(
     (e, i) => resolvedEmojis.indexOf(e) === i
   );
@@ -98,6 +98,10 @@ export default async function PollsManager(pMessage: Message) {
       await message.react(emoji);
     }
   }
+}
+
+const removeSpecialCharactersFromBeginning = (content: string) => {
+  return content.replace(/^\p{P}*/u, '');
 }
 
 export const ModeratorPollMirror = async (
