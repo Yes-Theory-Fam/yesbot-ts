@@ -8,9 +8,11 @@ import { createTextSpanFromBounds } from "typescript";
 const QUESTION_LINK: string =
   "https://spreadsheets.google.com/feeds/cells/1xUIqCaSrjyQzJeJfnXR0Hix6mDkaFhVauFmJb8Pzkj0/1/public/full?alt=json";
 const MAKEUP_CHALLENGE_PICTURE_URL =
-  "https://cdn.discordapp.com/attachments/698545400075780147/712491981158481940/image0.png";
-const INKTOBER_IMAGE_URL =
-  "https://media.discordapp.net/attachments/689589403189772291/761243856946987078/2020promptlist.png";
+  "https://media.discordapp.net/attachments/747182765468024862/781575356083208242/2b41f33966eb91a117e8897d1bab2daf.jpg";
+const MOVIE_CHALLENGE_PICTURE_URL =
+  "https://cdn.discordapp.com/attachments/747182765468024862/781570321253793862/6eb01dc2c8218f6c8ab6181fd07abba0.png";
+const DRAWING_CHALLENGE_PICTURE_URL =
+  "https://cdn.discordapp.com/attachments/747182765468024862/781574814594760714/30-day-drawing-challenge.png";
 
 export default async function TopicManager(message: Message) {
   const channel: TextChannel = <TextChannel>message.channel;
@@ -31,12 +33,17 @@ export default async function TopicManager(message: Message) {
       break;
 
     case "beauty-and-fashion":
-      const image = new MessageAttachment(MAKEUP_CHALLENGE_PICTURE_URL);
-      message.channel.send(image);
+      message.channel.send(new MessageAttachment(MAKEUP_CHALLENGE_PICTURE_URL));
       break;
 
     case "visual-design":
-      message.channel.send(new MessageAttachment(INKTOBER_IMAGE_URL));
+      message.channel.send(
+        new MessageAttachment(DRAWING_CHALLENGE_PICTURE_URL)
+      );
+      break;
+
+    case "filmmaking":
+      message.channel.send(new MessageAttachment(MOVIE_CHALLENGE_PICTURE_URL));
       break;
 
     case "trends":
