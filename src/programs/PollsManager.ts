@@ -1,11 +1,11 @@
 import {
+  Client,
+  DMChannel,
+  EmojiResolvable,
   Message,
   MessageReaction,
-  DMChannel,
-  User,
   PartialUser,
-  EmojiResolvable,
-  Client,
+  User,
 } from "discord.js";
 import { hasRole } from "../common/moderator";
 
@@ -31,7 +31,10 @@ const getEmojis = (lines: string[], bot: Client): string[] => {
     }
   }
 
-  return result;
+  return result.filter((emoji) => {
+    const isNumber = /^\d$/.test(emoji);
+    return !isNumber;
+  });
 };
 
 const letterToEmoji = (letter: string) => {
@@ -56,7 +59,12 @@ const resolveEmojis = (lines: string[], bot: Client): EmojiResolvable[] => {
   const emojiEmojis = getEmojis(lines, bot);
 
   if (emojiEmojis && emojiEmojis.length > 0) {
-    return emojiEmojis;
+    return emojiEmojis.map((emoji) =>
+      emoji
+        .split("")
+        .filter((c) => c.charCodeAt(0) !== 65039)
+        .join("")
+    );
   }
 
   const letterEmojis = getLetterEmojis(lines);
@@ -83,7 +91,10 @@ export default async function PollsManager(pMessage: Message) {
   }
 
   const lines = pMessage.cleanContent.split("\n");
-  const resolvedEmojis = resolveEmojis(lines.map(removeSpecialCharactersFromBeginning), pMessage.client);
+  const resolvedEmojis = resolveEmojis(
+    lines.map(removeSpecialCharactersFromBeginning),
+    pMessage.client
+  );
   const unique = resolvedEmojis.filter(
     (e, i) => resolvedEmojis.indexOf(e) === i
   );
@@ -101,8 +112,8 @@ export default async function PollsManager(pMessage: Message) {
 }
 
 const removeSpecialCharactersFromBeginning = (content: string) => {
-  return content.replace(/^\p{P}*/u, '');
-}
+  return content.replace(/^\p{P}*/u, "");
+};
 
 export const ModeratorPollMirror = async (
   reaction: MessageReaction,
