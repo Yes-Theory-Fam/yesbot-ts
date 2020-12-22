@@ -19,6 +19,11 @@ export const mapAdd = async (message: Message) => {
     return;
   }
 
+  const prefix = "I'm from ";
+  const countries = message.member.roles.cache
+    .filter((r) => r.name.startsWith(prefix))
+    .map((r) => r.name.substring(prefix.length, r.name.length - 1));
+
   const maintainerDm = await message.guild.members
     .resolve(MAP_ADD_DM_USER_ID)
     .user.createDM();
@@ -28,6 +33,7 @@ export const mapAdd = async (message: Message) => {
   Current name on the server: ${author.displayName}
   Current Discord tag: ${author.user.tag}
   City/Location: ${city}
+  Countries: ${countries.join(", ")}
   Link to the message calling the command: ${message.url}`;
   await maintainerDm.send(infoString);
   message.reply(
