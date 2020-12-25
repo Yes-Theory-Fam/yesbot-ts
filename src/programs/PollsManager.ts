@@ -59,12 +59,7 @@ const resolveEmojis = (lines: string[], bot: Client): EmojiResolvable[] => {
   const emojiEmojis = getEmojis(lines, bot);
 
   if (emojiEmojis && emojiEmojis.length > 0) {
-    return emojiEmojis.map((emoji) =>
-      emoji
-        .split("")
-        .filter((c) => c.charCodeAt(0) !== 65039)
-        .join("")
-    );
+    return emojiEmojis;
   }
 
   const letterEmojis = getLetterEmojis(lines);
