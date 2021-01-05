@@ -13,7 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "countries-and-timezones": "^2.2.0",
     "country-code-emoji": "^1.0.0",
     "date-fns": "^2.15.0",
