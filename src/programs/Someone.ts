@@ -6,7 +6,7 @@ import { isAfter, addHours } from "date-fns";
 import { SomeoneRepository } from "../entities";
 
 const QUESTION_LINK: string =
-  "https://spreadsheets.google.com/feeds/cells/1J7DlkcWzhcm9CXiWCB-dQloCqIHjVpupyvMqBPlJ7Mk/1/public/full?alt=json";
+  "https://spreadsheets.google.com/feeds/cells/1eve4McRxECmH4dLWLJvHLr9fErBWcCGiH94ihBNzK_s/1/public/full?alt=json";
 
 async function Someone(message: Message) {
   const allow = await isAllowed(message.author);
