@@ -6,6 +6,7 @@ import * as NitroColors from "./NitroColors";
 import * as Separators from "./Separators";
 import * as TopicManager from "./TopicManager";
 import * as Unassigned from "./Unassigned";
+import * as Valentine from "./Valentine";
 import * as VoiceOnDemandTools from "./VoiceOnDemand";
 import AdventureGame from "./AdventureGame";
 import BirthdayManager from "./BirthdayManager";
@@ -55,6 +56,7 @@ export {
   Ticket,
   TopicManager,
   Unassigned,
+  Valentine,
   VoiceOnDemand,
   VoiceOnDemandTools,
   WhereAreYouFromManager,

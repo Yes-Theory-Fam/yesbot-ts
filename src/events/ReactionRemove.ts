@@ -10,6 +10,7 @@ import {
 import bot from "../index";
 import { ChannelToggleRepository, ReactionRoleRepository } from "../entities";
 import { textLog } from "../common/moderator";
+import { Valentine } from "../programs";
 
 class ReactionRemove {
   bot: Client;
@@ -18,6 +19,7 @@ class ReactionRemove {
   reaction: string;
   channel: TextChannel;
   guild: Guild;
+  messageReaction: MessageReaction;
 
   constructor(messageReaction: MessageReaction, user: User | PartialUser) {
     this.bot = bot;
@@ -26,7 +28,8 @@ class ReactionRemove {
     this.reaction = messageReaction.emoji.name;
     this.channel = <TextChannel>messageReaction.message.channel;
     this.guild = <Guild>this.channel.guild;
-    if (this.channel.name != "pick-your-color") this.main();
+    this.messageReaction = messageReaction;
+    if (this.channel.name != "pick-your-color" && !this.user.bot) this.main();
   }
 
   async main() {
@@ -44,6 +47,7 @@ class ReactionRemove {
       guildMember.roles.remove(roleToAdd);
     });
 
+    Valentine.signoutReaction(this.messageReaction, this.user);
     this.handleChannelToggleReaction();
   }
 

@@ -23,6 +23,7 @@ import {
   TemplateMode,
   Ticket,
   TopicManager,
+  Valentine,
   VoiceOnDemand,
   WhereAreYouFromManager,
 } from "../programs";
@@ -145,6 +146,8 @@ class MessageManager {
           saveToDb("daily-challenge", restOfMessage, this.message);
         if (firstWord === "!todayChallenge")
           postDailyMessage(this.bot, this.message);
+        if (firstWord === "!valentine")
+          Valentine.changeEventState(this.message);
         break;
       case "bot-commands":
         if (
