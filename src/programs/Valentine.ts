@@ -20,12 +20,12 @@ type MemberPick = { member: GuildMember; valentine: Valentine };
 const pickCount = 2;
 const signupEmote = "💕";
 const signupChannelName = "valentine";
-const timeLimit = 10 * 60 * 60 * 1000; // 10 minutes
+const timeLimit = 10 * 60 * 1000; // 10 minutes
 const voiceChannelName = "jail";
 
 let timeout: Timeout;
-let currentPicks: MemberPick[];
-let originalChannels: VoiceChannel[];
+let currentPicks: MemberPick[] = [];
+let originalChannels: VoiceChannel[] = [];
 
 let running = false;
 
@@ -116,12 +116,12 @@ const lifecycle = async (guild: Guild) => {
 };
 
 const setupNextLifecycle = async (guild: Guild) => {
-  currentPicks = [];
   clearTimeout(timeout);
 
   for (let i = 0; i < currentPicks.length; i++) {
     await endMemberPick(currentPicks[i], originalChannels[i]);
   }
+  currentPicks = [];
 
   await lifecycle(guild);
 };
