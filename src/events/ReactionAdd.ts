@@ -17,6 +17,7 @@ import {
   GroupManagerTools,
   NitroColors,
   PollsManager,
+  Valentine,
 } from "../programs";
 import { MessageRepository, ReactionRoleRepository } from "../entities";
 import { hasRole } from "../common/moderator";
@@ -43,7 +44,7 @@ class ReactionAdd {
     this.channel = <TextChannel>messageReaction.message.channel;
     this.guild = <Guild>this.channel.guild;
     this.messageReaction = messageReaction;
-    this.main();
+    if (!this.user.bot) this.main();
   }
 
   async main() {
@@ -115,6 +116,7 @@ class ReactionAdd {
 
     this.handleChannelToggleReaction();
     ModeratorPollMirror(this.messageReaction, this.user);
+    Valentine.signupReaction(this.messageReaction, this.user);
   }
 
   async handleChannelToggleReaction() {
