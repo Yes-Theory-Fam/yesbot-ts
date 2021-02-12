@@ -12,24 +12,24 @@ import {
 } from "discord.js";
 import { Valentine } from "../entities/Valentine";
 import { IsNull } from "typeorm";
-import Timeout = NodeJS.Timeout;
 import { textLog } from "../common/moderator";
+import Tools from "../common/tools";
+import Timeout = NodeJS.Timeout;
 
 type MemberPick = { member: GuildMember; valentine: Valentine };
 
 const pickCount = 2;
 const signupEmote = "💕";
 const signupChannelName = "valentines";
-const schedulingTime = 30 * 60 * 1000; // 30 minutes
+const schedulingTime = 0.25 * 60 * 1000; // 30 minutes
 const timeLimit = 0.1 * 60 * 1000; // 10 minutes
 const voiceChannelName = "Jail Booth";
 
 let timeout: Timeout;
+let interval: Timeout;
 let currentPicks: MemberPick[] = [];
 let originalChannels: VoiceChannel[] = [];
 let movedInMessage: Message | null = null;
-
-let running = false;
 
 const getTextChannel = (guild: Guild) =>
   guild.channels.cache
@@ -42,9 +42,9 @@ const isValentineVoice = (channel: GuildChannel | null) =>
   channel.name.toLowerCase().endsWith(voiceChannelName.toLowerCase());
 
 const currentPings = () => {
-  const shallow = [...currentPicks];
-  const anded = shallow.pop();
-  return `${shallow.join(", ")} and ${anded}`;
+  const pings = currentPicks.map((p) => `<@${p.member.id}>`);
+  const anded = pings.pop();
+  return `${pings.join(", ")} and ${anded}`;
 };
 
 const isReactionRelevant = (reaction: MessageReaction) => {
@@ -71,9 +71,6 @@ const pickMembers = async (guild: Guild): Promise<MemberPick[]> => {
   const availableMembers = members.filter(({ member }) =>
     member.voice.channel?.parent?.name.toLowerCase().endsWith("conversation")
   );
-
-  // TODO: Remove test for only picking people from conversation
-  console.log(availableMembers);
 
   if (availableMembers.length < pickCount) {
     throw new Error("Not enough members");
@@ -108,24 +105,11 @@ const endMemberPick = async (mp: MemberPick, vc: VoiceChannel) => {
 };
 
 const lifecycle = async (guild: Guild) => {
-  const scheduleNextCycle = () => {
-    timeout = setTimeout(async () => {
-      if (currentPicks.length > 0) {
-        await textLog(
-          "@Support Another conversation managed to past the 10 minutes! Please upload the next emote :)"
-        );
-        await getTextChannel(guild).send(
-          `YES! ${currentPings()} talked for 10 minutes so a new emote is unlocked!`
-        );
-      }
-      await setupNextLifecycle(guild);
-    }, timeLimit);
-  };
-
+  console.log("30 minutes past, trying to pull in new people");
   try {
     currentPicks = await pickMembers(guild);
   } catch {
-    scheduleNextCycle();
+    // If we cannot find enough members, we will just try again in the next interval
     return;
   }
 
@@ -143,22 +127,36 @@ The 10 minutes start now (you will be moved back to the channels you were picked
     await member.voice.setChannel(voiceChannel);
   }
 
-  scheduleNextCycle();
+  timeout = setTimeout(async () => {
+    // We want to run the cleanup as early as possible so we cache the currentPings here
+    const pings = currentPings();
+    await cleanUp();
+    const role = Tools.getRoleByName("Support", guild);
+    await textLog(
+      `<@&${role}> Another conversation managed to past the 10 minutes! Please upload the next emote :)`
+    );
+    await getTextChannel(guild).send(
+      `YES! ${pings} talked for 10 minutes so a new emote is unlocked!`
+    );
+  }, timeLimit);
 };
 
-const setupNextLifecycle = async (guild: Guild) => {
+const cleanUp = async () => {
   clearTimeout(timeout);
-
-  if (movedInMessage) {
-    await movedInMessage.delete();
-  }
-
-  for (let i = 0; i < currentPicks.length; i++) {
-    await endMemberPick(currentPicks[i], originalChannels[i]);
-  }
+  const shallowPicks = [...currentPicks];
   currentPicks = [];
 
-  await lifecycle(guild);
+  if (movedInMessage) {
+    try {
+      await movedInMessage.delete();
+    } catch {
+      console.log("Could not delete movedInMessage; probably already deleted.");
+    }
+  }
+
+  for (let i = 0; i < shallowPicks.length; i++) {
+    await endMemberPick(shallowPicks[i], originalChannels[i]);
+  }
 };
 
 const setupReaction = async (messageId: Snowflake, guild: Guild) => {
@@ -193,12 +191,13 @@ export const changeEventState = (message: Message) => {
       setupReaction(split[2], message.guild);
       break;
     case "start":
-      running = true;
+      interval = setInterval(() => lifecycle(message.guild), schedulingTime);
       message.reply("Starting event!");
       lifecycle(message.guild);
       break;
     case "stop":
-      running = false;
+      clearInterval(interval);
+      interval = null;
       message.reply(
         "Stopping event! The currently active conversation will end but there won't be a next one (unless started again)!"
       );
@@ -256,8 +255,8 @@ export const valentineVoiceState = async (
     !isValentineVoice(newState.channel)
   ) {
     await getTextChannel(oldState.guild ?? newState.guild).send(
-      `Oh no! The conversation of ${currentPings()} didn't go that well apparently! They couldn't unlock the new emote.`
+      `Oh no! The conversation of ${currentPings()} didn't go that well apparently 😉 They couldn't unlock the new emote.`
     );
-    await setupNextLifecycle(oldState.channel.guild);
+    await cleanUp();
   }
 };
