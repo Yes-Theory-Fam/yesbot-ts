@@ -21,8 +21,8 @@ type MemberPick = { member: GuildMember; valentine: Valentine };
 const pickCount = 2;
 const signupEmote = "💕";
 const signupChannelName = "valentines";
-const schedulingTime = 0.25 * 60 * 1000; // 30 minutes
-const timeLimit = 0.1 * 60 * 1000; // 10 minutes
+const schedulingTime = 30 * 60 * 1000; // 30 minutes
+const timeLimit = 10 * 60 * 1000; // 10 minutes
 const voiceChannelName = "Jail Booth";
 
 let timeout: Timeout;
