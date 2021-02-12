@@ -49,7 +49,7 @@ export const postDailyMessage = async (
   const res = await repo
     .createQueryBuilder()
     .select()
-    .andWhere("random() < 0.5 OR id = 1")
+    // .andWhere("random() < 0.5 OR id = 1")
     .orderBy("last_used", "ASC")
     .limit(1)
     .getOne();
