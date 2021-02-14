@@ -105,7 +105,6 @@ const endMemberPick = async (mp: MemberPick, vc: VoiceChannel) => {
 };
 
 const lifecycle = async (guild: Guild) => {
-  console.log("30 minutes past, trying to pull in new people");
   try {
     currentPicks = await pickMembers(guild);
   } catch {
@@ -113,8 +112,8 @@ const lifecycle = async (guild: Guild) => {
     return;
   }
 
-  const message = `${currentPings()} have been moved to the ${voiceChannelName}. If they can maintain a conversation for 10 minutes, they can unlock a new emote!
-The 10 minutes start now (you will be moved back to the channels you were picked from automatically once the time runs out)!`;
+  const message = `${currentPings()} have been moved to the ${voiceChannelName}.
+Your 10 minutes to unlock your UwU role start now (you will be moved back to the channels you were picked from automatically once the time runs out)!`;
 
   movedInMessage = await getTextChannel(guild).send(message);
 
@@ -131,12 +130,12 @@ The 10 minutes start now (you will be moved back to the channels you were picked
     // We want to run the cleanup as early as possible so we cache the currentPings here
     const pings = currentPings();
     await cleanUp();
-    const role = Tools.getRoleByName("Support", guild);
-    await textLog(
-      `<@&${role}> Another conversation managed to past the 10 minutes! Please upload the next emote :)`
-    );
+    // const role = Tools.getRoleByName("Support", guild);
+    // await textLog(
+    //   `<@&${role}> Another conversation managed to past the 10 minutes! Please upload the next emote :)`
+    // );
     await getTextChannel(guild).send(
-      `YES! ${pings} talked for 10 minutes so a new emote is unlocked!`
+      `YES! ${pings} talked for 10 minutes so they unlocked the UwU role!`
     );
   }, timeLimit);
 };
@@ -191,6 +190,7 @@ export const changeEventState = (message: Message) => {
       setupReaction(split[2], message.guild);
       break;
     case "start":
+      clearInterval(interval);
       interval = setInterval(() => lifecycle(message.guild), schedulingTime);
       message.reply("Starting event!");
       lifecycle(message.guild);
