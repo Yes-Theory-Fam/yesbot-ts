@@ -10,8 +10,6 @@ class Ready {
     this.bot = bot;
     console.log(`${bot.user.tag} - Online`);
 
-    NitroColors.cacheNitroColors(GUILD_ID);
-    VoiceOnDemandTools.voiceOnDemandReady(bot);
     this.init(bot);
   }
 

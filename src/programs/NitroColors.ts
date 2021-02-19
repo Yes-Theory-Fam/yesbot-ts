@@ -25,6 +25,14 @@ export const cacheNitroColors = async (guildId: Snowflake) => {
       .fetch({ limit: 10 })
       .then((messages) => messages.array().reverse()[0]);
 
+    if (!colorSelectionMessage) {
+      console.log(
+        "Didn't find a message in #pick-your-color to load Nitro colors from. Skipping setting up nitro colors."
+      );
+      nitroRolesCache = new Collection([]);
+      return;
+    }
+
     nitroRolesCache = colorSelectionMessage.mentions.roles;
   } catch (err) {
     console.log("Cache Nitro Colors Error: ", err.message);

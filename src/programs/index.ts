@@ -16,14 +16,12 @@ import Deadchat from "./Deadchat";
 import EasterEvent from "./EasterEvent";
 import ExportManager from "./ExportManager";
 import GroupManager from "./GroupManager";
-import InitialiseTestEnvironment from "./InitialiseTestEnvironment";
 import PollsManager from "./PollsManager";
 import ProfileManager from "./ProfileManager";
 import ReactRole from "./ReactRole";
 import Resource from "./ResourceManager";
 import SendFromDB from "./SendFromDB";
 import Someone from "./Someone";
-import StateRoleFinder from "./StateRoleFinder";
 import TemplateMode from "./TemplateMode";
 import Ticket from "./Ticket";
 import VoiceOnDemand from "./VoiceOnDemand";
@@ -41,7 +39,6 @@ export {
   ExportManager,
   GroupManager,
   GroupManagerTools,
-  InitialiseTestEnvironment,
   MapTools,
   NitroColors,
   PollsManager,
@@ -51,7 +48,6 @@ export {
   SendFromDB,
   Separators,
   Someone,
-  StateRoleFinder,
   TemplateMode,
   Ticket,
   TopicManager,
