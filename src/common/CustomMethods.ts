@@ -1,18 +1,6 @@
-import {
-  Message,
-  User,
-  MessageAttachment,
-  TextBasedChannel,
-  DMChannel,
-} from "discord.js";
+import { Message, User, DMChannel } from "discord.js";
 import { Logger } from "./Logger";
 import { textLog, getMember } from "./moderator";
-import {
-  AUSTRALIA_IMAGE_URL,
-  CANADA_IMAGE_URL,
-  UK_IMAGE_URL,
-  USA_IMAGE_URL,
-} from "../const";
 import Tools from "./tools";
 
 export const sendLove = (message: Message) => {
@@ -47,10 +35,6 @@ export const randomReply = (message: Message) => {
     "very very very unlikely",
   ];
   message.reply(`${replies[Math.floor(Math.random() * replies.length)]}`);
-};
-
-export const reactWithEmoji = (message: Message, emoji: string) => {
-  message.react(emoji);
 };
 
 export const abuseMe = (message: Message) => {
@@ -91,7 +75,7 @@ export const abuseMe = (message: Message) => {
 };
 
 export const proposeNameChange = async (name: string, botMessage: Message) => {
-  botMessage.reply(
+  await botMessage.reply(
     "Perfect! I've sent your name request to the mods, hopefully they answer soon! In the meantime, you're free to roam around the server and explore. Maybe post an introduction to get started? :grin:"
   );
   const message = `Username: ${botMessage.author.toString()} would like to rename to "${name}". Allow?`;
@@ -140,10 +124,10 @@ export const deleteMessages = async (botMessage: Message) => {
     words.shift();
     const messagesToDelete = Number(words[0]);
     if (
-      messagesToDelete !== NaN &&
+      !isNaN(messagesToDelete) &&
       !(botMessage.channel instanceof DMChannel)
     ) {
-      botMessage.channel.bulkDelete(messagesToDelete);
+      await botMessage.channel.bulkDelete(messagesToDelete);
     }
   } catch (err) {
     Logger("CustomMethods", "deleteMessages", err);
@@ -165,18 +149,4 @@ export const addVote = async (botMessage: Message) => {
   } catch (err) {
     Logger("CustomMethods", "addVote", err);
   }
-};
-
-export const SendMap = (country: string, botMessage: Message) => {
-  botMessage.delete();
-  const image = new MessageAttachment(
-    country === "usa"
-      ? USA_IMAGE_URL
-      : country === "canada"
-      ? CANADA_IMAGE_URL
-      : country === "australia"
-      ? AUSTRALIA_IMAGE_URL
-      : UK_IMAGE_URL
-  );
-  botMessage.channel.send(image);
 };

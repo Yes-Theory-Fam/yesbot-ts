@@ -1,6 +1,5 @@
 import fs from "fs";
 import {
-  Client,
   Guild,
   GuildMember,
   Message,
@@ -15,23 +14,8 @@ import { textLog } from "./moderator";
 import { Logger } from "./Logger";
 
 class Tools {
-  static isProd(): boolean {
-    return process.platform === "linux";
-  }
-
-  static paramsToArgs(params: string) {
-    return params.split(" ");
-  }
-
   static stringToWords(inputStr: string): Array<string> {
     return <string[]>inputStr.split(" ");
-  }
-
-  static getYesGuild(bot: Client) {
-    const guild = bot.guilds.cache.find(
-      (g) => g.name === process.env.PROD_GUILD_NAME
-    );
-    return guild;
   }
 
   static async addThumbs(message: Message) {
@@ -66,77 +50,6 @@ class Tools {
       { max: 1, time: 6000000, errors: ["time"] }
     );
     return collected.first().emoji.toString();
-  }
-
-  static async addNumberReactions(
-    options: number,
-    message: Message
-  ): Promise<boolean> {
-    if (options > 5) return false;
-    for (let index = 1; index < options; index++) {
-      try {
-        await message.react(
-          options === 1
-            ? "1️⃣"
-            : options === 2
-            ? "2️⃣"
-            : options === 3
-            ? "3️⃣"
-            : options === 4
-            ? "4️⃣"
-            : options === 5
-            ? "5️⃣"
-            : null
-        );
-      } catch (err) {
-        Logger("tools", "addNumberReactions", err);
-      }
-    }
-  }
-
-  static async writeFile(filename: string, data: any) {
-    try {
-      fs.writeFile(
-        `./src/collections/${filename}.json`,
-        JSON.stringify(data),
-        () => {
-          return true;
-        }
-      );
-    } catch (err) {
-      Logger("tools", "writeFile", err);
-    }
-  }
-
-  static async updateFile(filename: string, data: any) {
-    try {
-      fs.readFile(
-        `./src/collections/${filename}.json`,
-        "utf-8",
-        (err, string) => {
-          let existingArray = JSON.parse(string);
-
-          existingArray.push(data);
-
-          fs.writeFile(
-            `./src/collections/${filename}.json`,
-            JSON.stringify(existingArray),
-            () => {
-              return true;
-            }
-          );
-        }
-      );
-    } catch (err) {
-      Logger("tools", "updateFile", err);
-    }
-  }
-
-  static censor(value: any) {
-    if (value && typeof value === "object" && value.parent) {
-      value.parent = value.parent.name;
-    }
-    return value;
   }
 
   static async getMessageById(
@@ -193,8 +106,8 @@ class Tools {
           (channel) => channel.id === toggle.channel
         );
         if (channel === undefined) {
-          textLog(
-            `I can't find this channel <#${channel.id}>. Has it been deleted?`
+          await textLog(
+            `I can't find this channel <#${toggle.channel}>. Has it been deleted?`
           );
           return;
         }

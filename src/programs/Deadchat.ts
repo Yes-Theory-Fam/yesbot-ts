@@ -8,13 +8,6 @@ export default async function Deadchat(pMessage: Message) {
       (await pMessage.channel.messages.fetch({ limit: 2 })).array()[1]
         .createdTimestamp >
     1800000; //|| pMessage.guild.name != "Yes Theory Fam";
-  const isChat = ["chat", "chat-too"].includes(
-    (pMessage.channel as TextChannel).name
-  );
-  if (!isChat) {
-    Tools.handleUserError(pMessage, "You can't use this command here.");
-    return;
-  }
 
   if (!isDead) {
     Tools.handleUserError(
