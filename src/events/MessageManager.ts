@@ -19,7 +19,6 @@ import {
   ReactRole,
   Resource,
   Someone,
-  StateRoleFinder,
   TemplateMode,
   Ticket,
   TopicManager,
@@ -37,9 +36,7 @@ import {
   deleteMessages,
   proposeNameChange,
   randomReply,
-  reactWithEmoji,
   sendLove,
-  SendMap,
 } from "../common/CustomMethods";
 import Tools from "../common/tools";
 import SendFromDB, { postDailyMessage, saveToDb } from "../programs/SendFromDB";
@@ -102,19 +99,13 @@ class MessageManager {
     const restOfMessage = words.slice(1).join(" ");
 
     switch (channel.name) {
-      case "where-are-you-from":
       case "welcome-chat":
         if (firstWord === "!video") {
           this.message.reply("https://youtu.be/v-JOe-xqPN0");
         }
         break;
       case "flag-drop":
-        if (firstWord == "!usa") SendMap("usa", this.message);
-        if (firstWord == "!canada") SendMap("canada", this.message);
-        if (firstWord == "!australia") SendMap("australia", this.message);
-        if (firstWord == "!uk") SendMap("uk", this.message);
         WhereAreYouFromManager(this.message);
-        if (firstWord === "!state") StateRoleFinder(this.message);
         break;
 
       case "chat":
@@ -221,7 +212,7 @@ class MessageManager {
       this.message.content.toLowerCase().includes("abooz") ||
       this.message.content.toLowerCase().includes("mod abuse")
     ) {
-      reactWithEmoji(this.message, "👀");
+      this.message.react("👀");
     }
 
     if (this.message.content.toLowerCase().startsWith("!group toggle"))
