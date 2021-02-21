@@ -1,29 +1,47 @@
 # YesBot - The famous bot that handles and serves Yes Theory Fam Discord server
 
+This repository contains the code powering a Discord bot called YesBot on [the Yes Theory Fam Server](https://discord.gg/yestheory).
+
+Feel free to contribute, learn and ask questions if you have any! Most importantly: Have fun while doing so :)
+
 ## Quick note:
-This bot is not intended to be run on servers with vastly different channel and role structure than [the Yes Theory Fam Server](https://discord.gg/yestheory).
+This bot is not intended to be run on servers with a vastly different channel and role structure than the Yes Theory Fam Server.
 While possible, chances are it will take quite some effort to adapt the bot to a different server.
 
 ## Requirements
 
 To run the bot you will need the following:
-- Node 14+ (it might work with earlier versions too but they are untested)
+- Node 14+ (it might work with earlier versions too, but they are untested)
 - One of the following
-  - Docker to spin up a postgres database with the included Docker file *(recommended)*
-  - A postgres database called yesbot with credentials yesbot:yesbot (it doesn't have to contain tables, TypeORM does that for you)
+  - Docker + docker-compose to spin up a postgres database with the included Docker file *(recommended)* **or**
+  - A postgres database called `yesbot` with credentials `yesbot:yesbot` (it doesn't have to contain tables, TypeORM does that for you)
+- A Discord server created from [this template](https://discord.com/template/7wc3BmmACSbr)
+- A Discord application with a bot token (get started at [https://discord.com/developers](https://discord.com/developers))
 
 ## Local instance
 
-### Run the database
-*You can skip this step if you have a postgres server with a database yesbot with credentials yesbot:yesbot running.*
+To allow your bot to run, you have to invite the bot into the server you created:
 
-Run the following command to start a docker container with the database:
-<!-- TODO -->
+1. Select your application with the bot token [here](https://discord.com/developers/applications/).
+2. Click OAuth2 in the left menu
+3. In the list of scopes, select `bot`
+4. In the list of bot permissions (shows up after step 3), select `Administrator`
+5. Copy and open the URL created in the scopes section
+6. Select the server created from the template and click Continue, then Authorize (you might also need to complete a Captcha)
+
+Now the bot is on your server and can do things once started. We will get to that next.
+
+### Run the database
+*You can skip this step if you have a postgres server with a database `yesbot` with credentials `yesbot:yesbot` running.*
+
+Run the following command in the root directory of the project to start a docker container with the database:
 
 ```shell
-docker run -f Dockerfile
+docker-compose up
+# or docker-compose up -d
+# if you want to reuse your terminal; in this case you can shut down the container with docker-compose down in the same directory
 ```
-### Setup the bot
+### Set up the bot
 
 1. Clone the repo and install the dependencies:
 ```shell
@@ -71,12 +89,12 @@ This codebase uses Prettier for consistent formatting. When writing code for the
 npm run lint
 ```
 
-and fix potential errors and warnings you might find. Quite a few can be fixed automatically using
+then fix potential errors and warnings you might find. Quite a few can be fixed automatically using
 ```shell
 npm run lint:fix
 ```
 
 ### Pull requests
 
-If your pull requests becomes unmergable due to merge conflicts, have patience. We will get to it and resolve them!
-Please don't solve them yourself as it makes the git history a little more chaotic.
+If your pull requests cannot be merged due to merge conflicts, have patience. We will get to it and resolve them!
+Please don't solve them yourself as it might make the git history a little more chaotic.
