@@ -25,7 +25,7 @@ import {
 } from "../common/interfaces";
 import { ILike } from "../lib/typeormILIKE";
 import { Repository } from "typeorm";
-import { dailyChallengeChannelId } from "./SendFromDB";
+import { dailyChallengeChannelId } from "./DailyChallenge";
 
 type GroupInteractionInformation =
   | GroupInteractionSuccess

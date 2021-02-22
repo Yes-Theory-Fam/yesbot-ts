@@ -42,7 +42,11 @@ import {
   SendMap,
 } from "../common/CustomMethods";
 import Tools from "../common/tools";
-import SendFromDB, { postDailyMessage, saveToDb } from "../programs/SendFromDB";
+import {
+  DailyChallenge,
+  postDailyMessage,
+  saveToDb,
+} from "../programs/DailyChallenge";
 
 class MessageManager {
   message: Message;
@@ -131,7 +135,7 @@ class MessageManager {
         break;
 
       case "daily-challenge":
-        if (firstWord === "!challenge") SendFromDB(this.message, channel.name);
+        if (firstWord === "!challenge") DailyChallenge(this.message);
         break;
       case "permanent-testing":
         if (firstWord === "!export") ExportManager(this.message);
