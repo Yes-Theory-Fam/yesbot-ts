@@ -1,5 +1,6 @@
 import * as BirthdayManagerTools from "./BirthdayManager";
 import * as BuddyProject from "./BuddyProject";
+import * as DailyChallenge from "./DailyChallenge";
 import * as GroupManagerTools from "./GroupManager";
 import * as MapTools from "./Map";
 import * as NitroColors from "./NitroColors";
@@ -21,7 +22,6 @@ import PollsManager from "./PollsManager";
 import ProfileManager from "./ProfileManager";
 import ReactRole from "./ReactRole";
 import Resource from "./ResourceManager";
-import SendFromDB from "./SendFromDB";
 import Someone from "./Someone";
 import StateRoleFinder from "./StateRoleFinder";
 import TemplateMode from "./TemplateMode";
@@ -48,7 +48,7 @@ export {
   ProfileManager,
   ReactRole,
   Resource,
-  SendFromDB,
+  DailyChallenge,
   Separators,
   Someone,
   StateRoleFinder,

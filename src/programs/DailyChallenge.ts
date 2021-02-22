@@ -2,40 +2,57 @@ import Axios from "axios";
 import Discord, { Client, Message, TextChannel } from "discord.js";
 import { Repository } from "typeorm";
 import { Logger } from "../common/Logger";
-import { DailyChallenge, DailyChallengeRepository } from "../entities";
+import {
+  DailyChallenge as DailyChallengeEntity,
+  DailyChallengeRepository,
+} from "../entities";
 
 export const dailyChallengeChannelId = "474197374684758025";
+const UTC_HOUR_POSTED = 8;
 
-export default async function SendFromDB(
-  pMessage: Message,
-  channelName: string
-) {
-  let repo = undefined;
-  if (channelName === "daily-challenge") {
-    repo = await DailyChallengeRepository();
+export const DailyChallenge = async (message: Message) => {
+  let repo = await DailyChallengeRepository();
+
+  const compare = new Date();
+  compare.setUTCHours(compare.getUTCHours() - 48 - UTC_HOUR_POSTED);
+
+  const res = await repo
+    .createQueryBuilder()
+    .select()
+    .where("last_used > :today", {
+      today: compare.toISOString(),
+    })
+    .getOne();
+
+  await message.channel.send(
+    res?.result ?? "We don't have a challenge for today, come back tomorrow!"
+  );
+};
+
+export const initialize = async (discordClient: Client) => {
+  let now = new Date();
+  let firstRun = new Date();
+  firstRun.setUTCHours(UTC_HOUR_POSTED, 0, 0, 0);
+  if (now.getUTCHours() >= UTC_HOUR_POSTED) {
+    // schedule for the next day - 8AM
+    firstRun.setUTCDate(firstRun.getUTCDate() + 1);
   }
+  let timeDiff = firstRun.getTime() - Date.now();
 
-  if (repo) {
-    const compare = new Date();
-    compare.setUTCHours(compare.getUTCHours() - 48 - 8);
+  const msDay = 24 * 60 * 60 * 1000; // 24 hours
+  const checkAndPost = () => {
+    const shouldPost = !(Math.floor(Date.now() / msDay) % 2);
+    if (shouldPost) {
+      postDailyMessage(discordClient, undefined, true);
+    }
+  };
 
-    const res = await repo
-      .createQueryBuilder()
-      .select()
-      .where("last_used > :today", {
-        today: compare.toISOString(),
-      })
-      .getOne();
-
-    pMessage.channel.send(
-      res?.result ?? "We don't have a challenge for today, come back tomorrow!"
-    );
-  } else {
-    pMessage.reply(
-      `We're sorry, Yesbot had a hiccup. Here's a cookie instead: 🍪`
-    );
-  }
-}
+  setTimeout(() => {
+    checkAndPost();
+    // Set an interval for each next day
+    setInterval(checkAndPost, msDay);
+  }, timeDiff);
+};
 
 export const postDailyMessage = async (
   bot: Client,
@@ -67,18 +84,18 @@ export const postDailyMessage = async (
       await repo.save(res);
     } catch (err) {
       Logger(
-        "SendFromDB",
+        "DailyChallenge",
         "postDailyMessage",
         "There was an error posting Daily Challenge: " + err
       );
     }
     if (message) {
-      message.reply(embed);
+      await message.reply(embed);
     } else if (messageChannel) {
       if (withPing) {
-        messageChannel.send("@group dailychallenge");
+        await messageChannel.send("@group dailychallenge");
       }
-      messageChannel.send(embed);
+      await messageChannel.send(embed);
     }
   }
 };
@@ -88,7 +105,7 @@ export const saveToDb = async (
   info: string,
   pMessage: Message
 ) => {
-  let repo: Repository<DailyChallenge> = undefined;
+  let repo: Repository<DailyChallengeEntity> = undefined;
   if (tableName === "daily-challenge") {
     repo = await DailyChallengeRepository();
 
@@ -99,7 +116,7 @@ export const saveToDb = async (
         const file = await Axios.get(attachment.url);
         const bulkChallenges: [] = file.data.split("\n");
         bulkChallenges.forEach(async (challenge: string, idx: number) => {
-          let res = new DailyChallenge();
+          let res = new DailyChallengeEntity();
           res.result = challenge.trim();
           await save(repo, res, pMessage);
           if (idx === bulkChallenges.length - 1) {
@@ -108,13 +125,13 @@ export const saveToDb = async (
         });
       } catch (err) {
         console.log(
-          "[ERROR] SendFromDB - There was an error getting the attached file: ",
+          "[ERROR] DailyChallenge - There was an error getting the attached file: ",
           err
         );
         pMessage.react("👎");
       }
     } else {
-      let res = new DailyChallenge();
+      let res = new DailyChallengeEntity();
       res.result = info;
       await save(repo, res, pMessage);
       pMessage.react("👍");
@@ -126,7 +143,7 @@ const save = async (repo: any, res: any, pMessage: Message) => {
   try {
     await repo.save(res);
   } catch (err) {
-    Logger("SendFromDB", "save", "There was an error saving to DB: " + err);
+    Logger("DailyChallenge", "save", "There was an error saving to DB: " + err);
     pMessage.react("👎");
   }
 };
