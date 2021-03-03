@@ -65,9 +65,17 @@ class MessageManager {
     }
   }
   routeMessage() {
-    const filteredWords = ["nigger", "nigga"];
     const mentionedMembers = this.message.mentions.users.size;
-    if (mentionedMembers > 20 && !this.message.author.bot) {
+    const whitelistedRoles = ["support", "yes theory", "seek discomfort"];
+    const hasWhitelistedRole = this.message.member.roles.cache.some((r) =>
+      whitelistedRoles.includes(r.name.toLowerCase())
+    );
+
+    if (
+      mentionedMembers > 20 &&
+      !this.message.author.bot &&
+      !hasWhitelistedRole
+    ) {
       this.author.createDM().then((dm: DMChannel) => {
         dm.send(
           "Hey there! You tagged more than 20 people in a single message. The message has been deleted and you have beeen timed out. Here is the message sent: "
@@ -83,9 +91,10 @@ class MessageManager {
       this.message.member.roles.add(timeoutRole);
       textLog(
         `<@&${supportRole.id}>: <@${this.message.author.id}> just tagged more than 20 people in a single message in <#${this.message.channel.id}>. The message has been deleted and they have beeen timed out.`
-      );
+      ).then(() => textLog(`Message content was: ${this.message.content}`));
     }
 
+    const filteredWords = ["nigger", "nigga"];
     const lowerCaseMessage = this.message.content.toLowerCase();
     if (filteredWords.some((word) => lowerCaseMessage.includes(word))) {
       this.message.delete();
