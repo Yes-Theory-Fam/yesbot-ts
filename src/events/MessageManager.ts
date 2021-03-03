@@ -66,16 +66,13 @@ class MessageManager {
   }
   routeMessage() {
     const mentionedMembers = this.message.mentions.users.size;
-    const whitelistedRoles = ["support", "yes theory", "seek discomfort"];
-    const hasWhitelistedRole = this.message.member.roles.cache.some((r) =>
-      whitelistedRoles.includes(r.name.toLowerCase())
-    );
+    if (mentionedMembers > 20 && !this.message.author.bot) {
+      const whitelistedRoles = ["support", "yes theory", "seek discomfort"];
+      const hasWhitelistedRole = this.message.member.roles.cache.some((r) =>
+        whitelistedRoles.includes(r.name.toLowerCase())
+      );
+      if (hasWhitelistedRole) return;
 
-    if (
-      mentionedMembers > 20 &&
-      !this.message.author.bot &&
-      !hasWhitelistedRole
-    ) {
       this.author.createDM().then((dm: DMChannel) => {
         dm.send(
           "Hey there! You tagged more than 20 people in a single message. The message has been deleted and you have beeen timed out. Here is the message sent: "
