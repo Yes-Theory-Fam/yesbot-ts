@@ -1,0 +1,145 @@
+# Contributing to YesBot
+
+---
+
+We are super grateful that you want to join us in making YesBot the best bot the Discord server can have! Be it issues, pull requests or general ideas and discussion, we are looking forward to seeing it.
+
+This document contains some guidelines for contributing so make sure to read through it to make things easier.
+
+## Issues
+
+---
+
+If you found a problem in YesBot and would like to let us know about it, head to the [issues](https://github.com/Yes-Theory-Fam/yesbot-ts/issues?utf8=%E2%9C%93&q=is:issue) and see if the issue you found has already been reported. If you found a match, just upvote it with the 👍 reaction.
+
+If you couldn't find anything that looks like your problem, create a new one containing the following information:
+
+- Clear and descriptive title ("Bot doesn't work" is *not* helpful)
+- Description of the issue with the following:
+    - What you did
+    - What you thought would happen
+    - What did happen
+- If you are able to reproduce this problem repeatedly and reliably, include step by step instructions on how to recreate the issue
+
+## Pull Requests (PRs)
+
+---
+
+We are happy if you want to add something to the bot! To help make things easier, please follow this advice:
+
+### Formatting
+
+This codebase uses Prettier for consistent formatting. Before submitting a PR for the bot, please check for linting issues using
+
+```bash
+npm run lint
+```
+
+then fix potential errors and warnings you might find. Quite a few can be fixed automatically using
+
+```bash
+npm run lint:fix
+```
+
+### Merge conflicts
+
+If your pull request cannot be merged due to a merge conflict, have patience. We will get to it and resolve them! Please don't solve them yourself as it might make the git history a little more chaotic.
+
+## Development
+
+---
+
+This section of the document includes information on what to consider while developing YesBot.
+
+### Project structure
+
+The bot's main code is contained in the `src` directory which contains several sub-directories:
+
+- collections - Files containing static data that the bot uses for certain tasks
+- common - Shared code for various things
+- entities - TypeORM database entities
+- events - Event handlers for the different events discord.js exposes
+- lib - (will be removed once [#193](https://github.com/Yes-Theory-Fam/yesbot-ts/issues/193) is resolved) - Contains custom functionality to extend libraries used
+- programs - Code containing logic for all the commands and features of the bot. This directory contains an `index.ts` which reexports all exports from all files in this folder, please do so to, when adding your own feature.
+- scripts - Standalone scripts that are designed to be manually run for one-off tasks (like importing birthdays for example)
+
+It also contains two single files:
+
+- db.ts - Simple setup of the TypeORM database connection
+- index.ts - Creates and exports the discord.js Client used in the entire application. This is the entry point for the bot.
+
+### Requirements
+
+To work on the bot you need the following:
+
+- The current [Node](https://nodejs.org/) LTS Version
+- A PostgreSQL server with a database called `yesbot`, username `yesbot` and password (you guessed it) `yesbot`
+    - (recommended) You can use [Docker](https://www.docker.com/get-started) with [Docker Compose](https://docs.docker.com/compose/install/) and the `docker-compose.yml` in this repository to launch one in one command
+    - [Download](https://www.postgresql.org/download/) and install PostgreSQL on your host system, then create and configure a database following the requirements above
+- A Discord server created from [this template](https://discord.com/template/7wc3BmmACSbr)
+- A Discord application with a bot token (get started at [https://discord.com/developers](https://discord.com/developers))
+- Developer mode in Discord enabled (Settings → Appearance → Advanced → Developer Mode) to be able to copy IDs from servers, channels, messages, and everything else that has an ID
+
+### Local instance
+
+To allow your bot to run, you have to invite the bot into the server you created:
+
+1. Select your application with the bot token [here](https://discord.com/developers/applications/).
+2. Click OAuth2 in the left menu
+3. In the list of scopes, select `bot`
+4. In the list of bot permissions (shows up after step 3), select `Administrator`
+5. Copy and open the URL created in the scopes section
+6. Select the server created from the template and click Continue, then Authorize (you might also need to complete a Captcha)
+
+Now the bot is on your server and can do things once started. We will get to that next.
+
+#### Run the database
+
+*You can skip this step if you have a postgres server with a database `yesbot` with credentials `yesbot:yesbot` running.*
+
+Run the following command in the root directory of the project to start a docker container with the database:
+
+```bash
+docker-compose up
+# or docker-compose up -d
+# if you want to reuse your terminal; in this case you can shut down the container with docker-compose down in the same directory
+```
+
+#### Set up the bot
+
+1. [Fork](https://github.com/Yes-Theory-Fam/yesbot-ts/fork) the repository to your user
+
+2. Clone the repo and install the dependencies:
+
+```bash
+git clone https://github.com/your-username/yesbot-ts.git
+cd yesbot-ts
+npm install
+```
+
+3. Create a `src/const.ts` file with these variables:
+
+```tsx
+export const BOT_TOKEN = "<here goes your bot token>";
+export const GUILD_ID = "<here goes the ID of your test server>";
+export const OUTPUT_CHANNEL_ID = "<here goes the ID of a channel in your test server that the bot should use for logging>";
+
+// You can leave these empty unless you are working on the !map feature. If you do, let one of the maintainers know!
+export const MAP_LINK = "";
+export const MAP_ADD_DM_USER_ID = "";
+
+// You can leave these just like this if you are using the Yes Theory Fam server template for your test server.
+// Otherwise you can change the role names here if you want.
+export const MODERATOR_ROLE_NAME = "Support";
+export const ENGINEER_ROLE_NAME = "Server Engineer";
+export const COORDINATOR_ROLE_NAME = "Server Coordinator";
+export const BUDDY_PROJECT_MATCHING = false;
+```
+
+4. Start the bot
+
+```bash
+npm run start
+```
+
+The bot should now start up, connect to the database and send a ready message in the channel you specified in the `const.ts` file.
