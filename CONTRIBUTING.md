@@ -2,7 +2,8 @@
 
 ---
 
-We are super grateful that you want to join us in making YesBot the best bot the Discord server can have! Be it issues, pull requests or general ideas and discussion, we are looking forward to seeing it.
+We are super grateful that you want to join us in making YesBot the best bot the Discord server can have! Be it issues,
+pull requests or general ideas and discussion, we are looking forward to seeing it.
 
 This document contains some guidelines for contributing so make sure to read through it to make things easier.
 
@@ -10,7 +11,9 @@ This document contains some guidelines for contributing so make sure to read thr
 
 ---
 
-If you found a problem in YesBot and would like to let us know about it, head to the [issues](https://github.com/Yes-Theory-Fam/yesbot-ts/issues?utf8=%E2%9C%93&q=is:issue) and see if the issue you found has already been reported. If you found a match, just upvote it with the 👍 reaction.
+If you found a problem in YesBot and would like to let us know about it, head to
+the [issues](https://github.com/Yes-Theory-Fam/yesbot-ts/issues?utf8=%E2%9C%93&q=is:issue) and see if the issue you
+found has already been reported. If you found a match, just upvote it with the 👍 reaction.
 
 If you couldn't find anything that looks like your problem, create a new one containing the following information:
 
@@ -19,7 +22,8 @@ If you couldn't find anything that looks like your problem, create a new one con
     - What you did
     - What you thought would happen
     - What did happen
-- If you are able to reproduce this problem repeatedly and reliably, include step by step instructions on how to recreate the issue
+- If you are able to reproduce this problem repeatedly and reliably, include step by step instructions on how to
+  recreate the issue
 
 ## Pull Requests (PRs)
 
@@ -27,9 +31,20 @@ If you couldn't find anything that looks like your problem, create a new one con
 
 We are happy if you want to add something to the bot! To help make things easier, please follow this advice:
 
+### Working on issues
+
+When working on an issue, please send a comment under that issue, so everyone knows about it and someone else doesn't
+accidentally start working on the same thing you have almost finished. We will assign you so that it's clear to
+everyone.
+
+The other way around: It probably doesn't make a lot of sense to start working on an issue that already has someone
+assigned. If you have doubts, that the assigned person is going to finish the task, let us know and we will see if we
+transfer the issue to you!
+
 ### Formatting
 
-This codebase uses Prettier for consistent formatting. Before submitting a PR for the bot, please check for linting issues using
+This codebase uses Prettier for consistent formatting. Before submitting a PR for the bot, please check for linting
+issues using
 
 ```bash
 npm run lint
@@ -43,7 +58,8 @@ npm run lint:fix
 
 ### Merge conflicts
 
-If your pull request cannot be merged due to a merge conflict, have patience. We will get to it and resolve them! Please don't solve them yourself as it might make the git history a little more chaotic.
+If your pull request cannot be merged due to a merge conflict, have patience. We will get to it and resolve them! Please
+don't solve them yourself as it might make the git history a little more chaotic.
 
 ## Development
 
@@ -59,14 +75,18 @@ The bot's main code is contained in the `src` directory which contains several s
 - common - Shared code for various things
 - entities - TypeORM database entities
 - events - Event handlers for the different events discord.js exposes
-- lib - (will be removed once [#193](https://github.com/Yes-Theory-Fam/yesbot-ts/issues/193) is resolved) - Contains custom functionality to extend libraries used
-- programs - Code containing logic for all the commands and features of the bot. This directory contains an `index.ts` which reexports all exports from all files in this folder, please do so to, when adding your own feature.
-- scripts - Standalone scripts that are designed to be manually run for one-off tasks (like importing birthdays for example)
+- lib - (will be removed once [#193](https://github.com/Yes-Theory-Fam/yesbot-ts/issues/193) is resolved) - Contains
+  custom functionality to extend libraries used
+- programs - Code containing logic for all the commands and features of the bot. This directory contains an `index.ts`
+  which reexports all exports from all files in this folder, please do so to, when adding your own feature.
+- scripts - Standalone scripts that are designed to be manually run for one-off tasks (like importing birthdays for
+  example)
 
 It also contains two single files:
 
 - db.ts - Simple setup of the TypeORM database connection
-- index.ts - Creates and exports the discord.js Client used in the entire application. This is the entry point for the bot.
+- index.ts - Creates and exports the discord.js Client used in the entire application. This is the entry point for the
+  bot.
 
 ### Requirements
 
@@ -74,11 +94,16 @@ To work on the bot you need the following:
 
 - The current [Node](https://nodejs.org/) LTS Version
 - A PostgreSQL server with a database called `yesbot`, username `yesbot` and password (you guessed it) `yesbot`
-    - (recommended) You can use [Docker](https://www.docker.com/get-started) with [Docker Compose](https://docs.docker.com/compose/install/) and the `docker-compose.yml` in this repository to launch one in one command
-    - [Download](https://www.postgresql.org/download/) and install PostgreSQL on your host system, then create and configure a database following the requirements above
+    - (recommended) You can use [Docker](https://www.docker.com/get-started)
+      with [Docker Compose](https://docs.docker.com/compose/install/) and the `docker-compose.yml` in this repository to
+      launch one in one command
+    - [Download](https://www.postgresql.org/download/) and install PostgreSQL on your host system, then create and
+      configure a database following the requirements above
 - A Discord server created from [this template](https://discord.com/template/7wc3BmmACSbr)
-- A Discord application with a bot token (get started at [https://discord.com/developers](https://discord.com/developers))
-- Developer mode in Discord enabled (Settings → Appearance → Advanced → Developer Mode) to be able to copy IDs from servers, channels, messages, and everything else that has an ID
+- A Discord application with a bot token (get started
+  at [https://discord.com/developers](https://discord.com/developers))
+- Developer mode in Discord enabled (Settings → Appearance → Advanced → Developer Mode) to be able to copy IDs from
+  servers, channels, messages, and everything else that has an ID
 
 ### Local instance
 
@@ -89,9 +114,11 @@ To allow your bot to run, you have to invite the bot into the server you created
 3. In the list of scopes, select `bot`
 4. In the list of bot permissions (shows up after step 3), select `Administrator`
 5. Copy and open the URL created in the scopes section
-6. Select the server created from the template and click Continue, then Authorize (you might also need to complete a Captcha)
+6. Select the server created from the template and click Continue, then Authorize (you might also need to complete a
+   Captcha)
 
-Now the bot is on your server and can do things once started. We will get to that next. For the following steps, you will need the code on your computer, so:
+Now the bot is on your server and can do things once started. We will get to that next. For the following steps, you
+will need the code on your computer, so:
 
 1. [Fork](https://github.com/Yes-Theory-Fam/yesbot-ts/fork) the repository to your user
 
@@ -117,6 +144,7 @@ docker-compose up
 #### Set up the bot
 
 1. Install the dependencies:
+
 ```bash
 npm install
 ```
@@ -146,4 +174,5 @@ export const BUDDY_PROJECT_MATCHING = false;
 npm run start
 ```
 
-The bot should now start up, connect to the database and send a ready message in the channel you specified in the `const.ts` file.
+The bot should now start up, connect to the database and send a ready message in the channel you specified in
+the `const.ts` file.
