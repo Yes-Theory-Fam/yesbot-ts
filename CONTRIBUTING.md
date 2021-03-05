@@ -91,11 +91,20 @@ To allow your bot to run, you have to invite the bot into the server you created
 5. Copy and open the URL created in the scopes section
 6. Select the server created from the template and click Continue, then Authorize (you might also need to complete a Captcha)
 
-Now the bot is on your server and can do things once started. We will get to that next.
+Now the bot is on your server and can do things once started. We will get to that next. For the following steps, you will need the code on your computer, so:
+
+1. [Fork](https://github.com/Yes-Theory-Fam/yesbot-ts/fork) the repository to your user
+
+2. Clone the repo and install the dependencies:
+
+```bash
+git clone https://github.com/your-username/yesbot-ts.git
+cd yesbot-ts
+```
 
 #### Run the database
 
-*You can skip this step if you have a postgres server with a database `yesbot` with credentials `yesbot:yesbot` running.*
+*Skip this step if you have a postgres server with a database `yesbot` with credentials `yesbot:yesbot` running.*
 
 Run the following command in the root directory of the project to start a docker container with the database:
 
@@ -107,17 +116,12 @@ docker-compose up
 
 #### Set up the bot
 
-1. [Fork](https://github.com/Yes-Theory-Fam/yesbot-ts/fork) the repository to your user
-
-2. Clone the repo and install the dependencies:
-
+1. Install the dependencies:
 ```bash
-git clone https://github.com/your-username/yesbot-ts.git
-cd yesbot-ts
 npm install
 ```
 
-3. Create a `src/const.ts` file with these variables:
+2. Create a `src/const.ts` file with these variables:
 
 ```tsx
 export const BOT_TOKEN = "<here goes your bot token>";
@@ -136,7 +140,7 @@ export const COORDINATOR_ROLE_NAME = "Server Coordinator";
 export const BUDDY_PROJECT_MATCHING = false;
 ```
 
-4. Start the bot
+3. Start the bot
 
 ```bash
 npm run start
