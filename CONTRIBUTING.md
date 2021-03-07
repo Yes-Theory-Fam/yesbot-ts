@@ -102,8 +102,8 @@ To work on the bot you need the following:
 - A Discord server created from [this template](https://discord.com/template/7wc3BmmACSbr)
 - A Discord application with a bot token (get started
   at [https://discord.com/developers](https://discord.com/developers))
-- After creating a Discord application click on (Bot → Add Bot).
-- In the Bot tabs on your newly created Discord application, this is where you will find your Bot token to be used later on in `const.ts`
+  - After creating a Discord application click on (Bot → Add Bot).
+  - In the Bot tabs on your newly created Discord application, this is where you will find your Bot token to be used later on in `const.ts`
 - Developer mode in Discord enabled (Settings → Appearance → Advanced → Developer Mode) to be able to copy IDs from
   servers, channels, messages, and everything else that has an ID
 
