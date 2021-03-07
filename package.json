@@ -28,10 +28,10 @@
     "typescript": "^3.9.7"
   },
   "devDependencies": {
-    "@yestheoryfam/prettier-config": "^1.0.0",
     "@types/countries-and-timezones": "^2.0.3",
     "@types/node": "^13.11.1",
     "@types/ws": "^7.2.6",
+    "@yestheoryfam/prettier-config": "^1.0.0",
     "prettier": "^2.0.5",
     "ts-node-dev": "^1.0.0-pre.56"
   }

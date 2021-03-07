@@ -17,11 +17,11 @@ found has already been reported. If you found a match, just upvote it with the �
 
 If you couldn't find anything that looks like your problem, create a new one containing the following information:
 
-- Clear and descriptive title ("Bot doesn't work" is *not* helpful)
+- Clear and descriptive title ("Bot doesn't work" is _not_ helpful)
 - Description of the issue with the following:
-    - What you did
-    - What you thought would happen
-    - What did happen
+  - What you did
+  - What you thought would happen
+  - What did happen
 - If you are able to reproduce this problem repeatedly and reliably, include step by step instructions on how to
   recreate the issue
 
@@ -94,14 +94,16 @@ To work on the bot you need the following:
 
 - The current [Node](https://nodejs.org/) LTS Version
 - A PostgreSQL server with a database called `yesbot`, username `yesbot` and password (you guessed it) `yesbot`
-    - (recommended) You can use [Docker](https://www.docker.com/get-started)
-      with [Docker Compose](https://docs.docker.com/compose/install/) and the `docker-compose.yml` in this repository to
-      launch one in one command
-    - [Download](https://www.postgresql.org/download/) and install PostgreSQL on your host system, then create and
-      configure a database following the requirements above
+  - (recommended) You can use [Docker](https://www.docker.com/get-started)
+    with [Docker Compose](https://docs.docker.com/compose/install/) and the `docker-compose.yml` in this repository to
+    launch one in one command
+  - [Download](https://www.postgresql.org/download/) and install PostgreSQL on your host system, then create and
+    configure a database following the requirements above
 - A Discord server created from [this template](https://discord.com/template/7wc3BmmACSbr)
 - A Discord application with a bot token (get started
   at [https://discord.com/developers](https://discord.com/developers))
+- After creating a Discord application click on (Bot → Add Bot).
+- In the Bot tabs on your newly created Discord application, this is where you will find your Bot token to be used later on in `const.ts`
 - Developer mode in Discord enabled (Settings → Appearance → Advanced → Developer Mode) to be able to copy IDs from
   servers, channels, messages, and everything else that has an ID
 
@@ -131,7 +133,7 @@ cd yesbot-ts
 
 #### Run the database
 
-*Skip this step if you have a postgres server with a database `yesbot` with credentials `yesbot:yesbot` running.*
+_Skip this step if you have a postgres server with a database `yesbot` with credentials `yesbot:yesbot` running._
 
 Run the following command in the root directory of the project to start a docker container with the database:
 
@@ -140,6 +142,8 @@ docker-compose up
 # or docker-compose up -d
 # if you want to reuse your terminal; in this case you can shut down the container with docker-compose down in the same directory
 ```
+
+Ensure that you have Docker running and no other connections on Port 5432 as this is where YesBot connects to.
 
 #### Set up the bot
 
@@ -154,7 +158,8 @@ npm install
 ```tsx
 export const BOT_TOKEN = "<here goes your bot token>";
 export const GUILD_ID = "<here goes the ID of your test server>";
-export const OUTPUT_CHANNEL_ID = "<here goes the ID of a channel in your test server that the bot should use for logging>";
+export const OUTPUT_CHANNEL_ID =
+  "<here goes the ID of a channel in your test server that the bot should use for logging>";
 
 // You can leave these empty unless you are working on the !map feature. If you do, let one of the maintainers know!
 export const MAP_LINK = "";
