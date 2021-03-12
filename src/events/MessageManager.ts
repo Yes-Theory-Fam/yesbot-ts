@@ -217,7 +217,7 @@ class MessageManager {
     // if (firstWord === "!fiyesta") Ticket(this.message, "fiyesta");
     if (firstWord === "!resources") Resource(this.message);
     if (firstWord === "!shoutout") Ticket(this.message, "shoutout");
-    if (firstWord === "!vote") addVote(this.message);
+    if (firstWord === "!addvote") addVote(this.message);
     if (firstWord === "!delete")
       hasRole(this.message.member, "Support")
         ? deleteMessages(this.message)

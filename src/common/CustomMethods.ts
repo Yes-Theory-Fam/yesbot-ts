@@ -1,6 +1,6 @@
-import { Message, User, DMChannel, GuildChannel } from "discord.js";
+import { DMChannel, Message, User } from "discord.js";
 import { Logger } from "./Logger";
-import { textLog, getMember } from "./moderator";
+import { getMember, textLog } from "./moderator";
 import Tools from "./tools";
 
 export const sendLove = (message: Message) => {
@@ -135,11 +135,6 @@ export const deleteMessages = async (botMessage: Message) => {
 };
 
 export const addVote = async (botMessage: Message) => {
-  const channel = botMessage.channel as GuildChannel;
-  if (channel.parent?.name.toLowerCase().endsWith("bot games")) {
-    return;
-  }
-
   try {
     const words = Tools.stringToWords(botMessage.content);
     words.shift();
