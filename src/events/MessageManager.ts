@@ -202,7 +202,7 @@ class MessageManager {
     const parentChannel = (this.message.channel as GuildChannel).parent;
     if (
       parentChannel &&
-      parentChannel.name.toLowerCase().endsWith("bot games")
+      parentChannel.name.toLowerCase().endsWith("entertainment")
     ) {
       Game.handleGameInput(this.message);
     }
