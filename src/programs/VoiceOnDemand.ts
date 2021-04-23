@@ -311,8 +311,8 @@ const changeHostOnDemand = async (message: Message) => {
     return;
   }
 
-  const mentionedUser = message.mentions.users.first();
-  if (!mentionedUser) {
+  const mentionedMember = message.mentions.members.first();
+  if (!mentionedMember) {
     Tools.handleUserError(
       message,
       "You have to mention the user you want to take on ownership of your room."
@@ -320,21 +320,21 @@ const changeHostOnDemand = async (message: Message) => {
     return;
   }
 
-  if (mentionedUser.id === message.author.id) {
+  if (mentionedMember.id === message.author.id) {
     Tools.handleUserError(message, "Errrrr... That's yourself 🤨");
     return;
   }
 
-  const mentionedUserInVoiceChannel = memberVoiceChannel.members.has(
-    mentionedUser.id
+  const mentionedMemberInVoiceChannel = memberVoiceChannel.members.has(
+    mentionedMember.id
   );
 
-  if (!mentionedUserInVoiceChannel) {
+  if (!mentionedMemberInVoiceChannel) {
     Tools.handleUserError(message, "That user is not in your voice channel");
     return;
   }
 
-  if (!hasRole(member, "Yes Theory")) {
+  if (!hasRole(mentionedMember, "Yes Theory")) {
     Tools.handleUserError(
       message,
       "That user doesn't have the Yes Theory role required to control the room. Pick someone else or get a Support to give them the Yes Theory role."
@@ -344,9 +344,16 @@ const changeHostOnDemand = async (message: Message) => {
 
   const repo = await VoiceOnDemandRepository();
   const mapping = await repo.findOne(message.author.id);
-  await transferOwnership(repo, mapping, mentionedUser, memberVoiceChannel);
+  await transferOwnership(
+    repo,
+    mapping,
+    mentionedMember.user,
+    memberVoiceChannel
+  );
 
-  message.reply(`I transfered ownership of your room to <@${mentionedUser}>!`);
+  message.reply(
+    `I transfered ownership of your room to <@${mentionedMember}>!`
+  );
 };
 
 export const voiceOnDemandPermissions = async (
