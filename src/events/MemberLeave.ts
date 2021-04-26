@@ -64,23 +64,12 @@ const RemoveFromGroups = async (memberId: string) => {
       .leftJoinAndSelect("usergroup.members", "groupmember")
       .where("groupmember.id = :id", { id: memberId })
       .getMany();
-    groups.forEach(async (requestedGroupName) => {
-      const group = await groupRepository.findOne({
-        where: {
-          name: ILike(requestedGroupName),
-        },
-        relations: ["members"],
-      });
-
-      if (group === undefined) {
-        return;
-      }
-
-      const updatedMemberList = group.members.filter(
+    groups.forEach((groups) => {
+      const updatedMemberList = groups.members.filter(
         (m: GroupMember) => m.id !== memberId
       );
       groupRepository.save({
-        ...group,
+        ...groups,
         members: updatedMemberList,
       });
     });
