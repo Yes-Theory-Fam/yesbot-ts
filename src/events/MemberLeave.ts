@@ -3,6 +3,7 @@ import {
   BirthdayRepository,
   BuddyProjectEntryRepository,
   GroupMember,
+  UserGroupMembershipRepository,
   UserGroupRepository,
 } from "../entities";
 import { textLog } from "../common/moderator";
@@ -58,24 +59,11 @@ const RemoveFromBirthdays = async (memberId: string) => {
 
 const RemoveFromGroups = async (memberId: string) => {
   try {
-    const groupRepository = await UserGroupRepository();
-    const groups = await groupRepository
-      .createQueryBuilder("usergroup")
-      .leftJoinAndSelect("usergroup.members", "groupmember")
-      .where("groupmember.id = :id", { id: memberId })
-      .getMany();
-    groups.forEach((groups) => {
-      const updatedMemberList = groups.members.filter(
-        (m: GroupMember) => m.id !== memberId
-      );
-      groupRepository.save({
-        ...groups,
-        members: updatedMemberList,
-      });
-    });
+    const groupMemberRepository = await UserGroupMembershipRepository();
+    await groupMemberRepository.remove({ id: memberId });
   } catch (e) {
     textLog(
-      `(MemberLeave) There was an error removing member from Birthday DB: ${memberId}`
+      `(MemberLeave) There was an error removing member from the group DB: ${memberId}`
     );
   }
 };
