@@ -23,7 +23,7 @@ const maxLimit = 10;
 const emptyTime = 60000;
 // Time the owner of the room has left before allowing a transfer
 const transferDelay = 60000;
-const emojiPool = ["📹", "💬", "📺", "🕹️", "🎵", "🏋️"];
+const emojiPool = ["📹", "💬", "📺", "🎲", "🎵", "🏋️"];
 
 const getChannelName = (m: GuildMember, e: string) =>
   `• ${e} ${m.displayName}'s Room`;
