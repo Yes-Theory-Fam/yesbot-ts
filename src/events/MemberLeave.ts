@@ -7,7 +7,6 @@ import {
   UserGroupRepository,
 } from "../entities";
 import { textLog } from "../common/moderator";
-import { ILike } from "../lib/typeormILIKE";
 
 export class MemberLeave {
   constructor(member: GuildMember | PartialGuildMember) {
