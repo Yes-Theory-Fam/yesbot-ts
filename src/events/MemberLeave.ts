@@ -2,12 +2,9 @@ import { GuildMember, PartialGuildMember } from "discord.js";
 import {
   BirthdayRepository,
   BuddyProjectEntryRepository,
-  GroupMember,
   UserGroupMembershipRepository,
-  UserGroupRepository,
 } from "../entities";
 import { textLog } from "../common/moderator";
-import { ILike } from "../lib/typeormILIKE";
 
 export class MemberLeave {
   constructor(member: GuildMember | PartialGuildMember) {
