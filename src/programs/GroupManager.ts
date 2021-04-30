@@ -311,7 +311,7 @@ const searchGroup = async (
   ).sort(byMemberCount);
 
   if (copy.length === 0) {
-    await message.reply("No matching groups were found.")
+    await message.reply("No matching groups were found.");
     return;
   }
 
