@@ -60,6 +60,7 @@ export class Spyfall extends GameSession<SpyfallSessionConfig> {
     rules,
     howToPlay,
     voiceRequired: true,
+    dmsRequired: true,
     minPlayers: 4,
     maxPlayers: 10,
     configuration: {
