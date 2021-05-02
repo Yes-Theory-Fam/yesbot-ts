@@ -200,6 +200,43 @@ export default class GameHub {
     }
   }
 
+  async validateDms(players: GuildMember[]) {
+    const safeDm = async (
+      user: GuildMember,
+      message: string
+    ): Promise<boolean> => {
+      try {
+        const dm = await user.createDM();
+        await dm.send(message);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    };
+    // Map all players to a Promise<{ player, sendSuccess: bool }>
+    const dmPromises = players.map((player) =>
+      safeDm(
+        player,
+        "*Verifying that I can send you a message*"
+      ).then((sendSuccess) => ({ player, sendSuccess }))
+    );
+    // Use Promise.all to wait for all promises to return and access their values
+    const dmResults = await Promise.all(dmPromises);
+    // Filter through the results and collect all the players where the DM failed
+    const failedPlayers = dmResults
+      .filter(({ sendSuccess }) => !sendSuccess)
+      .map(({ player }) => player);
+    // Send a note in the game channel
+    if (failedPlayers.length > 0) {
+      const failedPings = failedPlayers
+        .map((player) => `<@${player.id}>`)
+        .join(", ");
+      throw new Error(
+        `I couldn't send DMs to the following players: ${failedPings} please check your privacy settings (both general and for this server) to make sure I can DM you.`
+      );
+    }
+  }
+
   async createSession(emoji: string, leaderId: Snowflake) {
     const config = this.games[emoji];
     if (!config) {
@@ -223,6 +260,8 @@ export default class GameHub {
           `Not enough players! You need at least ${minPlayers} people.`
         );
       }
+
+      if (clazz.config.dmsRequired) await this.validateDms(players);
 
       if (maxPlayers && players.length > maxPlayers) {
         // noinspection ExceptionCaughtLocallyJS

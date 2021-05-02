@@ -20,6 +20,7 @@ export interface GameConfig<T extends SessionConfig> {
   minPlayers?: number;
   maxPlayers?: number;
   voiceRequired?: boolean;
+  dmsRequired?: boolean;
 }
 
 export interface SessionConfig {
