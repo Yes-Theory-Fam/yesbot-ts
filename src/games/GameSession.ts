@@ -93,8 +93,7 @@ export abstract class GameSession<T extends SessionConfig> {
       .map((user) => this.hub.guild.members.resolve(user.id));
   }
 
-  public async patchConfig(
-    partial: Partial<T>,
+  public async Configuration(
     channel: TextChannel,
     players: GuildMember[],
     leaderId: Snowflake,
@@ -104,7 +103,9 @@ export abstract class GameSession<T extends SessionConfig> {
     this.sessionConfig.voiceChannel = voiceChannel;
     this.sessionConfig.players = [...players];
     this.sessionConfig.leaderId = leaderId;
+  }
 
+  public async patchConfig(partial: Partial<T>): Promise<void> {
     if (this.sessionConfig) {
       this.sessionConfig = { ...this.sessionConfig, ...partial };
     } else {
