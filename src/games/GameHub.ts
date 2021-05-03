@@ -275,9 +275,10 @@ export default class GameHub {
 
     const minPlayers = clazz.config.minPlayers;
     const cleanedPlayers = await this.cleanPlayers(players);
-    const playerPing = cleanedPlayers
-      .map((member) => `<@${member.user.id}>`)
-      .join(" ");
+    if (cleanedPlayers.length >= clazz.config.minPlayers) {
+      const playerPing = cleanedPlayers
+        .map((member) => `<@${member.user.id}>`)
+        .join(" ");
 
     if (cleanedPlayers.length < minPlayers) {
       throw new Error(
@@ -289,19 +290,13 @@ export default class GameHub {
     const channel = await this.createChannel(config, permissions);
     let maybeVoiceChannel;
 
-    if (clazz.config.voiceRequired) {
-      maybeVoiceChannel = await this.createVoiceChannel(config, permissions);
-    }
+      if (clazz.config.voiceRequired) {
+        maybeVoiceChannel = await this.createVoiceChannel(config, permissions);
+      }
 
-    await channel.send(
-      `**${playerPing}, welcome to a game of ${config.name}!**`
-    );
-
-    if (maybeVoiceChannel) {
       await channel.send(
-        "I created a voice channel for you that you should be able to see in the Bot Games category"
+        `**${playerPing}, welcome to a game of ${config.name}!**`
       );
-    }
 
     session.setBaseConfiguration(
       channel,
