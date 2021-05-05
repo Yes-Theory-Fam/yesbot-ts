@@ -273,55 +273,60 @@ export default class GameHub {
       throw e;
     }
 
+    const minPlayers = clazz.config;
     const cleanedPlayers = await this.cleanPlayers(players);
-    if (cleanedPlayers.length >= clazz.config.minPlayers) {
-      const playerPing = cleanedPlayers
-        .map((member) => `<@${member.user.id}>`)
-        .join(" ");
+    const permissions = this.getChannelPermissions(cleanedPlayers);
+    const channel = await this.createChannel(config, permissions);
+    let maybeVoiceChannel;
+    const playerPing = cleanedPlayers
+      .map((member) => `<@${member.user.id}>`)
+      .join(" ");
 
-      const permissions = this.getChannelPermissions(cleanedPlayers);
-      const channel = await this.createChannel(config, permissions);
-      let maybeVoiceChannel;
-
-      if (clazz.config.voiceRequired) {
-        maybeVoiceChannel = await this.createVoiceChannel(config, permissions);
-      }
-
+    if (cleanedPlayers.length < clazz.config.minPlayers) {
       await channel.send(
-        `**${playerPing}, welcome to a game of ${config.name}!**`
+        `Not enough players! You need at least ${minPlayers} people.`
       );
-
-      if (maybeVoiceChannel) {
-        await channel.send(
-          "I created a voice channel for you that you should be able to see in the Bot Games category"
-        );
-      }
-
-      session.Configuration(
-        channel,
-        cleanedPlayers,
-        leaderId,
-        maybeVoiceChannel
-      );
-      this.sessions[channel.id] = session;
-
-      if (clazz.config.configuration) {
-        await channel.send(
-          `<@${leaderId}> is game leader, please configure the game!`
-        );
-
-        const configurator = new GameConfigurator(
-          clazz.config.configuration,
-          config.name,
-          leaderId,
-          channel
-        );
-        const gameConfig = await configurator.createConfiguration();
-        await session.patchConfig(gameConfig);
-      }
-
-      session.start();
+      return;
     }
+
+    if (clazz.config.voiceRequired) {
+      maybeVoiceChannel = await this.createVoiceChannel(config, permissions);
+    }
+
+    await channel.send(
+      `**${playerPing}, welcome to a game of ${config.name}!**`
+    );
+
+    if (maybeVoiceChannel) {
+      await channel.send(
+        "I created a voice channel for you that you should be able to see in the Bot Games category"
+      );
+    }
+
+    session.setBaseConfiguration(
+      channel,
+      cleanedPlayers,
+      leaderId,
+      maybeVoiceChannel
+    );
+    this.sessions[channel.id] = session;
+
+    if (clazz.config.configuration) {
+      await channel.send(
+        `<@${leaderId}> is game leader, please configure the game!`
+      );
+
+      const configurator = new GameConfigurator(
+        clazz.config.configuration,
+        config.name,
+        leaderId,
+        channel
+      );
+      const gameConfig = await configurator.createConfiguration();
+      await session.patchConfig(gameConfig);
+    }
+
+    session.start();
   }
 
   // Because of the way we "route" DMs to the game sessions, members may only be in a single session at once.

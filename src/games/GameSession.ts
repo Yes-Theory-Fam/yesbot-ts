@@ -93,12 +93,12 @@ export abstract class GameSession<T extends SessionConfig> {
       .map((user) => this.hub.guild.members.resolve(user.id));
   }
 
-  public async Configuration(
+  public setBaseConfiguration(
     channel: TextChannel,
     players: GuildMember[],
     leaderId: Snowflake,
     voiceChannel: VoiceChannel | undefined
-  ): Promise<void> {
+  ) {
     this.sessionConfig.channel = channel;
     this.sessionConfig.voiceChannel = voiceChannel;
     this.sessionConfig.players = [...players];
