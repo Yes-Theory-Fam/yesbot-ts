@@ -121,23 +121,17 @@ export class Spyfall extends GameSession<SpyfallSessionConfig> {
     activeVote: false,
   };
 
-  async patchConfig(
-    partial: Partial<SpyfallSessionConfig>,
-    channel: TextChannel,
-    players: GuildMember[],
-    leaderId: Snowflake,
-    voiceChannel: VoiceChannel | undefined
-  ) {
+  async patchConfig(partial: Partial<SpyfallSessionConfig>) {
     const nos = partial.numberOfSpies;
-    if (nos && Math.ceil(players.length / nos) <= 2) {
-      const sensibleDefault = Math.floor(players.length / 2) - 1;
-      await channel.send(
+    if (nos && Math.ceil(this.players.length / nos) <= 2) {
+      const sensibleDefault = Math.floor(this.players.length / 2) - 1;
+      await this.channel.send(
         `Configuration set a value of ${nos} spies which is equal to or more than half the amount of players which automatically wins the spies the game. Setting the number to ${sensibleDefault} to make the game playable.`
       );
       partial.numberOfSpies = sensibleDefault;
     }
 
-    await super.patchConfig(partial, channel, players, leaderId, voiceChannel);
+    await super.patchConfig(partial);
   }
 
   async start() {

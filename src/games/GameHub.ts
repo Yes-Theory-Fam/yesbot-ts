@@ -273,10 +273,17 @@ export default class GameHub {
       throw e;
     }
 
+    const minPlayers = clazz.config.minPlayers;
     const cleanedPlayers = await this.cleanPlayers(players);
     const playerPing = cleanedPlayers
       .map((member) => `<@${member.user.id}>`)
       .join(" ");
+
+    if (cleanedPlayers.length < minPlayers) {
+      throw new Error(
+        `Not enough players! You need at least ${minPlayers} people. Please make sure no players are in an ongoing game.`
+      );
+    }
 
     const permissions = this.getChannelPermissions(cleanedPlayers);
     const channel = await this.createChannel(config, permissions);
@@ -296,6 +303,14 @@ export default class GameHub {
       );
     }
 
+    session.setBaseConfiguration(
+      channel,
+      cleanedPlayers,
+      leaderId,
+      maybeVoiceChannel
+    );
+    this.sessions[channel.id] = session;
+
     if (clazz.config.configuration) {
       await channel.send(
         `<@${leaderId}> is game leader, please configure the game!`
@@ -308,17 +323,10 @@ export default class GameHub {
         channel
       );
       const gameConfig = await configurator.createConfiguration();
-      await session.patchConfig(
-        gameConfig,
-        channel,
-        cleanedPlayers,
-        leaderId,
-        maybeVoiceChannel
-      );
+      await session.patchConfig(gameConfig);
     }
 
     session.start();
-    this.sessions[channel.id] = session;
   }
 
   // Because of the way we "route" DMs to the game sessions, members may only be in a single session at once.
