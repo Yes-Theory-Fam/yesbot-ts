@@ -526,7 +526,9 @@ const requestOwnershipTransfer = async (
   }
 
   const claimingUser = claim
-    ? claim.users.cache.filter((user) => getMemberIds().includes(user.id)).first()
+    ? claim.users.cache
+        .filter((user) => getMemberIds().includes(user.id))
+        .first()
     : channel.members.random().user;
   await botCommands.send(
     `<@${claimingUser}>, is now the new owner of the room! You can now change the limit of it using \`!voice limit\`.`
