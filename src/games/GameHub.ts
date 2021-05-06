@@ -282,7 +282,7 @@ export default class GameHub {
       .map((member) => `<@${member.user.id}>`)
       .join(" ");
 
-    if (cleanedPlayers.length < clazz.config.minPlayers) {
+    if (cleanedPlayers.length < minPlayers) {
       await channel.send(
         `Not enough players! You need at least ${minPlayers} people.`
       );
