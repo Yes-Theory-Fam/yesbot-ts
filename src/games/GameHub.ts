@@ -253,7 +253,7 @@ export default class GameHub {
         players.push(this.guild.member(leaderId));
       }
 
-      const { minPlayers, maxPlayers } = clazz.config;  
+      const { minPlayers, maxPlayers } = clazz.config;
       if (minPlayers && players.length < minPlayers) {
         // noinspection ExceptionCaughtLocallyJS
         throw new Error(
@@ -281,7 +281,7 @@ export default class GameHub {
 
     if (cleanedPlayers.length < minPlayers) {
       throw new Error(
-        `Not enough players! You need at least ${minPlayers} people.`
+        `Not enough players! You need at least ${minPlayers} people. Please make sure no players are in an ongoing game.`
       );
     }
 
