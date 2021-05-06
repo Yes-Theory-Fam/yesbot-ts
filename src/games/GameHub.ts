@@ -273,7 +273,7 @@ export default class GameHub {
       throw e;
     }
 
-    const minPlayers = clazz.config;
+    const minPlayers = clazz.config.minPlayers;
     const cleanedPlayers = await this.cleanPlayers(players);
     const permissions = this.getChannelPermissions(cleanedPlayers);
     const channel = await this.createChannel(config, permissions);
@@ -282,7 +282,7 @@ export default class GameHub {
       .map((member) => `<@${member.user.id}>`)
       .join(" ");
 
-    if (cleanedPlayers.length < clazz.config.minPlayers) {
+    if (cleanedPlayers.length < minPlayers) {
       await channel.send(
         `Not enough players! You need at least ${minPlayers} people.`
       );
