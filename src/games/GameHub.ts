@@ -253,7 +253,7 @@ export default class GameHub {
         players.push(this.guild.member(leaderId));
       }
 
-      const { minPlayers, maxPlayers } = clazz.config;
+      const { minPlayers, maxPlayers } = clazz.config;  
       if (minPlayers && players.length < minPlayers) {
         // noinspection ExceptionCaughtLocallyJS
         throw new Error(
@@ -275,19 +275,19 @@ export default class GameHub {
 
     const minPlayers = clazz.config.minPlayers;
     const cleanedPlayers = await this.cleanPlayers(players);
-    const permissions = this.getChannelPermissions(cleanedPlayers);
-    const channel = await this.createChannel(config, permissions);
-    let maybeVoiceChannel;
     const playerPing = cleanedPlayers
       .map((member) => `<@${member.user.id}>`)
       .join(" ");
 
     if (cleanedPlayers.length < minPlayers) {
-      await channel.send(
+      throw new Error(
         `Not enough players! You need at least ${minPlayers} people.`
       );
-      return;
     }
+
+    const permissions = this.getChannelPermissions(cleanedPlayers);
+    const channel = await this.createChannel(config, permissions);
+    let maybeVoiceChannel;
 
     if (clazz.config.voiceRequired) {
       maybeVoiceChannel = await this.createVoiceChannel(config, permissions);
