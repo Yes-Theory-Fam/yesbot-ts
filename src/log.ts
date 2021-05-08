@@ -1,25 +1,43 @@
 import winston, { createLogger, format, transports } from "winston";
 
-const loggerFormat: winston.Logform.Format = format.combine(
-  format.colorize(),
-  format.simple(),
-);
+const USE_COLORS = process.stdout.isTTY;
+const SHOW_TIMESTAMP = process.stdout.isTTY;
 
 const fmt = format.printf(({ level, message, timestamp, ...meta }) => {
-  const {kind, program, ...fields} = meta;
-  if (Object.keys(fields).length > 0) {
-    return `${timestamp} ${level} [${kind}] [${program}]: ${message} ${JSON.stringify(fields)}`;
+  const { kind, program, ...fields } = meta;
+
+  let out = "";
+  if (SHOW_TIMESTAMP) {
+    out += `${timestamp} `;
   }
-  return `${timestamp} ${level} [${kind}] [${program}]: ${message}`;
+
+  // Add a json-kinda dict with metadata if present
+  if (Object.keys(fields).length > 0) {
+    return `${out}${level} [${kind}] [${program}]: ${message} ${JSON.stringify(fields)}`;
+  }
+  return `${out}${level} [${kind}] [${program}]: ${message}`;
 });
+
+let formatters: winston.Logform.Format[] = [];
+
+// If this is a TTY, enable colors
+if (USE_COLORS) {
+  formatters.push(format.colorize());
+}
+
+// And some simple timestamps
+if (SHOW_TIMESTAMP) {
+  formatters.push(format.timestamp({
+    format: "HH:mm:ss.SSS",
+  }));
+}
+
+// Lastly, add our own formatter.
+formatters.push(fmt);
 
 const loggerOpts: winston.LoggerOptions = {
   level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
-  format: format.combine(
-    format.timestamp(),
-    format.colorize(),
-    fmt,
-  ),
+  format: format.combine(...formatters),
   transports: [
     new transports.Console(),
   ]
