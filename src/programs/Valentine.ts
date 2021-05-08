@@ -15,6 +15,9 @@ import { IsNull } from "typeorm";
 import { textLog } from "../common/moderator";
 import Tools from "../common/tools";
 import Timeout = NodeJS.Timeout;
+import { createYesBotLogger } from "../log";
+
+const logger = createYesBotLogger("programs", "Valentine");
 
 type MemberPick = { member: GuildMember; valentine: Valentine };
 
@@ -148,8 +151,11 @@ const cleanUp = async () => {
   if (movedInMessage) {
     try {
       await movedInMessage.delete();
-    } catch {
-      console.log("Could not delete movedInMessage; probably already deleted.");
+    } catch (err) {
+      logger.error(
+        "Could not delete movedInMessage; probably already deleted.",
+        err
+      );
     }
   }
 

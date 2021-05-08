@@ -3,6 +3,9 @@ import { BuddyProjectEntry, BuddyProjectEntryRepository } from "../entities";
 import { Not, getConnection } from "typeorm";
 import { BUDDY_PROJECT_MATCHING } from "../const";
 import Tools from "../common/tools";
+import { createYesBotLogger } from "../log";
+
+const logger = createYesBotLogger("programs", "BuddyProject");
 
 export const getMatchText = (match: User, set: number): string => `
 Hey there! Thank you for signing up to be a part of the Buddy Project :speech_balloon: . You’ve been paired with <@${
@@ -236,7 +239,7 @@ export const buddyProjectMatch = async (
       .execute();
     return true;
   } catch (error) {
-    console.log(error);
+    logger.error("Failed to insert buddyproject entry", error);
     return false;
   }
 };

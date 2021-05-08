@@ -6,6 +6,9 @@ import {
   DailyChallenge as DailyChallengeEntity,
   DailyChallengeRepository,
 } from "../entities";
+import { createYesBotLogger } from "../log";
+
+const logger = createYesBotLogger("programs", "DailyChallenge");
 
 export const dailyChallengeChannelId = "474197374684758025";
 const UTC_HOUR_POSTED = 8;
@@ -124,10 +127,7 @@ export const saveToDb = async (
           }
         });
       } catch (err) {
-        console.log(
-          "[ERROR] DailyChallenge - There was an error getting the attached file: ",
-          err
-        );
+        logger.error("There was an error getting the attached file: ", err);
         pMessage.react("👎");
       }
     } else {
