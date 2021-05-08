@@ -4,7 +4,6 @@ import {
   BuddyProjectEntryRepository,
   GroupMember,
   UserGroupMembershipRepository,
-  UserGroupRepository,
 } from "../entities";
 import { textLog } from "../common/moderator";
 

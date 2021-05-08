@@ -1,4 +1,5 @@
 import {
+  BaseEntity,
   Entity,
   PrimaryGeneratedColumn,
   PrimaryColumn,
@@ -17,7 +18,7 @@ export class GroupMember {
 }
 
 @Entity()
-export class UserGroup {
+export class UserGroup extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -40,10 +41,6 @@ export class UserGroup {
   @Column({ default: 60 })
   cooldown: number;
 }
-
-export const UserGroupRepository = async () => {
-  return getConnection().getRepository(UserGroup);
-};
 
 export const UserGroupMembershipRepository = async () =>
   getConnection().getRepository(GroupMember);
