@@ -24,7 +24,8 @@
     "reflect-metadata": "^0.1.13",
     "ts-node": "^8.10.2",
     "typeorm": "^0.2.32",
-    "typeorm-upsert": "^1.0.0"
+    "typeorm-upsert": "^1.0.0",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "@types/countries-and-timezones": "^2.0.3",
