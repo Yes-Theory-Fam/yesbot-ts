@@ -163,6 +163,18 @@ const createOnDemand = async (message: Message, userLimit: number) => {
     }
   );
 
+  const repo = await VoiceOnDemandRepository();
+  const mapping = repo.create({
+    userId: member.id,
+    channelId: channel.id,
+    emoji: reaction.emoji.name,
+  });
+  await repo.save(mapping);
+
+  message.reply(
+    `Your room was created with a limit of ${userLimit}, have fun! Don't forget, this channel will be deleted if there is noone in it. :smile:`
+  );
+
   const timeoutRole = Tools.getRoleByName("Time Out", guild);
   const breakRole = Tools.getRoleByName("Break", guild);
 
@@ -191,18 +203,6 @@ const createOnDemand = async (message: Message, userLimit: number) => {
       type: "member",
     },
   ]);
-
-  const repo = await VoiceOnDemandRepository();
-  const mapping = repo.create({
-    userId: member.id,
-    channelId: channel.id,
-    emoji: reaction.emoji.name,
-  });
-  await repo.save(mapping);
-
-  message.reply(
-    `Your room was created with a limit of ${userLimit}, have fun! Don't forget, this channel will be deleted if there is noone in it. :smile:`
-  );
 
   const timeout = setTimeout(() => deleteIfEmpty(channel), emptyTime);
   state.voiceChannels.set(channel.id, timeout);
