@@ -1,14 +1,10 @@
-import { Entity, PrimaryColumn, Column, getConnection } from "typeorm";
+import { BaseEntity, Entity, PrimaryColumn, Column } from "typeorm";
 
 @Entity()
-export class SomeoneUser {
+export class SomeoneUser extends BaseEntity {
   @PrimaryColumn()
   id: string;
 
   @Column("timestamp with time zone") // Adds TZ support in psql
   time: Date;
 }
-
-export const SomeoneRepository = async () => {
-  return getConnection().getRepository(SomeoneUser);
-};
