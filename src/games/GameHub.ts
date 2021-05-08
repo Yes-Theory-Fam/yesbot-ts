@@ -285,15 +285,13 @@ export default class GameHub {
       );
     }
 
-    if (cleanedPlayers.length < minPlayers) {
-      throw new Error(
-        `Not enough players! You need at least ${minPlayers} people. Please make sure no players are in an ongoing game.`
-      );
-    }
-
     const permissions = this.getChannelPermissions(cleanedPlayers);
     const channel = await this.createChannel(config, permissions);
     let maybeVoiceChannel;
+
+    if (clazz.config.voiceRequired) {
+      maybeVoiceChannel = await this.createVoiceChannel(config, permissions);
+    }
 
     await channel.send(
       `**${playerPing}, welcome to a game of ${config.name}!**`
