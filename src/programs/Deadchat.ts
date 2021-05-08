@@ -24,6 +24,12 @@ export default async function Deadchat(pMessage: Message) {
     .limit(1)
     .getOne();
 
+  if (question === undefined) {
+    pMessage.channel.send(
+      ":robot: Yikes! I could not find a question to use to revive chat. Is this the end?"
+    );
+    return;
+  }
   pMessage.channel.send(question.question);
   question.lastUsed = new Date();
   question.save();
