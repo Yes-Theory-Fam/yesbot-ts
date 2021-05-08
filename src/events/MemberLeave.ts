@@ -3,7 +3,6 @@ import {
   Birthday,
   BuddyProjectEntryRepository,
   GroupMember,
-  UserGroupMembershipRepository,
 } from "../entities";
 import { textLog } from "../common/moderator";
 
@@ -56,8 +55,7 @@ const RemoveFromBirthdays = async (memberId: string) => {
 
 const RemoveFromGroups = async (memberId: string) => {
   try {
-    const groupMemberRepository = await UserGroupMembershipRepository();
-    await groupMemberRepository.remove({ id: memberId });
+    await GroupMember.delete(memberId);
   } catch (e) {
     textLog(
       `(MemberLeave) There was an error removing member from the group DB: ${memberId}`

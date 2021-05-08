@@ -16,7 +16,6 @@ import {
   getOrCreateMessage,
   GroupMember,
   UserGroup,
-  UserGroupMembershipRepository,
 } from "../entities";
 import {
   GroupInteractionError,
@@ -504,8 +503,7 @@ const tryJoinGroups = async (
   member: GuildMember
 ): Promise<GroupInteractionInformation[]> => {
   const results: GroupInteractionInformation[] = [];
-  const userGroupMembershipRepository = await UserGroupMembershipRepository();
-  const newGroupMember = userGroupMembershipRepository.create({
+  const newGroupMember = GroupMember.create({
     id: member.id,
   });
 
@@ -521,7 +519,7 @@ const tryJoinGroups = async (
       continue;
     }
 
-    const membership = await userGroupMembershipRepository.save(newGroupMember);
+    const membership = await newGroupMember.save();
     group.members = [...group.members, membership];
     group.save();
 

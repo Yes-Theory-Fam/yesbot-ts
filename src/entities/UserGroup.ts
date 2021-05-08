@@ -4,7 +4,6 @@ import {
   PrimaryGeneratedColumn,
   PrimaryColumn,
   Column,
-  getConnection,
   ManyToMany,
   JoinTable,
 } from "typeorm";
@@ -12,7 +11,7 @@ import {
 // Pretty temporary solution; this should be a more generic User
 // model which we can use for a lot more than just this.
 @Entity()
-export class GroupMember {
+export class GroupMember extends BaseEntity {
   @PrimaryColumn()
   id: string;
 }
@@ -41,6 +40,3 @@ export class UserGroup extends BaseEntity {
   @Column({ default: 60 })
   cooldown: number;
 }
-
-export const UserGroupMembershipRepository = async () =>
-  getConnection().getRepository(GroupMember);
