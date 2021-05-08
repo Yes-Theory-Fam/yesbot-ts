@@ -1,7 +1,7 @@
-import { Entity, PrimaryColumn, Column, getConnection } from "typeorm";
+import { Entity, PrimaryColumn, Column, BaseEntity } from "typeorm";
 
 @Entity()
-export class Birthday {
+export class Birthday extends BaseEntity {
   @PrimaryColumn("text")
   userid: string;
 
@@ -11,6 +11,3 @@ export class Birthday {
   @Column("text", { nullable: true })
   timezone: string;
 }
-
-export const BirthdayRepository = async () =>
-  getConnection().getRepository(Birthday);

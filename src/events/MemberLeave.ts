@@ -1,6 +1,6 @@
 import { GuildMember, PartialGuildMember } from "discord.js";
 import {
-  BirthdayRepository,
+  Birthday,
   BuddyProjectEntryRepository,
   GroupMember,
   UserGroupMembershipRepository,
@@ -42,12 +42,11 @@ const RemoveFromBuddyProject = async (memberId: string) => {
 
 const RemoveFromBirthdays = async (memberId: string) => {
   try {
-    const birthdayEntries = await BirthdayRepository();
-    const foundUser = await birthdayEntries.findOne({
+    const foundUser = await Birthday.findOne({
       userid: memberId,
     });
     if (foundUser) {
-      birthdayEntries.remove(foundUser);
+      await Birthday.remove(foundUser);
     }
   } catch (e) {
     textLog(
