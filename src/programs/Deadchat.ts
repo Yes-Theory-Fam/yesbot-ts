@@ -1,5 +1,5 @@
 import { Message, TextChannel } from "discord.js";
-import { DeadchatQuestion, DeadchatRepository } from "../entities";
+import { DeadchatQuestion } from "../entities";
 import Tools from "../common/tools";
 
 export default async function Deadchat(pMessage: Message) {
@@ -17,9 +17,7 @@ export default async function Deadchat(pMessage: Message) {
     return;
   }
 
-  const deadchatRepo = await DeadchatRepository();
-  const question: DeadchatQuestion = await deadchatRepo
-    .createQueryBuilder()
+  const question: DeadchatQuestion = await DeadchatQuestion.createQueryBuilder()
     .select()
     .andWhere("random() < 0.5 OR id = 1") // To get a random-ish question (strongly biased towards the top few questions but good enough I guess)
     .orderBy("last_used", "ASC")
@@ -28,5 +26,5 @@ export default async function Deadchat(pMessage: Message) {
 
   pMessage.channel.send(question.question);
   question.lastUsed = new Date();
-  deadchatRepo.save(question);
+  question.save();
 }
