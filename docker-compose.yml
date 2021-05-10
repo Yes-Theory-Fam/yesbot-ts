@@ -2,11 +2,10 @@ version: "3.7"
 
 services:
   postgres:
-    build:
-      context: ./database
-      dockerfile: Dockerfile
-    image: ytf-database:latest
+    image: postgres:13
     environment:
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: yesbot
+      POSTGRES_USER: yesbot
+      POSTGRES_PASSWORD: yesbot
     ports:
       - 5432:5432
