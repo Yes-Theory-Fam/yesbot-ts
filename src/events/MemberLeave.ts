@@ -1,10 +1,8 @@
 import { GuildMember, PartialGuildMember } from "discord.js";
 import {
-  BirthdayRepository,
+  Birthday,
   BuddyProjectEntryRepository,
   GroupMember,
-  UserGroupMembershipRepository,
-  UserGroupRepository,
 } from "../entities";
 import { textLog } from "../common/moderator";
 
@@ -42,12 +40,11 @@ const RemoveFromBuddyProject = async (memberId: string) => {
 
 const RemoveFromBirthdays = async (memberId: string) => {
   try {
-    const birthdayEntries = await BirthdayRepository();
-    const foundUser = await birthdayEntries.findOne({
+    const foundUser = await Birthday.findOne({
       userid: memberId,
     });
     if (foundUser) {
-      birthdayEntries.remove(foundUser);
+      await Birthday.remove(foundUser);
     }
   } catch (e) {
     textLog(
@@ -58,8 +55,7 @@ const RemoveFromBirthdays = async (memberId: string) => {
 
 const RemoveFromGroups = async (memberId: string) => {
   try {
-    const groupMemberRepository = await UserGroupMembershipRepository();
-    await groupMemberRepository.remove({ id: memberId });
+    await GroupMember.delete(memberId);
   } catch (e) {
     textLog(
       `(MemberLeave) There was an error removing member from the group DB: ${memberId}`

@@ -16,8 +16,6 @@ import {
   getOrCreateMessage,
   GroupMember,
   UserGroup,
-  UserGroupMembershipRepository,
-  UserGroupRepository,
 } from "../entities";
 import {
   GroupInteractionError,
@@ -131,14 +129,12 @@ export default async function GroupManager(
 
     if (!hasUnquotedGroupPing) return;
 
-    const groupRepository = await UserGroupRepository();
-
     const groupTriggerStart = content.substring(content.indexOf("@group"));
     const args = <string[]>groupTriggerStart.split(/\s/g);
 
     args.shift();
     const [requestName] = args;
-    const groups = await groupRepository.find({
+    const groups = await UserGroup.find({
       relations: ["members"],
     });
     const matchingGroups = groups.filter(
@@ -170,7 +166,7 @@ export default async function GroupManager(
     message.channel.send(groupPingMessage, { split: { char: "," } });
 
     group.lastUsed = new Date();
-    groupRepository.save(group);
+    group.save();
   }
 }
 
@@ -275,8 +271,7 @@ const deleteGroup = async (
     return;
   }
 
-  const groupRepository = await UserGroupRepository();
-  const group = await groupRepository.findOne({
+  const group = await UserGroup.findOne({
     where: {
       name: requestedGroupName,
     },
@@ -287,7 +282,7 @@ const deleteGroup = async (
     return;
   }
 
-  await groupRepository.delete(group.id);
+  await UserGroup.delete(group.id);
   await message.react("👍");
 };
 
@@ -295,14 +290,13 @@ const searchGroup = async (
   message: Message,
   requestedGroupName: string = ""
 ) => {
-  const groupRepository = await UserGroupRepository();
   const groupsPerPage = 4;
   const pages: Array<MessageEmbed> = [];
   const byMemberCount = (a: UserGroup, b: UserGroup) =>
     b.members.length - a.members.length;
 
   const copy = (
-    await groupRepository.find({
+    await UserGroup.find({
       where: {
         name: ILike(`%${requestedGroupName}%`),
       },
@@ -402,8 +396,7 @@ const createGroup = async (
     return;
   }
 
-  const groupRepository = await UserGroupRepository();
-  const group = await groupRepository.findOne({
+  const group = await UserGroup.findOne({
     where: {
       name: requestedGroupName,
     },
@@ -414,12 +407,12 @@ const createGroup = async (
     return;
   }
 
-  const newGroup = groupRepository.create({
+  const newGroup = UserGroup.create({
     name: requestedGroupName,
     description,
   });
 
-  await groupRepository.save(newGroup);
+  await newGroup.save();
   await message.react("👍");
 };
 
@@ -433,8 +426,7 @@ const updateGroup = async (
     return;
   }
 
-  const groupRepository = await UserGroupRepository();
-  const group = await groupRepository.findOne({
+  const group = await UserGroup.findOne({
     where: {
       name: ILike(requestedGroupName),
     },
@@ -448,7 +440,7 @@ const updateGroup = async (
   const previousDescription = group.description;
 
   group.description = description;
-  await groupRepository.save(group);
+  await group.save();
 
   await message.reply(
     `Group description updated from \n> ${previousDescription} \nto \n> ${group.description}`
@@ -469,15 +461,14 @@ const changeCooldown = async (
     return;
   }
 
-  const repo = await UserGroupRepository();
-  const group = await repo.findOne({
+  const group = await UserGroup.findOne({
     where: {
       name: ILike(requestedGroupName),
     },
   });
 
   group.cooldown = cooldownNumber;
-  repo.save(group);
+  group.save();
   message.react("👍");
 };
 
@@ -509,12 +500,10 @@ const leaveGroup = async (
 
 const tryJoinGroups = async (
   groups: UserGroup[],
-  member: GuildMember,
-  groupRepository: Repository<UserGroup>
+  member: GuildMember
 ): Promise<GroupInteractionInformation[]> => {
   const results: GroupInteractionInformation[] = [];
-  const userGroupMembershipRepository = await UserGroupMembershipRepository();
-  const newGroupMember = userGroupMembershipRepository.create({
+  const newGroupMember = GroupMember.create({
     id: member.id,
   });
 
@@ -530,11 +519,9 @@ const tryJoinGroups = async (
       continue;
     }
 
-    const membership = await userGroupMembershipRepository.save(newGroupMember);
-    groupRepository.save({
-      ...group,
-      members: [...group.members, membership],
-    });
+    const membership = await newGroupMember.save();
+    group.members = [...group.members, membership];
+    group.save();
 
     results.push({
       groupName: group.name,
@@ -547,8 +534,7 @@ const tryJoinGroups = async (
 
 const tryLeaveGroups = async (
   groups: UserGroup[],
-  member: GuildMember,
-  groupRepository: Repository<UserGroup>
+  member: GuildMember
 ): Promise<GroupInteractionInformation[]> => {
   const results: GroupInteractionInformation[] = [];
 
@@ -568,10 +554,8 @@ const tryLeaveGroups = async (
       continue;
     }
 
-    groupRepository.save({
-      ...group,
-      members: updatedMemberList,
-    });
+    group.members = updatedMemberList;
+    group.save();
 
     results.push({
       groupName: group.name,
@@ -588,8 +572,7 @@ const groupInteractionAndReport = async (
   member: GuildMember,
   interaction: (
     groups: UserGroup[],
-    member: GuildMember,
-    groupRepository: Repository<UserGroup>
+    member: GuildMember
   ) => Promise<GroupInteractionInformation[]>
 ) => {
   if (requestedGroupNames.filter((name) => name).length === 0) {
@@ -608,13 +591,11 @@ const groupInteractionAndReport = async (
     (name, index) => sanitizedGroupNames.indexOf(name) === index
   );
 
-  const groupRepository = await UserGroupRepository();
-
   const whereCondition = uniqueGroupNames.map((groupName) => ({
     name: ILike(groupName),
   }));
 
-  const groups = await groupRepository.find({
+  const groups = await UserGroup.find({
     where: whereCondition,
     relations: ["members"],
   });
@@ -624,7 +605,7 @@ const groupInteractionAndReport = async (
     return;
   }
 
-  const tryResult = await interaction(groups, member, groupRepository);
+  const tryResult = await interaction(groups, member);
   if (tryResult.length === 1) {
     const result = tryResult[0];
 

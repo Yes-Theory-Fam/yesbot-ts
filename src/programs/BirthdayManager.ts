@@ -12,7 +12,7 @@ import { getAllCountries, getCountry } from "countries-and-timezones";
 
 import Tools from "../common/tools";
 import { textLog, isAuthorModerator } from "../common/moderator";
-import { BirthdayRepository, Birthday } from "../entities";
+import { Birthday } from "../entities";
 import { ENGINEER_ROLE_NAME } from "../const";
 import { Logger } from "../common/Logger";
 
@@ -160,8 +160,7 @@ export async function createBirthday(
   timezone: string
 ) {
   try {
-    const birthdayRepository = await BirthdayRepository();
-    return birthdayRepository.create({
+    return Birthday.create({
       userid: id,
       birthdate: zonedTimeToUtc(birthdate, timezone),
       timezone,
@@ -173,8 +172,7 @@ export async function createBirthday(
 
 export async function saveBirthday(birthday: Birthday) {
   try {
-    const birthdayRepository = await BirthdayRepository();
-    return birthdayRepository.save(birthday);
+    return Birthday.save(birthday);
   } catch (err) {
     Logger("BirthdayManager", "saveBirthday", err);
   }
@@ -501,9 +499,7 @@ function timezonesFromRole(props: CountryWithRegion): readonly string[] {
 }
 
 export async function getUserBirthday(userId: string): Promise<Date | null> {
-  const birthdayRepository = await BirthdayRepository();
-
-  const userExistingBirthday = await birthdayRepository.findOne({
+  const userExistingBirthday = await Birthday.findOne({
     where: {
       userid: userId,
     },

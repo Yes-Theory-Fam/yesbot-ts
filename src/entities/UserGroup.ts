@@ -1,9 +1,9 @@
 import {
+  BaseEntity,
   Entity,
   PrimaryGeneratedColumn,
   PrimaryColumn,
   Column,
-  getConnection,
   ManyToMany,
   JoinTable,
 } from "typeorm";
@@ -11,13 +11,13 @@ import {
 // Pretty temporary solution; this should be a more generic User
 // model which we can use for a lot more than just this.
 @Entity()
-export class GroupMember {
+export class GroupMember extends BaseEntity {
   @PrimaryColumn()
   id: string;
 }
 
 @Entity()
-export class UserGroup {
+export class UserGroup extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -40,10 +40,3 @@ export class UserGroup {
   @Column({ default: 60 })
   cooldown: number;
 }
-
-export const UserGroupRepository = async () => {
-  return getConnection().getRepository(UserGroup);
-};
-
-export const UserGroupMembershipRepository = async () =>
-  getConnection().getRepository(GroupMember);

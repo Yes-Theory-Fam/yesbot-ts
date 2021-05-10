@@ -1,6 +1,6 @@
 import { GuildMember, Message, MessageEmbed } from "discord.js";
 import Tools from "../common/tools";
-import { UserGroupRepository } from "../entities";
+import { UserGroup } from "../entities";
 import { formatBirthday, getUserBirthday } from "./BirthdayManager";
 
 export default async function ProfileManager(pMessage: Message) {
@@ -30,8 +30,6 @@ const getProfileEmbed = async (
   member: GuildMember,
   message: Message
 ): Promise<MessageEmbed> => {
-  const groupRepository = await UserGroupRepository();
-
   const profileEmbed = new MessageEmbed();
   const countryRole = member.roles.cache.find((r) =>
     r.name.includes("I'm from")
@@ -49,8 +47,7 @@ const getProfileEmbed = async (
     return null;
   }
 
-  const groups = await groupRepository
-    .createQueryBuilder("usergroup")
+  const groups = await UserGroup.createQueryBuilder("usergroup")
     .leftJoinAndSelect("usergroup.members", "groupmember")
     .where("groupmember.id = :id", { id: member.id })
     .getMany();

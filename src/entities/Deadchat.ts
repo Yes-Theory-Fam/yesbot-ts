@@ -1,7 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, getConnection } from "typeorm";
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
 @Entity()
-export class DeadchatQuestion {
+export class DeadchatQuestion extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: string;
 
@@ -11,7 +11,3 @@ export class DeadchatQuestion {
   @Column({ default: new Date(), name: "last_used" })
   lastUsed: Date;
 }
-
-export const DeadchatRepository = async () => {
-  return getConnection().getRepository(DeadchatQuestion);
-};

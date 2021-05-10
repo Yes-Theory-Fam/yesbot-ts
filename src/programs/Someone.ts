@@ -3,7 +3,7 @@ import Tools from "../common/tools";
 import axios from "axios";
 import { isAfter, addHours } from "date-fns";
 
-import { SomeoneRepository } from "../entities";
+import { SomeoneUser as SomeoneEntity } from "../entities";
 
 const QUESTION_LINK: string =
   "https://spreadsheets.google.com/feeds/cells/1eve4McRxECmH4dLWLJvHLr9fErBWcCGiH94ihBNzK_s/1/public/full?alt=json";
@@ -69,16 +69,13 @@ const sendMessage = async (
 };
 
 async function updateLastMessage(message: Message) {
-  const someones = await SomeoneRepository();
-  const someone = someones.create({
+  const someone = SomeoneEntity.create({
     id: message.author.id,
+    time: new Date(),
   });
 
   try {
-    someones.save({
-      ...someone,
-      time: new Date(),
-    });
+    someone.save();
   } catch (e) {
     console.error(`Failed to save @someone for user '${someone.id}'`);
     return false;
@@ -88,8 +85,7 @@ async function updateLastMessage(message: Message) {
 }
 
 async function isAllowed(user: User) {
-  const someoneRepository = await SomeoneRepository();
-  const someone = await someoneRepository.findOne({ id: user.id });
+  const someone = await SomeoneEntity.findOne({ id: user.id });
 
   if (someone === undefined) {
     return true;
