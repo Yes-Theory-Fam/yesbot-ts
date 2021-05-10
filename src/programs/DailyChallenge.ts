@@ -1,7 +1,6 @@
 import Axios from "axios";
 import Discord, { Client, Message, TextChannel } from "discord.js";
 import { Repository } from "typeorm";
-import { Logger } from "../common/Logger";
 import {
   DailyChallenge as DailyChallengeEntity,
   DailyChallengeRepository,
@@ -86,10 +85,9 @@ export const postDailyMessage = async (
     try {
       await repo.save(res);
     } catch (err) {
-      Logger(
-        "DailyChallenge",
-        "postDailyMessage",
-        "There was an error posting Daily Challenge: " + err
+      logger.error(
+        "(postDailyMessage) There was an error posting Daily Challenge: ",
+        err
       );
     }
     if (message) {
@@ -143,7 +141,7 @@ const save = async (repo: any, res: any, pMessage: Message) => {
   try {
     await repo.save(res);
   } catch (err) {
-    Logger("DailyChallenge", "save", "There was an error saving to DB: " + err);
+    logger.error("There was an error saving to the DB: ", err);
     pMessage.react("👎");
   }
 };

@@ -14,7 +14,9 @@ import Tools from "../common/tools";
 import { textLog, isAuthorModerator } from "../common/moderator";
 import { Birthday } from "../entities";
 import { ENGINEER_ROLE_NAME } from "../const";
-import { Logger } from "../common/Logger";
+import { createYesBotLogger } from "../log";
+
+const logger = createYesBotLogger("programs", "BirthdayManager");
 
 const IM_FROM = "I'm from ";
 const months = [
@@ -130,7 +132,10 @@ export default async function BirthdayManager(message: Message) {
     } else if (err.message === "time expired") {
       message.react("⏰");
     } else {
-      Logger("BirthdayManager", "timezone", err);
+      logger.error(
+        "An unknown error has occurred awaiting the users timezone: ",
+        err
+      );
       message.channel.send(
         "Hmm, something went wrong. Please contact my engineers if this seems unreasonable. :nerd:"
       );
@@ -151,7 +156,9 @@ export default async function BirthdayManager(message: Message) {
       birthdate
     )} ${timezone}\``
   );
-  saveBirthday(await createBirthday(birthdayUser.id, birthdate, timezone));
+
+  const birthday = await createBirthday(birthdayUser.id, birthdate, timezone);
+  await birthday.save();
 }
 
 export async function createBirthday(
@@ -166,15 +173,7 @@ export async function createBirthday(
       timezone,
     });
   } catch (err) {
-    Logger("BirthdayManager", "createBirthday", err);
-  }
-}
-
-export async function saveBirthday(birthday: Birthday) {
-  try {
-    return Birthday.save(birthday);
-  } catch (err) {
-    Logger("BirthdayManager", "saveBirthday", err);
+    logger.error("Error creating birthday: ", err);
   }
 }
 
@@ -219,11 +218,7 @@ export function getUserBirthdate(message: string): Date | null {
   );
 
   if (!dayMatches || dayMatches.length < 2) {
-    Logger(
-      "BirthdayManager",
-      "getUserBirthdate",
-      `Couldn't find a match for a day in ${message}`
-    );
+    logger.error(`Couldn't find a match for a day in ${message}`);
     return null;
   }
 
@@ -231,11 +226,7 @@ export function getUserBirthdate(message: string): Date | null {
   const day = parseInt(dayMatches[1]);
 
   if (isNaN(day)) {
-    Logger(
-      "BirthdayManager",
-      "getUserBirthdate",
-      `Tried to parse ${dayMatches[1]} as an int and failed!`
-    );
+    logger.error(`Failed to parse ${dayMatches[1]} as an int`);
     return null;
   }
 
@@ -266,12 +257,7 @@ async function getUserTimezone(message: Message): Promise<string> {
     .filter((tz) => tz.includes("/"));
 
   if (timezones.length > 20) {
-    console.log(timezones);
-    Logger(
-      "BirthdayManager",
-      "getUserTimezone",
-      "Too many available timezones"
-    );
+    logger.error("User has too many available timezones: ", timezones);
     throw new Error("Too many available time zones");
   }
 
@@ -300,7 +286,7 @@ async function getUserTimezone(message: Message): Promise<string> {
     try {
       await sentMessage.react(String.fromCodePoint(regionIdentifierStart + i));
     } catch (err) {
-      Logger("BirthdayManager", "getUserTimezone", err);
+      logger.error("Error while adding timezones", err);
       // If we err here, it's probably because the user already selected an emoji.
       // Best to just skip adding more emojis.
       stopAddReactions = true;
@@ -406,7 +392,6 @@ function timezonesFromRole(props: CountryWithRegion): readonly string[] {
                 new Date().toLocaleTimeString("en-GB", { timeZone: tz });
                 return tz;
               } catch (e) {
-                Logger("BirthdayManager", "timezonesFromRole", e);
                 return null;
               }
             })

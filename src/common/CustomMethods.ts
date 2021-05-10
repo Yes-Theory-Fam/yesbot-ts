@@ -1,7 +1,9 @@
 import { DMChannel, Message, User } from "discord.js";
-import { Logger } from "./Logger";
 import { getMember, textLog } from "./moderator";
 import Tools from "./tools";
+import { createYesBotLogger } from "../log";
+
+const logger = createYesBotLogger("common", "CustomMethods");
 
 export const sendLove = (message: Message) => {
   const loveArr = [
@@ -110,11 +112,7 @@ export const proposeNameChange = async (name: string, botMessage: Message) => {
         }
       });
   } catch (err) {
-    Logger(
-      "MessageManager",
-      "proposeNameChange",
-      `Error changing name: ${err}`
-    );
+    logger.error("(proposeNameChange) Error changing name: ", err);
   }
 };
 
@@ -130,7 +128,7 @@ export const deleteMessages = async (botMessage: Message) => {
       await botMessage.channel.bulkDelete(messagesToDelete);
     }
   } catch (err) {
-    Logger("CustomMethods", "deleteMessages", err);
+    logger.error("Error deleting messages: ", err);
   }
 };
 
@@ -147,6 +145,6 @@ export const addVote = async (botMessage: Message) => {
         .then(() => messageToVote.react("👍"))
         .then(() => messageToVote.react("👎"));
   } catch (err) {
-    Logger("CustomMethods", "addVote", err);
+    logger.error("Error adding voting: ", err);
   }
 };

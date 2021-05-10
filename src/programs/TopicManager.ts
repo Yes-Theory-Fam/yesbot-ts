@@ -1,9 +1,10 @@
 import { Message, TextChannel, MessageAttachment } from "discord.js";
 import axios from "axios";
 import { TopicRepo } from "../entities/Topic";
-import { Logger } from "../common/Logger";
 import { isAuthorModerator } from "../common/moderator";
-import { createTextSpanFromBounds } from "typescript";
+import { createYesBotLogger } from "../log";
+
+const logger = createYesBotLogger("programs", "TopicManager");
 
 const QUESTION_LINK: string =
   "https://spreadsheets.google.com/feeds/cells/1xUIqCaSrjyQzJeJfnXR0Hix6mDkaFhVauFmJb8Pzkj0/1/public/full?alt=json";
@@ -92,10 +93,6 @@ export const setTopic = async (message: Message) => {
       message.react("👍");
     });
   } catch (e) {
-    Logger(
-      "TopicManager",
-      "setTopic",
-      `There was an error inserting a topic into the Topicrepo: ${e.message}.`
-    );
+    logger.error("(setTopic) Error adding topic", e);
   }
 };

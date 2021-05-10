@@ -13,9 +13,11 @@ import {
 } from "discord.js";
 import { ChannelToggleRepository } from "../entities";
 import { textLog } from "./moderator";
-import { Logger } from "./Logger";
+import { createYesBotLogger } from "../log";
 
 export const unicodeEmojiRegex = /^(\p{RI}\p{RI}|\p{Emoji}(\p{Emoji_Modifier_Base}|\uFE0F\u20E3?|[\u{E0020}-\u{E007E}]+\u{E007F})?(\u{200D}\p{Emoji}(\p{Emoji_Modifier_Base}|\uFE0F\u20E3?|[\u{E0020}-\u{E007E}]+\u{E007F})?)*)/gu;
+
+const logger = createYesBotLogger("common", "Tools");
 
 class Tools {
   static stringToWords(inputStr: string): Array<string> {
@@ -38,10 +40,11 @@ class Tools {
           }
         );
       } catch (error) {
-        const reason =
-          "FAILED TO READ FILE " + `./src/collections/${filename}.json`;
-        Logger("tools", "resolveFile", reason);
-        reject(reason);
+        logger.error(
+          `(resolveFile) Failed to read file src/collections/${filename}.json: `,
+          error
+        );
+        reject(error);
       }
     });
   }
@@ -68,7 +71,7 @@ class Tools {
       const message = await channel.messages.fetch(messageId);
       return [message, channel];
     } catch (error) {
-      Logger("tools", "getMessageById", error);
+      logger.error("(getMessageById) Failed to fetch message", error);
       return [null, null];
     }
   }
@@ -121,7 +124,10 @@ class Tools {
         });
       }
     } catch (err) {
-      Logger("tools", "addUserPermissions", err);
+      logger.error(
+        "(addPerUserPermissions) Failed to add per user permissions",
+        err
+      );
     }
   }
 
