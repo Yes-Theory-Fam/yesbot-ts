@@ -3,6 +3,7 @@ import {
   GuildMember,
   Message,
   MessageEmbed,
+  MessageMentionOptions,
   MessageReaction,
   User,
 } from "discord.js";
@@ -115,11 +116,16 @@ export default async function BirthdayManager(message: Message) {
         ENGINEER_ROLE_NAME,
         message.guild
       );
-      Tools.handleUserError(
-        message,
+      await message.delete();
+      const allowedMentions: MessageMentionOptions = {
+        roles: [engineerRole.id],
+        users: [message.author.id],
+      };
+      await message.reply(
         "Ouch, it seems like you have an extreme amounts of timezones available!" +
           "\nPlease wait while I call for my masters. :grin:" +
-          `\nBeep boop ${engineerRole.toString()}? :telephone:`
+          `\nBeep boop ${engineerRole.toString()}? :telephone:`,
+        { allowedMentions }
       );
     } else if (err.message === "time expired") {
       message.react("⏰");
@@ -262,6 +268,7 @@ async function getUserTimezone(message: Message): Promise<string> {
     .filter((tz) => tz.includes("/"));
 
   if (timezones.length > 20) {
+    console.log(timezones);
     Logger(
       "BirthdayManager",
       "getUserTimezone",
@@ -462,6 +469,21 @@ function timezonesFromRole(props: CountryWithRegion): readonly string[] {
     }
     case "the UAE": {
       return getCountry("AE").timezones;
+    }
+    case "Russia": {
+      return [
+        "Europe/Kaliningrad",
+        "Europe/Moscow",
+        "Europe/Samara",
+        "Asia/Yekaterinburg",
+        "Asia/Omsk",
+        "Asia/Novosibirsk",
+        "Asia/Irkutsk",
+        "Asia/Yakutsk",
+        "Asia/Vladivostok",
+        "Asia/Magadan",
+        "Asia/Kamchatka",
+      ];
     }
   }
 
