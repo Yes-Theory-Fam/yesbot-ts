@@ -2,6 +2,9 @@ import { Message, Snowflake, MessageEmbed } from "discord.js";
 import Tools from "../common/tools";
 import { isAuthorModerator } from "../common/moderator";
 import { ReactionRoleRepository } from "../entities";
+import { createYesBotLogger } from "../log";
+
+const logger = createYesBotLogger("program", "ReactRole");
 
 export default async function ReactRole(message: Message) {
   //! This comes to us in the format of "!roles [add|list] [messageId] [emoji] [roleId] [channelId]"
@@ -190,8 +193,9 @@ async function deleteReactRoleObjects(index: any, pMessage: Message) {
     } catch (err) {
       // We don't really care about the error, since the message/channel might have been removed.
       // We log it for good measure.
-      console.log(
-        `Error while removing all reactions from a reactionRole message: Err ${err}`
+      logger.error(
+        "Error while removing all reactions from a reactionRole message",
+        err
       );
     }
     pMessage.channel.send("Successfully removed reaction role.");

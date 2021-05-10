@@ -1,3 +1,4 @@
+import { createYesBotLogger } from "./log"
 import {
   Client,
   Channel,
@@ -31,7 +32,11 @@ import { BOT_TOKEN } from "./const";
 import "./db";
 import { MemberLeave } from "./events/MemberLeave";
 
+const logger = createYesBotLogger("main", "index");
+logger.info("Starting YesBot");
+
 const bot = new Client({ partials: ["REACTION", "MESSAGE"] });
+logger.debug("Logging in to Discord Gateway");
 bot.login(BOT_TOKEN);
 
 //! ================= EVENT HANDLERS ====================

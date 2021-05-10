@@ -9,6 +9,9 @@ import {
   Message,
 } from "discord.js";
 import { hasRole } from "../common/moderator";
+import { createYesBotLogger } from "../log";
+
+const logger = createYesBotLogger("programs", "NitroColors");
 
 let nitroRolesCache: Collection<Snowflake, Role>;
 let colorSelectionMessage: Message;
@@ -26,7 +29,7 @@ export const cacheNitroColors = async (guildId: Snowflake) => {
       .then((messages) => messages.array().reverse()[0]);
 
     if (!colorSelectionMessage) {
-      console.log(
+      logger.warn(
         "Didn't find a message in #pick-your-color to load Nitro colors from. Skipping setting up nitro colors."
       );
       nitroRolesCache = new Collection([]);
@@ -35,7 +38,7 @@ export const cacheNitroColors = async (guildId: Snowflake) => {
 
     nitroRolesCache = colorSelectionMessage.mentions.roles;
   } catch (err) {
-    console.log("Cache Nitro Colors Error: ", err.message);
+    logger.error("Cache Nitro Colors Error: ", err);
   }
 };
 

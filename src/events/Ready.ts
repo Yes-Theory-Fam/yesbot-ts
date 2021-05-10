@@ -1,5 +1,6 @@
 import { Client, TextChannel } from "discord.js";
 import { GUILD_ID, OUTPUT_CHANNEL_ID } from "../const";
+import { createYesBotLogger } from "../log";
 import {
   DailyChallenge,
   Game,
@@ -7,17 +8,20 @@ import {
   VoiceOnDemandTools,
 } from "../programs";
 
+const logger = createYesBotLogger("events", "Ready");
+
 class Ready {
   bot: Client;
 
   constructor(bot: Client) {
     this.bot = bot;
-    console.log(`${bot.user.tag} - Online`);
+    logger.info(`Bot is online - ${bot.user.tag}`);
 
     this.init(bot);
   }
 
   async init(bot: Client) {
+    logger.debug("Finding guild based on GUILD_ID", { GUILD_ID });
     const guild = this.bot.guilds.resolve(GUILD_ID);
     if (OUTPUT_CHANNEL_ID) {
       const outputChannel = <TextChannel>(

@@ -23,7 +23,10 @@ import {
 } from "../common/interfaces";
 import { ILike } from "typeorm";
 import { Repository } from "typeorm";
+import { createYesBotLogger } from "../log";
 import { dailyChallengeChannelId } from "./DailyChallenge";
+
+const logger = createYesBotLogger("program", "GroupManager");
 
 type GroupInteractionInformation =
   | GroupInteractionSuccess
@@ -216,7 +219,7 @@ const toggleGroup = async (words: string[], message: Message) => {
     await channelToggleRepository.save(toggle);
     message.react("👍");
   } catch (err) {
-    console.error("Failed to create toggle", err);
+    logger.error("Failed to create toggle", err);
     message.react("👎");
     return;
   }
@@ -235,7 +238,9 @@ export async function backfillReactions(
   channelId: string,
   guild: Guild
 ) {
-  console.log(`backfilling reactions for message ${messageId} in ${channelId}`);
+  logger.debug(
+    `backfilling reactions for message ${messageId} in ${channelId}`
+  );
   const channelToggleRepository = await ChannelToggleRepository();
 
   const channel = guild.channels.cache.find(
