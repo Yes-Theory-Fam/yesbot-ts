@@ -28,6 +28,7 @@ import {
   WhereAreYouFromManager,
   Game,
   DMMenu,
+  Unassigned,
 } from "../programs";
 import bot from "../index";
 import { MODERATOR_ROLE_NAME } from "../const";
@@ -153,6 +154,10 @@ class MessageManager {
           postDailyMessage(this.bot, this.message);
         if (firstWord === "!valentine")
           Valentine.changeEventState(this.message);
+        if (firstWord === "!unassignedRoleToggle")
+          Unassigned.UnassignedRoleAssignToggle(this.message);
+        if (firstWord === "!unassignedRoleStatus")
+          Unassigned.UnassignedRoleAssignStatus(this.message);
         break;
       case "bot-commands":
         if (

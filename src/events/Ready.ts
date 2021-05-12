@@ -5,6 +5,7 @@ import {
   DailyChallenge,
   Game,
   NitroColors,
+  Unassigned,
   VoiceOnDemandTools,
 } from "../programs";
 
@@ -28,7 +29,9 @@ class Ready {
         guild.channels.resolve(OUTPUT_CHANNEL_ID)
       );
       const readyMessageString = (status: string) =>
-        `${bot.user.tag} - Online - ${status}`;
+        `${bot.user.tag} - Online - ${status} - ${Unassigned.getStatus(
+          "Currently"
+        )}`;
 
       await NitroColors.cacheNitroColors(GUILD_ID);
       await VoiceOnDemandTools.voiceOnDemandReady(bot);
