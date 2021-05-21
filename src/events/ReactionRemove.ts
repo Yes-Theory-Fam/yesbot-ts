@@ -8,9 +8,9 @@ import {
   User,
 } from "discord.js";
 import bot from "../index";
-import { ChannelToggleRepository, ReactionRoleRepository } from "../entities";
 import { textLog } from "../common/moderator";
 import { Valentine } from "../programs";
+import prisma from "../prisma";
 
 class ReactionRemove {
   bot: Client;
@@ -33,14 +33,14 @@ class ReactionRemove {
   }
 
   async main() {
-    const reactionRoleRepository = await ReactionRoleRepository();
-    const reactRoleObjects = await reactionRoleRepository.find({
+    const reactRoleObjects = await prisma.reactionRole.findMany({
       where: {
         messageId: this.messageId,
         channelId: this.channel.id,
         reaction: this.reaction,
       },
     });
+
     reactRoleObjects.forEach((reactionRole) => {
       const guildMember = this.guild.member(this.user);
       const roleToAdd = this.guild.roles.resolve(reactionRole.roleId);
@@ -52,14 +52,13 @@ class ReactionRemove {
   }
 
   async handleChannelToggleReaction() {
-    const channelToggleRepository = await ChannelToggleRepository();
-    const toggle = await channelToggleRepository.findOne({
+    const toggle = await prisma.channelToggle.findFirst({
       where: {
         emoji: this.reaction,
-        message: this.messageId,
+        messageId: this.messageId,
       },
     });
-    if (toggle === undefined) {
+    if (!toggle) {
       return;
     }
 
@@ -67,9 +66,9 @@ class ReactionRemove {
       (c) => c.id === toggle.channel
     );
 
-    if (channel === undefined) {
-      textLog(
-        `I can't find this channel <#${channel.id}>. Has it been deleted?`
+    if (!channel) {
+      await textLog(
+        `I can't find this channel <#${toggle.channel}>. Has it been deleted?`
       );
       return;
     }

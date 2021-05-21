@@ -12,8 +12,9 @@ import { getAllCountries, getCountry } from "countries-and-timezones";
 
 import Tools from "../common/tools";
 import { textLog, isAuthorModerator } from "../common/moderator";
-import { Birthday } from "../entities";
 import { createYesBotLogger } from "../log";
+import prisma from "../prisma";
+import { Birthday } from "@yes-theory-fam/database";
 
 const logger = createYesBotLogger("programs", "BirthdayManager");
 
@@ -156,24 +157,20 @@ export default async function BirthdayManager(message: Message) {
     )} ${timezone}\``
   );
 
-  const birthday = await createBirthday(birthdayUser.id, birthdate, timezone);
-  await birthday.save();
+  const birthday = createBirthday(birthdayUser.id, birthdate, timezone);
+  await prisma.birthday.create({ data: birthday });
 }
 
-export async function createBirthday(
+export function createBirthday(
   id: string,
   birthdate: Date,
   timezone: string
-) {
-  try {
-    return Birthday.create({
-      userid: id,
-      birthdate: zonedTimeToUtc(birthdate, timezone),
-      timezone,
-    });
-  } catch (err) {
-    logger.error("Error creating birthday: ", err);
-  }
+): Birthday {
+  return {
+    userId: id,
+    birthdate: zonedTimeToUtc(birthdate, timezone),
+    timezone,
+  };
 }
 
 export function getUserBirthdate(message: string): Date | null {
@@ -483,18 +480,16 @@ function timezonesFromRole(props: CountryWithRegion): readonly string[] {
 }
 
 export async function getUserBirthday(userId: string): Promise<Date | null> {
-  const userExistingBirthday = await Birthday.findOne({
-    where: {
-      userid: userId,
-    },
+  const userExistingBirthday = await prisma.birthday.findUnique({
+    where: { userId },
   });
 
-  return userExistingBirthday === undefined
-    ? null
-    : utcToZonedTime(
+  return userExistingBirthday
+    ? utcToZonedTime(
         userExistingBirthday.birthdate,
         userExistingBirthday.timezone
-      );
+      )
+    : null;
 }
 
 export function formatBirthday(date: Date | null): string {

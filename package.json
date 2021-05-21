@@ -5,14 +5,19 @@
   "main": "index.js",
   "prettier": "@yestheoryfam/prettier-config",
   "scripts": {
+    "db:prisma": "npx prisma",
+    "db:generate": "npm run db:prisma generate -- --schema ./node_modules/@yes-theory-fam/database/prisma/schema.prisma",
+    "db:migrate": "env-cmd npm run db:prisma migrate",
     "lint": "prettier --check \"src/!(collections)/**/*.(js|ts|json)\"",
     "lint:fix": "prettier --write \"src/!(collections)/**/*.(js|ts|json)\"",
-    "start": "ts-node-dev --respawn src/index.ts",
-    "start:prod": "ts-node src/index.ts"
+    "postinstall": "npm run db:generate",
+    "start": "env-cmd ts-node-dev --respawn src/index.ts",
+    "start:prod": "env-cmd ts-node src/index.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@yes-theory-fam/database": "0.4.1",
     "axios": "0.21.1",
     "countries-and-timezones": "2.4.0",
     "country-code-emoji": "1.0.0",
@@ -32,8 +37,11 @@
     "@types/node": "13.13.52",
     "@types/ws": "7.4.4",
     "@yestheoryfam/prettier-config": "1.0.0",
+    "env-cmd": "10.1.0",
     "prettier": "2.3.0",
+    "prisma": "2.22.1",
     "ts-node-dev": "1.1.6",
+    "typegraphql-prisma": "0.14.2",
     "typescript": "4.2.4"
   }
 }

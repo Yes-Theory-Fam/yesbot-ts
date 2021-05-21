@@ -55,7 +55,7 @@ export const removeColorIfNotAllowed = async (
   const isColorAllowed = roleRequirements.some((role) => hasRole(member, role));
 
   if (nitroColor && !isColorAllowed) {
-    member.roles.remove(nitroColor);
+    await member.roles.remove(nitroColor);
   }
 };
 

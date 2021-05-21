@@ -1,16 +1,13 @@
 import {
   Client,
-  CollectorFilter,
   DMChannel,
   Message,
-  MessageReaction,
   TextChannel,
   User,
   GuildChannel,
 } from "discord.js";
 import {
   BirthdayManager,
-  BuddyProjectManager,
   Deadchat,
   ExportManager,
   GroupManager,
@@ -37,7 +34,6 @@ import {
   abuseMe,
   addVote,
   deleteMessages,
-  proposeNameChange,
   randomReply,
   sendLove,
 } from "../common/CustomMethods";
@@ -64,7 +60,7 @@ class MessageManager {
       this.routeMessage();
     }
   }
-  routeMessage() {
+  async routeMessage() {
     const mentionedMembers = this.message.mentions.users.size;
     if (mentionedMembers > 20 && !this.message.author.bot) {
       const whitelistedRoles = ["support", "yes theory", "seek discomfort"];
@@ -79,13 +75,13 @@ class MessageManager {
         );
         dm.send(this.message.content);
       });
-      this.message.delete();
+      await this.message.delete();
       const timeoutRole = Tools.getRoleByName("Time Out", this.message.guild);
       const supportRole = Tools.getRoleByName(
         process.env.MODERATOR_ROLE_NAME,
         this.message.guild
       );
-      this.message.member.roles.add(timeoutRole);
+      await this.message.member.roles.add(timeoutRole);
       textLog(
         `<@&${supportRole.id}>: <@${this.message.author.id}> just tagged more than 20 people in a single message in <#${this.message.channel.id}>. The message has been deleted and they have beeen timed out.`
       ).then(() => textLog(`Message content was: ${this.message.content}`));
@@ -94,7 +90,7 @@ class MessageManager {
     const filteredWords = ["nigger", "nigga"];
     const lowerCaseMessage = this.message.content.toLowerCase();
     if (filteredWords.some((word) => lowerCaseMessage.includes(word))) {
-      this.message.delete();
+      await this.message.delete();
       this.message.author
         .createDM()
         .then((dm) =>
@@ -114,68 +110,70 @@ class MessageManager {
     switch (channel.name) {
       case "welcome-chat":
         if (firstWord === "!video") {
-          this.message.reply("https://youtu.be/v-JOe-xqPN0");
+          await this.message.reply("https://youtu.be/v-JOe-xqPN0");
         }
         break;
       case "flag-drop":
-        WhereAreYouFromManager(this.message);
+        await WhereAreYouFromManager(this.message);
         break;
 
       case "chat":
       case "chat-too":
       case "4th-chat":
-        if (firstWord === "@someone") Someone(this.message);
-        if (firstWord === "!deadchat") Deadchat(this.message);
+        if (firstWord === "@someone") await Someone(this.message);
+        if (firstWord === "!deadchat") await Deadchat(this.message);
         if (firstWord === "!translate") abuseMe(this.message);
         break;
 
       case "trends":
-        if (firstWord === "!trend") TopicManager.default(this.message);
-        if (firstWord === "!trendSet") TopicManager.setTopic(this.message);
+        if (firstWord === "!trend")
+          await TopicManager.TopicManager(this.message);
+        if (firstWord === "!trendSet")
+          await TopicManager.setTopic(this.message);
         break;
 
       case "daily-challenge":
-        if (firstWord === "!challenge") DailyChallenge(this.message);
+        if (firstWord === "!challenge") await DailyChallenge(this.message);
         break;
       case "permanent-testing":
-        if (firstWord === "!export") ExportManager(this.message);
+        if (firstWord === "!export") await ExportManager(this.message);
         if (
           firstWord === "!group" &&
           !this.message.content.toLowerCase().startsWith("!group toggle")
         )
-          GroupManager(this.message, true);
-        if (firstWord === "!profile") ProfileManager(this.message);
-        if (firstWord === "!templateMode") TemplateMode(this.message);
+          await GroupManager(this.message, true);
+        if (firstWord === "!profile") await ProfileManager(this.message);
+        if (firstWord === "!templateMode") await TemplateMode(this.message);
         if (firstWord === "!addChallenge")
-          saveToDb("daily-challenge", restOfMessage, this.message);
+          await saveToDb("daily-challenge", restOfMessage, this.message);
         if (firstWord === "!todayChallenge")
-          postDailyMessage(this.bot, this.message);
+          await postDailyMessage(this.bot, this.message);
         if (firstWord === "!valentine")
-          Valentine.changeEventState(this.message);
+          await Valentine.changeEventState(this.message);
         if (firstWord === "!unassignedRoleToggle")
-          Unassigned.UnassignedRoleAssignToggle(this.message);
+          await Unassigned.UnassignedRoleAssignToggle(this.message);
         if (firstWord === "!unassignedRoleStatus")
-          Unassigned.UnassignedRoleAssignStatus(this.message);
+          await Unassigned.UnassignedRoleAssignStatus(this.message);
         break;
       case "bot-commands":
         if (
           firstWord === "!group" &&
           !this.message.content.toLowerCase().startsWith("!group toggle")
         )
-          GroupManager(this.message, true);
-        if (firstWord === "!profile") ProfileManager(this.message);
-        if (firstWord === "!birthday") BirthdayManager(this.message);
+          await GroupManager(this.message, true);
+        if (firstWord === "!profile") await ProfileManager(this.message);
+        if (firstWord === "!birthday") await BirthdayManager(this.message);
 
-        if (firstWord === "!voice") VoiceOnDemand(this.message);
+        if (firstWord === "!voice") await VoiceOnDemand(this.message);
         if (firstWord === "!video") {
-          this.message.reply("https://youtu.be/v-JOe-xqPN0");
+          await this.message.reply("https://youtu.be/v-JOe-xqPN0");
         }
-        if (firstWord === "!map") MapTools.map(this.message);
-        if (firstWord === "!mapadd") MapTools.mapAdd(this.message);
+        if (firstWord === "!map") await MapTools.map(this.message);
+        if (firstWord === "!mapadd") await MapTools.mapAdd(this.message);
         break;
 
       case "polls":
-        PollsManager(this.message);
+        await PollsManager(this.message);
         break;
 
       case "feature-requests":
@@ -183,23 +181,8 @@ class MessageManager {
         break;
 
       case "bot-games":
-        if (firstWord === "!game") Game.showGameEmbed(this.message);
+        if (firstWord === "!game") await Game.showGameEmbed(this.message);
         break;
-
-      case "buddy-project-output":
-        if (firstWord === "!match") BuddyProjectManager(this.message, "match");
-        if (firstWord === "!check") BuddyProjectManager(this.message, "check");
-        if (firstWord === "!unmatch")
-          BuddyProjectManager(this.message, "unmatch");
-        if (firstWord === "!clean") BuddyProjectManager(this.message, "clean");
-        break;
-
-      case "buddy-project-tools":
-        if (firstWord === "!ghost") BuddyProjectManager(this.message, "ghost");
-        if (firstWord === "!retry") BuddyProjectManager(this.message, "retry");
-
-      case "buddy-project-chat":
-        if (firstWord === "!buddy") BuddyProjectManager(this.message, "buddy");
     }
 
     const parentChannel = (this.message.channel as GuildChannel).parent;
@@ -214,19 +197,19 @@ class MessageManager {
       const guildRole = this.message.guild.roles.cache.find(
         (r) => r.name.toLowerCase() === "head"
       );
-      this.message.member.roles.remove(guildRole);
+      await this.message.member.roles.remove(guildRole);
     }
-    if (firstWord === "!topic") TopicManager.default(this.message);
+    if (firstWord === "!topic") TopicManager.TopicManager(this.message);
     // if (firstWord === "!fiyesta") Ticket(this.message, "fiyesta");
-    if (firstWord === "!resources") Resource(this.message);
-    if (firstWord === "!shoutout") Ticket(this.message, "shoutout");
-    if (firstWord === "!addvote") addVote(this.message);
+    if (firstWord === "!resources") await Resource(this.message);
+    if (firstWord === "!shoutout") await Ticket(this.message, "shoutout");
+    if (firstWord === "!addvote") await addVote(this.message);
     if (firstWord === "!delete")
       hasRole(this.message.member, "Support")
-        ? deleteMessages(this.message)
+        ? await deleteMessages(this.message)
         : null;
-    if (firstWord === "!role") ReactRole(this.message);
-    if (firstWord === "F") this.message.react("🇫");
+    if (firstWord === "!role") await ReactRole(this.message);
+    if (firstWord === "F") await this.message.react("🇫");
     if (
       ["i love u yesbot", "i love you yesbot", "yesbot i love you "].includes(
         this.message.content.toLowerCase()
@@ -242,13 +225,13 @@ class MessageManager {
       this.message.content.toLowerCase().includes("abooz") ||
       this.message.content.toLowerCase().includes("mod abuse")
     ) {
-      this.message.react("👀");
+      await this.message.react("👀");
     }
 
     if (this.message.content.toLowerCase().startsWith("!group toggle"))
-      GroupManager(this.message, true);
+      await GroupManager(this.message, true);
 
-    if (words.includes("@group")) GroupManager(this.message, false);
+    if (words.includes("@group")) await GroupManager(this.message, false);
   }
 
   async routeDm() {
@@ -256,7 +239,7 @@ class MessageManager {
     const dmChannel = this.message.channel;
 
     if (!member) {
-      dmChannel.send(
+      await dmChannel.send(
         "Hey, I am the bot of the Yes Theory Fam Discord Server :) Looks like you are not on it currently, so I cannot really do a lot for you. If you'd like to join, click here: https://discord.gg/yestheory"
       );
       return;
@@ -267,7 +250,7 @@ class MessageManager {
     const command = this.message.content.split(" ")[0];
     switch (command) {
       case "!menu":
-        DMMenu.showMenu(this.message);
+        await DMMenu.showMenu(this.message);
         break;
       // When nothing else makes sense we just guess that they are playing a game.
       // handleGameInput will drop the message if it doesn't understand either.

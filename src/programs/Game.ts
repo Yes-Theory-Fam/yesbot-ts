@@ -1,4 +1,4 @@
-import { Message, MessageReaction, User, Guild, TextChannel } from "discord.js";
+import { Guild, Message, TextChannel } from "discord.js";
 import { GameHub, Spyfall } from "../games";
 import Tools from "../common/tools";
 

@@ -1,5 +1,4 @@
 import * as BirthdayManagerTools from "./BirthdayManager";
-import * as BuddyProject from "./BuddyProject";
 import * as DailyChallenge from "./DailyChallenge";
 import * as DMMenu from "./DMMenu";
 import * as Game from "./Game";
@@ -13,8 +12,6 @@ import * as Valentine from "./Valentine";
 import * as VoiceOnDemandTools from "./VoiceOnDemand";
 import AdventureGame from "./AdventureGame";
 import BirthdayManager from "./BirthdayManager";
-import BuddyProjectGhost from "./BuddyProjectGhost";
-import BuddyProjectManager from "./BuddyProjectManager";
 import Deadchat from "./Deadchat";
 import EasterEvent from "./EasterEvent";
 import ExportManager from "./ExportManager";
@@ -33,9 +30,6 @@ export {
   AdventureGame,
   BirthdayManager,
   BirthdayManagerTools,
-  BuddyProject,
-  BuddyProjectGhost,
-  BuddyProjectManager,
   Deadchat,
   DMMenu,
   EasterEvent,

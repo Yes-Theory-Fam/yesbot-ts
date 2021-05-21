@@ -10,7 +10,7 @@ export default async function WhereAreYouFromManager(pMessage: Message) {
     const matchedCountries = getCountriesFromMessage(pMessage.content);
 
     if (matchedCountries.length > 1) {
-      pMessage.reply(
+      await pMessage.reply(
         "Please only tell me 1 country for now, you can ask a member of the Support team about multiple nationalities :grin:"
       );
       return;
@@ -24,7 +24,7 @@ export default async function WhereAreYouFromManager(pMessage: Message) {
         const moderatorRole = pMessage.guild.roles.cache.find(
           (r) => r.name === process.env.MODERATOR_ROLE_NAME
         );
-        textLog(
+        await textLog(
           `${moderatorRole.toString()}: <@${
             pMessage.author.id
           }> just requested role for country ${
@@ -33,8 +33,8 @@ export default async function WhereAreYouFromManager(pMessage: Message) {
         );
         return;
       }
-      pMessage.member.roles.add(roleToAssign);
-      pMessage.react("👍");
+      await pMessage.member.roles.add(roleToAssign);
+      await pMessage.react("👍");
       pMessage.member.createDM().then((dmChannel) => {
         const rules = pMessage.guild.channels.cache.find(
           (c) => c.name === "rules"

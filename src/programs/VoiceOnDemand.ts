@@ -11,10 +11,10 @@ import {
 } from "discord.js";
 
 import { hasRole } from "../common/moderator";
-import { VoiceOnDemandRepository, VoiceOnDemandMapping } from "../entities";
 import state from "../common/state";
 import Tools from "../common/tools";
-import { Repository } from "typeorm";
+import prisma from "../prisma";
+import { VoiceOnDemandMapping } from "@yes-theory-fam/database";
 
 const defaultLimit = (5).toString();
 const maxLimit = 10;
@@ -29,8 +29,9 @@ const getChannelName = (m: GuildMember, e: string) =>
 
 const getVoiceChannel = async (member: GuildMember): Promise<VoiceChannel> => {
   const guild = member.guild;
-  const repo = await VoiceOnDemandRepository();
-  const mapping = await repo.findOne(member.id);
+  const mapping = await prisma.voiceOnDemandMapping.findUnique({
+    where: { userId: member.id },
+  });
   return guild.channels.resolve(mapping?.channelId) as VoiceChannel;
 };
 
@@ -42,7 +43,7 @@ export default async function (message: Message) {
     !notYesTheoryExclusiveCommands.includes(command) &&
     !hasRole(message.member, "Yes Theory")
   ) {
-    Tools.handleUserError(
+    await Tools.handleUserError(
       message,
       `Hey, you need to have the Yes Theory role to use this command! You can get this by talking with others in our public voice chats :grin:`
     );
@@ -52,38 +53,38 @@ export default async function (message: Message) {
   switch (command) {
     case "create":
     case "limit":
-      handleLimitCommand(message);
+      await handleLimitCommand(message);
       break;
     case "shrink":
     case "up":
     case "down":
-      handleLimitUpdateCommand(message, command);
+      await handleLimitUpdateCommand(message, command);
       break;
     case "knock":
-      knockOnDemand(message);
+      await knockOnDemand(message);
       break;
     case "host":
-      changeHostOnDemand(message);
+      await changeHostOnDemand(message);
       break;
     default:
-      Tools.handleUserError(
+      await Tools.handleUserError(
         message,
         "Wrong syntax! Use !voice <create|limit> [limit] or !voice host @newHost"
       );
   }
 }
 
-const handleLimitCommand = (message: Message) => {
+const handleLimitCommand = async (message: Message) => {
   const [, command, limitArg = defaultLimit] = message.content.split(" ");
   const requestedLimit = Math.floor(Number(limitArg));
 
   if (isNaN(requestedLimit)) {
-    Tools.handleUserError(message, "The limit has to be a number");
+    await Tools.handleUserError(message, "The limit has to be a number");
     return;
   }
 
   if (requestedLimit < 2) {
-    Tools.handleUserError(message, "The limit has to be at least 2");
+    await Tools.handleUserError(message, "The limit has to be at least 2");
     return;
   }
 
@@ -91,15 +92,15 @@ const handleLimitCommand = (message: Message) => {
 
   switch (command) {
     case "create":
-      createOnDemand(message, limit);
+      await createOnDemand(message, limit);
       break;
     case "limit":
-      limitOnDemand(message, limit);
+      await limitOnDemand(message, limit);
       break;
   }
 };
 
-const handleLimitUpdateCommand = (message: Message, command: string) => {
+const handleLimitUpdateCommand = async (message: Message, command: string) => {
   const getGetLimit = () => {
     switch (command) {
       case "shrink":
@@ -111,7 +112,7 @@ const handleLimitUpdateCommand = (message: Message, command: string) => {
     }
   };
 
-  updateLimit(message, getGetLimit());
+  await updateLimit(message, getGetLimit());
 };
 
 const getShrinkLimit = (channel: VoiceChannel) =>
@@ -128,7 +129,7 @@ const createOnDemand = async (message: Message, userLimit: number) => {
   const hasExisting = await getVoiceChannel(member);
 
   if (hasExisting) {
-    Tools.handleUserError(
+    await Tools.handleUserError(
       message,
       "You already have an existing voice channel!"
     );
@@ -162,15 +163,14 @@ const createOnDemand = async (message: Message, userLimit: number) => {
     }
   );
 
-  const repo = await VoiceOnDemandRepository();
-  const mapping = repo.create({
+  const mapping = {
     userId: member.id,
     channelId: channel.id,
     emoji: reaction.emoji.name,
-  });
-  await repo.save(mapping);
+  };
+  await prisma.voiceOnDemandMapping.create({ data: mapping });
 
-  message.reply(
+  await message.reply(
     `Your room was created with a limit of ${userLimit}, have fun! Don't forget, this channel will be deleted if there is noone in it. :smile:`
   );
 
@@ -208,7 +208,7 @@ const createOnDemand = async (message: Message, userLimit: number) => {
 };
 
 const limitOnDemand = async (message: Message, limit: number) => {
-  updateLimit(message, () => limit);
+  await updateLimit(message, () => limit);
 };
 
 const knockOnDemand = async (message: Message) => {
@@ -260,18 +260,18 @@ const knockOnDemand = async (message: Message) => {
     })
   ).first();
 
-  accessMessage.delete();
+  await accessMessage.delete();
 
   if (!vote) {
-    message.reply(`sorry but ${member.displayName} didn't respond.`);
+    await message.reply(`sorry but ${member.displayName} didn't respond.`);
     return;
   }
 
-  message.reply("you were let in!");
+  await message.reply("you were let in!");
 
   // Blatant hack to abuse existing API
   message.author = owner;
-  updateLimit(message, getUpLimit);
+  await updateLimit(message, getUpLimit);
 };
 
 const updateLimit = async (
@@ -282,7 +282,7 @@ const updateLimit = async (
   const memberVoiceChannel = await getVoiceChannel(member);
 
   if (!memberVoiceChannel) {
-    Tools.handleUserError(
+    await Tools.handleUserError(
       message,
       "You don't have a voice channel. You can create one using `!voice create` and an optional limit"
     );
@@ -291,11 +291,13 @@ const updateLimit = async (
 
   const limit = await getLimit(memberVoiceChannel);
 
-  memberVoiceChannel.edit({
+  await memberVoiceChannel.edit({
     userLimit: limit,
   });
 
-  message.reply(`Successfully changed the limit of your room to ${limit}`);
+  await message.reply(
+    `Successfully changed the limit of your room to ${limit}`
+  );
 };
 
 const changeHostOnDemand = async (message: Message) => {
@@ -303,7 +305,7 @@ const changeHostOnDemand = async (message: Message) => {
   const memberVoiceChannel = await getVoiceChannel(member);
 
   if (!memberVoiceChannel) {
-    Tools.handleUserError(
+    await Tools.handleUserError(
       message,
       "You don't have a voice channel. You can create one using `!voice create` and an optional limit"
     );
@@ -312,7 +314,7 @@ const changeHostOnDemand = async (message: Message) => {
 
   const mentionedMember = message.mentions.members.first();
   if (!mentionedMember) {
-    Tools.handleUserError(
+    await Tools.handleUserError(
       message,
       "You have to mention the user you want to take on ownership of your room."
     );
@@ -320,7 +322,7 @@ const changeHostOnDemand = async (message: Message) => {
   }
 
   if (mentionedMember.id === message.author.id) {
-    Tools.handleUserError(message, "Errrrr... That's yourself 🤨");
+    await Tools.handleUserError(message, "Errrrr... That's yourself 🤨");
     return;
   }
 
@@ -329,28 +331,28 @@ const changeHostOnDemand = async (message: Message) => {
   );
 
   if (!mentionedMemberInVoiceChannel) {
-    Tools.handleUserError(message, "That user is not in your voice channel");
+    await Tools.handleUserError(
+      message,
+      "That user is not in your voice channel"
+    );
     return;
   }
 
   if (!hasRole(mentionedMember, "Yes Theory")) {
-    Tools.handleUserError(
+    await Tools.handleUserError(
       message,
       "That user doesn't have the Yes Theory role required to control the room. Pick someone else or get a Support to give them the Yes Theory role."
     );
     return;
   }
 
-  const repo = await VoiceOnDemandRepository();
-  const mapping = await repo.findOne(message.author.id);
-  await transferOwnership(
-    repo,
-    mapping,
-    mentionedMember.user,
-    memberVoiceChannel
-  );
+  const mapping = await prisma.voiceOnDemandMapping.findUnique({
+    where: { userId: message.author.id },
+  });
 
-  message.reply(
+  await transferOwnership(mapping, mentionedMember.user, memberVoiceChannel);
+
+  await message.reply(
     `I transfered ownership of your room to <@${mentionedMember}>!`
   );
 };
@@ -365,17 +367,18 @@ export const voiceOnDemandPermissions = async (
   // Because this should only trigger when the owner (as first person) joins, we can ignore
   //  all joins where more than one person is in the room after a person joined
   if (newState.channel.members.size > 1) return;
-  const repo = await VoiceOnDemandRepository();
 
   const { channel } = newState;
   const { id } = channel;
-  const mapping = await repo.findOne({ channelId: id });
+  const mapping = await prisma.voiceOnDemandMapping.findUnique({
+    where: { channelId: id },
+  });
 
   if (!mapping) return;
 
   const { guild } = channel;
 
-  channel.updateOverwrite(guild.roles.everyone, {
+  await channel.updateOverwrite(guild.roles.everyone, {
     STREAM: true,
     CONNECT: null,
   });
@@ -396,9 +399,10 @@ export const voiceOnDemandReset = async (
   //  the same amount of users in so it's not relevant for our purpose
   if (!oldState.channel || oldState.channelID === newState.channelID) return;
 
-  const repo = await VoiceOnDemandRepository();
   const channelId = oldState.channel.id;
-  const mapping = await repo.findOne({ channelId });
+  const mapping = await prisma.voiceOnDemandMapping.findUnique({
+    where: { channelId },
+  });
   if (!mapping) return;
 
   type TimeoutFunction = () => void;
@@ -412,7 +416,7 @@ export const voiceOnDemandReset = async (
 
   if (mapping.userId === newState.member.id) {
     updateTimeout(
-      () => requestOwnershipTransfer(oldState.channel, repo, mapping),
+      () => requestOwnershipTransfer(oldState.channel, mapping),
       transferDelay
     );
   }
@@ -427,15 +431,14 @@ export const voiceOnDemandReset = async (
 //  adding a timeout task to clean up in case they are empty.
 export const voiceOnDemandReady = async (bot: Client) => {
   const guild = bot.guilds.resolve(process.env.GUILD_ID);
-  const repo = await VoiceOnDemandRepository();
-  const mappings = await repo.find();
+  const mappings = await prisma.voiceOnDemandMapping.findMany();
   for (let i = 0; i < mappings.length; i++) {
     const { channelId, userId } = mappings[i];
     const channel = guild.channels.resolve(channelId) as VoiceChannel;
 
     // Fallback if a channel in the DB was already deleted manually
     if (channel === null) {
-      removeMapping(channelId);
+      await removeMapping(channelId);
       return;
     }
 
@@ -444,7 +447,7 @@ export const voiceOnDemandReady = async (bot: Client) => {
       state.voiceChannels.set(channelId, timeout);
     } else if (channel.members.every((member) => member.id !== userId)) {
       const timeout = setTimeout(
-        () => requestOwnershipTransfer(channel, repo, mappings[i]),
+        () => requestOwnershipTransfer(channel, mappings[i]),
         transferDelay
       );
       state.voiceChannels.set(channelId, timeout);
@@ -453,8 +456,7 @@ export const voiceOnDemandReady = async (bot: Client) => {
 };
 
 const removeMapping = async (channelId: string) => {
-  const repo = await VoiceOnDemandRepository();
-  repo.delete({ channelId });
+  await prisma.voiceOnDemandMapping.delete({ where: { channelId } });
 };
 
 const deleteIfEmpty = async (channel: VoiceChannel) => {
@@ -463,21 +465,23 @@ const deleteIfEmpty = async (channel: VoiceChannel) => {
   if (!channel || !channel.guild.channels.resolve(channel.id)) return;
   if (channel.members.size === 0) {
     await channel.delete();
-    const repo = await VoiceOnDemandRepository();
-    repo.delete({ channelId: channel.id });
+    await prisma.voiceOnDemandMapping.delete({
+      where: { channelId: channel.id },
+    });
   }
 };
 
 const requestOwnershipTransfer = async (
   channel: VoiceChannel,
-  repo: Repository<VoiceOnDemandMapping>,
   mapping: VoiceOnDemandMapping
 ) => {
   if (!channel.guild.channels.resolve(channel.id) || channel.members.size === 0)
     return;
 
   // Gotta fetch the most recent one to make sure potential updates through !voice host are still in here
-  const currentMapping = await repo.findOne(mapping.userId);
+  const currentMapping = await prisma.voiceOnDemandMapping.findUnique({
+    where: { userId: mapping.userId },
+  });
   if (!currentMapping) return;
 
   // Owner is in there
@@ -533,21 +537,18 @@ const requestOwnershipTransfer = async (
     `<@${claimingUser}>, is now the new owner of the room! You can now change the limit of it using \`!voice limit\`.`
   );
 
-  transferOwnership(repo, currentMapping, claimingUser, channel);
+  await transferOwnership(currentMapping, claimingUser, channel);
 };
 
 const transferOwnership = async (
-  repo: Repository<VoiceOnDemandMapping>,
   mapping: VoiceOnDemandMapping,
   claimingUser: User,
   channel: VoiceChannel
 ) => {
-  await repo
-    .createQueryBuilder()
-    .update()
-    .set({ userId: claimingUser.id })
-    .where("channel_id = :id", { id: channel.id })
-    .execute();
+  await prisma.voiceOnDemandMapping.update({
+    where: { channelId: channel.id },
+    data: { userId: claimingUser.id },
+  });
 
   const { emoji } = mapping;
   const newChannelName = getChannelName(

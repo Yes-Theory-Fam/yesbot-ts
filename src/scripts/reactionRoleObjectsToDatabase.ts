@@ -1,23 +1,16 @@
-import "../db"; // imported for side effect
 import Tools from "../common/tools";
-import { ReactionRoleRepository, ReactionRole } from "../entities";
 import { setTimeout } from "timers";
+import prisma from "../prisma";
+import { ReactionRole } from "@yes-theory-fam/database";
 
-// // {"messageId":"668469840981393408","reaction":"🏗️","roleId":"668435737401753611","channelId":"668435977051570187"}
-interface JSONReactionRole {
-  channelId: string;
-  messageId: string;
-  reaction: string;
-  roleId: string;
-}
+type JSONReactionRole = Omit<ReactionRole, "id">;
 
 async function importReactionRoleObjects() {
-  const reactionRoleRepository = await ReactionRoleRepository();
   const reactionRoles = (<unknown>(
     await Tools.resolveFile("reactRoleObjects")
   )) as JSONReactionRole[];
 
-  const existingReactionRoles = await reactionRoleRepository.find();
+  const existingReactionRoles = await prisma.reactionRole.findMany();
   const existingReactionRolesChannelMsgReaction = existingReactionRoles.map(
     (reactionRole) => [
       reactionRole.channelId,
@@ -26,7 +19,7 @@ async function importReactionRoleObjects() {
     ]
   );
 
-  const toCreateSource = reactionRoles
+  const toCreateSource: JSONReactionRole[] = reactionRoles
     .filter(
       ({ channelId, messageId, reaction }) =>
         !existingReactionRolesChannelMsgReaction.includes([
@@ -35,14 +28,12 @@ async function importReactionRoleObjects() {
           reaction,
         ])
     )
-    .map((reactionRole) =>
-      reactionRoleRepository.create({
-        channelId: reactionRole.channelId,
-        messageId: reactionRole.messageId,
-        reaction: reactionRole.reaction,
-        roleId: reactionRole.roleId,
-      })
-    );
+    .map((reactionRole) => ({
+      channelId: reactionRole.channelId,
+      messageId: reactionRole.messageId,
+      reaction: reactionRole.reaction,
+      roleId: reactionRole.roleId,
+    }));
 
   let toCreate2: JSONReactionRole[] = [];
   for (let i = 0; i < toCreateSource.length; i++) {
@@ -83,12 +74,7 @@ async function importReactionRoleObjects() {
   }
 
   try {
-    await reactionRoleRepository
-      .createQueryBuilder()
-      .insert()
-      .into(ReactionRole)
-      .values(toCreate2)
-      .execute();
+    await prisma.reactionRole.createMany({ data: toCreate2 });
   } catch (err) {
     console.log("Failed to mass-import reaction role objects. Error: ", err);
   }

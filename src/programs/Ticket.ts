@@ -45,6 +45,7 @@ export default async function Ticket(pMessage: Message, type: string) {
       moderatorRoleName = process.env.MODERATOR_ROLE_NAME;
       moderatorRoleId = SUPPORT_ROLE_ID;
       ticketMessage = `Hi ${pMessage.member.toString()}, please list the details of your contest below.`;
+      break;
     default:
       break;
   }
@@ -71,7 +72,11 @@ export default async function Ticket(pMessage: Message, type: string) {
     const ticketChannel = <TextChannel>pMessage.channel;
     if (ticketChannel.name.startsWith(type)) {
       if (isAuthorModerator(pMessage))
-        createCloseMessage(ticketChannel, pMessage.author, TICKET_LOG_CHANNEL);
+        await createCloseMessage(
+          ticketChannel,
+          pMessage.author,
+          TICKET_LOG_CHANNEL
+        );
     }
     return;
   }
@@ -80,10 +85,10 @@ export default async function Ticket(pMessage: Message, type: string) {
     const ticketChannel = <TextChannel>pMessage.channel;
     if (ticketChannel.name.startsWith(type)) {
       if (isAuthorModerator(pMessage))
-        closeTicket(ticketChannel, pMessage.author, TICKET_LOG_CHANNEL);
+        await closeTicket(ticketChannel, pMessage.author, TICKET_LOG_CHANNEL);
     }
   } else {
-    pMessage.delete();
+    await pMessage.delete();
     const channelOptions: TextChannelOptions = {
       topic: "Support ticket for " + pMessage.member.user.username,
       type: "text",
@@ -118,7 +123,7 @@ export default async function Ticket(pMessage: Message, type: string) {
         channelOptions
       );
 
-      ticketChannel.send(
+      await ticketChannel.send(
         `${ticketMessage} A ${supportRole.toString()} will be with you as soon as possible.`
       );
     }
@@ -134,8 +139,8 @@ async function closeTicket(
   const logChannel = <TextChannel>(
     channel.guild.channels.cache.find((c) => c.name.startsWith(logChannelName))
   );
-  logChannel.send(text, { split: true });
-  channel.delete("Closed Ticket");
+  await logChannel.send(text, { split: true });
+  await channel.delete("Closed Ticket");
 }
 
 async function createOutput(
@@ -154,7 +159,6 @@ async function createOutput(
         text = text + dateHeader;
         lastDate = dateHeader;
       }
-      year = year.toString().length == 1 ? `0${year}` : year;
       min = min.toString().length == 1 ? `0${min}` : min;
       return `*[${hour}:${min}]* **${message.author.username}**: ${message.cleanContent}`;
     })

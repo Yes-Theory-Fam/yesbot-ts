@@ -1,6 +1,7 @@
-import "../db"; // imported for side effect
+import prisma from "../prisma";
 import fs from "fs";
-import { BirthdayRepository, Birthday } from "../entities";
+
+import { Birthday } from "@yes-theory-fam/database";
 import { BirthdayManagerTools } from "../programs";
 import { setTimeout } from "timers";
 import { zonedTimeToUtc } from "date-fns-tz";
@@ -25,7 +26,6 @@ const debug = false;
 
 async function importBirthdaysCsvToDatabase(filename: string) {
   let timezoneRow: number;
-  const birthdayRepository = await BirthdayRepository();
 
   const rawBirthdays = fs
     .readFileSync(filename, "utf-8")
@@ -66,8 +66,8 @@ async function importBirthdaysCsvToDatabase(filename: string) {
     );
   }
 
-  const existingBirthdays = await birthdayRepository.find();
-  const existingBirthdayUsers = existingBirthdays.map((b) => b.userid);
+  const existingBirthdays = await prisma.birthday.findMany();
+  const existingBirthdayUsers = existingBirthdays.map((b) => b.userId);
 
   const birthdays = await Promise.all(
     csvBirthdays
@@ -106,7 +106,7 @@ async function importBirthdaysCsvToDatabase(filename: string) {
   const toCreate = birthdays.reduce<BirthdayCollection>(
     (prev, curr) => ({
       ...prev,
-      [curr.userid]: curr,
+      [curr.userId]: curr,
     }),
     {}
   );
@@ -123,22 +123,18 @@ async function importBirthdaysCsvToDatabase(filename: string) {
       .slice(0, 4)
       .forEach((key) =>
         console.debug(
-          `First row (parsed): ${toCreate[key].userid}:${toCreate[key].birthdate}`
+          `First row (parsed): ${toCreate[key].userId}:${toCreate[key].birthdate}`
         )
       );
   }
 
   try {
-    await birthdayRepository
-      .createQueryBuilder()
-      .insert()
-      .into(Birthday)
-      .values(
-        Object.keys(toCreate)
-          .map((key) => toCreate[key])
-          .reduce((prev, curr) => [...prev, curr], [])
-      )
-      .execute();
+    // TODO see if this blows up
+    const newBirthdays = Object.keys(toCreate)
+      .map((key) => toCreate[key])
+      .reduce((prev, curr) => [...prev, curr], []);
+
+    await prisma.birthday.createMany({ data: newBirthdays });
   } catch (err) {
     console.log("Failed to mass-import birthdays. Error: ", err);
   }

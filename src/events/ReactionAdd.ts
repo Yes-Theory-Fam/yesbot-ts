@@ -12,16 +12,13 @@ import bot from "../index";
 import Tools from "../common/tools";
 import {
   AdventureGame,
-  BuddyProject,
-  BuddyProjectGhost,
   GroupManagerTools,
   NitroColors,
-  PollsManager,
   Valentine,
 } from "../programs";
-import { MessageRepository, ReactionRoleRepository } from "../entities";
 import { hasRole } from "../common/moderator";
 import { ModeratorPollMirror } from "../programs/PollsManager";
+import prisma from "../prisma";
 
 class ReactionAdd {
   bot: Client;
@@ -48,42 +45,10 @@ class ReactionAdd {
   }
 
   async main() {
-    if (
-      this.channel.name === "buddy-project-tools" &&
-      this.pureEmoji === "👻" &&
-      !this.user.bot
-    ) {
-      let outputChannel = <TextChannel>(
-        this.guild.channels.cache.find((c) => c.name === "buddy-project-ghosts")
-      );
-      const output = await BuddyProjectGhost(this.user, this.guild);
-      outputChannel.send(output.message);
-
-      this.messageReaction.users.remove(this.user);
-    }
     if (this.pureEmoji === "🧙" && this.channel.name == "discord-disaster") {
-      AdventureGame(this.user, this.guild, this.bot);
+      await AdventureGame(this.user, this.guild, this.bot);
     }
-    if (
-      this.channel.name === "buddy-project" &&
-      this.pureEmoji === "💬" &&
-      !this.user.bot
-    ) {
-      const member = this.guild.members.cache.find((m) => m.user === this.user);
-      const bpRole = Tools.getRoleByName("Buddy Project 2020", this.guild);
-      member.roles.add(bpRole);
-      let outputChannel = <TextChannel>(
-        this.guild.channels.cache.find((c) => c.name === "buddy-project-output")
-      );
-      outputChannel.send(
-        `<@${this.user}> is signing up again for the relaunch.`
-      );
-      outputChannel.send(
-        await BuddyProject.BuddyProjectSignup(this.guild.member(this.user))
-      );
-    }
-    const reactionRoleRepository = await ReactionRoleRepository();
-    const reactRoleObjects = await reactionRoleRepository.find({
+    const reactRoleObjects = await prisma.reactionRole.findMany({
       where: {
         messageId: this.messageId,
         channelId: this.channel.id,
@@ -108,26 +73,23 @@ class ReactionAdd {
             )
           );
 
-        this.messageReaction.users.remove(guildMember);
+        await this.messageReaction.users.remove(guildMember);
       } else {
-        guildMember.roles.add(roleToAdd);
+        await guildMember.roles.add(roleToAdd);
       }
     });
 
-    this.handleChannelToggleReaction();
-    ModeratorPollMirror(this.messageReaction, this.user);
-    Valentine.signupReaction(this.messageReaction, this.user);
+    await this.handleChannelToggleReaction();
+    await ModeratorPollMirror(this.messageReaction, this.user);
+    await Valentine.signupReaction(this.messageReaction, this.user);
   }
 
   async handleChannelToggleReaction() {
-    const messageRepository = await MessageRepository();
-    const storedMessage = await messageRepository.findOne({
-      where: {
-        id: this.messageId,
-      },
+    const storedMessage = await prisma.message.findUnique({
+      where: { id: this.messageId },
     });
 
-    if (storedMessage === undefined) {
+    if (!storedMessage) {
       // abort if we don't know of a trigger for this message
       return;
     }
@@ -138,26 +100,27 @@ class ReactionAdd {
       const reaction = this.message.reactions.cache.find(
         (reaction) => reaction.emoji.name === this.reaction
       );
-      reaction.users.remove(member);
+      await reaction.users.remove(member);
       return;
     }
 
     // Make sure we know what channel this message is forever
     if (storedMessage.channel === null) {
-      // record what channel this message is in
-      await messageRepository.save({
-        ...storedMessage,
-        channel: this.channel.id,
+      storedMessage.channel = this.channel.id;
+      await prisma.message.update({
+        data: storedMessage,
+        where: { id: storedMessage.id },
       });
-      this.message.react(this.reaction);
-      GroupManagerTools.backfillReactions(
+      // record what channel this message is in
+      await this.message.react(this.reaction);
+      await GroupManagerTools.backfillReactions(
         this.messageId,
         this.channel.id,
         this.guild
       );
     }
 
-    Tools.addPerUserPermissions(
+    await Tools.addPerUserPermissions(
       this.reaction,
       this.messageId,
       this.guild,

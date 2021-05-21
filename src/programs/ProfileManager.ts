@@ -1,7 +1,7 @@
 import { GuildMember, Message, MessageEmbed } from "discord.js";
 import Tools from "../common/tools";
-import { UserGroup } from "../entities";
 import { formatBirthday, getUserBirthday } from "./BirthdayManager";
+import prisma from "../prisma";
 
 export default async function ProfileManager(pMessage: Message) {
   const { content } = pMessage;
@@ -15,14 +15,14 @@ export default async function ProfileManager(pMessage: Message) {
     const requestedMember = pMessage.guild.member(requestedUser);
 
     if (!requestedMember) {
-      Tools.handleUserError(
+      await Tools.handleUserError(
         pMessage,
         "I couldn't find that member in this server!"
       );
       return;
     }
     const profileEmbed = await getProfileEmbed(requestedMember, pMessage);
-    pMessage.channel.send(profileEmbed);
+    await pMessage.channel.send(profileEmbed);
   }
 }
 
@@ -43,16 +43,25 @@ const getProfileEmbed = async (
   const yesEmoji = member.guild.emojis.cache.find((e) => e.name == "yes");
   const birthdayString = formatBirthday(await getUserBirthday(member.user.id));
   if (!countryRole) {
-    message.reply("That user isn't registered here!");
+    await message.reply("That user isn't registered here!");
     return null;
   }
 
-  const groups = await UserGroup.createQueryBuilder("usergroup")
-    .leftJoinAndSelect("usergroup.members", "groupmember")
-    .where("groupmember.id = :id", { id: member.id })
-    .getMany();
+  // TODO test this through
+  const memberWithGroups = await prisma.groupMember.findFirst({
+    where: {
+      id: member.id,
+    },
+    include: {
+      userGroupMembersGroupMembers: {
+        include: { userGroup: { select: { name: true } } },
+      },
+    },
+  });
 
-  const groupString = groups.map((group) => group.name).join(", ");
+  const groupString = memberWithGroups.userGroupMembersGroupMembers
+    .map(({ userGroup: { name } }) => name)
+    .join(", ");
 
   const joinDate = member.joinedAt.toDateString();
   profileEmbed.setThumbnail(member.user.avatarURL());
