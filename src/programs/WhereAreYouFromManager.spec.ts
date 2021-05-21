@@ -3,7 +3,6 @@ import {
   getRoleForCountry,
 } from "./WhereAreYouFromManager";
 import bot from "../index";
-import { GUILD_ID } from "../const";
 
 // message, countryName, roleName
 type Testcase = [string, string, string];
@@ -38,7 +37,7 @@ const test = () => {
         return `Got country ${country.name}, expected ${countryName} for message ${message}`;
       }
 
-      const guild = bot.guilds.resolve(GUILD_ID);
+      const guild = bot.guilds.resolve(process.env.GUILD_ID);
       const role = getRoleForCountry(country, guild);
 
       if (!role) {

@@ -1,7 +1,6 @@
 import { GuildMember, User } from "discord.js";
 import { BuddyProjectEntry, BuddyProjectEntryRepository } from "../entities";
 import { Not, getConnection } from "typeorm";
-import { BUDDY_PROJECT_MATCHING } from "../const";
 import Tools from "../common/tools";
 import { createYesBotLogger } from "../log";
 
@@ -121,7 +120,7 @@ export async function BuddyProjectSignup(
   }
   addOutput("Successfully entered.");
 
-  if (!BUDDY_PROJECT_MATCHING) {
+  if (!process.env.BUDDY_PROJECT_MATCHING) {
     addOutput("Not currently matching.");
     return output;
   }

@@ -1,9 +1,4 @@
 import { Message, TextChannel, User } from "discord.js";
-import {
-  ENGINEER_ROLE_NAME,
-  COORDINATOR_ROLE_NAME,
-  MODERATOR_ROLE_NAME,
-} from "../const";
 import { isAuthorModerator } from "../common/moderator";
 import { TextChannelOptions } from "../common/interfaces";
 
@@ -26,7 +21,7 @@ export default async function Ticket(pMessage: Message, type: string) {
 
   switch (type) {
     case "fiyesta":
-      moderatorRoleName = ENGINEER_ROLE_NAME;
+      moderatorRoleName = process.env.ENGINEER_ROLE_NAME;
       categoryId = pMessage.guild.channels.cache.find((c) =>
         c.name.toLowerCase().includes("application")
       ).id;
@@ -36,7 +31,7 @@ export default async function Ticket(pMessage: Message, type: string) {
       ticketMessage = `Hi ${pMessage.member.toString()}, please list the details of your proposed FiYESta below and read the <#502198786441871381> while you wait.`;
       break;
     case "shoutout":
-      moderatorRoleName = COORDINATOR_ROLE_NAME;
+      moderatorRoleName = process.env.COORDINATOR_ROLE_NAME;
       categoryId = pMessage.guild.channels.cache.find((c) =>
         c.name.toLowerCase().includes("validation")
       ).id;
@@ -47,7 +42,7 @@ export default async function Ticket(pMessage: Message, type: string) {
       break;
     case "contest":
       categoryId = CONTEST_CATEGORY_ID;
-      moderatorRoleName = MODERATOR_ROLE_NAME;
+      moderatorRoleName = process.env.MODERATOR_ROLE_NAME;
       moderatorRoleId = SUPPORT_ROLE_ID;
       ticketMessage = `Hi ${pMessage.member.toString()}, please list the details of your contest below.`;
     default:

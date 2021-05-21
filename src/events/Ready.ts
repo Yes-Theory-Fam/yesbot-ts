@@ -1,5 +1,4 @@
 import { Client, TextChannel } from "discord.js";
-import { GUILD_ID, OUTPUT_CHANNEL_ID } from "../const";
 import { createYesBotLogger } from "../log";
 import {
   DailyChallenge,
@@ -22,18 +21,19 @@ class Ready {
   }
 
   async init(bot: Client) {
-    logger.debug("Finding guild based on GUILD_ID", { GUILD_ID });
-    const guild = this.bot.guilds.resolve(GUILD_ID);
-    if (OUTPUT_CHANNEL_ID) {
+    const GUIDE_ID = process.env.GUILD_ID;
+    logger.debug("Finding guild based on GUILD_ID", { GUIDE_ID });
+    const guild = this.bot.guilds.resolve(GUIDE_ID);
+    if (process.env.OUTPUT_CHANNEL_ID) {
       const outputChannel = <TextChannel>(
-        guild.channels.resolve(OUTPUT_CHANNEL_ID)
+        guild.channels.resolve(process.env.OUTPUT_CHANNEL_ID)
       );
       const readyMessageString = (status: string) =>
         `${bot.user.tag} - Online - ${status} - ${Unassigned.getStatus(
           "Currently"
         )}`;
 
-      await NitroColors.cacheNitroColors(GUILD_ID);
+      await NitroColors.cacheNitroColors(GUIDE_ID);
       await VoiceOnDemandTools.voiceOnDemandReady(bot);
       await DailyChallenge.initialize(this.bot);
       Game.initGameHub(guild);

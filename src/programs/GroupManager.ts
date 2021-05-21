@@ -9,7 +9,6 @@ import {
   User,
 } from "discord.js";
 import Tools from "../common/tools";
-import { ENGINEER_ROLE_NAME } from "../const";
 import { isAuthorModerator } from "../common/moderator";
 import {
   ChannelToggleRepository,
@@ -61,7 +60,7 @@ export default async function GroupManager(
         "changeCooldown",
       ].includes(action)
     ) {
-      const helpMessage = `Incorrect syntax, please use the following: \`!group join|leave|create|search|delete|update|changeCooldown\`. If you need additional help, react with 🛠️ below to tag a ${ENGINEER_ROLE_NAME}`;
+      const helpMessage = `Incorrect syntax, please use the following: \`!group join|leave|create|search|delete|update|changeCooldown\`. If you need additional help, react with 🛠️ below to tag a ${process.env.ENGINEER_ROLE_NAME}`;
       await message.reply(helpMessage);
       return;
     }

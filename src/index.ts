@@ -27,7 +27,6 @@ import {
   GuildMemberUpdate,
   VoiceStateUpdate,
 } from "./events";
-import { BOT_TOKEN } from "./const";
 // Imported for DB side-effects.
 import "./db";
 import { MemberLeave } from "./events/MemberLeave";
@@ -37,7 +36,7 @@ logger.info("Starting YesBot");
 
 const bot = new Client({ partials: ["REACTION", "MESSAGE"] });
 logger.debug("Logging in to Discord Gateway");
-bot.login(BOT_TOKEN);
+bot.login(process.env.BOT_TOKEN);
 
 //! ================= EVENT HANDLERS ====================
 bot.on(

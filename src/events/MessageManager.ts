@@ -31,7 +31,6 @@ import {
   Unassigned,
 } from "../programs";
 import bot from "../index";
-import { MODERATOR_ROLE_NAME } from "../const";
 import state from "../common/state";
 import { hasRole, textLog, getMember } from "../common/moderator";
 import {
@@ -48,7 +47,6 @@ import {
   postDailyMessage,
   saveToDb,
 } from "../programs/DailyChallenge";
-import { GameHub } from "../games";
 
 class MessageManager {
   message: Message;
@@ -84,7 +82,7 @@ class MessageManager {
       this.message.delete();
       const timeoutRole = Tools.getRoleByName("Time Out", this.message.guild);
       const supportRole = Tools.getRoleByName(
-        MODERATOR_ROLE_NAME,
+        process.env.MODERATOR_ROLE_NAME,
         this.message.guild
       );
       this.message.member.roles.add(timeoutRole);

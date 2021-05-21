@@ -115,34 +115,33 @@ type ChannelAccessToggleMessages = {
   [key: string]: { channelId: string; toggles: string[] };
 };
 
-const getChannelAccessToggleMessages = async (): Promise<
-  ChannelAccessToggleMessages
-> => {
-  const repo = await ChannelToggleRepository();
-  const toggles = (await repo
-    .createQueryBuilder("toggle")
-    .distinct(true)
-    .innerJoinAndSelect("toggle.message", "message")
-    .getMany()) as ChannelToggle[];
+const getChannelAccessToggleMessages =
+  async (): Promise<ChannelAccessToggleMessages> => {
+    const repo = await ChannelToggleRepository();
+    const toggles = (await repo
+      .createQueryBuilder("toggle")
+      .distinct(true)
+      .innerJoinAndSelect("toggle.message", "message")
+      .getMany()) as ChannelToggle[];
 
-  const messageToggleList: {
-    [key: string]: { channelId: string; toggles: string[] };
-  } = {};
-  for (const toggle of toggles) {
-    const messageId = toggle.message.id;
-    if (messageToggleList[messageId]) {
-      messageToggleList[messageId].toggles.push(toggle.emoji);
-      continue;
+    const messageToggleList: {
+      [key: string]: { channelId: string; toggles: string[] };
+    } = {};
+    for (const toggle of toggles) {
+      const messageId = toggle.message.id;
+      if (messageToggleList[messageId]) {
+        messageToggleList[messageId].toggles.push(toggle.emoji);
+        continue;
+      }
+
+      messageToggleList[messageId] = {
+        channelId: toggle.message.channel,
+        toggles: [toggle.emoji],
+      };
     }
 
-    messageToggleList[messageId] = {
-      channelId: toggle.message.channel,
-      toggles: [toggle.emoji],
-    };
-  }
-
-  return messageToggleList;
-};
+    return messageToggleList;
+  };
 
 const resolvePerUserPermissions = async (
   newMember: GuildMember | PartialGuildMember

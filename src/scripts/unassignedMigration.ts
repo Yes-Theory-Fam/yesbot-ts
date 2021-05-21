@@ -174,7 +174,7 @@ const main = async () => {
       .filter(
         (member) =>
           !member.user.bot &&
-          ((member.roles as unknown) as string[]).every(
+          (member.roles as unknown as string[]).every(
             (roleId) => !countryRoles.includes(roleId)
           )
       )

@@ -1,6 +1,5 @@
 import { Guild, GuildMember, Message } from "discord.js";
 import Tools from "../common/tools";
-import { MODERATOR_ROLE_NAME } from "../const";
 
 export default async function ExportManager(message: Message) {
   const words = Tools.stringToWords(message.content);
@@ -15,7 +14,7 @@ export default async function ExportManager(message: Message) {
 
   const member = message.member;
   const moderator = !!member.roles.cache.some(
-    (r) => r.name === MODERATOR_ROLE_NAME
+    (r) => r.name === process.env.MODERATOR_ROLE_NAME
   );
 
   switch (toExportType) {
