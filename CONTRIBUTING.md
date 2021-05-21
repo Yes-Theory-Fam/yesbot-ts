@@ -145,7 +145,7 @@ Ensure that you have Docker running and no other connections on Port 5432 as thi
 npm install
 ```
 
-2. Create an `.env` in the root directory and opy the `.env.example`. Change the values to match your test server.
+2. Create an `.env` in the root directory and copy the `.env.example`. Change the values to match your test server.
 
 3. Start the bot
 

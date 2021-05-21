@@ -21,9 +21,9 @@ class Ready {
   }
 
   async init(bot: Client) {
-    const GUIDE_ID = process.env.GUILD_ID;
-    logger.debug("Finding guild based on GUILD_ID", { GUIDE_ID });
-    const guild = this.bot.guilds.resolve(GUIDE_ID);
+    const GUILD_ID = process.env.GUILD_ID;
+    logger.debug("Finding guild based on GUILD_ID", { GUILD_ID });
+    const guild = this.bot.guilds.resolve(GUILD_ID);
     if (process.env.OUTPUT_CHANNEL_ID) {
       const outputChannel = <TextChannel>(
         guild.channels.resolve(process.env.OUTPUT_CHANNEL_ID)
@@ -33,7 +33,7 @@ class Ready {
           "Currently"
         )}`;
 
-      await NitroColors.cacheNitroColors(GUIDE_ID);
+      await NitroColors.cacheNitroColors(GUILD_ID);
       await VoiceOnDemandTools.voiceOnDemandReady(bot);
       await DailyChallenge.initialize(this.bot);
       Game.initGameHub(guild);
