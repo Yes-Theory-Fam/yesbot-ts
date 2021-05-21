@@ -121,6 +121,6 @@ export const ModeratorPollMirror = async (
   const fetched = await reaction.users.fetch();
   if (fetched.size > 1) return;
 
-  message.react(reaction.emoji);
-  reaction.users.remove(user.id);
+  await message.react(reaction.emoji);
+  await reaction.users.remove(user.id);
 };

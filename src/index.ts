@@ -1,35 +1,24 @@
-import { createYesBotLogger } from "./log"
+import { createYesBotLogger } from "./log";
 import {
   Client,
-  Channel,
-  Emoji,
-  Guild,
   GuildMember,
-  PartialGuildMember,
   Message,
-  User,
-  PartialUser,
-  Collection,
-  Role,
-  TextChannel,
   MessageReaction,
-  Speaking,
-  PartialMessage,
-  Presence,
+  PartialGuildMember,
+  PartialUser,
+  User,
   VoiceState,
 } from "discord.js";
 import {
+  GuildMemberUpdate,
+  MemberJoin,
+  MemberLeave,
   MessageManager,
   ReactionAdd,
   ReactionRemove,
   Ready,
-  MemberJoin,
-  GuildMemberUpdate,
   VoiceStateUpdate,
 } from "./events";
-// Imported for DB side-effects.
-import "./db";
-import { MemberLeave } from "./events/MemberLeave";
 
 const logger = createYesBotLogger("main", "index");
 logger.info("Starting YesBot");

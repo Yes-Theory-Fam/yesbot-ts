@@ -28,7 +28,7 @@ const templateMode = async (message: Message) => {
       return Tools.handleUserError(message, "Argument must be on or off!");
   }
 
-  message.reply("Completed.");
+  await message.reply("Completed.");
 };
 
 const on = async (

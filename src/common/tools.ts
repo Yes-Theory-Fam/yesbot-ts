@@ -11,9 +11,9 @@ import {
   MessageReaction,
   Collection,
 } from "discord.js";
-import { ChannelToggleRepository } from "../entities";
 import { textLog } from "./moderator";
 import { createYesBotLogger } from "../log";
+import prisma from "../prisma";
 
 export const unicodeEmojiRegex =
   /^(\p{RI}\p{RI}|\p{Emoji}(\p{Emoji_Modifier_Base}|\uFE0F\u20E3?|[\u{E0020}-\u{E007E}]+\u{E007F})?(\u{200D}\p{Emoji}(\p{Emoji_Modifier_Base}|\uFE0F\u20E3?|[\u{E0020}-\u{E007E}]+\u{E007F})?)*)/gu;
@@ -23,11 +23,6 @@ const logger = createYesBotLogger("common", "Tools");
 class Tools {
   static stringToWords(inputStr: string): Array<string> {
     return <string[]>inputStr.split(" ");
-  }
-
-  static async addThumbs(message: Message) {
-    await message.react("👍");
-    await message.react("👎");
   }
 
   static async resolveFile(filename: string): Promise<Object[]> {
@@ -101,19 +96,15 @@ class Tools {
     user: GuildMember | PartialGuildMember
   ) {
     try {
-      const channelToggleRepository = await ChannelToggleRepository();
-      const toggle = await channelToggleRepository.findOne({
-        where: {
-          emoji: reactionName,
-          message: messageId,
-        },
+      const toggle = await prisma.channelToggle.findFirst({
+        where: { emoji: reactionName, messageId },
       });
 
       if (toggle !== undefined) {
         const channel = guild.channels.cache.find(
           (channel) => channel.id === toggle.channel
         );
-        if (channel === undefined) {
+        if (!channel) {
           await textLog(
             `I can't find this channel <#${toggle.channel}>. Has it been deleted?`
           );

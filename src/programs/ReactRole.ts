@@ -1,8 +1,8 @@
 import { Message, Snowflake, MessageEmbed } from "discord.js";
 import Tools from "../common/tools";
 import { isAuthorModerator } from "../common/moderator";
-import { ReactionRoleRepository } from "../entities";
 import { createYesBotLogger } from "../log";
+import prisma from "../prisma";
 
 const logger = createYesBotLogger("program", "ReactRole");
 
@@ -16,7 +16,7 @@ export default async function ReactRole(message: Message) {
   const [action, messageId, reaction, roleId, channelId] = words;
 
   if (!action || !["add", "list", "delete", "search"].includes(action)) {
-    message.reply(
+    await message.reply(
       `Incorrect syntax, please use the following: \`!role add|list|delete|search\``
     );
     return;
@@ -24,21 +24,21 @@ export default async function ReactRole(message: Message) {
   switch (action) {
     case "add":
       if (!messageId || !reaction || !roleId) {
-        message.reply(
+        await message.reply(
           `Incorrect syntax, please use the following: \`!role add messageId reaction roleId <channelId>\``
         );
         return;
       }
-      addReactRoleObject(messageId, reaction, roleId, channelId, message);
+      await addReactRoleObject(messageId, reaction, roleId, channelId, message);
       break;
     case "list":
-      listReactRoleObjects(message);
+      await listReactRoleObjects(message);
       break;
     case "delete":
-      deleteReactRoleObjects(words[1], message);
+      await deleteReactRoleObjects(Number(words[1]), message);
       break;
     case "search":
-      searchForRole([...words.slice(1)].join(" "), message);
+      await searchForRole([...words.slice(1)].join(" "), message);
       break;
     default:
       break;
@@ -53,9 +53,9 @@ const searchForRole = async (roleSearchString: string, message: Message) => {
     );
   }
   if (!foundRole) {
-    message.reply("I couldn't find that role!");
+    await message.reply("I couldn't find that role!");
   } else {
-    message.reply(
+    await message.reply(
       `There are ${foundRole.members.size} members in ${foundRole.toString()}`
     );
   }
@@ -77,17 +77,18 @@ async function addReactRoleObject(
   );
   let role = await Tools.getRoleById(roleId, pMessage.guild);
   if (message && channel) {
-    const reactionRoleRepository = await ReactionRoleRepository();
-    const reactRoleObject = reactionRoleRepository.create({
+    const reactRoleObject = {
       messageId: message.id,
       channelId: channelId,
       roleId: roleId,
       reaction,
-    });
+    };
     try {
-      await reactionRoleRepository.save(reactRoleObject);
+      await prisma.reactionRole.create({ data: reactRoleObject });
     } catch (err) {
-      pMessage.reply(`Failed to create reaction role. Error message: ${err}`);
+      await pMessage.reply(
+        `Failed to create reaction role. Error message: ${err}`
+      );
       return;
     }
     await message.react(reaction);
@@ -99,9 +100,9 @@ async function addReactRoleObject(
       .addField("Target Channel:", channel, true)
       .addField("Necessary Reaction:", reaction, true)
       .addField("Reward Role:", role, true);
-    pMessage.channel.send(successEmbed);
+    await pMessage.channel.send(successEmbed);
   } else {
-    pMessage.reply(
+    await pMessage.reply(
       "I couldn't find that message, please check the parameters of your `!roles add` and try again."
     );
   }
@@ -109,9 +110,8 @@ async function addReactRoleObject(
 
 async function listReactRoleObjects(pMessage: Message) {
   const guild = pMessage.guild;
-  const reactionRoleRepository = await ReactionRoleRepository();
-  const reactRoleObjects = await reactionRoleRepository.find({
-    order: { id: "ASC" },
+  const reactRoleObjects = await prisma.reactionRole.findMany({
+    orderBy: { id: "asc" },
   });
 
   // Quick fix for limiting the results.
@@ -121,7 +121,7 @@ async function listReactRoleObjects(pMessage: Message) {
   if (words.length >= 3) {
     start = parseInt(words[2]);
     if (isNaN(start)) {
-      pMessage.reply(`Hey! '${words[2]}' isn't a number!`);
+      await pMessage.reply(`Hey! '${words[2]}' isn't a number!`);
       return;
     }
   }
@@ -129,7 +129,7 @@ async function listReactRoleObjects(pMessage: Message) {
   if (words.length >= 4) {
     end = parseInt(words[3]);
     if (isNaN(start)) {
-      pMessage.reply(`Hey! '${words[3]}' isn't a number!`);
+      await pMessage.reply(`Hey! '${words[3]}' isn't a number!`);
       return;
     }
   }
@@ -159,26 +159,24 @@ async function listReactRoleObjects(pMessage: Message) {
         returnString += `\n`;
       })
     );
-    pMessage.channel.send(returnString);
+    await pMessage.channel.send(returnString);
   } catch (error) {
-    pMessage.channel.send(
+    await pMessage.channel.send(
       `I couldn't find any reaction roles for this server. Error message: ${error}`
     );
   }
 }
 
-async function deleteReactRoleObjects(index: any, pMessage: Message) {
-  const reactionRoleRepository = await ReactionRoleRepository();
-  const objectToRemove = await reactionRoleRepository.findOne({
-    where: {
-      id: index,
-    },
+async function deleteReactRoleObjects(index: number, pMessage: Message) {
+  const objectToRemove = await prisma.reactionRole.findUnique({
+    where: { id: index },
   });
+
   if (objectToRemove) {
     try {
-      await reactionRoleRepository.delete(objectToRemove);
+      await prisma.reactionRole.delete({ where: { id: index } });
     } catch (err) {
-      pMessage.channel.send(
+      await pMessage.channel.send(
         `Failed to delete reaction role. Error message: ${err}`
       );
       return;
@@ -189,7 +187,7 @@ async function deleteReactRoleObjects(index: any, pMessage: Message) {
       objectToRemove.channelId
     );
     try {
-      message.reactions.removeAll();
+      await message.reactions.removeAll();
     } catch (err) {
       // We don't really care about the error, since the message/channel might have been removed.
       // We log it for good measure.
@@ -198,8 +196,8 @@ async function deleteReactRoleObjects(index: any, pMessage: Message) {
         err
       );
     }
-    pMessage.channel.send("Successfully removed reaction role.");
+    await pMessage.channel.send("Successfully removed reaction role.");
   } else {
-    pMessage.reply("I cannot find a role with that ID.");
+    await pMessage.reply("I cannot find a role with that ID.");
   }
 }

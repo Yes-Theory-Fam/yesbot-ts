@@ -11,7 +11,7 @@ import {
 import Tools from "../common/tools";
 import { hasRole } from "../common/moderator";
 import { Separators, NitroColors } from "../programs";
-import { ChannelToggleRepository, ChannelToggle } from "../entities";
+import prisma from "../prisma";
 
 class GuildMemberUpdate {
   bot: Client;
@@ -99,8 +99,9 @@ const revokePerUserPermissions = async (
   newMember: GuildMember | PartialGuildMember
 ) => {
   const guild = newMember.guild;
-  const repo = await ChannelToggleRepository();
-  const perUserChannelIds = await repo.find({ select: ["channel"] });
+  const perUserChannelIds = await prisma.channelToggle.findMany({
+    select: { channel: true },
+  });
   const targetChannels = perUserChannelIds
     .map((toggle) => toggle.channel)
     .map((id) => guild.channels.resolve(id))
@@ -117,12 +118,9 @@ type ChannelAccessToggleMessages = {
 
 const getChannelAccessToggleMessages =
   async (): Promise<ChannelAccessToggleMessages> => {
-    const repo = await ChannelToggleRepository();
-    const toggles = (await repo
-      .createQueryBuilder("toggle")
-      .distinct(true)
-      .innerJoinAndSelect("toggle.message", "message")
-      .getMany()) as ChannelToggle[];
+    const toggles = await prisma.channelToggle.findMany({
+      select: { message: true, emoji: true },
+  });
 
     const messageToggleList: {
       [key: string]: { channelId: string; toggles: string[] };

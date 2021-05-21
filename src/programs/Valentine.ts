@@ -10,12 +10,11 @@ import {
   VoiceChannel,
   VoiceState,
 } from "discord.js";
-import { Valentine } from "../entities/Valentine";
-import { IsNull } from "typeorm";
+import { Valentine } from "@yes-theory-fam/database";
 import { textLog } from "../common/moderator";
-import Tools from "../common/tools";
 import Timeout = NodeJS.Timeout;
 import { createYesBotLogger } from "../log";
+import prisma from "../prisma";
 
 const logger = createYesBotLogger("programs", "Valentine");
 
@@ -61,9 +60,11 @@ const isReactionRelevant = (reaction: MessageReaction) => {
 };
 
 const pickMembers = async (guild: Guild): Promise<MemberPick[]> => {
-  const availableValentines = await Valentine.find({
+  const availableValentines = await prisma.valentine.findMany({
     where: {
-      start: IsNull(),
+      start: {
+        not: null,
+      },
     },
   });
 
@@ -90,8 +91,10 @@ const pickMembers = async (guild: Guild): Promise<MemberPick[]> => {
 };
 
 const endMemberPick = async (mp: MemberPick, vc: VoiceChannel) => {
-  mp.valentine.end = new Date();
-  await mp.valentine.save();
+  await prisma.valentine.update({
+    where: { userId: mp.valentine.userId },
+    data: { end: new Date() },
+  });
 
   const channelExists = vc.guild.channels.resolve(vc.id);
 
@@ -124,8 +127,11 @@ Your 10 minutes to unlock your UwU role start now (you will be moved back to the
 
   originalChannels = currentPicks.map(({ member }) => member.voice.channel);
   for (const { member, valentine } of currentPicks) {
-    valentine.start = new Date();
-    await valentine.save();
+    await prisma.valentine.update({
+      where: { userId: valentine.userId },
+      data: { start: new Date() },
+    });
+
     await member.voice.setChannel(voiceChannel);
   }
 
@@ -187,29 +193,29 @@ const setupReaction = async (messageId: Snowflake, guild: Guild) => {
   await textLog("Done!");
 };
 
-export const changeEventState = (message: Message) => {
+export const changeEventState = async (message: Message) => {
   const split = message.content.split(" ");
   const command = split[1];
 
   switch (command) {
     case "setup":
-      setupReaction(split[2], message.guild);
+      await setupReaction(split[2], message.guild);
       break;
     case "start":
       clearInterval(interval);
       interval = setInterval(() => lifecycle(message.guild), schedulingTime);
-      message.reply("Starting event!");
-      lifecycle(message.guild);
+      await message.reply("Starting event!");
+      await lifecycle(message.guild);
       break;
     case "stop":
       clearInterval(interval);
       interval = null;
-      message.reply(
+      await message.reply(
         "Stopping event! The currently active conversation will end but there won't be a next one (unless started again)!"
       );
       break;
     default:
-      message.reply(
+      await message.reply(
         "Unknown command! Available are `start`, `stop` and `setup`"
       );
   }
@@ -220,14 +226,14 @@ export const signupReaction = async (reaction: MessageReaction, user: User) => {
     return;
   }
 
-  const existingValentine = await Valentine.findOne(user.id);
+  const existingValentine = await prisma.valentine.findUnique({
+    where: { userId: user.id },
+  });
   if (existingValentine && existingValentine.start) {
     return;
   }
 
-  const valentine = new Valentine();
-  valentine.userId = user.id;
-  await valentine.save();
+  await prisma.valentine.create({ data: { userId: user.id } });
 };
 
 export const signoutReaction = async (
@@ -238,10 +244,7 @@ export const signoutReaction = async (
     return;
   }
 
-  await Valentine.delete({
-    userId: user.id,
-    start: IsNull(),
-  });
+  await prisma.valentine.delete({ where: { userId: user.id } });
 };
 
 export const valentineVoiceState = async (

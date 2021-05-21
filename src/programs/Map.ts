@@ -1,8 +1,8 @@
 import { Message } from "discord.js";
 import Tools from "../common/tools";
 
-export const map = (message: Message) => {
-  message.reply(
+export const map = async (message: Message) => {
+  await message.reply(
     "you can find the map here: " +
       process.env.MAP_LINK +
       "\nIf you want to be added to it, type !mapadd [city, country]"
@@ -14,7 +14,10 @@ export const mapAdd = async (message: Message) => {
   split.shift();
   const city = split.join(" ");
   if (!city) {
-    Tools.handleUserError(message, "You need to add the city you are from!");
+    await Tools.handleUserError(
+      message,
+      "You need to add the city you are from!"
+    );
     return;
   }
 
@@ -35,7 +38,7 @@ export const mapAdd = async (message: Message) => {
   Countries: ${countries.join(", ")}
   Link to the message calling the command: ${message.url}`;
   await maintainerDm.send(infoString);
-  message.reply(
+  await message.reply(
     "I messaged the maintainer of the map, they will add you to it soon!"
   );
 };

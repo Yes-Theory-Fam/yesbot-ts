@@ -4,10 +4,10 @@ async function Resource(message: Message) {
   const channel = message.channel as TextChannel;
   switch (channel.name) {
     case "coding":
-      message.channel.send(RESOURCES_CODING);
+      await message.channel.send(RESOURCES_CODING);
       break;
     case "learning-spanish":
-      message.channel.send(RESOURCES_SPANISH);
+      await message.channel.send(RESOURCES_SPANISH);
       break;
 
     default:
@@ -23,7 +23,7 @@ Our own lovely Michel has written a guide tailored for this group that in his ow
 
 Our group suggest Javascript as the first language whose rabbit hole you can fall down at the start of your journey. You can read more about Javascript here:
              - CodeCademy online course: <https://www.codecademy.com/learn/javascript>
-             - Eloquent Javascript, free book: <http://eloquentjavascript.net/>
+             - Eloquent Javascript, free book: <https://eloquentjavascript.net/>
              - MDN's JavaScript guide: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Introduction>
              - You Don't Know JS (free book series): <https://github.com/getify/You-Dont-Know-JS>
              - Javascript reference/docs: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference>

@@ -1,8 +1,8 @@
 import { Message, TextChannel, MessageAttachment } from "discord.js";
 import axios from "axios";
-import { TopicRepo } from "../entities/Topic";
 import { isAuthorModerator } from "../common/moderator";
 import { createYesBotLogger } from "../log";
+import prisma from "../prisma";
 
 const logger = createYesBotLogger("programs", "TopicManager");
 
@@ -15,7 +15,7 @@ const MOVIE_CHALLENGE_PICTURE_URL =
 const DRAWING_CHALLENGE_PICTURE_URL =
   "https://cdn.discordapp.com/attachments/747182765468024862/781574814594760714/30-day-drawing-challenge.png";
 
-export default async function TopicManager(message: Message) {
+export const TopicManager = async (message: Message) => {
   const channel: TextChannel = <TextChannel>message.channel;
 
   switch (channel.name) {
@@ -30,50 +30,54 @@ export default async function TopicManager(message: Message) {
 
       date--;
       const question = questions[date];
-      message.channel.send(question);
+      await message.channel.send(question);
       break;
 
     case "beauty-and-fashion":
-      message.channel.send(new MessageAttachment(MAKEUP_CHALLENGE_PICTURE_URL));
+      await message.channel.send(
+        new MessageAttachment(MAKEUP_CHALLENGE_PICTURE_URL)
+      );
       break;
 
     case "visual-design":
-      message.channel.send(
+      await message.channel.send(
         new MessageAttachment(DRAWING_CHALLENGE_PICTURE_URL)
       );
       break;
 
     case "filmmaking":
-      message.channel.send(new MessageAttachment(MOVIE_CHALLENGE_PICTURE_URL));
+      await message.channel.send(
+        new MessageAttachment(MOVIE_CHALLENGE_PICTURE_URL)
+      );
       break;
 
     case "trends":
-      const topicRepo = await TopicRepo();
-      const currentTrend = await topicRepo
-        .createQueryBuilder("topic")
-        .select()
-        .where("topic.channel = :channel", { channel: "trends" })
-        .orderBy("topic.id", "DESC")
-        .limit(1)
-        .getOne();
+      const currentTrend = await prisma.topic.findFirst({
+        where: {
+          channel: "trends",
+        },
+        orderBy: {
+          id: "desc",
+        },
+      });
+
       if (currentTrend) {
-        message.reply(`Current Trend is ${currentTrend.topic}`);
+        await message.reply(`Current Trend is ${currentTrend.topic}`);
       } else {
-        message.reply("There are no current trends, create one! :eyes: ");
+        await message.reply("There are no current trends, create one! :eyes: ");
       }
       break;
 
     default:
       break;
   }
-}
+};
 
 export const setTopic = async (message: Message) => {
   const channel: TextChannel = <TextChannel>message.channel;
 
-  const topicRepo = await TopicRepo();
   if (!isAuthorModerator(message)) {
-    message.react("👎");
+    await message.react("👎");
     return;
   }
   const cleanMessage = message.cleanContent.split(/\s+/);
@@ -82,14 +86,14 @@ export const setTopic = async (message: Message) => {
   cleanMessage.shift();
   cleanMessage.push(attachment);
   const joinedMsg = cleanMessage.join(" ");
-  const newTopic = topicRepo.create({
+  const data = {
     topic: joinedMsg,
     channel: channel.name,
     created: new Date(),
-  });
+  };
 
   try {
-    await topicRepo.save(newTopic).then(() => {
+    await prisma.topic.create({ data }).then(() => {
       message.react("👍");
     });
   } catch (e) {

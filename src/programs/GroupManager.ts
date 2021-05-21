@@ -5,31 +5,41 @@ import {
   Message,
   MessageEmbed,
   MessageReaction,
+  Snowflake,
   TextChannel,
   User,
 } from "discord.js";
 import Tools from "../common/tools";
 import { isAuthorModerator } from "../common/moderator";
 import {
-  ChannelToggleRepository,
-  getOrCreateMessage,
   GroupMember,
+  Message as MessageEntity,
   UserGroup,
-} from "../entities";
+  UserGroupMembersGroupMember,
+} from "@yes-theory-fam/database";
 import {
   GroupInteractionError,
   GroupInteractionSuccess,
 } from "../common/interfaces";
-import { ILike } from "typeorm";
-import { Repository } from "typeorm";
 import { createYesBotLogger } from "../log";
 import { dailyChallengeChannelId } from "./DailyChallenge";
+import prisma from "../prisma";
 
 const logger = createYesBotLogger("program", "GroupManager");
 
 type GroupInteractionInformation =
   | GroupInteractionSuccess
   | GroupInteractionError;
+
+type GroupWithMemberRelationList = UserGroup & {
+  userGroupMembersGroupMembers: UserGroupMembersGroupMember[];
+};
+
+type GroupWithMemberList = UserGroup & {
+  userGroupMembersGroupMembers: (UserGroupMembersGroupMember & {
+    groupMember: GroupMember;
+  })[];
+};
 
 const isSuccess = (
   result: GroupInteractionInformation
@@ -70,34 +80,35 @@ export default async function GroupManager(
 
     switch (action) {
       case "join":
-        joinGroup(message, [requestName, ...rest], user);
+        await joinGroup(message, [requestName, ...rest], user);
         break;
 
       case "toggle":
-        toggleGroup(words, message);
+        await toggleGroup(words, message);
         break;
 
       case "create":
-        if (moderator) createGroup(message, requestName, user, description);
+        if (moderator)
+          await createGroup(message, requestName, user, description);
         else
-          Tools.handleUserError(
+          await Tools.handleUserError(
             message,
             "You do not have permission to use this command."
           );
         break;
 
       case "leave":
-        leaveGroup(message, [requestName, ...rest], user);
+        await leaveGroup(message, [requestName, ...rest], user);
         break;
 
       case "search":
-        searchGroup(message, requestName);
+        await searchGroup(message, requestName);
         break;
 
       case "delete":
-        if (moderator) deleteGroup(message, requestName);
+        if (moderator) await deleteGroup(message, requestName);
         else
-          Tools.handleUserError(
+          await Tools.handleUserError(
             message,
             "You do not have permission to use this command."
           );
@@ -105,8 +116,8 @@ export default async function GroupManager(
 
       case "update": {
         moderator
-          ? updateGroup(message, requestName, description)
-          : Tools.handleUserError(
+          ? await updateGroup(message, requestName, description)
+          : await Tools.handleUserError(
               message,
               "You do not have permission to use this command."
             );
@@ -114,8 +125,8 @@ export default async function GroupManager(
       }
       case "changeCooldown": {
         moderator
-          ? changeCooldown(message, requestName, description)
-          : Tools.handleUserError(
+          ? await changeCooldown(message, requestName, description)
+          : await Tools.handleUserError(
               message,
               "You do not have permission to use this command."
             );
@@ -136,8 +147,10 @@ export default async function GroupManager(
 
     args.shift();
     const [requestName] = args;
-    const groups = await UserGroup.find({
-      relations: ["members"],
+    const groups = await prisma.userGroup.findMany({
+      include: {
+        userGroupMembersGroupMembers: { include: { groupMember: true } },
+      },
     });
     const matchingGroups = groups.filter(
       (group: UserGroup) =>
@@ -145,7 +158,7 @@ export default async function GroupManager(
     );
 
     if (matchingGroups.length === 0) {
-      message.reply("I couldn't find that group.");
+      await message.reply("I couldn't find that group.");
       return;
     }
 
@@ -154,7 +167,7 @@ export default async function GroupManager(
 
     if (timeDifference < group.cooldown) {
       const remainingCooldown = group.cooldown - Math.round(timeDifference);
-      Tools.handleUserError(
+      await Tools.handleUserError(
         message,
         `Sorry, this group was already pinged within the last ${group.cooldown} minutes; it's about ${remainingCooldown} minutes left until you can ping it again.`
       );
@@ -163,26 +176,40 @@ export default async function GroupManager(
 
     const groupPingMessage =
       `**@${group.name}**: ` +
-      group.members.map((member) => `<@${member.id}>`).join(", ");
+      group.userGroupMembersGroupMembers
+        .map((member) => `<@${member.groupMemberId}>`)
+        .join(", ");
 
-    message.channel.send(groupPingMessage, { split: { char: "," } });
+    await message.channel.send(groupPingMessage, { split: { char: "," } });
 
-    group.lastUsed = new Date();
-    group.save();
+    await prisma.userGroup.update({
+      where: { id: group.id },
+      data: { lastUsed: new Date() },
+    });
   }
 }
 
+const getOrCreateMessage = async (
+  messageId: Snowflake
+): Promise<MessageEntity> => {
+  const existingMessage = await prisma.message.findUnique({
+    where: { id: messageId },
+  });
+  if (existingMessage) return existingMessage;
+  return await prisma.message.create({ data: { id: messageId } });
+};
+
 const toggleGroup = async (words: string[], message: Message) => {
   if (!isAuthorModerator(message)) {
-    message.react("👎");
+    await message.react("👎");
     return;
   }
 
   words.shift();
   const [messageId, emoji, channelName] = words;
   if (!(messageId && emoji && channelName)) {
-    message.react("👎");
-    message.reply(
+    await message.react("👎");
+    await message.reply(
       "Invalid syntax, please double check for messageId, emoji, channelName and try again."
     );
     return;
@@ -191,15 +218,15 @@ const toggleGroup = async (words: string[], message: Message) => {
     (c) => c.name === channelName.toLowerCase()
   );
   if (!existingChannel) {
-    message.react("👎");
-    message.reply("That channel doesn't exist here.");
+    await message.react("👎");
+    await message.reply("That channel doesn't exist here.");
     return;
   }
 
   const reactionMessage = await getOrCreateMessage(messageId);
 
   if (reactionMessage.channel === null) {
-    message.reply(
+    await message.reply(
       "Since this is the first time I've heard of this message I need your help. " +
         `Can you put one ${emoji} emoji on the message for me please?\n` +
         "After you've done that, I'll make sure to put up all the emojis on it. :grin:\n" +
@@ -207,19 +234,23 @@ const toggleGroup = async (words: string[], message: Message) => {
     );
   }
 
-  const channelToggleRepository = await ChannelToggleRepository();
-
   try {
-    const toggle = channelToggleRepository.create({
-      emoji,
-      message: reactionMessage,
-      channel: existingChannel.id,
+    await prisma.channelToggle.create({
+      data: {
+        emoji,
+        message: {
+          connectOrCreate: {
+            where: { id: reactionMessage.id },
+            create: reactionMessage,
+          },
+        },
+        channel: existingChannel.id,
+      },
     });
-    await channelToggleRepository.save(toggle);
-    message.react("👍");
+    await message.react("👍");
   } catch (err) {
     logger.error("Failed to create toggle", err);
-    message.react("👎");
+    await message.react("👎");
     return;
   }
 
@@ -240,24 +271,19 @@ export async function backfillReactions(
   logger.debug(
     `backfilling reactions for message ${messageId} in ${channelId}`
   );
-  const channelToggleRepository = await ChannelToggleRepository();
 
   const channel = guild.channels.cache.find(
     (c) => c.id === channelId
   ) as TextChannel;
 
-  if (channel === undefined) {
+  if (!channel) {
     throw new Error("I can't find that channel. Maybe it has been deleted?");
   }
 
   const reactionDiscordMessage = await channel.messages.fetch(messageId);
-  const toggles = await channelToggleRepository.find({
-    where: {
-      message: messageId,
-    },
-    order: {
-      id: "ASC",
-    },
+  const toggles = await prisma.channelToggle.findMany({
+    where: { messageId },
+    orderBy: { id: "asc" },
   });
 
   // Only add missing reactions
@@ -271,22 +297,20 @@ const deleteGroup = async (
   requestedGroupName: string = ""
 ) => {
   if (!requestedGroupName) {
-    message.react("👎");
+    await message.react("👎");
     return;
   }
 
-  const group = await UserGroup.findOne({
-    where: {
-      name: requestedGroupName,
-    },
+  const group = await prisma.userGroup.findFirst({
+    where: { name: requestedGroupName },
   });
 
-  if (group === undefined) {
+  if (!group) {
     await message.reply("That group does not exist!");
     return;
   }
 
-  await UserGroup.delete(group.id);
+  await prisma.userGroup.delete({ where: { id: group.id } });
   await message.react("👍");
 };
 
@@ -296,15 +320,22 @@ const searchGroup = async (
 ) => {
   const groupsPerPage = 4;
   const pages: Array<MessageEmbed> = [];
-  const byMemberCount = (a: UserGroup, b: UserGroup) =>
-    b.members.length - a.members.length;
+  const byMemberCount = (
+    a: GroupWithMemberRelationList,
+    b: GroupWithMemberRelationList
+  ) =>
+    b.userGroupMembersGroupMembers.length -
+    a.userGroupMembersGroupMembers.length;
 
   const copy = (
-    await UserGroup.find({
+    await prisma.userGroup.findMany({
       where: {
-        name: ILike(`%${requestedGroupName}%`),
+        name: {
+          contains: requestedGroupName,
+          mode: "insensitive",
+        },
       },
-      relations: ["members"],
+      include: { userGroupMembersGroupMembers: true },
     })
   ).sort(byMemberCount);
 
@@ -330,7 +361,11 @@ const searchGroup = async (
 
     chunk.forEach((group) => {
       embed.addField("Group Name:", group.name, true);
-      embed.addField("Number of Members:", group.members.length, true);
+      embed.addField(
+        "Number of Members:",
+        group.userGroupMembersGroupMembers.length,
+        true
+      );
       embed.addField("Description", group.description || "-");
       embed.addField("\u200B", "\u200B");
     });
@@ -350,7 +385,7 @@ const searchGroup = async (
       embed: pages[page],
     });
     await reaction.users.remove(message.author.id);
-    setupPaging(page, shownPageMessage);
+    await setupPaging(page, shownPageMessage);
   };
 
   const setupPaging = async (currentPage: number, pagedMessage: Message) => {
@@ -369,10 +404,10 @@ const searchGroup = async (
       });
       const first = reactions.first();
       if (first.emoji.name === "⬅️") {
-        flip(currentPage - 1, pagedMessage, first);
+        await flip(currentPage - 1, pagedMessage, first);
       }
       if (first.emoji.name === "➡️") {
-        flip(currentPage + 1, pagedMessage, first);
+        await flip(currentPage + 1, pagedMessage, first);
       }
     } catch (error) {}
   };
@@ -396,27 +431,26 @@ const createGroup = async (
   description: string
 ) => {
   if (!requestedGroupName) {
-    message.react("👎");
+    await message.react("👎");
     return;
   }
 
-  const group = await UserGroup.findOne({
+  const group = await prisma.userGroup.findFirst({
     where: {
       name: requestedGroupName,
     },
   });
 
-  if (group !== undefined) {
+  if (group) {
     await message.reply("That group already exists!");
     return;
   }
-
-  const newGroup = UserGroup.create({
-    name: requestedGroupName,
-    description,
+  await prisma.userGroup.create({
+    data: {
+      name: requestedGroupName,
+      description,
+    },
   });
-
-  await newGroup.save();
   await message.react("👍");
 };
 
@@ -426,28 +460,33 @@ const updateGroup = async (
   description: string
 ) => {
   if (!requestedGroupName) {
-    message.react("👎");
+    await message.react("👎");
     return;
   }
 
-  const group = await UserGroup.findOne({
+  const group = await prisma.userGroup.findFirst({
     where: {
-      name: ILike(requestedGroupName),
+      name: {
+        equals: requestedGroupName,
+        mode: "insensitive",
+      },
     },
   });
 
-  if (group === undefined) {
+  if (!group) {
     await message.reply("That group doesn't exist!");
     return;
   }
 
   const previousDescription = group.description;
 
-  group.description = description;
-  await group.save();
+  await prisma.userGroup.update({
+    where: { id: group.id },
+    data: { description },
+  });
 
   await message.reply(
-    `Group description updated from \n> ${previousDescription} \nto \n> ${group.description}`
+    `Group description updated from \n> ${previousDescription} \nto \n> ${description}`
   );
 };
 
@@ -458,22 +497,28 @@ const changeCooldown = async (
 ) => {
   const cooldownNumber = Number(newCooldown);
   if (isNaN(cooldownNumber)) {
-    Tools.handleUserError(
+    await Tools.handleUserError(
       message,
       "Please write a number for the new cooldown! It will be interpreted as minutes before the group can be pinged again."
     );
     return;
   }
 
-  const group = await UserGroup.findOne({
+  const group = await prisma.userGroup.findFirst({
     where: {
-      name: ILike(requestedGroupName),
+      name: {
+        equals: requestedGroupName,
+        mode: "insensitive",
+      },
     },
   });
 
-  group.cooldown = cooldownNumber;
-  group.save();
-  message.react("👍");
+  await prisma.userGroup.update({
+    where: { id: group.id },
+    data: { cooldown: cooldownNumber },
+  });
+
+  await message.react("👍");
 };
 
 const joinGroup = async (
@@ -481,7 +526,7 @@ const joinGroup = async (
   requestedGroupNames: string[],
   member: GuildMember
 ) => {
-  groupInteractionAndReport(
+  await groupInteractionAndReport(
     message,
     requestedGroupNames,
     member,
@@ -494,7 +539,7 @@ const leaveGroup = async (
   requestedGroupNames: string[],
   member: GuildMember
 ) => {
-  groupInteractionAndReport(
+  await groupInteractionAndReport(
     message,
     requestedGroupNames,
     member,
@@ -503,18 +548,19 @@ const leaveGroup = async (
 };
 
 const tryJoinGroups = async (
-  groups: UserGroup[],
+  groups: GroupWithMemberList[],
   member: GuildMember
 ): Promise<GroupInteractionInformation[]> => {
   const results: GroupInteractionInformation[] = [];
-  const newGroupMember = GroupMember.create({
-    id: member.id,
-  });
 
   for (let i = 0; i < groups.length; i++) {
     const group = groups[i];
 
-    if (group.members.some((m: GroupMember) => m.id === member.id)) {
+    if (
+      group.userGroupMembersGroupMembers.some(
+        (m) => m.groupMemberId === member.id
+      )
+    ) {
       results.push({
         groupName: group.name,
         success: false,
@@ -523,9 +569,21 @@ const tryJoinGroups = async (
       continue;
     }
 
-    const membership = await newGroupMember.save();
-    group.members = [...group.members, membership];
-    group.save();
+    await prisma.userGroup.update({
+      where: { id: group.id },
+      data: {
+        userGroupMembersGroupMembers: {
+          create: {
+            groupMember: {
+              connectOrCreate: {
+                where: { id: member.id },
+                create: { id: member.id },
+              },
+            },
+          },
+        },
+      },
+    });
 
     results.push({
       groupName: group.name,
@@ -537,7 +595,7 @@ const tryJoinGroups = async (
 };
 
 const tryLeaveGroups = async (
-  groups: UserGroup[],
+  groups: GroupWithMemberList[],
   member: GuildMember
 ): Promise<GroupInteractionInformation[]> => {
   const results: GroupInteractionInformation[] = [];
@@ -545,11 +603,13 @@ const tryLeaveGroups = async (
   for (let i = 0; i < groups.length; i++) {
     const group = groups[i];
 
-    const updatedMemberList = group.members.filter(
-      (m: GroupMember) => m.id !== member.id
+    const updatedMemberList = group.userGroupMembersGroupMembers.filter(
+      (m) => m.groupMemberId !== member.id
     );
 
-    if (updatedMemberList.length === group.members.length) {
+    if (
+      updatedMemberList.length === group.userGroupMembersGroupMembers.length
+    ) {
       results.push({
         success: false,
         groupName: group.name,
@@ -558,8 +618,14 @@ const tryLeaveGroups = async (
       continue;
     }
 
-    group.members = updatedMemberList;
-    group.save();
+    await prisma.userGroupMembersGroupMember.delete({
+      where: {
+        userGroupId_groupMemberId: {
+          groupMemberId: member.id,
+          userGroupId: group.id,
+        },
+      },
+    });
 
     results.push({
       groupName: group.name,
@@ -575,12 +641,12 @@ const groupInteractionAndReport = async (
   requestedGroupNames: string[],
   member: GuildMember,
   interaction: (
-    groups: UserGroup[],
+    groups: GroupWithMemberList[],
     member: GuildMember
   ) => Promise<GroupInteractionInformation[]>
 ) => {
   if (requestedGroupNames.filter((name) => name).length === 0) {
-    Tools.handleUserError(
+    await Tools.handleUserError(
       message,
       "I need at least one group name to do that!"
     );
@@ -595,29 +661,37 @@ const groupInteractionAndReport = async (
     (name, index) => sanitizedGroupNames.indexOf(name) === index
   );
 
-  const whereCondition = uniqueGroupNames.map((groupName) => ({
-    name: ILike(groupName),
-  }));
-
-  const groups = await UserGroup.find({
-    where: whereCondition,
-    relations: ["members"],
+  const groups = await prisma.userGroup.findMany({
+    where: {
+      name: {
+        in: uniqueGroupNames,
+        mode: "insensitive",
+      },
+    },
+    include: {
+      userGroupMembersGroupMembers: {
+        include: {
+          groupMember: true,
+        },
+      },
+    },
   });
 
-  if (groups === undefined || groups.length === 0) {
-    message.reply("I couldn't find any of the requested groups.");
+  if (!groups || groups.length === 0) {
+    await message.reply("I couldn't find any of the requested groups.");
     return;
   }
 
   const tryResult = await interaction(groups, member);
-  if (tryResult.length === 1) {
+  if (uniqueGroupNames.length === 1) {
+    // If the uniqueGroupNames only contain one element, the tryResult will be exactly one item long
     const result = tryResult[0];
 
     if (isSuccess(result)) {
-      message.react("👍");
+      await message.react("👍");
     } else {
-      message.react("👎");
-      message.reply(result.message);
+      await message.react("👎");
+      await message.reply(result.message);
     }
 
     return;
@@ -634,7 +708,7 @@ const groupInteractionAndReport = async (
     else report.push(`${name} - 👎 - ${result.message}`);
   }
 
-  message.reply("\n" + report.join("\n"));
+  await message.reply("\n" + report.join("\n"));
 };
 
 const isChannelAllowed = (channel: Channel): boolean => {

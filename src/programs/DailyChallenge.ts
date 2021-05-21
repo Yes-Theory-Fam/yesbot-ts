@@ -1,11 +1,8 @@
 import Axios from "axios";
 import Discord, { Client, Message, TextChannel } from "discord.js";
-import { Repository } from "typeorm";
-import {
-  DailyChallenge as DailyChallengeEntity,
-  DailyChallengeRepository,
-} from "../entities";
 import { createYesBotLogger } from "../log";
+import prisma from "../prisma";
+import { DailyChallenge as DailyChallengeEntity } from "@yes-theory-fam/database";
 
 const logger = createYesBotLogger("programs", "DailyChallenge");
 
@@ -13,18 +10,16 @@ export const dailyChallengeChannelId = "474197374684758025";
 const UTC_HOUR_POSTED = 8;
 
 export const DailyChallenge = async (message: Message) => {
-  let repo = await DailyChallengeRepository();
-
   const compare = new Date();
   compare.setUTCHours(compare.getUTCHours() - 48 - UTC_HOUR_POSTED);
 
-  const res = await repo
-    .createQueryBuilder()
-    .select()
-    .where("last_used > :today", {
-      today: compare.toISOString(),
-    })
-    .getOne();
+  const res = await prisma.dailyChallenge.findFirst({
+    where: {
+      lastUsed: {
+        gte: compare.toISOString(),
+      },
+    },
+  });
 
   await message.channel.send(
     res?.result ?? "We don't have a challenge for today, come back tomorrow!"
@@ -64,14 +59,10 @@ export const postDailyMessage = async (
   let messageChannel = <TextChannel>(
     bot.channels.resolve(dailyChallengeChannelId)
   );
-  const repo = await DailyChallengeRepository();
-  const res = await repo
-    .createQueryBuilder()
-    .select()
-    // .andWhere("random() < 0.5 OR id = 1")
-    .orderBy("last_used", "ASC")
-    .limit(1)
-    .getOne();
+  const res = await prisma.dailyChallenge.findFirst({
+    orderBy: { lastUsed: "asc" },
+  });
+
   if (res) {
     const embed = new Discord.MessageEmbed()
       .setColor("BLUE")
@@ -83,7 +74,7 @@ export const postDailyMessage = async (
     res.lastUsed = used;
 
     try {
-      await repo.save(res);
+      await prisma.dailyChallenge.update({ where: { id: res.id }, data: res });
     } catch (err) {
       logger.error(
         "(postDailyMessage) There was an error posting Daily Challenge: ",
@@ -106,10 +97,7 @@ export const saveToDb = async (
   info: string,
   pMessage: Message
 ) => {
-  let repo: Repository<DailyChallengeEntity> = undefined;
   if (tableName === "daily-challenge") {
-    repo = await DailyChallengeRepository();
-
     // Check if its an attachment:
     const attachment = pMessage.attachments?.first();
     if (attachment) {
@@ -117,9 +105,8 @@ export const saveToDb = async (
         const file = await Axios.get(attachment.url);
         const bulkChallenges: [] = file.data.split("\n");
         bulkChallenges.forEach(async (challenge: string, idx: number) => {
-          let res = new DailyChallengeEntity();
-          res.result = challenge.trim();
-          await save(repo, res, pMessage);
+          const res = { result: challenge.trim() };
+          await save(res, pMessage);
           if (idx === bulkChallenges.length - 1) {
             pMessage.react("👍");
           }
@@ -129,17 +116,16 @@ export const saveToDb = async (
         pMessage.react("👎");
       }
     } else {
-      let res = new DailyChallengeEntity();
-      res.result = info;
-      await save(repo, res, pMessage);
+      const res = { result: info };
+      await save(res, pMessage);
       pMessage.react("👍");
     }
   }
 };
 
-const save = async (repo: any, res: any, pMessage: Message) => {
+const save = async (res: { result: string }, pMessage: Message) => {
   try {
-    await repo.save(res);
+    await prisma.dailyChallenge.create({ data: res });
   } catch (err) {
     logger.error("There was an error saving to the DB: ", err);
     pMessage.react("👎");

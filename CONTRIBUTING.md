@@ -15,9 +15,9 @@ If you couldn't find anything that looks like your problem, create a new one con
 
 - Clear and descriptive title ("Bot doesn't work" is _not_ helpful)
 - Description of the issue with the following:
-  - What you did
-  - What you thought would happen
-  - What did happen
+    - What you did
+    - What you thought would happen
+    - What did happen
 - If you are able to reproduce this problem repeatedly and reliably, include step by step instructions on how to
   recreate the issue
 
@@ -76,7 +76,7 @@ The bot's main code is contained in the `src` directory which contains several s
 
 It also contains two single files:
 
-- db.ts - Simple setup of the TypeORM database connection
+- prisma.ts - Simple setup of the TypeORM database connection
 - index.ts - Creates and exports the discord.js Client used in the entire application. This is the entry point for the
   bot.
 
@@ -86,16 +86,17 @@ To work on the bot you need the following:
 
 - The current [Node](https://nodejs.org/) LTS Version
 - A PostgreSQL server with a database called `yesbot`, username `yesbot` and password (you guessed it) `yesbot`
-  - (recommended) You can use [Docker](https://www.docker.com/get-started)
-    with [Docker Compose](https://docs.docker.com/compose/install/) and the `docker-compose.yml` in this repository to
-    launch one in one command
-  - [Download](https://www.postgresql.org/download/) and install PostgreSQL on your host system, then create and
-    configure a database following the requirements above
+    - (recommended) You can use [Docker](https://www.docker.com/get-started)
+      with [Docker Compose](https://docs.docker.com/compose/install/) and the `docker-compose.yml` in this repository to
+      launch one in one command
+    - [Download](https://www.postgresql.org/download/) and install PostgreSQL on your host system, then create and
+      configure a database following the requirements above
 - A Discord server created from [this template](https://discord.com/template/7wc3BmmACSbr)
 - A Discord application with a bot token (get started
   at [https://discord.com/developers](https://discord.com/developers))
-  - After creating a Discord application click on (Bot → Add Bot).
-  - In the Bot tabs on your newly created Discord application, this is where you will find your Bot token to be used later on in `const.ts`
+    - After creating a Discord application click on (Bot → Add Bot).
+    - In the Bot tabs on your newly created Discord application, this is where you will find your Bot token to be used
+      later on in `const.ts`
 - Developer mode in Discord enabled (Settings → Appearance → Advanced → Developer Mode) to be able to copy IDs from
   servers, channels, messages, and everything else that has an ID
 
