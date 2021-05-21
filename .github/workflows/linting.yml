@@ -9,7 +9,7 @@ jobs:
       matrix:
         node-version: [14.x]
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Cache node modules
         uses: actions/cache@v1
         with:
@@ -21,6 +21,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - name: Write authentication to file
+        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> .npmrc
       - name: install and lint
         run: |
           npm ci
