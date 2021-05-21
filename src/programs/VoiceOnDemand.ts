@@ -10,7 +10,6 @@ import {
   TextChannel,
 } from "discord.js";
 
-import { GUILD_ID } from "../const";
 import { hasRole } from "../common/moderator";
 import { VoiceOnDemandRepository, VoiceOnDemandMapping } from "../entities";
 import state from "../common/state";
@@ -427,7 +426,7 @@ export const voiceOnDemandReset = async (
 // To make sure voice channels are still cleaned up after a bot restart, we are looking through all stored channels
 //  adding a timeout task to clean up in case they are empty.
 export const voiceOnDemandReady = async (bot: Client) => {
-  const guild = bot.guilds.resolve(GUILD_ID);
+  const guild = bot.guilds.resolve(process.env.GUILD_ID);
   const repo = await VoiceOnDemandRepository();
   const mappings = await repo.find();
   for (let i = 0; i < mappings.length; i++) {

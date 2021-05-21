@@ -1,7 +1,6 @@
 import { Guild, Message, Role, TextChannel, User } from "discord.js";
 import { isRegistered, textLog } from "../common/moderator";
 import { Country, countries } from "../collections/flagEmojis";
-import { MODERATOR_ROLE_NAME } from "../const";
 import { Unassigned } from ".";
 
 export default async function WhereAreYouFromManager(pMessage: Message) {
@@ -23,7 +22,7 @@ export default async function WhereAreYouFromManager(pMessage: Message) {
 
       if (!roleToAssign) {
         const moderatorRole = pMessage.guild.roles.cache.find(
-          (r) => r.name === MODERATOR_ROLE_NAME
+          (r) => r.name === process.env.MODERATOR_ROLE_NAME
         );
         textLog(
           `${moderatorRole.toString()}: <@${

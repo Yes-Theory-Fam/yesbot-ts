@@ -13,7 +13,6 @@ import { getAllCountries, getCountry } from "countries-and-timezones";
 import Tools from "../common/tools";
 import { textLog, isAuthorModerator } from "../common/moderator";
 import { Birthday } from "../entities";
-import { ENGINEER_ROLE_NAME } from "../const";
 import { createYesBotLogger } from "../log";
 
 const logger = createYesBotLogger("programs", "BirthdayManager");
@@ -115,7 +114,7 @@ export default async function BirthdayManager(message: Message) {
   } catch (err) {
     if (err.message === "Too many available time zones") {
       const engineerRole = Tools.getRoleByName(
-        ENGINEER_ROLE_NAME,
+        process.env.ENGINEER_ROLE_NAME,
         message.guild
       );
       await message.delete();

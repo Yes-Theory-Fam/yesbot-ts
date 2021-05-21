@@ -145,25 +145,7 @@ Ensure that you have Docker running and no other connections on Port 5432 as thi
 npm install
 ```
 
-2. Create a `src/const.ts` file with these variables:
-
-```tsx
-export const BOT_TOKEN = "<here goes your bot token>";
-export const GUILD_ID = "<here goes the ID of your test server>";
-export const OUTPUT_CHANNEL_ID =
-  "<here goes the ID of a channel in your test server that the bot should use for logging>";
-
-// You can leave these empty unless you are working on the !map feature. If you do, let one of the maintainers know!
-export const MAP_LINK = "";
-export const MAP_ADD_DM_USER_ID = "";
-
-// You can leave these just like this if you are using the Yes Theory Fam server template for your test server.
-// Otherwise you can change the role names here if you want.
-export const MODERATOR_ROLE_NAME = "Support";
-export const ENGINEER_ROLE_NAME = "Server Engineer";
-export const COORDINATOR_ROLE_NAME = "Server Coordinator";
-export const BUDDY_PROJECT_MATCHING = false;
-```
+2. Create an `.env` in the root directory and copy the `.env.example`. Change the values to match your test server.
 
 3. Start the bot
 
