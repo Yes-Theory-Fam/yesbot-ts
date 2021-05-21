@@ -1,4 +1,4 @@
-name: Node.js CI Test
+name: Node.js CI Linting Test
 
 on: [ push ]
 
@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [12.x, 14.x]
+        node-version: [14.x]
     steps:
       - uses: actions/checkout@v1
       - name: Cache node modules
@@ -21,7 +21,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: npm ci and npm run build
+      - name: install and lint
         run: |
           npm install
-          npm run test
+          npm run lint
