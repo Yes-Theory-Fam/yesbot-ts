@@ -116,30 +116,31 @@ type ChannelAccessToggleMessages = {
   [key: string]: { channelId: string; toggles: string[] };
 };
 
-const getChannelAccessToggleMessages =
-  async (): Promise<ChannelAccessToggleMessages> => {
-    const toggles = await prisma.channelToggle.findMany({
-      select: { message: true, emoji: true },
+const getChannelAccessToggleMessages = async (): Promise<
+  ChannelAccessToggleMessages
+> => {
+  const toggles = await prisma.channelToggle.findMany({
+    select: { message: true, emoji: true },
   });
 
-    const messageToggleList: {
-      [key: string]: { channelId: string; toggles: string[] };
-    } = {};
-    for (const toggle of toggles) {
-      const messageId = toggle.message.id;
-      if (messageToggleList[messageId]) {
-        messageToggleList[messageId].toggles.push(toggle.emoji);
-        continue;
-      }
-
-      messageToggleList[messageId] = {
-        channelId: toggle.message.channel,
-        toggles: [toggle.emoji],
-      };
+  const messageToggleList: {
+    [key: string]: { channelId: string; toggles: string[] };
+  } = {};
+  for (const toggle of toggles) {
+    const messageId = toggle.message.id;
+    if (messageToggleList[messageId]) {
+      messageToggleList[messageId].toggles.push(toggle.emoji);
+      continue;
     }
 
-    return messageToggleList;
-  };
+    messageToggleList[messageId] = {
+      channelId: toggle.message.channel,
+      toggles: [toggle.emoji],
+    };
+  }
+
+  return messageToggleList;
+};
 
 const resolvePerUserPermissions = async (
   newMember: GuildMember | PartialGuildMember

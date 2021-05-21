@@ -77,45 +77,45 @@ export class GameConfigurator<GameConfig extends SessionConfig> {
     if (node.type === "string") {
       switch (node.options) {
         case "input":
-          return this.getStringInput(node, message) as unknown as Promise<K>;
+          return (this.getStringInput(node, message) as unknown) as Promise<K>;
         case "selection":
-          return this.getStringSelection(
-            node,
-            message
-          ) as unknown as Promise<K>;
+          return (this.getStringSelection(node, message) as unknown) as Promise<
+            K
+          >;
       }
     }
 
     if (node.type === "emoji") {
       switch (node.options) {
         case "input":
-          return this.getEmojiInput(node, message) as unknown as Promise<K>;
+          return (this.getEmojiInput(node, message) as unknown) as Promise<K>;
         case "selection":
-          return this.getEmojiSelection(node, message) as unknown as Promise<K>;
+          return (this.getEmojiSelection(node, message) as unknown) as Promise<
+            K
+          >;
       }
     }
 
     if (node.type === "number") {
       switch (node.options) {
         case "input":
-          return this.getNumberInput(node, message) as unknown as Promise<K>;
+          return (this.getNumberInput(node, message) as unknown) as Promise<K>;
         case "selection":
-          return this.getNumberSelection(
-            node,
-            message
-          ) as unknown as Promise<K>;
+          return (this.getNumberSelection(node, message) as unknown) as Promise<
+            K
+          >;
         case "range":
-          return this.getNumberRange(node, message) as unknown as Promise<K>;
+          return (this.getNumberRange(node, message) as unknown) as Promise<K>;
       }
     }
 
     if (node.type === "boolean") {
       switch (node.options) {
         case "selection":
-          return this.getBooleanSelection(
+          return (this.getBooleanSelection(
             node,
             message
-          ) as unknown as Promise<K>;
+          ) as unknown) as Promise<K>;
       }
     }
 
@@ -641,7 +641,7 @@ export class GameConfigurator<GameConfig extends SessionConfig> {
 
   private getDefaultValue<K>(node: ConfigurationNode<K>): K {
     if (isConfigKey(node)) {
-      return node.defaultValue as unknown as K;
+      return (node.defaultValue as unknown) as K;
     }
 
     const result: Partial<K> = {};

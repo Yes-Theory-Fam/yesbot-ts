@@ -215,9 +215,10 @@ export default class GameHub {
     };
     // Map all players to a Promise<{ player, sendSuccess: bool }>
     const dmPromises = players.map((player) =>
-      safeDm(player, "*Verifying that I can send you a message*").then(
-        (sendSuccess) => ({ player, sendSuccess })
-      )
+      safeDm(
+        player,
+        "*Verifying that I can send you a message*"
+      ).then((sendSuccess) => ({ player, sendSuccess }))
     );
     // Use Promise.all to wait for all promises to return and access their values
     const dmResults = await Promise.all(dmPromises);
