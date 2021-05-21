@@ -1,0 +1,8 @@
+{
+  "schedule": [
+    "every weekend"
+  ],
+  "extends": ["group:all"],
+  "rangeStrategy": "pin",
+  "labels": ["renovate"]
+}
