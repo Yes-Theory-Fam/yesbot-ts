@@ -15,7 +15,7 @@ describe("test custom methods", () => {
 
   const message: Message = ({
     author: {
-      id: 312297787901607937,
+      id: 111111111111111100,
     },
     mentions: {
       users: mentionUsers,
@@ -53,7 +53,7 @@ describe("test custom methods", () => {
     const mentionUsers = new Collection<Snowflake, User>();
     const msg: Message = ({
       author: {
-        id: 312297787901607937,
+        id: 111111111111111100,
       },
       mentions: {
         users: mentionUsers,
@@ -65,6 +65,6 @@ describe("test custom methods", () => {
     } as unknown) as Message;
 
     abuseMe(msg);
-    expect(msg.channel.send).toHaveBeenCalledWith("<@312297787901607940> *``* translated to English means *Is your a$$ jealous of the amount of sh!t that just came out of your mouth?*");
+    expect(msg.channel.send).toHaveBeenCalledWith("<@111111111111111100> *``* translated to English means *Is your a$$ jealous of the amount of sh!t that just came out of your mouth?*");
   });
 });
