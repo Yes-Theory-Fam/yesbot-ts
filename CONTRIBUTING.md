@@ -96,7 +96,7 @@ To work on the bot you need the following:
   at [https://discord.com/developers](https://discord.com/developers))
     - After creating a Discord application click on (Bot → Add Bot).
     - In the Bot tabs on your newly created Discord application, this is where you will find your Bot token to be used
-      later on in `const.ts`
+      later on in `.env`
 - Developer mode in Discord enabled (Settings → Appearance → Advanced → Developer Mode) to be able to copy IDs from
   servers, channels, messages, and everything else that has an ID
 
@@ -140,19 +140,22 @@ Ensure that you have Docker running and no other connections on Port 5432 as thi
 
 #### Set up the bot
 
-1. Install the dependencies:
+1. Make sure your NPM
+   is [configured to install the YTF Database package](https://github.com/Yes-Theory-Fam/database#npm-configuration).
+
+2. Install the dependencies:
 
 ```bash
 npm install
 ```
 
-2. Create an `.env` in the root directory and copy the `.env.example`. Change the values to match your test server.
+3. Create an `.env` in the root directory and copy the `.env.example`. Change the values to match your test server.
 
-3. Start the bot
+4. Start the bot
 
 ```bash
 npm run start
 ```
 
 The bot should now start up, connect to the database and send a ready message in the channel you specified in
-the `const.ts` file.
+the `.env` file.
