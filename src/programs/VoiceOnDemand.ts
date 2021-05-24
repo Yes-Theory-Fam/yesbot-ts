@@ -14,7 +14,7 @@ import { hasRole } from "../common/moderator";
 import state from "../common/state";
 import Tools from "../common/tools";
 import prisma from "../prisma";
-import { VoiceOnDemandMapping } from "@yes-theory-fam/database";
+import { VoiceOnDemandMapping } from "@yes-theory-fam/database/client";
 
 const defaultLimit = (5).toString();
 const maxLimit = 10;

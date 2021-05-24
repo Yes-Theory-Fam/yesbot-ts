@@ -14,7 +14,7 @@ import Tools from "../common/tools";
 import { textLog, isAuthorModerator } from "../common/moderator";
 import { createYesBotLogger } from "../log";
 import prisma from "../prisma";
-import { Birthday } from "@yes-theory-fam/database";
+import { Birthday } from "@yes-theory-fam/database/client";
 
 const logger = createYesBotLogger("programs", "BirthdayManager");
 

@@ -10,7 +10,7 @@ import {
   VoiceChannel,
   VoiceState,
 } from "discord.js";
-import { Valentine } from "@yes-theory-fam/database";
+import { Valentine } from "@yes-theory-fam/database/client";
 import { textLog } from "../common/moderator";
 import Timeout = NodeJS.Timeout;
 import { createYesBotLogger } from "../log";

@@ -2,7 +2,7 @@ import Axios from "axios";
 import Discord, { Client, Message, TextChannel } from "discord.js";
 import { createYesBotLogger } from "../log";
 import prisma from "../prisma";
-import { DailyChallenge as DailyChallengeEntity } from "@yes-theory-fam/database";
+import { DailyChallenge as DailyChallengeEntity } from "@yes-theory-fam/database/client";
 
 const logger = createYesBotLogger("programs", "DailyChallenge");
 

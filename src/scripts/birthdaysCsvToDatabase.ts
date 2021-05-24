@@ -1,7 +1,7 @@
 import prisma from "../prisma";
 import fs from "fs";
 
-import { Birthday } from "@yes-theory-fam/database";
+import { Birthday } from "@yes-theory-fam/database/client";
 import { BirthdayManagerTools } from "../programs";
 import { setTimeout } from "timers";
 import { zonedTimeToUtc } from "date-fns-tz";

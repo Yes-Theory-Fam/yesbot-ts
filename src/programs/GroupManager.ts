@@ -16,7 +16,7 @@ import {
   Message as MessageEntity,
   UserGroup,
   UserGroupMembersGroupMember,
-} from "@yes-theory-fam/database";
+} from "@yes-theory-fam/database/client";
 import {
   GroupInteractionError,
   GroupInteractionSuccess,

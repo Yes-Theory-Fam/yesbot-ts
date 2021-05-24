@@ -1,7 +1,7 @@
 import Tools from "../common/tools";
 import { setTimeout } from "timers";
 import prisma from "../prisma";
-import { ReactionRole } from "@yes-theory-fam/database";
+import { ReactionRole } from "@yes-theory-fam/database/client";
 
 type JSONReactionRole = Omit<ReactionRole, "id">;
 
