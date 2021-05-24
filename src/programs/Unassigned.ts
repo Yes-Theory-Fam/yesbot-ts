@@ -4,7 +4,8 @@ import { createYesBotLogger } from "../log";
 
 const logger = createYesBotLogger("programs", "Unassigned");
 
-const getUnassignedRole = (guild: Guild) => Tools.getRoleByName("Admin", guild); // TODO REVERT THIS O-O
+const getUnassignedRole = (guild: Guild) =>
+  Tools.getRoleByName("Unassigned", guild);
 
 let assignRoleOnJoin = true;
 
