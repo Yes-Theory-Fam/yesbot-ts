@@ -47,7 +47,6 @@ const getProfileEmbed = async (
     return null;
   }
 
-  // TODO test this through
   const memberWithGroups = await prisma.groupMember.findFirst({
     where: {
       id: member.id,
@@ -59,7 +58,7 @@ const getProfileEmbed = async (
     },
   });
 
-  const groupString = memberWithGroups.userGroupMembersGroupMembers
+  const groupString = memberWithGroups?.userGroupMembersGroupMembers
     .map(({ userGroup: { name } }) => name)
     .join(", ");
 
