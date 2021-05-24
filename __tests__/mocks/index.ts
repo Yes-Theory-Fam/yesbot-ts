@@ -8,6 +8,8 @@ import {
   GuildMember,
   Message,
   MessageReaction,
+  GuildManager,
+  ChannelManager,
 } from "discord.js";
 
 export default class MockDiscord {
@@ -18,8 +20,10 @@ export default class MockDiscord {
   private textChannel!: TextChannel;
   private user!: User;
   private guildMember!: GuildMember;
-  public message!: Message;
-  public messageReaction!: MessageReaction;
+  private message!: Message;
+  private messageReaction!: MessageReaction;
+  private guildManager!: GuildManager;
+  private channelManager!: ChannelManager;
 
   constructor() {
     this.mockClient();
@@ -32,6 +36,9 @@ export default class MockDiscord {
     this.addMember();
     this.mockMessage();
     this.mockMessageReaction();
+    this.mockGuildManager();
+    this.mockChannelManager();
+    this.mockChannel();
   }
 
   private addMember = () => {
@@ -76,11 +83,19 @@ export default class MockDiscord {
     return this.messageReaction;
   }
 
+  public getGuildManager(): GuildManager {
+    return this.guildManager;
+  }
+
   private mockClient(): void {
     this.client = new Client();
     this.client.users.fetch = jest.fn(() => Promise.resolve(this.getUser()));
     this.client.login = jest.fn(() => Promise.resolve("LOGIN_TOKEN"));
     this.client.token = process.env.BOT_TOKEN;
+    this.client.guilds = this.guildManager;
+    this.client.channels.resolve = jest.fn(() => {
+      return this.channel;
+    });
   }
 
   private mockGuild(): void {
@@ -112,6 +127,12 @@ export default class MockDiscord {
     });
   }
 
+  private mockGuildManager(): void {
+    this.guildManager = new GuildManager(this.client);
+
+    this.guildManager.resolve = jest.fn(() => this.guild);
+  }
+
   private mockChannel(): void {
     this.channel = new Channel(this.client, {
       id: "channel-id",
@@ -139,6 +160,7 @@ export default class MockDiscord {
       lastPinTimestamp: new Date("2019-01-01").getTime(),
       rate_limit_per_user: 0,
     });
+    this.textChannel.send = jest.fn();
   }
 
   private mockUser(): void {
@@ -167,6 +189,9 @@ export default class MockDiscord {
         roles: [],
       },
       this.guild
+    );
+    this.getGuildMember().setNickname = jest.fn(() =>
+      Promise.resolve(this.guildMember)
     );
   }
 
@@ -207,6 +232,13 @@ export default class MockDiscord {
         emoji: "🥰",
       },
       this.message
+    );
+  }
+
+  private mockChannelManager(): void {
+    this.channelManager = new ChannelManager(this.client, []);
+    this.channelManager.fetch = jest.fn(() =>
+      Promise.resolve(this.textChannel)
     );
   }
 }

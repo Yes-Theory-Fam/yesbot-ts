@@ -11,19 +11,19 @@ import {
 const logger = createYesBotLogger("events", "Ready");
 
 class Ready {
-  bot: Client;
+  client: Client;
 
-  constructor(bot: Client) {
-    this.bot = bot;
-    logger.info(`Bot is online - ${bot.user.tag}`);
+  constructor(client: Client) {
+    this.client = client;
+    logger.info(`Bot is online - ${client.user.tag}`);
 
-    this.init(bot);
+    this.init(client);
   }
 
   async init(bot: Client) {
     const GUILD_ID = process.env.GUILD_ID;
     logger.debug("Finding guild based on GUILD_ID", { GUILD_ID });
-    const guild = this.bot.guilds.resolve(GUILD_ID);
+    const guild = this.client.guilds.resolve(GUILD_ID);
     if (process.env.OUTPUT_CHANNEL_ID) {
       const outputChannel = <TextChannel>(
         guild.channels.resolve(process.env.OUTPUT_CHANNEL_ID)
@@ -35,7 +35,7 @@ class Ready {
 
       await NitroColors.cacheNitroColors(GUILD_ID);
       await VoiceOnDemandTools.voiceOnDemandReady(bot);
-      await DailyChallenge.initialize(this.bot);
+      await DailyChallenge.initialize(this.client);
       Game.initGameHub(guild);
       const readyMessage = await outputChannel?.send(
         readyMessageString("Fetching members.")

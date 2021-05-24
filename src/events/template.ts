@@ -1,11 +1,11 @@
 import { Client } from "discord.js";
-import bot from "../index";
+import { Bot } from "../bot";
 
 class Template {
-  bot: Client;
+  client: Client;
 
   constructor() {
-    this.bot = bot;
+    this.client = Bot.getInstance().getClient();
   }
 }
 

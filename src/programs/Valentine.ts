@@ -11,10 +11,10 @@ import {
   VoiceState,
 } from "discord.js";
 import { Valentine } from "@yes-theory-fam/database/client";
-import { textLog } from "../common/moderator";
 import Timeout = NodeJS.Timeout;
 import { createYesBotLogger } from "../log";
 import prisma from "../prisma";
+import moderator from "../common/moderator";
 
 const logger = createYesBotLogger("programs", "Valentine");
 
@@ -172,25 +172,27 @@ const cleanUp = async () => {
 
 const setupReaction = async (messageId: Snowflake, guild: Guild) => {
   if (!messageId) {
-    return await textLog(
+    return await moderator.textLog(
       `Please add the messageId! Ex: !valentine setup 1720397101346`
     );
   }
 
   const channel = getTextChannel(guild);
   if (!channel) {
-    return await textLog(`Could not find channel ${signupChannelName}`);
+    return await moderator.textLog(
+      `Could not find channel ${signupChannelName}`
+    );
   }
 
   if (!(channel instanceof TextChannel)) {
-    return await textLog(
+    return await moderator.textLog(
       `Channel with name ${signupChannelName} is not a TextChannel`
     );
   }
 
   const message = await channel.messages.fetch(messageId, false, true);
   await message.react(signupEmote);
-  await textLog("Done!");
+  await moderator.textLog("Done!");
 };
 
 export const changeEventState = async (message: Message) => {

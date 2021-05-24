@@ -1,15 +1,15 @@
 import { Message, Snowflake, MessageEmbed } from "discord.js";
 import Tools from "../common/tools";
-import { isAuthorModerator } from "../common/moderator";
 import { createYesBotLogger } from "../log";
 import prisma from "../prisma";
+import moderator from "../common/moderator";
 
 const logger = createYesBotLogger("program", "ReactRole");
 
 export default async function ReactRole(message: Message) {
   //! This comes to us in the format of "!roles [add|list] [messageId] [emoji] [roleId] [channelId]"
   //! So first we need to establish if it is add or list
-  if (!isAuthorModerator(message)) return;
+  if (!moderator.isAuthorModerator(message)) return;
 
   const words = Tools.stringToWords(message.content);
   words.shift();

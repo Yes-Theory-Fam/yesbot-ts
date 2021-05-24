@@ -1,4 +1,3 @@
-import bot from "../index";
 import {
   Snowflake,
   TextChannel,
@@ -8,8 +7,9 @@ import {
   PartialGuildMember,
   Message,
 } from "discord.js";
-import { hasRole } from "../common/moderator";
 import { createYesBotLogger } from "../log";
+import moderator from "../common/moderator";
+import { Bot } from "../bot";
 
 const logger = createYesBotLogger("programs", "NitroColors");
 
@@ -18,8 +18,9 @@ let colorSelectionMessage: Message;
 
 export const cacheNitroColors = async (guildId: Snowflake) => {
   try {
-    const pickYourColorChannel = bot.guilds
-      .resolve(guildId)
+    const pickYourColorChannel = Bot.getInstance()
+      .getClient()
+      .guilds.resolve(guildId)
       .channels.cache.find(
         (channel) => channel.name === "pick-your-color"
       ) as TextChannel;
@@ -52,7 +53,9 @@ export const removeColorIfNotAllowed = async (
     nitroRolesCache.some((role) => role.id === r.id)
   );
 
-  const isColorAllowed = roleRequirements.some((role) => hasRole(member, role));
+  const isColorAllowed = roleRequirements.some((role) =>
+    moderator.hasRole(member, role)
+  );
 
   if (nitroColor && !isColorAllowed) {
     await member.roles.remove(nitroColor);

@@ -1,7 +1,7 @@
 import { DMChannel, Message, User } from "discord.js";
-import { getMember, textLog } from "./moderator";
 import Tools from "./tools";
 import { createYesBotLogger } from "../log";
+import moderator from "./moderator";
 
 const logger = createYesBotLogger("common", "CustomMethods");
 
@@ -22,7 +22,7 @@ export const sendLove = async (message: Message) => {
   ];
   const randomLoveReply = loveArr[Math.floor(Math.random() * loveArr.length)];
   await message.reply(randomLoveReply);
-  message.react("😍").then((x) => console.log(JSON.stringify(x)));
+  await message.react("😍");
 };
 
 export const randomReply = async (message: Message) => {
@@ -78,41 +78,35 @@ export const abuseMe = async (message: Message) => {
 };
 
 export const proposeNameChange = async (name: string, botMessage: Message) => {
-  console.log(JSON.stringify({name,botMessage}));
   await botMessage.reply(
     "Perfect! I've sent your name request to the mods, hopefully they answer soon! In the meantime, you're free to roam around the server and explore. Maybe post an introduction to get started? :grin:"
   );
   const message = `Username: ${botMessage.author.toString()} would like to rename to "${name}". Allow?`;
   try {
-    const sentMessage = await textLog(message);
+    const sentMessage = await moderator.textLog(message);
     sentMessage.react("✅").then(() => sentMessage.react("🚫"));
-    sentMessage
-      .awaitReactions(
-        (reaction: any, user: User) => {
-          return !user.bot;
-        },
-        { max: 1, time: 6000000, errors: ["time"] }
-      )
-      .then((collected) => {
-        const reaction = collected.first();
-        switch (reaction.emoji.toString()) {
-          case "✅":
-            const member = getMember(botMessage.author.id);
-            member.setNickname(name);
-            sentMessage.delete();
-            textLog(`${botMessage.author.toString()} was renamed to ${name}.`);
-            break;
-          case "🚫":
-            sentMessage.delete();
-            textLog(
-              `${botMessage.author.toString()} was *not* renamed to ${name}.`
-            );
-            break;
 
-          default:
-            break;
-        }
-      });
+    const gotReaction = await sentMessage.awaitReactions(
+      (reaction: any, user: User) => !user.bot,
+      { max: 1, time: 6000000, errors: ["time"] }
+    );
+
+    const reactedEmoji = gotReaction.first().emoji.toString();
+
+    if (reactedEmoji === "✅") {
+      await moderator.getMember(botMessage.author.id).setNickname(name);
+      await sentMessage.delete();
+      await moderator.textLog(
+        `${botMessage.author.toString()} was renamed to ${name}.`
+      );
+    } else if (reactedEmoji === "🚫") {
+      await sentMessage.delete();
+      await moderator.textLog(
+        `${botMessage.author.toString()} was *not* renamed to ${name}.`
+      );
+    } else {
+      throw new Error("Undefined Emoji Reaction");
+    }
   } catch (err) {
     logger.error("(proposeNameChange) Error changing name: ", err);
   }

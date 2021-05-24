@@ -11,10 +11,10 @@ import { zonedTimeToUtc, utcToZonedTime } from "date-fns-tz";
 import { getAllCountries, getCountry } from "countries-and-timezones";
 
 import Tools from "../common/tools";
-import { textLog, isAuthorModerator } from "../common/moderator";
 import { createYesBotLogger } from "../log";
 import prisma from "../prisma";
 import { Birthday } from "@yes-theory-fam/database/client";
+import moderator from "../common/moderator";
 
 const logger = createYesBotLogger("programs", "BirthdayManager");
 
@@ -46,7 +46,7 @@ export default async function BirthdayManager(message: Message) {
   }
 
   const birthdayUser =
-    isAuthorModerator(message) && message.mentions.users.size === 1
+    moderator.isAuthorModerator(message) && message.mentions.users.size === 1
       ? message.mentions.users.first()
       : message.author;
 
@@ -130,28 +130,28 @@ export default async function BirthdayManager(message: Message) {
         { allowedMentions }
       );
     } else if (err.message === "time expired") {
-      message.react("⏰");
+      await message.react("⏰");
     } else {
       logger.error(
         "An unknown error has occurred awaiting the users timezone: ",
         err
       );
-      message.channel.send(
+      await message.channel.send(
         "Hmm, something went wrong. Please contact my engineers if this seems unreasonable. :nerd:"
       );
     }
     return;
   }
 
-  message.channel.send(
+  await message.channel.send(
     `Okay, I'll store your birthday as ${formatBirthday(
       birthdate
     )} in the timezone ${timezone}.`
   );
-  textLog(
+  await moderator.textLog(
     "Hi there! Could someone help me by executing this command? Thank you!"
   );
-  textLog(
+  await moderator.textLog(
     `\`bb.override <@${birthdayUser.id}> set ${formatBirthday(
       birthdate
     )} ${timezone}\``

@@ -9,12 +9,12 @@ import {
   GuildChannel,
 } from "discord.js";
 import Tools from "../common/tools";
-import { hasRole } from "../common/moderator";
 import { Separators, NitroColors } from "../programs";
 import prisma from "../prisma";
+import moderator from "../common/moderator";
 
 class GuildMemberUpdate {
-  bot: Client;
+  client: Client;
 
   constructor(
     oldMember: GuildMember | PartialGuildMember,
@@ -87,13 +87,17 @@ const gainedRole = (
   oldMember: GuildMember | PartialGuildMember,
   newMember: GuildMember | PartialGuildMember,
   roleName: string
-) => !hasRole(oldMember, roleName) && hasRole(newMember, roleName);
+) =>
+  !moderator.hasRole(oldMember, roleName) &&
+  moderator.hasRole(newMember, roleName);
 
 const lostRole = (
   oldMember: GuildMember | PartialGuildMember,
   newMember: GuildMember | PartialGuildMember,
   roleName: string
-) => hasRole(oldMember, roleName) && !hasRole(newMember, roleName);
+) =>
+  moderator.hasRole(oldMember, roleName) &&
+  !moderator.hasRole(newMember, roleName);
 
 const revokePerUserPermissions = async (
   newMember: GuildMember | PartialGuildMember

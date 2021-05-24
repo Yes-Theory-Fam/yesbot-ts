@@ -1,10 +1,10 @@
 import { Guild, Message, Role, TextChannel, User } from "discord.js";
-import { isRegistered, textLog } from "../common/moderator";
 import { Country, countries } from "../collections/flagEmojis";
 import { Unassigned } from ".";
+import moderator from "../common/moderator";
 
 export default async function WhereAreYouFromManager(pMessage: Message) {
-  const newUser = !isRegistered(pMessage.member);
+  const newUser = !moderator.isRegistered(pMessage.member);
 
   if (newUser) {
     const matchedCountries = getCountriesFromMessage(pMessage.content);
@@ -24,7 +24,7 @@ export default async function WhereAreYouFromManager(pMessage: Message) {
         const moderatorRole = pMessage.guild.roles.cache.find(
           (r) => r.name === process.env.MODERATOR_ROLE_NAME
         );
-        await textLog(
+        await moderator.textLog(
           `${moderatorRole.toString()}: <@${
             pMessage.author.id
           }> just requested role for country ${

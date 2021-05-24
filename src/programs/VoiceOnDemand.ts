@@ -10,11 +10,11 @@ import {
   TextChannel,
 } from "discord.js";
 
-import { hasRole } from "../common/moderator";
 import state from "../common/state";
 import Tools from "../common/tools";
 import prisma from "../prisma";
 import { VoiceOnDemandMapping } from "@yes-theory-fam/database/client";
+import moderator from "../common/moderator";
 
 const defaultLimit = (5).toString();
 const maxLimit = 10;
@@ -41,7 +41,7 @@ export default async function (message: Message) {
 
   if (
     !notYesTheoryExclusiveCommands.includes(command) &&
-    !hasRole(message.member, "Yes Theory")
+    !moderator.hasRole(message.member, "Yes Theory")
   ) {
     await Tools.handleUserError(
       message,
@@ -338,7 +338,7 @@ const changeHostOnDemand = async (message: Message) => {
     return;
   }
 
-  if (!hasRole(mentionedMember, "Yes Theory")) {
+  if (!moderator.hasRole(mentionedMember, "Yes Theory")) {
     await Tools.handleUserError(
       message,
       "That user doesn't have the Yes Theory role required to control the room. Pick someone else or get a Support to give them the Yes Theory role."

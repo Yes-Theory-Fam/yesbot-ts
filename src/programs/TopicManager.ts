@@ -1,8 +1,8 @@
 import { Message, TextChannel, MessageAttachment } from "discord.js";
 import axios from "axios";
-import { isAuthorModerator } from "../common/moderator";
 import { createYesBotLogger } from "../log";
 import prisma from "../prisma";
+import moderator from "../common/moderator";
 
 const logger = createYesBotLogger("programs", "TopicManager");
 
@@ -76,7 +76,7 @@ export const TopicManager = async (message: Message) => {
 export const setTopic = async (message: Message) => {
   const channel: TextChannel = <TextChannel>message.channel;
 
-  if (!isAuthorModerator(message)) {
+  if (!moderator.isAuthorModerator(message)) {
     await message.react("👎");
     return;
   }

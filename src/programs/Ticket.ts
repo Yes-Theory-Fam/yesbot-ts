@@ -1,6 +1,6 @@
 import { Message, TextChannel, User } from "discord.js";
-import { isAuthorModerator } from "../common/moderator";
 import { TextChannelOptions } from "../common/interfaces";
+import moderator from "../common/moderator";
 
 export default async function Ticket(pMessage: Message, type: string) {
   const guild_name = pMessage.guild.name;
@@ -71,7 +71,7 @@ export default async function Ticket(pMessage: Message, type: string) {
   if (isClose) {
     const ticketChannel = <TextChannel>pMessage.channel;
     if (ticketChannel.name.startsWith(type)) {
-      if (isAuthorModerator(pMessage))
+      if (moderator.isAuthorModerator(pMessage))
         await createCloseMessage(
           ticketChannel,
           pMessage.author,
@@ -84,7 +84,7 @@ export default async function Ticket(pMessage: Message, type: string) {
   if (isForceClose) {
     const ticketChannel = <TextChannel>pMessage.channel;
     if (ticketChannel.name.startsWith(type)) {
-      if (isAuthorModerator(pMessage))
+      if (moderator.isAuthorModerator(pMessage))
         await closeTicket(ticketChannel, pMessage.author, TICKET_LOG_CHANNEL);
     }
   } else {

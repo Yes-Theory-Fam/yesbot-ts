@@ -1,12 +1,12 @@
 import {
-  Message,
   GuildMember,
+  Message,
   PartialGuildMember,
   TextChannel,
-  Client,
 } from "discord.js";
+import { Bot } from "../bot";
 
-export const isAuthorModerator = (message: Message): boolean => {
+const isAuthorModerator = (message: Message): boolean => {
   if (message.member.roles.hoist) {
     return message.member.roles.hoist.name === process.env.MODERATOR_ROLE_NAME;
   } else {
@@ -14,7 +14,7 @@ export const isAuthorModerator = (message: Message): boolean => {
   }
 };
 
-export const hasRole = (
+const hasRole = (
   member: GuildMember | PartialGuildMember,
   roleName: string
 ): boolean => {
@@ -27,15 +27,20 @@ export const isRegistered = (
   return !!member.roles.cache.find((role) => role.name.startsWith("I'm from "));
 };
 
-export const textLog = (text: string): Promise<Message> => {
-  const bot = require("..") as Client;
+const textLog = (text: string): Promise<Message> => {
+  const bot = Bot.getInstance();
+  const client = bot.getClient();
   const outputChannel = <TextChannel>(
-    bot.channels.resolve(process.env.OUTPUT_CHANNEL_ID)
+    client.channels.resolve(process.env.OUTPUT_CHANNEL_ID)
   );
   return outputChannel.send(text);
 };
 
-export const getMember = (userId: string): GuildMember => {
-  const bot = require("..") as Client;
-  return bot.guilds.resolve(process.env.GUILD_ID).members.resolve(userId);
+const getMember = (userId: string): GuildMember => {
+  return Bot.getInstance()
+    .getClient()
+    .guilds.resolve(process.env.GUILD_ID)
+    .members.resolve(userId);
 };
+export default { textLog, getMember, isAuthorModerator, hasRole, isRegistered };
+// module.exports = { textLog, getMember, isAuthorModerator, hasRole, isRegistered };

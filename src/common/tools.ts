@@ -11,9 +11,9 @@ import {
   MessageReaction,
   Collection,
 } from "discord.js";
-import { textLog } from "./moderator";
 import { createYesBotLogger } from "../log";
 import prisma from "../prisma";
+import moderator from "./moderator";
 
 export const unicodeEmojiRegex =
   /^(\p{RI}\p{RI}|\p{Emoji}(\p{Emoji_Modifier_Base}|\uFE0F\u20E3?|[\u{E0020}-\u{E007E}]+\u{E007F})?(\u{200D}\p{Emoji}(\p{Emoji_Modifier_Base}|\uFE0F\u20E3?|[\u{E0020}-\u{E007E}]+\u{E007F})?)*)/gu;
@@ -105,7 +105,7 @@ class Tools {
           (channel) => channel.id === toggle.channel
         );
         if (!channel) {
-          await textLog(
+          await moderator.textLog(
             `I can't find this channel <#${toggle.channel}>. Has it been deleted?`
           );
           return;

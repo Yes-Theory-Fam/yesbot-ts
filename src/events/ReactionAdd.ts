@@ -1,4 +1,5 @@
 import {
+  Client,
   Guild,
   Message,
   MessageReaction,
@@ -6,9 +7,7 @@ import {
   Snowflake,
   TextChannel,
   User,
-  Client,
 } from "discord.js";
-import bot from "../index";
 import Tools from "../common/tools";
 import {
   AdventureGame,
@@ -16,12 +15,13 @@ import {
   NitroColors,
   Valentine,
 } from "../programs";
-import { hasRole } from "../common/moderator";
 import { ModeratorPollMirror } from "../programs/PollsManager";
 import prisma from "../prisma";
+import moderator from "../common/moderator";
+import { Bot } from "../bot";
 
 class ReactionAdd {
-  bot: Client;
+  client: Client;
   channel: TextChannel;
   guild: Guild;
   message: Message;
@@ -32,7 +32,7 @@ class ReactionAdd {
   user: User;
 
   constructor(messageReaction: MessageReaction, user: User | PartialUser) {
-    this.bot = bot;
+    this.client = Bot.getInstance().getClient();
     this.user = <User>user;
     this.message = messageReaction.message;
     this.messageId = messageReaction.message.id;
@@ -46,7 +46,7 @@ class ReactionAdd {
 
   async main() {
     if (this.pureEmoji === "🧙" && this.channel.name == "discord-disaster") {
-      await AdventureGame(this.user, this.guild, this.bot);
+      await AdventureGame(this.user, this.guild, this.client);
     }
     const reactRoleObjects = await prisma.reactionRole.findMany({
       where: {
@@ -96,7 +96,7 @@ class ReactionAdd {
 
     const member = this.guild.member(this.user);
     // Catch users who are timeouted and deny their attempts at accessing other channels
-    if (hasRole(member, "Time Out")) {
+    if (moderator.hasRole(member, "Time Out")) {
       const reaction = this.message.reactions.cache.find(
         (reaction) => reaction.emoji.name === this.reaction
       );

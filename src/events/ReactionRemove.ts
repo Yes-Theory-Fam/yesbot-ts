@@ -7,13 +7,13 @@ import {
   TextChannel,
   User,
 } from "discord.js";
-import bot from "../index";
-import { textLog } from "../common/moderator";
 import { Valentine } from "../programs";
 import prisma from "../prisma";
+import moderator from "../common/moderator";
+import { Bot } from "../bot";
 
 class ReactionRemove {
-  bot: Client;
+  client: Client;
   messageId: Snowflake;
   user: User;
   reaction: string;
@@ -22,7 +22,7 @@ class ReactionRemove {
   messageReaction: MessageReaction;
 
   constructor(messageReaction: MessageReaction, user: User | PartialUser) {
-    this.bot = bot;
+    this.client = Bot.getInstance().getClient();
     this.user = <User>user;
     this.messageId = messageReaction.message.id;
     this.reaction = messageReaction.emoji.name;
@@ -67,7 +67,7 @@ class ReactionRemove {
     );
 
     if (!channel) {
-      await textLog(
+      await moderator.textLog(
         `I can't find this channel <#${toggle.channel}>. Has it been deleted?`
       );
       return;

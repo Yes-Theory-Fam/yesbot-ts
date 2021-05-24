@@ -52,12 +52,12 @@ export const initialize = async (discordClient: Client) => {
 };
 
 export const postDailyMessage = async (
-  bot: Client,
+  client: Client,
   message?: Message,
   withPing: boolean = false
 ) => {
   let messageChannel = <TextChannel>(
-    bot.channels.resolve(dailyChallengeChannelId)
+    client.channels.resolve(dailyChallengeChannelId)
   );
   const res = await prisma.dailyChallenge.findFirst({
     orderBy: { lastUsed: "asc" },

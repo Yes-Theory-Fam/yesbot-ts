@@ -10,7 +10,6 @@ import {
   User,
 } from "discord.js";
 import Tools from "../common/tools";
-import { isAuthorModerator } from "../common/moderator";
 import {
   GroupMember,
   Message as MessageEntity,
@@ -24,6 +23,7 @@ import {
 import { createYesBotLogger } from "../log";
 import { dailyChallengeChannelId } from "./DailyChallenge";
 import prisma from "../prisma";
+import moderator from "../common/moderator";
 
 const logger = createYesBotLogger("program", "GroupManager");
 
@@ -76,7 +76,7 @@ export default async function GroupManager(
     }
 
     const user = message.member;
-    const moderator = isAuthorModerator(message);
+    const isModerator = moderator.isAuthorModerator(message);
 
     switch (action) {
       case "join":
@@ -88,7 +88,7 @@ export default async function GroupManager(
         break;
 
       case "create":
-        if (moderator)
+        if (isModerator)
           await createGroup(message, requestName, user, description);
         else
           await Tools.handleUserError(
@@ -106,7 +106,7 @@ export default async function GroupManager(
         break;
 
       case "delete":
-        if (moderator) await deleteGroup(message, requestName);
+        if (isModerator) await deleteGroup(message, requestName);
         else
           await Tools.handleUserError(
             message,
@@ -115,7 +115,7 @@ export default async function GroupManager(
         break;
 
       case "update": {
-        moderator
+        isModerator
           ? await updateGroup(message, requestName, description)
           : await Tools.handleUserError(
               message,
@@ -124,7 +124,7 @@ export default async function GroupManager(
         break;
       }
       case "changeCooldown": {
-        moderator
+        isModerator
           ? await changeCooldown(message, requestName, description)
           : await Tools.handleUserError(
               message,
@@ -200,7 +200,7 @@ const getOrCreateMessage = async (
 };
 
 const toggleGroup = async (words: string[], message: Message) => {
-  if (!isAuthorModerator(message)) {
+  if (!moderator.isAuthorModerator(message)) {
     await message.react("👎");
     return;
   }

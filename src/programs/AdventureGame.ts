@@ -11,14 +11,14 @@ import {
 export default async function AdventureGame(
   user: User,
   guild: Guild,
-  bot: Client
+  client: Client
 ) {
   //Step 1: Create new channel for the user
 
   const channelName = `game-session-${user.username}`
     .replace(/\s+/g, "-")
     .toLowerCase();
-  const channelOptions = createChannelOptions(user, bot, guild);
+  const channelOptions = createChannelOptions(user, client, guild);
   const attemptedFindChannel = guild.channels.cache.find(
     (c) => c.name == channelName
   );
@@ -202,7 +202,7 @@ const removePlaying = (m: GuildMember) => {
 
 const createChannelOptions = (
   user: User,
-  bot: Client,
+  client: Client,
   guild: Guild
 ): GuildCreateChannelOptions => {
   const categoryId =
@@ -227,7 +227,7 @@ const createChannelOptions = (
         deny: ["SEND_MESSAGES", "ADD_REACTIONS"],
       },
       {
-        id: bot.user.id,
+        id: client.user.id,
         allow: ["VIEW_CHANNEL"],
       },
     ],

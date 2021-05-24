@@ -7,8 +7,8 @@ import {
   PartialUser,
   User,
 } from "discord.js";
-import { hasRole } from "../common/moderator";
 import { unicodeEmojiRegex } from "../common/tools";
+import moderator from "../common/moderator";
 
 // Resolves emojis (unicode and discord) at the start of a line
 const getEmojis = (lines: string[], bot: Client): string[] => {
@@ -117,7 +117,7 @@ export const ModeratorPollMirror = async (
   if (channel instanceof DMChannel || channel.name !== "polls") return;
   const member = channel.guild.member(user.id);
 
-  if (!hasRole(member, "Support")) return;
+  if (!moderator.hasRole(member, "Support")) return;
   const fetched = await reaction.users.fetch();
   if (fetched.size > 1) return;
 

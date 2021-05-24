@@ -27,9 +27,7 @@ import {
   DMMenu,
   Unassigned,
 } from "../programs";
-import bot from "../index";
 import state from "../common/state";
-import { hasRole, textLog, getMember } from "../common/moderator";
 import {
   abuseMe,
   addVote,
@@ -43,17 +41,19 @@ import {
   postDailyMessage,
   saveToDb,
 } from "../programs/DailyChallenge";
+import moderator from "../common/moderator";
+import { Bot, Bot as bot } from "../bot";
 
 class MessageManager {
   message: Message;
   author: User;
-  bot: Client;
+  client: Client;
   logs: boolean;
 
   constructor(msg: Message) {
     this.message = msg;
     this.author = msg.author;
-    this.bot = bot;
+    this.client = Bot.getInstance().getClient();
     if (msg.channel.type === "dm" && !msg.author.bot) {
       this.routeDm();
     } else {
@@ -82,9 +82,13 @@ class MessageManager {
         this.message.guild
       );
       await this.message.member.roles.add(timeoutRole);
-      textLog(
-        `<@&${supportRole.id}>: <@${this.message.author.id}> just tagged more than 20 people in a single message in <#${this.message.channel.id}>. The message has been deleted and they have beeen timed out.`
-      ).then(() => textLog(`Message content was: ${this.message.content}`));
+      moderator
+        .textLog(
+          `<@&${supportRole.id}>: <@${this.message.author.id}> just tagged more than 20 people in a single message in <#${this.message.channel.id}>. The message has been deleted and they have beeen timed out.`
+        )
+        .then(() =>
+          moderator.textLog(`Message content was: ${this.message.content}`)
+        );
     }
 
     const filteredWords = ["nigger", "nigga"];
@@ -147,7 +151,7 @@ class MessageManager {
         if (firstWord === "!addChallenge")
           await saveToDb("daily-challenge", restOfMessage, this.message);
         if (firstWord === "!todayChallenge")
-          await postDailyMessage(this.bot, this.message);
+          await postDailyMessage(this.client, this.message);
         if (firstWord === "!valentine")
           await Valentine.changeEventState(this.message);
         if (firstWord === "!unassignedRoleToggle")
@@ -205,7 +209,7 @@ class MessageManager {
     if (firstWord === "!shoutout") await Ticket(this.message, "shoutout");
     if (firstWord === "!addvote") await addVote(this.message);
     if (firstWord === "!delete")
-      hasRole(this.message.member, "Support")
+      moderator.hasRole(this.message.member, "Support")
         ? await deleteMessages(this.message)
         : null;
     if (firstWord === "!role") await ReactRole(this.message);
@@ -235,7 +239,7 @@ class MessageManager {
   }
 
   async routeDm() {
-    const member = getMember(this.message.author.id);
+    const member = moderator.getMember(this.message.author.id);
     const dmChannel = this.message.channel;
 
     if (!member) {
