@@ -74,14 +74,11 @@ export const abuseMe = async (message: Message) => {
     replies[Math.floor(Math.random() * replies.length)]
   }*`;
 
-  message.channel
-    .send(reply)
-    .then((response) => console.log(JSON.stringify(response)))
-    .catch((error) => console.log(error))
-    .finally(() => console.log("finally"));
+  await message.channel.send(reply);
 };
 
 export const proposeNameChange = async (name: string, botMessage: Message) => {
+  console.log(JSON.stringify({name,botMessage}));
   await botMessage.reply(
     "Perfect! I've sent your name request to the mods, hopefully they answer soon! In the meantime, you're free to roam around the server and explore. Maybe post an introduction to get started? :grin:"
   );
