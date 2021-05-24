@@ -7,6 +7,7 @@ import {
   User,
   GuildMember,
   Message,
+  MessageReaction,
 } from "discord.js";
 
 export default class MockDiscord {
@@ -18,6 +19,7 @@ export default class MockDiscord {
   private user!: User;
   private guildMember!: GuildMember;
   public message!: Message;
+  public messageReaction!: MessageReaction;
 
   constructor() {
     this.mockClient();
@@ -27,9 +29,16 @@ export default class MockDiscord {
     this.mockTextChannel();
     this.mockUser();
     this.mockGuildMember();
-    this.guild.addMember(this.user, { accessToken: "mockAccessToken" });
+    this.addMember();
     this.mockMessage();
+    this.mockMessageReaction();
   }
+
+  private addMember = () => {
+    this.guild
+      .addMember(this.user, { accessToken: "mockAccessToken" })
+      .then((r) => r);
+  };
 
   public getClient(): Client {
     return this.client;
@@ -63,8 +72,15 @@ export default class MockDiscord {
     return this.message;
   }
 
+  public getMessageReaction(): MessageReaction {
+    return this.messageReaction;
+  }
+
   private mockClient(): void {
     this.client = new Client();
+    this.client.users.fetch = jest.fn(() => Promise.resolve(this.getUser()));
+    this.client.login = jest.fn(() => Promise.resolve("LOGIN_TOKEN"));
+    this.client.token = process.env.BOT_TOKEN;
   }
 
   private mockGuild(): void {
@@ -127,7 +143,7 @@ export default class MockDiscord {
 
   private mockUser(): void {
     this.user = new User(this.client, {
-      id: "user-id",
+      id: "222222222222222200",
       username: "user username",
       discriminator: "user#0000",
       avatar: "user avatar url",
@@ -150,7 +166,7 @@ export default class MockDiscord {
         user: this.user,
         roles: [],
       },
-      this.guild,
+      this.guild
     );
   }
 
@@ -176,7 +192,21 @@ export default class MockDiscord {
         mention_everyone: [],
         hit: false,
       },
-      this.textChannel,
+      this.textChannel
+    );
+  }
+
+  private mockMessageReaction(): void {
+    this.messageReaction = new MessageReaction(
+      this.client,
+      {
+        id: "messageReaction-id",
+        author: this.user,
+        count: 1,
+        me: true,
+        emoji: "🥰",
+      },
+      this.message
     );
   }
 }

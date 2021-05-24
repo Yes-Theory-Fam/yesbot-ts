@@ -215,12 +215,12 @@ class MessageManager {
         this.message.content.toLowerCase()
       )
     )
-      sendLove(this.message);
+      await sendLove(this.message);
     if (
       this.message.content.toLowerCase().startsWith("yesbot") &&
       this.message.content.toLowerCase().endsWith("?")
     )
-      randomReply(this.message);
+      await randomReply(this.message);
     if (
       this.message.content.toLowerCase().includes("abooz") ||
       this.message.content.toLowerCase().includes("mod abuse")

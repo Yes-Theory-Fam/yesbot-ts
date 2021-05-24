@@ -5,7 +5,7 @@ import { createYesBotLogger } from "../log";
 
 const logger = createYesBotLogger("common", "CustomMethods");
 
-export const sendLove = (message: Message) => {
+export const sendLove = async (message: Message) => {
   const loveArr = [
     "I love you too, Cutiepie",
     "I will find you and I will love you.",
@@ -21,11 +21,11 @@ export const sendLove = (message: Message) => {
     "I love you too! (Although I'm not entirely sure what love is but this experience I'm feeling is probably some iteration of love.)",
   ];
   const randomLoveReply = loveArr[Math.floor(Math.random() * loveArr.length)];
-  message.reply(randomLoveReply);
-  message.react("😍");
+  await message.reply(randomLoveReply);
+  message.react("😍").then((x) => console.log(JSON.stringify(x)));
 };
 
-export const randomReply = (message: Message) => {
+export const randomReply = async (message: Message) => {
   let replies = [
     "yes.",
     "probably.",
@@ -36,10 +36,10 @@ export const randomReply = (message: Message) => {
     "definitely.",
     "very very very unlikely",
   ];
-  message.reply(`${replies[Math.floor(Math.random() * replies.length)]}`);
+  await message.reply(`${replies[Math.floor(Math.random() * replies.length)]}`);
 };
 
-export const abuseMe = (message: Message) => {
+export const abuseMe = async (message: Message) => {
   const taggedUser = message.mentions.users?.first();
   let replies = [
     'You are as useless as the "ueue" in "Queue".',
@@ -67,13 +67,18 @@ export const abuseMe = (message: Message) => {
   ];
 
   const userToTag = taggedUser ? taggedUser.id : message.author.id;
-  const cleanMessage = message.cleanContent.split(/\s+/);
-  cleanMessage.shift();
-  const joinedMsg = cleanMessage.join(" ");
+  const cleanContent = message.cleanContent.split(/\s+/);
+  cleanContent.shift();
+  const joinedMsg = cleanContent.join(" ");
   const reply = `<@${userToTag}> *\`${joinedMsg}\`* translated to English means *${
     replies[Math.floor(Math.random() * replies.length)]
   }*`;
-  message.channel.send(reply);
+
+  message.channel
+    .send(reply)
+    .then((response) => console.log(JSON.stringify(response)))
+    .catch((error) => console.log(error))
+    .finally(() => console.log("finally"));
 };
 
 export const proposeNameChange = async (name: string, botMessage: Message) => {
@@ -138,7 +143,7 @@ export const addVote = async (botMessage: Message) => {
     words.shift();
     const messageId = words[0];
     const messageToVote = await botMessage.channel.messages.resolve(messageId);
-    if (!messageToVote) botMessage.react("👎");
+    if (!messageToVote) await botMessage.react("👎");
     else
       botMessage
         .delete()

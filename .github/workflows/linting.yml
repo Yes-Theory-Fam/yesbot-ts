@@ -28,4 +28,6 @@ jobs:
           npm ci
           npm run lint
       - name: testing
-        run: npm run test
+        run: |
+          export BOT_TOKEN=secrets.GITHUB_TOKEN
+          npm run test

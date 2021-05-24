@@ -1,70 +1,78 @@
-import {
-  sendLove,
-  randomReply,
-  abuseMe,
-} from "../../src/common/CustomMethods";
+import { sendLove, randomReply, abuseMe } from "../../src/common/CustomMethods";
 
 import MockDiscord from "../mocks";
-import { Collection, Message, Snowflake, User } from "discord.js";
+import Discord, { Collection, Message, Snowflake, User } from "discord.js";
 
-describe("test custom methods", () => {
+describe("custom method", () => {
   const mockDiscord = new MockDiscord();
 
   const mentionUsers = new Collection<Snowflake, User>();
-  mentionUsers.set("Discord.SnowflakeUtil.generate(new Date()).toString()", mockDiscord.getUser());
+  mentionUsers.set(
+    Discord.SnowflakeUtil.generate(new Date()).toString(),
+    mockDiscord.getUser()
+  );
 
-  const message: Message = ({
+  const message: Message = {
     author: {
       id: 111111111111111100,
     },
     mentions: {
       users: mentionUsers,
     },
-    channel: { send: jest.fn() },
-    reply: jest.fn(),
-    react: jest.fn(),
+    channel: { send: jest.fn(() => Promise.resolve(mockDiscord.getMessage())) },
+    reply: jest.fn(() => Promise.resolve(mockDiscord.getMessage())),
+    react: jest.fn(() => Promise.resolve(mockDiscord.getMessageReaction())),
     cleanContent: "cleanContent",
-  } as unknown) as Message;
-
+  } as unknown as Message;
 
   const mockMath = Object.create(global.Math);
   mockMath.random = () => 0.5;
   global.Math = mockMath;
 
-  it("should reply with `Okay.` and react on sendLove", () => {
-
-    sendLove(message);
+  it("sendLove should reply with `Okay.` and react", async () => {
+    await sendLove(message);
     expect(message.reply).toHaveBeenCalledWith("Okay.");
     expect(message.react).toHaveBeenCalledWith("😍");
   });
 
-  it("should reply with an random message on randomReply", () => {
-    randomReply(message);
+  it("randomReply should reply with an random message", async () => {
+    await randomReply(message);
     expect(message.reply).toHaveBeenCalledWith("absolutely not.");
   });
 
-  it("should reply with mention on abuseMe", async () => {
-    abuseMe(message);
-    expect(message.channel.send).toHaveBeenCalledWith("<@user-id> *``* translated to English means *Is your a$$ jealous of the amount of sh!t that just came out of your mouth?*");
+  it("abuseMe should reply to yourself", async () => {
+    await abuseMe(message);
+    expect(message.channel.send).toHaveBeenCalledWith(
+      "<@222222222222222200> *``* translated to English means *Is your a$$ jealous of the amount of sh!t that just came out of your mouth?*"
+    );
   });
 
-  it("should reply without mention on abuseMe", async () => {
-
+  it("abuseMe should reply to mention", async () => {
     const mentionUsers = new Collection<Snowflake, User>();
-    const msg: Message = ({
+    mentionUsers.set(
+      Discord.SnowflakeUtil.generate(new Date()).toString(),
+      mockDiscord.getUser()
+    );
+    const msg: Message = {
       author: {
         id: 111111111111111100,
       },
       mentions: {
         users: mentionUsers,
       },
-      channel: { send: jest.fn() },
-      reply: jest.fn(),
-      react: jest.fn(),
+      channel: {
+        send: jest.fn(() => Promise.resolve(mockDiscord.getMessage())),
+      },
       cleanContent: "cleanContent",
-    } as unknown) as Message;
+      client: mockDiscord.getClient(),
+    } as unknown as Message;
 
-    abuseMe(msg);
-    expect(msg.channel.send).toHaveBeenCalledWith("<@111111111111111100> *``* translated to English means *Is your a$$ jealous of the amount of sh!t that just came out of your mouth?*");
+    abuseMe(msg)
+      .then(() => {
+        return expect(msg.channel.send).toHaveBeenCalledWith(
+          "<@222222222222222200> *``* translated to English means *Is your a$$ jealous of the amount of sh!t that just came out of your mouth?*"
+        );
+      })
+      .catch((error) => console.log(error));
   });
 });
