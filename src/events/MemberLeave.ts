@@ -12,14 +12,19 @@ export class MemberLeave {
   }
 }
 
+// See https://www.prisma.io/docs/reference/api-reference/error-reference#p2025
+const recordNotFoundCode = "P2025";
+
 const RemoveFromBirthdays = async (userId: string) => {
   try {
     await prisma.birthday.delete({ where: { userId } });
   } catch (e) {
-    logger.error("Removing from birthday DB failed: ", e);
-    await textLog(
-      `(MemberLeave) -> There was an error removing member from Birthday DB: ${userId}`
-    );
+    if (e.code !== recordNotFoundCode) {
+      logger.error("Removing from birthday DB failed: ", e);
+      await textLog(
+        `(MemberLeave) -> There was an error removing member from Birthday DB: ${userId}`
+      );
+    }
   }
 };
 
@@ -30,9 +35,11 @@ const RemoveFromGroups = async (memberId: string) => {
     });
     await prisma.groupMember.delete({ where: { id: memberId } });
   } catch (e) {
-    logger.error("Removing from groups DB failed: ", e);
-    await textLog(
-      `(MemberLeave) There was an error removing member from the group DB: ${memberId}`
-    );
+    if (e.code !== recordNotFoundCode) {
+      logger.error("Removing from groups DB failed: ", e);
+      await textLog(
+        `(MemberLeave) There was an error removing member from the group DB: ${memberId}`
+      );
+    }
   }
 };
