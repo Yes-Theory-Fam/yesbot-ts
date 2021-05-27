@@ -19,9 +19,13 @@ import {
   Ready,
   VoiceStateUpdate,
 } from "./events";
+import rambo, { DiscordEvent } from "./events/handler";
 
 const logger = createYesBotLogger("main", "index");
 logger.info("Starting YesBot");
+
+logger.info("Initializing rambo");
+rambo.initialize();
 
 const bot = new Client({ partials: ["REACTION", "MESSAGE"] });
 logger.debug("Logging in to Discord Gateway");
@@ -43,7 +47,10 @@ bot.on(
     newMember: GuildMember | PartialGuildMember
   ) => new GuildMemberUpdate(oldMember, newMember)
 );
-bot.on("message", (msg: Message) => new MessageManager(msg));
+bot.on("message", (msg: Message) => {
+  new MessageManager(msg);
+  rambo.handleEvent(DiscordEvent.Message, msg);
+});
 bot.on(
   "messageReactionAdd",
   (messageReaction: MessageReaction, user: User | PartialUser) =>

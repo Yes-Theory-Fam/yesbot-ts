@@ -383,7 +383,6 @@ export const voiceOnDemandPermissions = async (
     CONNECT: null,
   });
 
-  // Comment to restart
   // We don't need this overwrite anymore
   channel.permissionOverwrites.get(mapping.userId)?.delete();
 };
