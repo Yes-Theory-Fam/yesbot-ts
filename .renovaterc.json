@@ -4,5 +4,6 @@
   ],
   "extends": ["group:all"],
   "rangeStrategy": "pin",
-  "labels": ["renovate"]
+  "labels": ["renovate"],
+  "ignoreDeps": ["prisma", "@prisma/client"]
 }
