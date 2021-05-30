@@ -182,7 +182,7 @@ export const locations = [
     ],
   },
   {
-    location: "Military Base",
+    location: "Military BaseOptions",
     roles: [
       "Deserter",
       "Colonel",
