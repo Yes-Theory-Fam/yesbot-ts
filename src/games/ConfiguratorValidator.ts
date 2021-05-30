@@ -25,7 +25,7 @@ type ConfigurationKeyBase<T> = {
 } & NodeProperties;
 
 /**
- * Base type definition for a configuration key that allows selection of the result from a range of options
+ * BaseOptions type definition for a configuration key that allows selection of the result from a range of options
  */
 export type SelectionConfigurationKey<T> = ConfigurationKeyBase<T> & {
   options: "selection";

@@ -19,7 +19,7 @@ import {
   Ready,
   VoiceStateUpdate,
 } from "./events";
-import rambo, { DiscordEvent } from "./events/handler";
+import rambo, { DiscordEvent } from "./rambo";
 
 const logger = createYesBotLogger("main", "index");
 logger.info("Starting YesBot");
@@ -49,7 +49,7 @@ bot.on(
 );
 bot.on("message", (msg: Message) => {
   new MessageManager(msg);
-  rambo.handleEvent(DiscordEvent.Message, msg);
+  rambo.handleEvent(DiscordEvent.MESSAGE, msg);
 });
 bot.on(
   "messageReactionAdd",
