@@ -2,8 +2,20 @@
   "schedule": [
     "every weekend"
   ],
-  "extends": ["group:all"],
+  "extends": [
+    "group:all"
+  ],
   "rangeStrategy": "pin",
-  "labels": ["renovate"],
-  "ignoreDeps": ["prisma", "@prisma/client"]
+  "labels": [
+    "renovate"
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": [
+        "prisma",
+        "typegraphql-prisma"
+      ],
+      "groupName": "prisma packages"
+    }
+  ]
 }
