@@ -1,9 +1,9 @@
 import { GuildMember, Message, MessageEmbed } from "discord.js";
 import Tools from "../common/tools";
-import { formatBirthday, getUserBirthday } from "./BirthdayManager";
+import { formatBirthday, getUserBirthday } from "./birthday-manager";
 import prisma from "../prisma";
 
-export default async function ProfileManager(pMessage: Message) {
+export default async function Profile(pMessage: Message) {
   const { content } = pMessage;
 
   if (content.startsWith("!profile")) {

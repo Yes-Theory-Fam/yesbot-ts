@@ -29,7 +29,7 @@ class, extending existing types. One is the `SessionConfig` for your game that h
 game. The other is the actual `GameSession` itself:
 
 ```ts
-import { GameSession, SessionConfig } from "../GameSession";
+import { GameSession, SessionConfig } from "../game-session";
 
 interface ExampleSessionConfig extends SessionConfig {
   example: string;
@@ -285,7 +285,7 @@ For the bot to pick up your game, you have to register it to the GameHub:
 1. Make sure your game class is exported from your file
 2. Re-export it from `src/games/index.ts` (you can see how it's done with Spyfall and other games). Add your game, so
    the exports are in alphabetical order
-3. Add your game to the imports in `src/programs/Game.ts`. Again, maintain alphabetical order of the imports
+3. Add your game to the imports in `src/programs/game.ts`. Again, maintain alphabetical order of the imports
 4. Add a line inside the `initGameHub` function containing `hub.registerGame(YourGame)`. One last time, you guessed it,
    in alphabetical order; that makes things easier to read and maintain
 5. Done! When you start the bot now and run `!game` in #bot-games, your game should show up!

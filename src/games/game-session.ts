@@ -1,4 +1,4 @@
-import GameHub from "./GameHub";
+import GameHub from "./game-hub";
 import {
   AwaitReactionsOptions,
   GuildMember,
@@ -9,7 +9,7 @@ import {
   User,
   VoiceChannel,
 } from "discord.js";
-import { ConfiguratorConfig } from "./ConfiguratorValidator";
+import { ConfiguratorConfig } from "./configurator-validator";
 
 export interface GameConfig<T extends SessionConfig> {
   emoji: string;

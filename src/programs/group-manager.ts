@@ -22,7 +22,7 @@ import {
   GroupInteractionSuccess,
 } from "../common/interfaces";
 import { createYesBotLogger } from "../log";
-import { dailyChallengeChannelId } from "./DailyChallenge";
+import { dailyChallengeChannelId } from "./daily-challenge";
 import prisma from "../prisma";
 
 const logger = createYesBotLogger("program", "GroupManager");

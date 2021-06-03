@@ -13,7 +13,7 @@ import { Unassigned } from ".";
 
 const regionCountries = ["Australia", "Canada", "UK", "USA"];
 
-export default async function WhereAreYouFromManager(pMessage: Message) {
+export default async function WhereAreYouFrom(pMessage: Message) {
   const newUser = !isRegistered(pMessage.member);
 
   if (newUser) {

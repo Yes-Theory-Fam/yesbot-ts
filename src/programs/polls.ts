@@ -78,7 +78,7 @@ const partition = <T>(items: T[], size: number): T[][] => {
   return output;
 };
 
-export default async function PollsManager(pMessage: Message) {
+export default async function Polls(pMessage: Message) {
   if (pMessage.author.bot) {
     return;
   }

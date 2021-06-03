@@ -10,14 +10,9 @@ import {
 } from "discord.js";
 import bot from "../index";
 import Tools from "../common/tools";
-import {
-  AdventureGame,
-  GroupManagerTools,
-  NitroColors,
-  Valentine,
-} from "../programs";
+import { GroupManagerTools, NitroColors } from "../programs";
 import { hasRole } from "../common/moderator";
-import { ModeratorPollMirror } from "../programs/PollsManager";
+import { ModeratorPollMirror } from "../programs/polls";
 import prisma from "../prisma";
 
 class ReactionAdd {
@@ -45,9 +40,6 @@ class ReactionAdd {
   }
 
   async main() {
-    if (this.pureEmoji === "🧙" && this.channel.name == "discord-disaster") {
-      await AdventureGame(this.user, this.guild, this.bot);
-    }
     const reactRoleObjects = await prisma.reactionRole.findMany({
       where: {
         messageId: this.messageId,
@@ -81,7 +73,6 @@ class ReactionAdd {
 
     await this.handleChannelToggleReaction();
     await ModeratorPollMirror(this.messageReaction, this.user);
-    await Valentine.signupReaction(this.messageReaction, this.user);
   }
 
   async handleChannelToggleReaction() {

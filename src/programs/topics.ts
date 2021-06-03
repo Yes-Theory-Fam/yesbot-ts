@@ -4,7 +4,7 @@ import { isAuthorModerator } from "../common/moderator";
 import { createYesBotLogger } from "../log";
 import prisma from "../prisma";
 
-const logger = createYesBotLogger("programs", "TopicManager");
+const logger = createYesBotLogger("programs", "Topics");
 
 const QUESTION_LINK: string =
   "https://spreadsheets.google.com/feeds/cells/1xUIqCaSrjyQzJeJfnXR0Hix6mDkaFhVauFmJb8Pzkj0/1/public/full?alt=json";
@@ -15,7 +15,7 @@ const MOVIE_CHALLENGE_PICTURE_URL =
 const DRAWING_CHALLENGE_PICTURE_URL =
   "https://cdn.discordapp.com/attachments/747182765468024862/781574814594760714/30-day-drawing-challenge.png";
 
-export const TopicManager = async (message: Message) => {
+export const Topics = async (message: Message) => {
   const channel: TextChannel = <TextChannel>message.channel;
 
   switch (channel.name) {

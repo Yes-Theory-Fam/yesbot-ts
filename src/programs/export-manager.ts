@@ -3,34 +3,28 @@ import Tools from "../common/tools";
 
 export default async function ExportManager(message: Message) {
   const words = Tools.stringToWords(message.content);
-  const [command, toExportType, toExport] = words;
+  const [, toExportType, toExport] = words;
 
   if (!toExportType || !["role"].includes(toExportType)) {
-    message.reply(
+    await message.reply(
       `Incorrect syntax, please use the following: \`!export role\``
     );
     return;
   }
 
-  const member = message.member;
-  const moderator = !!member.roles.cache.some(
-    (r) => r.name === process.env.MODERATOR_ROLE_NAME
-  );
-
   switch (toExportType) {
     case "role":
-      exportRole(toExport, message.guild, message);
+      await exportRole(toExport, message.guild, message);
       break;
   }
 }
 
-const exportRole = (toExport: string, guild: Guild, message: Message) => {
-  // toExport = toExport.match()
+const exportRole = async (toExport: string, guild: Guild, message: Message) => {
   const foundRole = guild.roles.cache.find(
     (role) => role.name.toLowerCase() === toExport.toLowerCase()
   );
   if (!foundRole) {
-    message.channel.send(
+    await message.channel.send(
       `No roles found for "${toExport}". Export like !export role "study group french"`
     );
   }
@@ -39,5 +33,5 @@ const exportRole = (toExport: string, guild: Guild, message: Message) => {
     output += `"<@${member.id}>",\n`;
   });
   output += `]\`\`\``;
-  message.channel.send(output);
+  await message.channel.send(output);
 };
