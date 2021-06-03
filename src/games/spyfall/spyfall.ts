@@ -5,7 +5,7 @@ import {
   TextChannel,
   VoiceChannel,
 } from "discord.js";
-import { GameConfig, GameSession, SessionConfig } from "../GameSession";
+import { GameConfig, GameSession, SessionConfig } from "../game-session";
 import Tools from "../../common/tools";
 import { locations } from "./locations";
 

@@ -12,17 +12,16 @@ import {
   ExportManager,
   GroupManager,
   MapTools,
-  PollsManager,
-  ProfileManager,
+  Polls,
+  Profile,
   ReactRole,
   Resource,
   Someone,
   TemplateMode,
   Ticket,
   TopicManager,
-  Valentine,
   VoiceOnDemand,
-  WhereAreYouFromManager,
+  WhereAreYouFrom,
   Game,
   DMMenu,
   Unassigned,
@@ -36,13 +35,13 @@ import {
   deleteMessages,
   randomReply,
   sendLove,
-} from "../common/CustomMethods";
+} from "../common/custom-methods";
 import Tools from "../common/tools";
 import {
   DailyChallenge,
   postDailyMessage,
   saveToDb,
-} from "../programs/DailyChallenge";
+} from "../programs/daily-challenge";
 
 class MessageManager {
   message: Message;
@@ -114,7 +113,7 @@ class MessageManager {
         }
         break;
       case "flag-drop":
-        await WhereAreYouFromManager.default(this.message);
+        await WhereAreYouFrom.default(this.message);
         break;
 
       case "chat":
@@ -126,8 +125,7 @@ class MessageManager {
         break;
 
       case "trends":
-        if (firstWord === "!trend")
-          await TopicManager.TopicManager(this.message);
+        if (firstWord === "!trend") await TopicManager.Topics(this.message);
         if (firstWord === "!trendSet")
           await TopicManager.setTopic(this.message);
         break;
@@ -142,14 +140,12 @@ class MessageManager {
           !this.message.content.toLowerCase().startsWith("!group toggle")
         )
           await GroupManager(this.message, true);
-        if (firstWord === "!profile") await ProfileManager(this.message);
+        if (firstWord === "!profile") await Profile(this.message);
         if (firstWord === "!templateMode") await TemplateMode(this.message);
         if (firstWord === "!addChallenge")
           await saveToDb("daily-challenge", restOfMessage, this.message);
         if (firstWord === "!todayChallenge")
           await postDailyMessage(this.bot, this.message);
-        if (firstWord === "!valentine")
-          await Valentine.changeEventState(this.message);
         if (firstWord === "!unassignedRoleToggle")
           await Unassigned.UnassignedRoleAssignToggle(this.message);
         if (firstWord === "!unassignedRoleStatus")
@@ -161,7 +157,7 @@ class MessageManager {
           !this.message.content.toLowerCase().startsWith("!group toggle")
         )
           await GroupManager(this.message, true);
-        if (firstWord === "!profile") await ProfileManager(this.message);
+        if (firstWord === "!profile") await Profile(this.message);
         if (firstWord === "!birthday") await BirthdayManager(this.message);
 
         if (firstWord === "!voice") await VoiceOnDemand(this.message);
@@ -173,7 +169,7 @@ class MessageManager {
         break;
 
       case "polls":
-        await PollsManager(this.message);
+        await Polls(this.message);
         break;
 
       case "feature-requests":
@@ -199,7 +195,7 @@ class MessageManager {
       );
       await this.message.member.roles.remove(guildRole);
     }
-    if (firstWord === "!topic") TopicManager.TopicManager(this.message);
+    if (firstWord === "!topic") TopicManager.Topics(this.message);
     // if (firstWord === "!fiyesta") Ticket(this.message, "fiyesta");
     if (firstWord === "!resources") await Resource(this.message);
     if (firstWord === "!shoutout") await Ticket(this.message, "shoutout");

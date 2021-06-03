@@ -7,10 +7,10 @@ import {
   Snowflake,
   TextChannel,
 } from "discord.js";
-import { GameConfig, GameSession } from "./GameSession";
+import { GameConfig, GameSession } from "./game-session";
 import Tools from "../common/tools";
-import { ConfiguratorValidator } from "./ConfiguratorValidator";
-import { GameConfigurator } from "./GameConfigurator";
+import { ConfiguratorValidator } from "./configurator-validator";
+import { GameConfigurator } from "./game-configurator";
 
 const generalCommands = ["!rules", "!howtoplay", "!end"];
 

@@ -6,7 +6,7 @@ import {
   User,
 } from "discord.js";
 import state from "../common/state";
-import { proposeNameChange } from "../common/CustomMethods";
+import { proposeNameChange } from "../common/custom-methods";
 
 const removeIgnore = (channel: DMChannel) => {
   const index = state.ignoredGroupDMs.indexOf(channel.id);

@@ -17,8 +17,8 @@ import {
   NumberRangeConfigurationKey,
   SelectionConfigurationKey,
   TypedConfigurationKey,
-} from "./ConfiguratorValidator";
-import { SessionConfig } from "./GameSession";
+} from "./configurator-validator";
+import { SessionConfig } from "./game-session";
 import Tools, { unicodeEmojiRegex } from "../common/tools";
 
 const checkmark = "✅";
