@@ -1,19 +1,19 @@
-import GuildMemberUpdate from "./guild-member-update";
-import MemberJoin from "./member-join";
-import MessageManager from "./message";
-import ReactionAdd from "./reaction-add";
-import ReactionRemove from "./reaction-remove";
-import Ready from "./ready";
-import VoiceStateUpdate from "./voice-state-update";
-import { MemberLeave } from "./member-leave";
+import guildMemberUpdate from "./guild-member-update";
+import memberJoin from "./member-join";
+import messageManager from "./message";
+import reactionAdd from "./reaction-add";
+import reactionRemove from "./reaction-remove";
+import ready from "./ready";
+import voiceStateUpdate from "./voice-state-update";
+import memberLeave from "./member-leave";
 
 export {
-  GuildMemberUpdate,
-  MemberJoin,
-  MemberLeave,
-  MessageManager,
-  ReactionAdd,
-  ReactionRemove,
-  Ready,
-  VoiceStateUpdate,
+  guildMemberUpdate,
+  memberJoin,
+  memberLeave,
+  messageManager,
+  reactionAdd,
+  reactionRemove,
+  ready,
+  voiceStateUpdate,
 };

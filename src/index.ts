@@ -10,14 +10,14 @@ import {
   VoiceState,
 } from "discord.js";
 import {
-  GuildMemberUpdate,
-  MemberJoin,
-  MemberLeave,
-  MessageManager,
-  ReactionAdd,
-  ReactionRemove,
-  Ready,
-  VoiceStateUpdate,
+  guildMemberUpdate,
+  memberJoin,
+  memberLeave,
+  messageManager,
+  reactionAdd,
+  reactionRemove,
+  ready,
+  voiceStateUpdate,
 } from "./events";
 import rambo, { DiscordEvent } from "./rambo";
 
@@ -32,40 +32,36 @@ logger.debug("Logging in to Discord Gateway");
 bot.login(process.env.BOT_TOKEN);
 
 //! ================= EVENT HANDLERS ====================
-bot.on(
-  "guildMemberAdd",
-  (member: GuildMember | PartialGuildMember) => new MemberJoin(member)
+bot.on("guildMemberAdd", (member: GuildMember | PartialGuildMember) =>
+  memberJoin(member)
 );
-bot.on(
-  "guildMemberRemove",
-  (member: GuildMember | PartialGuildMember) => new MemberLeave(member)
+bot.on("guildMemberRemove", (member: GuildMember | PartialGuildMember) =>
+  memberLeave(member)
 );
 bot.on(
   "guildMemberUpdate",
   (
     oldMember: GuildMember | PartialGuildMember,
     newMember: GuildMember | PartialGuildMember
-  ) => new GuildMemberUpdate(oldMember, newMember)
+  ) => guildMemberUpdate(oldMember, newMember)
 );
-bot.on("message", (msg: Message) => {
-  new MessageManager(msg);
+bot.on("message", async (msg: Message) => {
+  await messageManager(msg);
   rambo.handleEvent(DiscordEvent.MESSAGE, msg);
 });
 bot.on(
   "messageReactionAdd",
   (messageReaction: MessageReaction, user: User | PartialUser) =>
-    new ReactionAdd(messageReaction, user)
+    reactionAdd(messageReaction, user)
 );
 bot.on(
   "messageReactionRemove",
   (messageReaction: MessageReaction, user: User | PartialUser) =>
-    new ReactionRemove(messageReaction, user)
+    reactionRemove(messageReaction, user)
 );
-bot.on("ready", () => new Ready(bot));
-bot.on(
-  "voiceStateUpdate",
-  (oldMember: VoiceState, newMember: VoiceState) =>
-    new VoiceStateUpdate(oldMember, newMember)
+bot.on("ready", () => ready(bot));
+bot.on("voiceStateUpdate", (oldMember: VoiceState, newMember: VoiceState) =>
+  voiceStateUpdate(oldMember, newMember)
 );
 //! ================= /EVENT HANDLERS ===================
 

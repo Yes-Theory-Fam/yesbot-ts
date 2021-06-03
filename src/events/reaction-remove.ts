@@ -1,79 +1,67 @@
-import {
-  Client,
-  Guild,
-  MessageReaction,
-  PartialUser,
-  Snowflake,
-  TextChannel,
-  User,
-} from "discord.js";
-import bot from "../index";
+import { Message, MessageReaction, PartialUser, User } from "discord.js";
 import { textLog } from "../common/moderator";
-import { Valentine } from "../programs";
 import prisma from "../prisma";
 
-class ReactionRemove {
-  bot: Client;
-  messageId: Snowflake;
-  user: User;
-  reaction: string;
-  channel: TextChannel;
-  guild: Guild;
-  messageReaction: MessageReaction;
+const reactionRemove = async (
+  messageReaction: MessageReaction,
+  user: User | PartialUser
+) => {
+  const {
+    message: { id: messageId, channel, guild },
+    emoji: { name: emoji },
+  } = messageReaction;
 
-  constructor(messageReaction: MessageReaction, user: User | PartialUser) {
-    this.bot = bot;
-    this.user = <User>user;
-    this.messageId = messageReaction.message.id;
-    this.reaction = messageReaction.emoji.name;
-    this.channel = <TextChannel>messageReaction.message.channel;
-    this.guild = <Guild>this.channel.guild;
-    this.messageReaction = messageReaction;
-    if (this.channel.name != "pick-your-color" && !this.user.bot) this.main();
+  if (channel.type === "dm" || channel.name === "pick-your-color" || user.bot) {
+    return;
   }
 
-  async main() {
-    const reactRoleObjects = await prisma.reactionRole.findMany({
-      where: {
-        messageId: this.messageId,
-        channelId: this.channel.id,
-        reaction: this.reaction,
-      },
-    });
+  const reactRoleObjects = await prisma.reactionRole.findMany({
+    where: {
+      messageId: messageId,
+      channelId: channel.id,
+      reaction: emoji,
+    },
+  });
 
-    reactRoleObjects.forEach((reactionRole) => {
-      const guildMember = this.guild.member(this.user);
-      const roleToAdd = this.guild.roles.resolve(reactionRole.roleId);
-      guildMember.roles.remove(roleToAdd);
-    });
+  reactRoleObjects.forEach((reactionRole) => {
+    const guildMember = guild.member(user.id);
+    const roleToAdd = guild.roles.resolve(reactionRole.roleId);
+    guildMember.roles.remove(roleToAdd);
+  });
 
-    Valentine.signoutReaction(this.messageReaction, this.user);
-    this.handleChannelToggleReaction();
+  await handleChannelToggleReaction(
+    messageReaction.message,
+    user,
+    messageReaction.emoji.name
+  );
+};
+
+const handleChannelToggleReaction = async (
+  message: Message,
+  user: User | PartialUser,
+  emoji: string
+) => {
+  const { id: messageId, guild } = message;
+
+  const toggle = await prisma.channelToggle.findFirst({
+    where: {
+      emoji,
+      messageId,
+    },
+  });
+  if (!toggle) {
+    return;
   }
 
-  async handleChannelToggleReaction() {
-    const toggle = await prisma.channelToggle.findFirst({
-      where: {
-        emoji: this.reaction,
-        messageId: this.messageId,
-      },
-    });
-    if (!toggle) {
-      return;
-    }
+  const channel = guild.channels.cache.find((c) => c.id === toggle.channel);
 
-    const channel = this.guild.channels.cache.find(
-      (c) => c.id === toggle.channel
+  if (!channel) {
+    await textLog(
+      `I can't find this channel <#${toggle.channel}>. Has it been deleted?`
     );
-
-    if (!channel) {
-      await textLog(
-        `I can't find this channel <#${toggle.channel}>. Has it been deleted?`
-      );
-      return;
-    }
-    await channel.permissionOverwrites.get(this.user.id)?.delete();
+    return;
   }
-}
+  await channel.permissionOverwrites.get(user.id)?.delete();
+};
 
-export default ReactionRemove;
+export default reactionRemove;
