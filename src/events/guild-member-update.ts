@@ -1,5 +1,4 @@
 import {
-  Client,
   GuildMember,
   PartialGuildMember,
   TextChannel,
@@ -10,47 +9,43 @@ import {
 } from "discord.js";
 import Tools from "../common/tools";
 import { hasRole } from "../common/moderator";
-import { Separators, NitroColors, WhereAreYouFromManager } from "../programs";
+import { Separators, NitroColors, WhereAreYouFrom } from "../programs";
 import prisma from "../prisma";
 
-class GuildMemberUpdate {
-  bot: Client;
-
-  constructor(
-    oldMember: GuildMember | PartialGuildMember,
-    newMember: GuildMember | PartialGuildMember
-  ) {
+const guildMemberUpdate = async (
+  oldMember: GuildMember | PartialGuildMember,
+  newMember: GuildMember | PartialGuildMember
+) => {
     if (
       gainedRole(oldMember, newMember, "Time Out") ||
       gainedRole(oldMember, newMember, "Break")
     ) {
-      revokePerUserPermissions(newMember);
+      await revokePerUserPermissions(newMember);
     }
 
-    if (resolvePerUserCondition(oldMember, newMember)) {
-      resolvePerUserPermissions(newMember);
-    }
-
-    if (gainedRole(oldMember, newMember, "Break")) {
-      lockCountryChannels(newMember);
-    }
-
-    if (lostRole(oldMember, newMember, "Break")) {
-      unlockCountryChannels(newMember);
-    }
-
-    if (
-      gainedRole(oldMember, newMember, "Unassigned") ||
-      gainedRole(oldMember, newMember, "Member")
-    ) {
-      return;
-    }
-
-    WhereAreYouFromManager.updateAfterRegionSelect(oldMember, newMember);
-    NitroColors.removeColorIfNotAllowed(newMember);
-    Separators.separatorOnRoleAdd(oldMember, newMember);
-    Separators.separatorOnRoleRemove(oldMember, newMember);
+  if (resolvePerUserCondition(oldMember, newMember)) {
+    await resolvePerUserPermissions(newMember);
   }
+
+  if (gainedRole(oldMember, newMember, "Break")) {
+    lockCountryChannels(newMember);
+  }
+
+  if (lostRole(oldMember, newMember, "Break")) {
+    unlockCountryChannels(newMember);
+  }
+
+  if (
+    gainedRole(oldMember, newMember, "Unassigned") ||
+    gainedRole(oldMember, newMember, "Member")
+  ) {
+    return;
+  }
+
+  await WhereAreYouFrom.updateAfterRegionSelect(oldMember, newMember);
+  await NitroColors.removeColorIfNotAllowed(newMember);
+  Separators.separatorOnRoleAdd(oldMember, newMember);
+  Separators.separatorOnRoleRemove(oldMember, newMember);
 }
 
 // A users per-user permissions shall be restored if they have lost one of the switch roles and every role they have is none of the switchRoles
@@ -147,14 +142,14 @@ const resolvePerUserPermissions = async (
       toggles.includes(reaction.emoji.name)
     );
 
-    for (const [_, reaction] of relevantReactions) {
+    for (const [, reaction] of relevantReactions) {
       const users = await reaction.users.fetch({
         after,
         limit: 10,
       });
       if (!users.has(newMember.id)) continue;
 
-      Tools.addPerUserPermissions(
+      await Tools.addPerUserPermissions(
         reaction.emoji.name,
         messageId,
         newMember.guild,
@@ -207,4 +202,4 @@ const unlockCountryChannels = (member: GuildMember | PartialGuildMember) => {
   );
 };
 
-export default GuildMemberUpdate;
+export default guildMemberUpdate;

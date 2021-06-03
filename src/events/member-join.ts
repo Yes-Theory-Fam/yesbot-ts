@@ -1,12 +1,8 @@
-import { Client, GuildMember, PartialGuildMember } from "discord.js";
+import { GuildMember, PartialGuildMember } from "discord.js";
 import { Unassigned } from "../programs";
 
-class MemberJoin {
-  bot: Client;
+const memberJoin = (member: GuildMember | PartialGuildMember) => {
+  Unassigned.UnassignedMemberJoin(member);
+};
 
-  constructor(member: GuildMember | PartialGuildMember) {
-    Unassigned.UnassignedMemberJoin(member);
-  }
-}
-
-export default MemberJoin;
+export default memberJoin;

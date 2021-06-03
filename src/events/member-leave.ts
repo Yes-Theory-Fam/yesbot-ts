@@ -3,14 +3,12 @@ import { textLog } from "../common/moderator";
 import prisma from "../prisma";
 import { createYesBotLogger } from "../log";
 
-const logger = createYesBotLogger("events", "MemberLeave");
+const logger = createYesBotLogger("events", "memberLeave");
 
-export class MemberLeave {
-  constructor(member: GuildMember | PartialGuildMember) {
-    RemoveFromBirthdays(member.id);
-    RemoveFromGroups(member.id);
-  }
-}
+const memberLeave = async (member: GuildMember | PartialGuildMember) => {
+  await RemoveFromBirthdays(member.id);
+  await RemoveFromGroups(member.id);
+};
 
 // See https://www.prisma.io/docs/reference/api-reference/error-reference#p2025
 const recordNotFoundCode = "P2025";
@@ -43,3 +41,5 @@ const RemoveFromGroups = async (memberId: string) => {
     }
   }
 };
+
+export default memberLeave;

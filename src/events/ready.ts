@@ -8,45 +8,36 @@ import {
   VoiceOnDemandTools,
 } from "../programs";
 
-const logger = createYesBotLogger("events", "Ready");
+const logger = createYesBotLogger("events", "ready");
 
-class Ready {
-  bot: Client;
+const ready = async (bot: Client) => {
+  logger.info(`Bot is online - ${bot.user.tag}`);
 
-  constructor(bot: Client) {
-    this.bot = bot;
-    logger.info(`Bot is online - ${bot.user.tag}`);
+  const GUILD_ID = process.env.GUILD_ID;
+  logger.debug("Finding guild based on GUILD_ID", { GUILD_ID });
+  const guild = bot.guilds.resolve(GUILD_ID);
+  if (process.env.OUTPUT_CHANNEL_ID) {
+    const outputChannel = <TextChannel>(
+      guild.channels.resolve(process.env.OUTPUT_CHANNEL_ID)
+    );
+    const readyMessageString = (status: string) =>
+      `${bot.user.tag} - Online - ${status} - ${Unassigned.getStatus(
+        "Currently"
+      )}`;
 
-    this.init(bot);
+    await NitroColors.cacheNitroColors(GUILD_ID);
+    await VoiceOnDemandTools.voiceOnDemandReady(bot);
+    await DailyChallenge.initialize(bot);
+    Game.initGameHub(guild);
+    const readyMessage = await outputChannel?.send(
+      readyMessageString("Fetching members.")
+    );
+
+    await guild.members.fetch({
+      withPresences: true,
+    });
+    readyMessage.edit(readyMessageString("Members fetched, fully ready!"));
   }
+};
 
-  async init(bot: Client) {
-    const GUILD_ID = process.env.GUILD_ID;
-    logger.debug("Finding guild based on GUILD_ID", { GUILD_ID });
-    const guild = this.bot.guilds.resolve(GUILD_ID);
-    if (process.env.OUTPUT_CHANNEL_ID) {
-      const outputChannel = <TextChannel>(
-        guild.channels.resolve(process.env.OUTPUT_CHANNEL_ID)
-      );
-      const readyMessageString = (status: string) =>
-        `${bot.user.tag} - Online - ${status} - ${Unassigned.getStatus(
-          "Currently"
-        )}`;
-
-      await NitroColors.cacheNitroColors(GUILD_ID);
-      await VoiceOnDemandTools.voiceOnDemandReady(bot);
-      await DailyChallenge.initialize(this.bot);
-      Game.initGameHub(guild);
-      const readyMessage = await outputChannel?.send(
-        readyMessageString("Fetching members.")
-      );
-
-      await guild.members.fetch({
-        withPresences: true,
-      });
-      readyMessage.edit(readyMessageString("Members fetched, fully ready!"));
-    }
-  }
-}
-
-export default Ready;
+export default ready;
