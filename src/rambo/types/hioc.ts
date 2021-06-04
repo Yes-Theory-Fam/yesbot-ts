@@ -1,4 +1,4 @@
-import { CommandHandler } from "../common/handler";
+import { CommandHandler } from "./handler";
 import { EventHandlerOptions } from "../events";
 import { DiscordEvent } from "./base";
 

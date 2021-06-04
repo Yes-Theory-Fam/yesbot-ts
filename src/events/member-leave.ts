@@ -6,14 +6,14 @@ import { createYesBotLogger } from "../log";
 const logger = createYesBotLogger("events", "memberLeave");
 
 const memberLeave = async (member: GuildMember | PartialGuildMember) => {
-  await RemoveFromBirthdays(member.id);
-  await RemoveFromGroups(member.id);
+  await removeFromBirthdays(member.id);
+  await removeFromGroups(member.id);
 };
 
 // See https://www.prisma.io/docs/reference/api-reference/error-reference#p2025
 const recordNotFoundCode = "P2025";
 
-const RemoveFromBirthdays = async (userId: string) => {
+const removeFromBirthdays = async (userId: string) => {
   try {
     await prisma.birthday.delete({ where: { userId } });
   } catch (e) {
@@ -26,7 +26,7 @@ const RemoveFromBirthdays = async (userId: string) => {
   }
 };
 
-const RemoveFromGroups = async (memberId: string) => {
+const removeFromGroups = async (memberId: string) => {
   try {
     await prisma.userGroupMembersGroupMember.deleteMany({
       where: { groupMemberId: memberId },

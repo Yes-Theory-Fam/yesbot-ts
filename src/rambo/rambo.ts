@@ -9,7 +9,7 @@ import {
   StringIndexedHIOCTreeNode,
 } from "./types/hioc";
 import { EventHandlerOptions } from "./events";
-import { HandlerClass } from "./common/handler";
+import { HandlerClass } from "./types/handler";
 import { DiscordEvent } from "./types/base";
 
 const logger = createYesBotLogger("rambo", "rambo");

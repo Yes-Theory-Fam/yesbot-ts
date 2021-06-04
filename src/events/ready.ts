@@ -13,9 +13,9 @@ const logger = createYesBotLogger("events", "ready");
 const ready = async (bot: Client) => {
   logger.info(`Bot is online - ${bot.user.tag}`);
 
-  const GUILD_ID = process.env.GUILD_ID;
-  logger.debug("Finding guild based on GUILD_ID", { GUILD_ID });
-  const guild = bot.guilds.resolve(GUILD_ID);
+  const guildId = process.env.GUILD_ID;
+  logger.debug("Finding guild based on GUILD_ID", { GUILD_ID: guildId });
+  const guild = bot.guilds.resolve(guildId);
   if (process.env.OUTPUT_CHANNEL_ID) {
     const outputChannel = <TextChannel>(
       guild.channels.resolve(process.env.OUTPUT_CHANNEL_ID)
@@ -25,7 +25,7 @@ const ready = async (bot: Client) => {
         "Currently"
       )}`;
 
-    await NitroColors.cacheNitroColors(GUILD_ID);
+    await NitroColors.cacheNitroColors(guildId);
     await VoiceOnDemandTools.voiceOnDemandReady(bot);
     await DailyChallenge.initialize(bot);
     Game.initGameHub(guild);

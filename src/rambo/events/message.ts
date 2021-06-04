@@ -17,7 +17,7 @@ import {
   InstanceOrConstructor,
   StringIndexedHIOCTree,
 } from "../types/hioc";
-import { CommandHandler } from "../common/handler";
+import { CommandHandler } from "../types/handler";
 
 export interface MessageEventHandlerOptions extends BaseOptions {
   event: DiscordEvent.MESSAGE;
