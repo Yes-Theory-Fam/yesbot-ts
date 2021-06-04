@@ -7,7 +7,7 @@ import prisma from "../prisma";
 const QUESTION_LINK: string =
   "https://spreadsheets.google.com/feeds/cells/1eve4McRxECmH4dLWLJvHLr9fErBWcCGiH94ihBNzK_s/1/public/full?alt=json";
 
-async function Someone(message: Message) {
+const someone = async (message: Message) => {
   const allow = await isAllowed(message.author);
 
   if (!allow) {
@@ -63,7 +63,7 @@ async function Someone(message: Message) {
   }
 
   await message.delete();
-}
+};
 
 const sendMessage = async (
   author: GuildMember,
@@ -152,4 +152,4 @@ async function getQuestion() {
   return entries[Math.floor(Math.random() * entries.length)];
 }
 
-export default Someone;
+export default someone;

@@ -34,11 +34,11 @@ const months = [
   "dec",
 ];
 
-export default async function BirthdayManager(message: Message) {
+const birthdayManager = async (message: Message) => {
   const words = Tools.stringToWords(message.content);
 
   if (words.length < 2) {
-    Tools.handleUserError(
+    await Tools.handleUserError(
       message,
       "Please type !birthday and your birthday. I prefer if you use a name for the month :robot:"
     );
@@ -53,7 +53,7 @@ export default async function BirthdayManager(message: Message) {
   const userExistingBirthday = await getUserBirthday(birthdayUser.id);
 
   if (userExistingBirthday !== null) {
-    Tools.handleUserError(
+    await Tools.handleUserError(
       message,
       `I have already stored your birthday as ${formatBirthday(
         userExistingBirthday
@@ -65,7 +65,7 @@ export default async function BirthdayManager(message: Message) {
   const birthdate = getUserBirthdate(message.content);
 
   if (birthdate === null) {
-    Tools.handleUserError(
+    await Tools.handleUserError(
       message,
       "I'm unable to understand that date. Could you please specify it in month-date form? Like this: `!birthday december-24`. Thank you!"
     );
@@ -100,7 +100,7 @@ export default async function BirthdayManager(message: Message) {
   }
 
   if (birthdayAccepted.first().emoji.name === "👎") {
-    message.channel.send(
+    await message.channel.send(
       "Okay, please be more specific and try again, or hang around for a Support to help you out! :grin:"
     );
     return;
@@ -130,28 +130,28 @@ export default async function BirthdayManager(message: Message) {
         { allowedMentions }
       );
     } else if (err.message === "time expired") {
-      message.react("⏰");
+      await message.react("⏰");
     } else {
       logger.error(
         "An unknown error has occurred awaiting the users timezone: ",
         err
       );
-      message.channel.send(
+      await message.channel.send(
         "Hmm, something went wrong. Please contact my engineers if this seems unreasonable. :nerd:"
       );
     }
     return;
   }
 
-  message.channel.send(
+  await message.channel.send(
     `Okay, I'll store your birthday as ${formatBirthday(
       birthdate
     )} in the timezone ${timezone}.`
   );
-  textLog(
+  await textLog(
     "Hi there! Could someone help me by executing this command? Thank you!"
   );
-  textLog(
+  await textLog(
     `\`bb.override <@${birthdayUser.id}> set ${formatBirthday(
       birthdate
     )} ${timezone}\``
@@ -159,7 +159,7 @@ export default async function BirthdayManager(message: Message) {
 
   const birthday = createBirthday(birthdayUser.id, birthdate, timezone);
   await prisma.birthday.create({ data: birthday });
-}
+};
 
 export function createBirthday(
   id: string,
@@ -174,7 +174,7 @@ export function createBirthday(
 }
 
 export function getUserBirthdate(message: string): Date | null {
-  const words = message.split(/[\s,-\/\.]\s?/);
+  const words = message.split(/[\s,-\/.]\s?/);
 
   const monthNameMatches = months.find((month) =>
     words.find((word) => word.toLowerCase().includes(month))
@@ -261,11 +261,7 @@ async function getUserTimezone(message: Message): Promise<string> {
   response.setTitle("Pick your timezone");
 
   const regionIdentifierStart = 127462;
-  let reactions: string[] = [];
-
-  timezones.forEach((tz, i) => {
-    if (stopAddReactions) return;
-
+  const reactions: string[] = timezones.map((tz, i) => {
     const currentTime = new Date();
     const currentTimeString = `Current time: ${currentTime.toLocaleTimeString(
       "en-GB",
@@ -273,21 +269,20 @@ async function getUserTimezone(message: Message): Promise<string> {
     )}`;
     const identifier = String.fromCodePoint(regionIdentifierStart + i);
     response.addField(tz, `${identifier} - ${currentTimeString}`);
-    reactions.push(identifier);
+    return identifier;
   });
 
-  let stopAddReactions = false;
   const sentMessage = await message.channel.send(response);
-  response.fields.forEach(async (_, i) => {
+  for (const reaction of reactions) {
     try {
-      await sentMessage.react(String.fromCodePoint(regionIdentifierStart + i));
+      await sentMessage.react(reaction);
     } catch (err) {
       logger.error("Error while adding timezones", err);
       // If we err here, it's probably because the user already selected an emoji.
       // Best to just skip adding more emojis.
-      stopAddReactions = true;
+      break;
     }
-  });
+  }
 
   const filter: CollectorFilter = (reaction: MessageReaction, user: User) => {
     return (
@@ -314,7 +309,7 @@ async function getUserTimezone(message: Message): Promise<string> {
   const reaction = received.first();
   const selectedTz = timezones[reactions.indexOf(reaction.emoji.name)];
 
-  sentMessage.delete();
+  await sentMessage.delete();
   return selectedTz;
 }
 
@@ -497,3 +492,5 @@ export function formatBirthday(date: Date | null): string {
     ? "Unknown"
     : `${months[date.getMonth()]}-${date.getDate()}`;
 }
+
+export default birthdayManager;

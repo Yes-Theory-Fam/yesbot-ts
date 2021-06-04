@@ -2,8 +2,8 @@ import { Message, TextChannel, User } from "discord.js";
 import { isAuthorModerator } from "../common/moderator";
 import { TextChannelOptions } from "../common/interfaces";
 
-export default async function Ticket(pMessage: Message, type: string) {
-  const guild_name = pMessage.guild.name;
+const ticket = async (message: Message, type: string) => {
+  const guild_name = message.guild.name;
 
   const TICKET_LOG_CHANNEL = `${type}-logs`;
 
@@ -11,7 +11,7 @@ export default async function Ticket(pMessage: Message, type: string) {
     guild_name == "Yes Theory Fam" ? "not done" : "695317780198719500";
 
   const ENGINEER_ROLE_ID = "667747778201649172";
-  const SUPPORT_ROLE_ID = "771496822790160445";
+  const SUPPORT_ROLE_ID = "452983558659637256";
 
   let moderatorRoleName: string;
   let categoryId: string;
@@ -21,36 +21,36 @@ export default async function Ticket(pMessage: Message, type: string) {
   switch (type) {
     case "fiyesta":
       moderatorRoleName = process.env.ENGINEER_ROLE_NAME;
-      categoryId = pMessage.guild.channels.cache.find((c) =>
+      categoryId = message.guild.channels.cache.find((c) =>
         c.name.toLowerCase().includes("application")
       ).id;
-      moderatorRoleId = pMessage.guild.roles.cache.find(
+      moderatorRoleId = message.guild.roles.cache.find(
         (r) => r.id === ENGINEER_ROLE_ID
       ).id;
-      ticketMessage = `Hi ${pMessage.member.toString()}, please list the details of your proposed FiYESta below and read the <#502198786441871381> while you wait.`;
+      ticketMessage = `Hi ${message.member.toString()}, please list the details of your proposed FiYESta below and read the <#502198786441871381> while you wait.`;
       break;
     case "shoutout":
       moderatorRoleName = process.env.MODERATOR_ROLE_NAME;
-      categoryId = pMessage.guild.channels.cache.find((c) =>
+      categoryId = message.guild.channels.cache.find((c) =>
         c.name.toLowerCase().includes("validation")
       ).id;
-      moderatorRoleId = pMessage.guild.roles.cache.find(
+      moderatorRoleId = message.guild.roles.cache.find(
         (r) => r.id === SUPPORT_ROLE_ID
       ).id;
-      ticketMessage = `Hi ${pMessage.member.toString()}, please list the details of your shoutout below.`;
+      ticketMessage = `Hi ${message.member.toString()}, please list the details of your shoutout below.`;
       break;
     case "contest":
       categoryId = CONTEST_CATEGORY_ID;
       moderatorRoleName = process.env.MODERATOR_ROLE_NAME;
       moderatorRoleId = SUPPORT_ROLE_ID;
-      ticketMessage = `Hi ${pMessage.member.toString()}, please list the details of your contest below.`;
+      ticketMessage = `Hi ${message.member.toString()}, please list the details of your contest below.`;
       break;
     default:
       break;
   }
 
   //! This comes to us in the format of "![fiyesta|shoutout] [close|logs]?"
-  const args = pMessage.cleanContent.split(" ");
+  const args = message.cleanContent.split(" ");
   if (
     args[1] &&
     !(args[1] == "close" || args[1] == "logs" || args[1] == "forceclose")
@@ -58,22 +58,22 @@ export default async function Ticket(pMessage: Message, type: string) {
     return;
   }
   let channelName = `${type}-${(
-    pMessage.author.username + pMessage.author.discriminator
+    message.author.username + message.author.discriminator
   ).toLowerCase()}`;
-  const isForceClose = pMessage.cleanContent.split(" ")[1] == "forceclose";
+  const isForceClose = message.cleanContent.split(" ")[1] == "forceclose";
 
-  const isClose = pMessage.cleanContent.split(" ")[1] == "close";
-  const supportRole = pMessage.guild.roles.cache.find(
+  const isClose = message.cleanContent.split(" ")[1] == "close";
+  const supportRole = message.guild.roles.cache.find(
     (r) => r.name == moderatorRoleName
   );
 
   if (isClose) {
-    const ticketChannel = <TextChannel>pMessage.channel;
+    const ticketChannel = <TextChannel>message.channel;
     if (ticketChannel.name.startsWith(type)) {
-      if (isAuthorModerator(pMessage))
+      if (isAuthorModerator(message))
         await createCloseMessage(
           ticketChannel,
-          pMessage.author,
+          message.author,
           TICKET_LOG_CHANNEL
         );
     }
@@ -81,23 +81,23 @@ export default async function Ticket(pMessage: Message, type: string) {
   }
 
   if (isForceClose) {
-    const ticketChannel = <TextChannel>pMessage.channel;
+    const ticketChannel = <TextChannel>message.channel;
     if (ticketChannel.name.startsWith(type)) {
-      if (isAuthorModerator(pMessage))
-        await closeTicket(ticketChannel, pMessage.author, TICKET_LOG_CHANNEL);
+      if (isAuthorModerator(message))
+        await closeTicket(ticketChannel, message.author, TICKET_LOG_CHANNEL);
     }
   } else {
-    await pMessage.delete();
+    await message.delete();
     const channelOptions: TextChannelOptions = {
-      topic: "Support ticket for " + pMessage.member.user.username,
+      topic: "Support ticket for " + message.member.user.username,
       type: "text",
       permissionOverwrites: [
         {
-          id: pMessage.guild.id,
+          id: message.guild.id,
           deny: ["VIEW_CHANNEL"],
         },
         {
-          id: pMessage.author.id,
+          id: message.author.id,
           allow: ["VIEW_CHANNEL", "READ_MESSAGE_HISTORY", "SEND_MESSAGES"],
           deny: ["ADD_REACTIONS"],
         },
@@ -109,15 +109,15 @@ export default async function Ticket(pMessage: Message, type: string) {
       parent: categoryId,
     };
     channelName = channelName.replace(/\s+/g, "-").toLowerCase();
-    if (pMessage.guild.channels.cache.find((c) => c.name == channelName)) {
-      pMessage.author.createDM().then((channel) => {
+    if (message.guild.channels.cache.find((c) => c.name == channelName)) {
+      message.author.createDM().then((channel) => {
         channel.send(
           "You already have a ticket open, please close that one first before opening another."
         );
       });
       return;
     } else {
-      const ticketChannel = await pMessage.guild.channels.create(
+      const ticketChannel = await message.guild.channels.create(
         channelName,
         channelOptions
       );
@@ -127,7 +127,7 @@ export default async function Ticket(pMessage: Message, type: string) {
       );
     }
   }
-}
+};
 
 async function closeTicket(
   channel: TextChannel,
@@ -231,3 +231,5 @@ function timeConverter(UNIX_timestamp: number) {
   const sec = a.getSeconds();
   return [year, month, date, hour, min, sec];
 }
+
+export default ticket;

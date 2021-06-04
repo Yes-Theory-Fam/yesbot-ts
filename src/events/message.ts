@@ -30,7 +30,7 @@ import {
 } from "../common/custom-methods";
 import Tools from "../common/tools";
 import {
-  DailyChallenge,
+  dailyChallenge,
   postDailyMessage,
   saveToDb,
 } from "../programs/daily-challenge";
@@ -109,12 +109,12 @@ const routeMessage = async (message: Message) => {
       break;
 
     case "trends":
-      if (firstWord === "!trend") await TopicManager.Topics(message);
+      if (firstWord === "!trend") await TopicManager.topics(message);
       if (firstWord === "!trendSet") await TopicManager.setTopic(message);
       break;
 
     case "daily-challenge":
-      if (firstWord === "!challenge") await DailyChallenge(message);
+      if (firstWord === "!challenge") await dailyChallenge(message);
       break;
     case "permanent-testing":
       if (firstWord === "!export") await ExportManager(message);
@@ -130,9 +130,9 @@ const routeMessage = async (message: Message) => {
       if (firstWord === "!todayChallenge")
         await postDailyMessage(message.client, message);
       if (firstWord === "!unassignedRoleToggle")
-        await Unassigned.UnassignedRoleAssignToggle(message);
+        await Unassigned.unassignedRoleAssignToggle(message);
       if (firstWord === "!unassignedRoleStatus")
-        await Unassigned.UnassignedRoleAssignStatus(message);
+        await Unassigned.unassignedRoleAssignStatus(message);
       break;
     case "bot-commands":
       if (
@@ -178,7 +178,7 @@ const routeMessage = async (message: Message) => {
     );
     await message.member.roles.remove(guildRole);
   }
-  if (firstWord === "!topic") TopicManager.Topics(message);
+  if (firstWord === "!topic") TopicManager.topics(message);
   // if (firstWord === "!fiyesta") Ticket(message, "fiyesta");
   if (firstWord === "!resources") await Resource(message);
   if (firstWord === "!shoutout") await Ticket(message, "shoutout");

@@ -15,7 +15,7 @@ export const getStatus = (prefix: string) => {
   }assign the Unassigned role.`;
 };
 
-export const UnassignedRoleAssignToggle = async (message: Message) => {
+export const unassignedRoleAssignToggle = async (message: Message) => {
   assignRoleOnJoin = !assignRoleOnJoin;
   logger.info(
     `Set the bot to ${assignRoleOnJoin ? "" : "not "}assign Unassigned.`
@@ -23,23 +23,23 @@ export const UnassignedRoleAssignToggle = async (message: Message) => {
   await message.reply(getStatus("Now"));
 };
 
-export const UnassignedRoleAssignStatus = async (message: Message) => {
+export const unassignedRoleAssignStatus = async (message: Message) => {
   await message.reply(
     getStatus("Currently") + " Use !unassignedRoleToggle to toggle this."
   );
 };
 
-export const UnassignedMemberJoin = (
+export const unassignedMemberJoin = async (
   member: GuildMember | PartialGuildMember
 ) => {
   if (assignRoleOnJoin) {
-    member.roles.add(getUnassignedRole(member.guild));
+    await member.roles.add(getUnassignedRole(member.guild));
   }
 };
 
-export const UnassignedMemberUpdate = (
+export const unassignedMemberUpdate = async (
   newMember: GuildMember | PartialGuildMember
 ) => {
   const Unassigned = getUnassignedRole(newMember.guild);
-  newMember.roles.remove(Unassigned);
+  await newMember.roles.remove(Unassigned);
 };

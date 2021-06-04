@@ -78,15 +78,15 @@ const partition = <T>(items: T[], size: number): T[][] => {
   return output;
 };
 
-export default async function Polls(pMessage: Message) {
-  if (pMessage.author.bot) {
+const polls = async (message: Message) => {
+  if (message.author.bot) {
     return;
   }
 
-  const lines = pMessage.cleanContent.split("\n");
+  const lines = message.cleanContent.split("\n");
   const resolvedEmojis = resolveEmojis(
     lines.map(removeSpecialCharactersFromBeginning),
-    pMessage.client
+    message.client
   );
   const unique = resolvedEmojis.filter(
     (e, i) => resolvedEmojis.indexOf(e) === i
@@ -94,21 +94,21 @@ export default async function Polls(pMessage: Message) {
   const partitioned = partition(unique, 20);
 
   for (let i = 0; i < partitioned.length; i++) {
-    const message =
-      i === 0 ? pMessage : await pMessage.channel.send("More options");
+    const reactMessage =
+      i === 0 ? message : await message.channel.send("More options");
 
     const partition = partitioned[i];
     for (const emoji of partition) {
-      await message.react(emoji);
+      await reactMessage.react(emoji);
     }
   }
-}
+};
 
 const removeSpecialCharactersFromBeginning = (content: string) => {
   return content.replace(/^\p{P}*/u, "");
 };
 
-export const ModeratorPollMirror = async (
+export const moderatorPollMirror = async (
   reaction: MessageReaction,
   user: User | PartialUser
 ) => {
@@ -124,3 +124,5 @@ export const ModeratorPollMirror = async (
   await message.react(reaction.emoji);
   await reaction.users.remove(user.id);
 };
+
+export default polls;

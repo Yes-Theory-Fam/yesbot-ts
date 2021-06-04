@@ -1,6 +1,6 @@
 import { Message, TextChannel } from "discord.js";
 
-async function Resource(message: Message) {
+const resources = async (message: Message) => {
   const channel = message.channel as TextChannel;
   switch (channel.name) {
     case "coding":
@@ -13,9 +13,9 @@ async function Resource(message: Message) {
     default:
       break;
   }
-}
+};
 
-export default Resource;
+export default resources;
 
 const RESOURCES_CODING = `
 

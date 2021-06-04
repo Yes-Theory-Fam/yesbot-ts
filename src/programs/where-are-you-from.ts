@@ -13,14 +13,14 @@ import { Unassigned } from ".";
 
 const regionCountries = ["Australia", "Canada", "UK", "USA"];
 
-export default async function WhereAreYouFrom(pMessage: Message) {
-  const newUser = !isRegistered(pMessage.member);
+const whereAreYouFrom = async (message: Message) => {
+  const newUser = !isRegistered(message.member);
 
   if (newUser) {
-    const matchedCountries = getCountriesFromMessage(pMessage.content);
+    const matchedCountries = getCountriesFromMessage(message.content);
 
     if (matchedCountries.length > 1) {
-      await pMessage.reply(
+      await message.reply(
         "Please only tell me 1 country for now, you can ask a member of the Support team about multiple nationalities :grin:"
       );
       return;
@@ -28,39 +28,39 @@ export default async function WhereAreYouFrom(pMessage: Message) {
 
     const countryToAssign = matchedCountries[0];
     if (countryToAssign) {
-      const roleToAssign = getRoleForCountry(countryToAssign, pMessage.guild);
+      const roleToAssign = getRoleForCountry(countryToAssign, message.guild);
 
       if (!roleToAssign) {
-        const moderatorRole = pMessage.guild.roles.cache.find(
+        const moderatorRole = message.guild.roles.cache.find(
           (r) => r.name === process.env.MODERATOR_ROLE_NAME
         );
         await textLog(
           `${moderatorRole.toString()}: <@${
-            pMessage.author.id
+            message.author.id
           }> just requested role for country ${
             countryToAssign.name
           }, but I could not find it. Please make sure this role exists.`
         );
         return;
       }
-      await pMessage.member.roles.add(roleToAssign);
-      await pMessage.react("👍");
+      await message.member.roles.add(roleToAssign);
+      await message.react("👍");
       const isCountryWithRegionRole = regionCountries.some((country) =>
         roleToAssign.name.endsWith(`${country}!`)
       );
 
-      pMessage.member.createDM().then((dmChannel) => {
-        const rules = pMessage.guild.channels.cache.find(
+      message.member.createDM().then((dmChannel) => {
+        const rules = message.guild.channels.cache.find(
           (c) => c.name === "rules"
         );
-        const generalInfo = pMessage.guild.channels.cache.find(
+        const generalInfo = message.guild.channels.cache.find(
           (c) => c.name === "general-info"
         );
 
         if (!isCountryWithRegionRole) {
-          welcomeMember(pMessage.member.user, pMessage.member.guild);
+          welcomeMember(message.member.user, message.member.guild);
         }
-        Unassigned.UnassignedMemberUpdate(pMessage.member);
+        Unassigned.unassignedMemberUpdate(message.member);
         dmChannel.send(
           `Hey! My name is YesBot, I'm so happy to see you've made it into our world, we really hope you stick around!\n\nIn the meantime, you should checkout ${rules.toString()} and ${generalInfo.toString()} , they contain a lot of good-to-knows about our server and what cool stuff you can do.\nIf you'd like me to change your name on the server for you, just drop me a message and I will help you out! Then I can introduce you to our family :grin:\n\nI know Discord can be a lot to take in at first, trust me, but it's really quite a wonderful place.`
         );
@@ -71,11 +71,11 @@ export default async function WhereAreYouFrom(pMessage: Message) {
         const lowerCaseCountry = roleToAssign.name
           .match(countryFromRoleNameRegex)[1]
           .toLowerCase();
-        await ghostPing(pMessage, lowerCaseCountry);
+        await ghostPing(message, lowerCaseCountry);
       }
     }
   }
-}
+};
 
 const welcomeMember = async (user: User, guild: Guild) => {
   const memberRole = guild.roles.cache.find(({ name }) => name === "Member");
@@ -188,3 +188,5 @@ export const updateAfterRegionSelect = async (
     }
   }
 };
+
+export default whereAreYouFrom;
