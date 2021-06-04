@@ -1,6 +1,10 @@
 import { Message } from "discord.js";
-import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
-import { MessageLocation } from "../event-distribution/types/base";
+import {
+  Command,
+  CommandHandler,
+  DiscordEvent,
+  MessageLocation,
+} from "../event-distribution";
 
 /**
  * Example of a stateless message handler (stateful: true missing in config).
@@ -35,7 +39,7 @@ export class DecoratorTest extends CommandHandler<DiscordEvent.MESSAGE> {
 export class DecoratorTest2 extends CommandHandler<DiscordEvent.MESSAGE> {
   called: number = 0;
 
-  handle(message: Message): void {
+  async handle(message: Message): Promise<void> {
     ++this.called;
     console.log(`Called handler 2 ${this.called} times`);
   }

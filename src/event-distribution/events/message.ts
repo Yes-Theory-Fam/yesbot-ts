@@ -3,26 +3,14 @@ import {
   BaseOptions,
   DiscordEvent,
   ExtractInfoForEventFunction,
-  ExtractInfoFunction,
   HandlerFunctionFor,
 } from "../types/base";
-import Discord, {
-  DMChannel,
-  Message,
-  NewsChannel,
-  TextChannel,
-} from "discord.js";
-import {
-  HIOC,
-  InstanceOrConstructor,
-  StringIndexedHIOCTree,
-} from "../types/hioc";
-import { CommandHandler } from "../types/handler";
+import { DMChannel, Message, NewsChannel, TextChannel } from "discord.js";
+import { HIOC, StringIndexedHIOCTree } from "../types/hioc";
 
 export interface MessageEventHandlerOptions extends BaseOptions {
   event: DiscordEvent.MESSAGE;
   trigger: string;
-  aliases?: string[];
 }
 
 export type MessageHandlerFunction<T extends DiscordEvent> = HandlerFunctionFor<
