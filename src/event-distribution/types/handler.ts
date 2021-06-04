@@ -7,7 +7,7 @@ export type HandlerClass<T extends DiscordEvent> = {
 };
 
 export abstract class CommandHandler<T extends DiscordEvent> {
-  public abstract handleEvent(
+  public abstract handle(
     ...params: Parameters<HandlerFunction<T>>
   ): ReturnType<HandlerFunction<T>>;
 }

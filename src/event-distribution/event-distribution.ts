@@ -12,14 +12,14 @@ import { EventHandlerOptions } from "./events";
 import { HandlerClass } from "./types/handler";
 import { DiscordEvent } from "./types/base";
 
-const logger = createYesBotLogger("rambo", "rambo");
+const logger = createYesBotLogger("event-distribution", "event-distribution");
 
-type RamboHandlers = {
+type EventDistributionHandlers = {
   [key in DiscordEvent]: StringIndexedHIOCTree<key>;
 };
 
-export class Rambo {
-  handlers: RamboHandlers = {
+export class EventDistribution {
+  handlers: EventDistributionHandlers = {
     [DiscordEvent.MESSAGE]: {},
     [DiscordEvent.REACTION_ADD]: {},
     [DiscordEvent.REACTION_REMOVE]: {},
@@ -41,7 +41,7 @@ export class Rambo {
       let instance = ioc;
       if (typeof instance === "function") instance = new instance();
 
-      instance.handleEvent(...args);
+      instance.handle(...args);
     }
   }
 

@@ -7,7 +7,7 @@ import prisma from "../prisma";
 const QUESTION_LINK: string =
   "https://spreadsheets.google.com/feeds/cells/1eve4McRxECmH4dLWLJvHLr9fErBWcCGiH94ihBNzK_s/1/public/full?alt=json";
 
-const someone = async (message: Message) => {
+const someoneTag = async (message: Message) => {
   const allow = await isAllowed(message.author);
 
   if (!allow) {
@@ -152,4 +152,4 @@ async function getQuestion() {
   return entries[Math.floor(Math.random() * entries.length)];
 }
 
-export default someone;
+export default someoneTag;

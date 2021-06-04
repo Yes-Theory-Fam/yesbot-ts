@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import { Command, CommandHandler, DiscordEvent } from "../rambo";
+import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 
 /**
  * Example of a stateless message handler (stateful: true missing in config).
@@ -14,7 +14,7 @@ import { Command, CommandHandler, DiscordEvent } from "../rambo";
 export class DecoratorTest extends CommandHandler<DiscordEvent.MESSAGE> {
   called: number = 0;
 
-  handleEvent(): void {
+  handle(): void {
     ++this.called;
     console.log(`Called handler 1 ${this.called} times`);
   }
@@ -34,7 +34,7 @@ export class DecoratorTest extends CommandHandler<DiscordEvent.MESSAGE> {
 export class DecoratorTest2 extends CommandHandler<DiscordEvent.MESSAGE> {
   called: number = 0;
 
-  handleEvent(message: Message): void {
+  handle(message: Message): void {
     ++this.called;
     console.log(`Called handler 2 ${this.called} times`);
   }
