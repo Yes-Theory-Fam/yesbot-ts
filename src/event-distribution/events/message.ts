@@ -62,5 +62,6 @@ export const extractMessageInfo: ExtractInfoForEventFunction<DiscordEvent.MESSAG
     return {
       handlerKeys: [channelIdentifier, message.content.split(" ")[0]],
       user: message.author,
+      isDm: message.channel.type === "dm",
     };
   };

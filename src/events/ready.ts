@@ -29,14 +29,14 @@ const ready = async (bot: Client) => {
     await VoiceOnDemandTools.voiceOnDemandReady(bot);
     await DailyChallenge.initialize(bot);
     Game.initGameHub(guild);
-    const readyMessage = await outputChannel?.send(
-      readyMessageString("Fetching members.")
-    );
-
-    await guild.members.fetch({
-      withPresences: true,
-    });
-    readyMessage.edit(readyMessageString("Members fetched, fully ready!"));
+    // const readyMessage = await outputChannel?.send(
+    //   readyMessageString("Fetching members.")
+    // );
+    //
+    // await guild.members.fetch({
+    //   withPresences: true,
+    // });
+    // readyMessage.edit(readyMessageString("Members fetched, fully ready!"));
   }
 };
 

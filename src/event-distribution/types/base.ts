@@ -9,12 +9,19 @@ export const enum DiscordEvent {
   REACTION_REMOVE = "REACTION_REMOVE",
 }
 
+export const enum MessageLocation {
+  SERVER = "SERVER",
+  DM = "DM",
+  ANYWHERE = "ANYWHERE",
+}
+
 export interface BaseOptions {
   event: DiscordEvent;
   stateful?: boolean;
   description: string;
   requiredRoles?: string[];
   channelNames?: string[];
+  location?: MessageLocation;
 }
 
 type VoidFunctionWithArgs<T> = T extends any[]
@@ -30,6 +37,7 @@ export type HandlerFunctionFor<
 export interface HandlerInfo {
   handlerKeys: string[];
   user: User;
+  isDm: boolean;
 }
 
 export type ExtractInfoFunction<T extends DiscordEvent> = (

@@ -1,5 +1,6 @@
 import { Message } from "discord.js";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
+import { MessageLocation } from "../event-distribution/types/base";
 
 /**
  * Example of a stateless message handler (stateful: true missing in config).
@@ -37,5 +38,24 @@ export class DecoratorTest2 extends CommandHandler<DiscordEvent.MESSAGE> {
   handle(message: Message): void {
     ++this.called;
     console.log(`Called handler 2 ${this.called} times`);
+  }
+}
+
+/**
+ * Example of a DM only message handler.
+ */
+@Command({
+  event: DiscordEvent.MESSAGE,
+  description: "",
+  trigger: "yeet",
+  stateful: true,
+  location: MessageLocation.DM,
+})
+export class DecoratorTest3 extends CommandHandler<DiscordEvent.MESSAGE> {
+  called: number = 0;
+
+  handle(message: Message): void {
+    ++this.called;
+    console.log(`Called handler 3 ${this.called} times`);
   }
 }
