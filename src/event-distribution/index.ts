@@ -6,6 +6,7 @@ import { MessageLocation } from "./types/base";
 const distribution = new EventDistribution();
 
 export * from "./types/handler";
+export * from "./types/base";
 
 export const Command = <T extends EventHandlerOptions>(options: T) => {
   if (!options.location) {

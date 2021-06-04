@@ -6,8 +6,10 @@ export type HandlerClass<T extends DiscordEvent> = {
   prototype: typeof CommandHandler["prototype"];
 };
 
+type PromiseOr<T> = T | Promise<T>;
+
 export abstract class CommandHandler<T extends DiscordEvent> {
   public abstract handle(
     ...params: Parameters<HandlerFunction<T>>
-  ): ReturnType<HandlerFunction<T>>;
+  ): PromiseOr<ReturnType<HandlerFunction<T>>>;
 }
