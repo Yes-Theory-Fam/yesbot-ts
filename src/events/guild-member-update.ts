@@ -16,12 +16,12 @@ const guildMemberUpdate = async (
   oldMember: GuildMember | PartialGuildMember,
   newMember: GuildMember | PartialGuildMember
 ) => {
-    if (
-      gainedRole(oldMember, newMember, "Time Out") ||
-      gainedRole(oldMember, newMember, "Break")
-    ) {
-      await revokePerUserPermissions(newMember);
-    }
+  if (
+    gainedRole(oldMember, newMember, "Time Out") ||
+    gainedRole(oldMember, newMember, "Break")
+  ) {
+    await revokePerUserPermissions(newMember);
+  }
 
   if (resolvePerUserCondition(oldMember, newMember)) {
     await resolvePerUserPermissions(newMember);
@@ -138,11 +138,11 @@ const resolvePerUserPermissions = async (
 
     const message = await channel.messages.fetch(messageId);
 
-    const relevantReactions = message.reactions.cache.filter((reaction) =>
-      toggles.includes(reaction.emoji.name)
-    );
+    const relevantReactions = message.reactions.cache
+      .filter((reaction) => toggles.includes(reaction.emoji.name))
+      .array();
 
-    for (const [, reaction] of relevantReactions) {
+    for (const reaction of relevantReactions) {
       const users = await reaction.users.fetch({
         after,
         limit: 10,
