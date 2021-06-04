@@ -40,6 +40,6 @@ export const unassignedMemberJoin = async (
 export const unassignedMemberUpdate = async (
   newMember: GuildMember | PartialGuildMember
 ) => {
-  const Unassigned = getUnassignedRole(newMember.guild);
-  await newMember.roles.remove(Unassigned);
+  const unassigned = getUnassignedRole(newMember.guild);
+  await newMember.roles.remove(unassigned);
 };

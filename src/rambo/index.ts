@@ -1,10 +1,10 @@
 import { Rambo } from "./rambo";
 import { EventHandlerOptions } from "./events";
-import { HandlerClass } from "./common/handler";
+import { HandlerClass } from "./types/handler";
 
 const rambo = new Rambo();
 
-export * from "./common/handler";
+export * from "./types/handler";
 
 export const Command = <T extends EventHandlerOptions>(options: T) => {
   return <U extends HandlerClass<T["event"]>>(target: U) => {

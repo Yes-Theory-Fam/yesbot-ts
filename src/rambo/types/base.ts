@@ -1,6 +1,6 @@
 import { EventHandlerOptions, HandlerFunction } from "../events";
 import { User } from "discord.js";
-import { CommandHandler } from "../common/handler";
+import { CommandHandler } from "./handler";
 import { InstanceOrConstructor, StringIndexedHIOCTree } from "./hioc";
 
 export const enum DiscordEvent {
