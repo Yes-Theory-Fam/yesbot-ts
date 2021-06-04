@@ -3,11 +3,12 @@ import Tools from "../common/tools";
 import prisma from "../prisma";
 
 const deadchat = async (message: Message) => {
+  const thirtyMinutes = 30 * 60 * 1000;
   const isDead =
     Date.now() -
       (await message.channel.messages.fetch({ limit: 2 })).array()[1]
         .createdTimestamp >
-    1800000;
+    thirtyMinutes;
 
   if (!isDead) {
     await Tools.handleUserError(
