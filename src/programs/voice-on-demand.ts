@@ -35,7 +35,7 @@ const getVoiceChannel = async (member: GuildMember): Promise<VoiceChannel> => {
   return guild.channels.resolve(mapping?.channelId) as VoiceChannel;
 };
 
-export default async function (message: Message) {
+const voiceOnDemand = async (message: Message) => {
   const [, command] = message.content.split(" ");
   const notYesTheoryExclusiveCommands = ["knock"];
 
@@ -72,7 +72,7 @@ export default async function (message: Message) {
         "Wrong syntax! Use !voice <create|limit> [limit] or !voice host @newHost"
       );
   }
-}
+};
 
 const handleLimitCommand = async (message: Message) => {
   const [, command, limitArg = defaultLimit] = message.content.split(" ");
@@ -557,3 +557,5 @@ const transferOwnership = async (
 
   await channel.setName(newChannelName);
 };
+
+export default voiceOnDemand;

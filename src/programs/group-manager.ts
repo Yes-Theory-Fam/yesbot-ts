@@ -45,10 +45,7 @@ const isSuccess = (
   result: GroupInteractionInformation
 ): result is GroupInteractionSuccess => result.success;
 
-export default async function GroupManager(
-  message: Message,
-  isConfig: boolean
-) {
+const groupManager = async (message: Message, isConfig: boolean) => {
   const content = message.content;
 
   if (isConfig) {
@@ -187,7 +184,7 @@ export default async function GroupManager(
       data: { lastUsed: new Date() },
     });
   }
-}
+};
 
 const getOrCreateMessage = async (
   messageId: Snowflake
@@ -737,3 +734,5 @@ const isChannelAllowed = (channel: Channel): boolean => {
 
   return allowedChannels.includes(channel.id);
 };
+
+export default groupManager;

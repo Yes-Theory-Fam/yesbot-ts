@@ -1,7 +1,7 @@
 import { Guild, GuildMember, Message } from "discord.js";
 import Tools from "../common/tools";
 
-export default async function ExportManager(message: Message) {
+const exportManager = async (message: Message) => {
   const words = Tools.stringToWords(message.content);
   const [, toExportType, toExport] = words;
 
@@ -17,7 +17,7 @@ export default async function ExportManager(message: Message) {
       await exportRole(toExport, message.guild, message);
       break;
   }
-}
+};
 
 const exportRole = async (toExport: string, guild: Guild, message: Message) => {
   const foundRole = guild.roles.cache.find(
@@ -35,3 +35,5 @@ const exportRole = async (toExport: string, guild: Guild, message: Message) => {
   output += `]\`\`\``;
   await message.channel.send(output);
 };
+
+export default exportManager;

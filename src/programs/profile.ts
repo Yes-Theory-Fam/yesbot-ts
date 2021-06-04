@@ -3,28 +3,27 @@ import Tools from "../common/tools";
 import { formatBirthday, getUserBirthday } from "./birthday-manager";
 import prisma from "../prisma";
 
-export default async function Profile(pMessage: Message) {
-  const { content } = pMessage;
+const profile = async (message: Message) => {
+  const { content } = message;
 
   if (content.startsWith("!profile")) {
     const words = Tools.stringToWords(content);
     words.shift();
 
-    const requestedUser =
-      pMessage.mentions.users.first() || pMessage.member.user;
-    const requestedMember = pMessage.guild.member(requestedUser);
+    const requestedUser = message.mentions.users.first() || message.member.user;
+    const requestedMember = message.guild.member(requestedUser);
 
     if (!requestedMember) {
       await Tools.handleUserError(
-        pMessage,
+        message,
         "I couldn't find that member in this server!"
       );
       return;
     }
-    const profileEmbed = await getProfileEmbed(requestedMember, pMessage);
-    await pMessage.channel.send(profileEmbed);
+    const profileEmbed = await getProfileEmbed(requestedMember, message);
+    await message.channel.send(profileEmbed);
   }
-}
+};
 
 const getProfileEmbed = async (
   member: GuildMember,
@@ -83,3 +82,5 @@ const getProfileEmbed = async (
   );
   return profileEmbed;
 };
+
+export default profile;

@@ -6,7 +6,7 @@ import prisma from "../prisma";
 
 const logger = createYesBotLogger("program", "ReactRole");
 
-export default async function ReactRole(message: Message) {
+const reactRole = async (message: Message) => {
   //! This comes to us in the format of "!roles [add|list] [messageId] [emoji] [roleId] [channelId]"
   //! So first we need to establish if it is add or list
   if (!isAuthorModerator(message)) return;
@@ -43,7 +43,7 @@ export default async function ReactRole(message: Message) {
     default:
       break;
   }
-}
+};
 
 const searchForRole = async (roleSearchString: string, message: Message) => {
   let foundRole = Tools.getRoleByName(roleSearchString, message.guild);
@@ -201,3 +201,5 @@ async function deleteReactRoleObjects(index: number, pMessage: Message) {
     await pMessage.reply("I cannot find a role with that ID.");
   }
 }
+
+export default reactRole;
