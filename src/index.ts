@@ -19,13 +19,13 @@ import {
   ready,
   voiceStateUpdate,
 } from "./events";
-import rambo, { DiscordEvent } from "./rambo";
+import distribution, { DiscordEvent } from "./event-distribution";
 
 const logger = createYesBotLogger("main", "index");
 logger.info("Starting YesBot");
 
-logger.info("Initializing rambo");
-rambo.initialize();
+logger.info("Initializing event-distribution");
+distribution.initialize();
 
 const bot = new Client({ partials: ["REACTION", "MESSAGE"] });
 logger.debug("Logging in to Discord Gateway");
@@ -47,7 +47,7 @@ bot.on(
 );
 bot.on("message", async (msg: Message) => {
   await messageManager(msg);
-  rambo.handleEvent(DiscordEvent.MESSAGE, msg);
+  distribution.handleEvent(DiscordEvent.MESSAGE, msg);
 });
 bot.on(
   "messageReactionAdd",

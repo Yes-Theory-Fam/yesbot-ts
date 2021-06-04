@@ -18,7 +18,7 @@ import Polls from "./polls";
 import Profile from "./profile";
 import ReactRole from "./react-role";
 import Resource from "./resources";
-import Someone from "./someone";
+import Someone from "./someone-tag";
 import TemplateMode from "./template-mode";
 import Ticket from "./ticket";
 import VoiceOnDemand from "./voice-on-demand";
