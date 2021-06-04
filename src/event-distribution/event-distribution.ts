@@ -10,7 +10,7 @@ import {
 } from "./types/hioc";
 import { EventHandlerOptions } from "./events";
 import { HandlerClass } from "./types/handler";
-import { DiscordEvent } from "./types/base";
+import { DiscordEvent, MessageLocation } from "./types/base";
 
 const logger = createYesBotLogger("event-distribution", "event-distribution");
 
@@ -29,15 +29,23 @@ export class EventDistribution {
     event: T,
     ...args: Parameters<HandlerFunction<T>>
   ) {
-    const eventInfo = extractEventInfo(event, ...args);
-    // TODO Handle DM only commands
+    const { handlerKeys, isDm } = extractEventInfo(event, ...args);
     // TODO Handle Permission / Role checks
-    const eventHandlers = this.getHandlers(
-      this.handlers[event],
-      eventInfo.handlerKeys
-    );
 
-    for (const { ioc } of eventHandlers) {
+    const eventHandlers = this.getHandlers(this.handlers[event], handlerKeys);
+    const locationFilteredHandlers = eventHandlers.filter((eh) => {
+      const { location } = eh.options;
+      switch (location) {
+        case MessageLocation.ANYWHERE:
+          return true;
+        case MessageLocation.DM:
+          return isDm;
+        case MessageLocation.SERVER:
+          return !isDm;
+      }
+    });
+
+    for (const { ioc } of locationFilteredHandlers) {
       let instance = ioc;
       if (typeof instance === "function") instance = new instance();
 

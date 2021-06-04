@@ -57,5 +57,9 @@ export const extractReactionInfo: ExtractInfoForEventFunction<
 
   const channel = reaction.message.channel;
   const channelIdentifier = getChannelIdentifier(channel);
-  return { handlerKeys: [channelIdentifier, reaction.emoji.name], user };
+  return {
+    handlerKeys: [channelIdentifier, reaction.emoji.name],
+    user,
+    isDm: reaction.message.channel.type === "dm",
+  };
 };
