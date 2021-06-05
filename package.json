@@ -6,13 +6,16 @@
   "prettier": "@yestheoryfam/prettier-config",
   "scripts": {
     "db:prisma": "npx prisma",
-    "db:generate": "npm run db:prisma generate -- --schema ./node_modules/@yes-theory-fam/database/prisma/schema.prisma",
+    "db:generate": "npm run db:prisma generate",
     "db:migrate": "env-cmd npm run db:prisma migrate",
     "lint": "prettier --check \"src/!(collections)/**/*.(js|ts|json)\"",
     "lint:fix": "prettier --write \"src/!(collections)/**/*.(js|ts|json)\"",
     "postinstall": "npm run db:generate",
     "start": "env-cmd ts-node-dev --respawn src/index.ts",
     "start:prod": "env-cmd ts-node src/index.ts"
+  },
+  "prisma": {
+    "schema": "node_modules/@yes-theory-fam/database/prisma/schema.prisma"
   },
   "author": "",
   "license": "ISC",
