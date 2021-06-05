@@ -35,7 +35,7 @@ interface BaseOptions {
   location?: MessageLocation; // A location enum setting where events are accepted.
   // Available values are:
   //  - MessageLocation.SERVER (only call handler for events on the server)
-  //  - MessageLocation.DM (only call handler for events in DMs) and 
+  //  - MessageLocation.DIRECT_MESSAGE (only call handler for events in DMs) and 
   //  - MessageLocation.ANYWHERE (call handler regardless of the origin of the event).
   // The default is MessageLocation.SERVER if channelNames is non-empty, MessageLocation.ANYWHERE otherwise.
 }
