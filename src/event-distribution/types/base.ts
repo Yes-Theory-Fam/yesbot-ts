@@ -11,7 +11,7 @@ export const enum DiscordEvent {
 
 export const enum MessageLocation {
   SERVER = "SERVER",
-  DM = "DM",
+  DIRECT_MESSAGE = "DIRECT_MESSAGE",
   ANYWHERE = "ANYWHERE",
 }
 
@@ -37,7 +37,7 @@ export type HandlerFunctionFor<
 export interface HandlerInfo {
   handlerKeys: string[];
   user: User;
-  isDm: boolean;
+  isDirectMessage: boolean;
 }
 
 export type ExtractInfoFunction<T extends DiscordEvent> = (

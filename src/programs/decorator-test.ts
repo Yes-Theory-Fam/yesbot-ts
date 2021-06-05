@@ -53,7 +53,7 @@ export class DecoratorTest2 extends CommandHandler<DiscordEvent.MESSAGE> {
   description: "",
   trigger: "yeet",
   stateful: true,
-  location: MessageLocation.DM,
+  location: MessageLocation.DIRECT_MESSAGE,
 })
 export class DecoratorTest3 extends CommandHandler<DiscordEvent.MESSAGE> {
   called: number = 0;

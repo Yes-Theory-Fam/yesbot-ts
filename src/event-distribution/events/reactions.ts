@@ -60,6 +60,6 @@ export const extractReactionInfo: ExtractInfoForEventFunction<
   return {
     handlerKeys: [channelIdentifier, reaction.emoji.name],
     user,
-    isDm: reaction.message.channel.type === "dm",
+    isDirectMessage: reaction.message.channel.type === "dm",
   };
 };

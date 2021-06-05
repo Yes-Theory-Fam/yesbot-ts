@@ -29,7 +29,7 @@ export class EventDistribution {
     event: T,
     ...args: Parameters<HandlerFunction<T>>
   ) {
-    const { handlerKeys, isDm } = extractEventInfo(event, ...args);
+    const { handlerKeys, isDirectMessage } = extractEventInfo(event, ...args);
     // TODO Handle Permission / Role checks
 
     const eventHandlers = this.getHandlers(this.handlers[event], handlerKeys);
@@ -38,10 +38,10 @@ export class EventDistribution {
       switch (location) {
         case MessageLocation.ANYWHERE:
           return true;
-        case MessageLocation.DM:
-          return isDm;
+        case MessageLocation.DIRECT_MESSAGE:
+          return isDirectMessage;
         case MessageLocation.SERVER:
-          return !isDm;
+          return !isDirectMessage;
       }
     });
 
