@@ -140,71 +140,74 @@ const createOnDemand = async (message: Message, userLimit: number) => {
     return;
   }
 
-  if (hasExisting) {
-    await Tools.handleUserError(
-      message,
-      "You already have an existing voice channel!"
-    );
-    return;
-  }
-
   const parent = guild.channels.cache.find(
     (channel) =>
       channel.name.toLowerCase().includes("conversation") &&
       channel.type === "category"
   );
+  if (!hasExisting) {
+    const channel = await guild.channels.create(
+      getChannelName(message.member, reaction.emoji.name),
+      {
+        type: "voice",
+        parent,
+        userLimit,
+      }
+    );
 
-  const channel = await guild.channels.create(
-    getChannelName(message.member, reaction.emoji.name),
-    {
-      type: "voice",
-      parent,
-      userLimit,
+    const mapping = {
+      userId: member.id,
+      channelId: channel.id,
+      emoji: reaction.emoji.name,
+    };
+    try {
+      await prisma.voiceOnDemandMapping.create({ data: mapping });
+    } catch (e) {
+      if (e.code === "P2002") {
+        channel.delete();
+        return;
+      }
     }
-  );
+    await message.reply(
+      `Your room was created with a limit of ${userLimit}, have fun! Don't forget, this channel will be deleted if there is noone in it. :smile:`
+    );
+    const timeoutRole = Tools.getRoleByName("Time Out", guild);
+    const breakRole = Tools.getRoleByName("Break", guild);
 
-  const mapping = {
-    userId: member.id,
-    channelId: channel.id,
-    emoji: reaction.emoji.name,
-  };
-  await prisma.voiceOnDemandMapping.create({ data: mapping });
+    await channel.updateOverwrite(guild.roles.everyone, { STREAM: true });
+    await channel.overwritePermissions([
+      {
+        id: guild.roles.everyone,
+        allow: [],
+        deny: [Permissions.FLAGS.CONNECT],
+        type: "role",
+      },
+      {
+        id: timeoutRole.id,
+        deny: [Permissions.FLAGS.CONNECT],
+        type: "role",
+      },
+      {
+        id: breakRole.id,
+        deny: [Permissions.FLAGS.VIEW_CHANNEL],
+        type: "role",
+      },
+      {
+        id: member.id,
+        allow: [Permissions.FLAGS.CONNECT],
+        deny: [],
+        type: "member",
+      },
+    ]);
 
-  await message.reply(
-    `Your room was created with a limit of ${userLimit}, have fun! Don't forget, this channel will be deleted if there is noone in it. :smile:`
-  );
-
-  const timeoutRole = Tools.getRoleByName("Time Out", guild);
-  const breakRole = Tools.getRoleByName("Break", guild);
-
-  await channel.updateOverwrite(guild.roles.everyone, { STREAM: true });
-  await channel.overwritePermissions([
-    {
-      id: guild.roles.everyone,
-      allow: [],
-      deny: [Permissions.FLAGS.CONNECT],
-      type: "role",
-    },
-    {
-      id: timeoutRole.id,
-      deny: [Permissions.FLAGS.CONNECT],
-      type: "role",
-    },
-    {
-      id: breakRole.id,
-      deny: [Permissions.FLAGS.VIEW_CHANNEL],
-      type: "role",
-    },
-    {
-      id: member.id,
-      allow: [Permissions.FLAGS.CONNECT],
-      deny: [],
-      type: "member",
-    },
-  ]);
-
-  const timeout = setTimeout(() => deleteIfEmpty(channel), emptyTime);
-  state.voiceChannels.set(channel.id, timeout);
+    const timeout = setTimeout(() => deleteIfEmpty(channel), emptyTime);
+    state.voiceChannels.set(channel.id, timeout);
+  } else {
+    await Tools.handleUserError(
+      message,
+      "You already have an existing voice channel!"
+    );
+  }
 };
 
 const limitOnDemand = async (message: Message, limit: number) => {
@@ -541,7 +544,19 @@ const requestOwnershipTransfer = async (
     : channel.members.random().user;
   const claimingUserGuild = await channel.guild.members.fetch(claimingUser);
   const claimingUserVoiceChannel = await getVoiceChannel(claimingUserGuild);
-  if (claimingUserVoiceChannel !== null) {
+
+  if (channel.members.size === 1 && claimingUserVoiceChannel !== null) {
+    channel.delete();
+    await prisma.voiceOnDemandMapping.delete({
+      where: { channelId: channel.id },
+    });
+    await transferMessage.delete();
+    await botCommands.send(
+      `<@${claimingUser}>, I have deleted the channel you are in as you already have one!`
+    );
+  }
+
+  if (claimingUserVoiceChannel !== null && channel.members.size > 1) {
     // if no user reacts, this verifies the random user selected does not have a room.
     if (
       transferMessage.reactions.cache.get("☝").count === 1 &&
@@ -562,6 +577,7 @@ const requestOwnershipTransfer = async (
       await botCommands.send(
         `<@${claimingUser}>, you cannot claim the room as you already have a room, I shall assign someone randomly!`
       );
+
       //Randomizer with filter to make sure the user with a room isn't picked again.
       const voiceChannelUsers = channel.members;
       const memberFilter = voiceChannelUsers.filter(
@@ -574,6 +590,7 @@ const requestOwnershipTransfer = async (
       await transferOwnership(currentMapping, randomUser, channel);
     }
   }
+
   if (claimingUserVoiceChannel === null) {
     await transferMessage.delete();
     await botCommands.send(
