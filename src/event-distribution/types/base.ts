@@ -1,5 +1,5 @@
 import { EventHandlerOptions, HandlerFunction } from "../events";
-import { User } from "discord.js";
+import { Guild, GuildMember, User } from "discord.js";
 import { CommandHandler } from "./handler";
 import { InstanceOrConstructor, StringIndexedHIOCTree } from "./hioc";
 
@@ -9,7 +9,7 @@ export const enum DiscordEvent {
   REACTION_REMOVE = "REACTION_REMOVE",
 }
 
-export const enum MessageLocation {
+export const enum EventLocation {
   SERVER = "SERVER",
   DIRECT_MESSAGE = "DIRECT_MESSAGE",
   ANYWHERE = "ANYWHERE",
@@ -21,7 +21,7 @@ export interface BaseOptions {
   description: string;
   requiredRoles?: string[];
   channelNames?: string[];
-  location?: MessageLocation;
+  location?: EventLocation;
 }
 
 type VoidFunctionWithArgs<T> = T extends any[]
@@ -36,7 +36,7 @@ export type HandlerFunctionFor<
 
 export interface HandlerInfo {
   handlerKeys: string[];
-  user: User;
+  member: GuildMember | null;
   isDirectMessage: boolean;
 }
 

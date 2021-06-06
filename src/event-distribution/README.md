@@ -14,7 +14,7 @@ The basic structure of an event handler is basically set in stone:
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 
 @Command({ /* options */ })
-class SomeEventHandler extends CommandHandler</* DiscordEvent.EVENT_NAME */> {
+export class SomeEventHandler extends CommandHandler</* DiscordEvent.EVENT_NAME */> {
   handle(/* arguments */): void {
     /* Implementation */
   }
@@ -34,10 +34,10 @@ interface BaseOptions {
   channelNames?: string[]; // An array of channel names. The handler will only be called when the event occured in one of the channels listed.
   location?: MessageLocation; // A location enum setting where events are accepted.
   // Available values are:
-  //  - MessageLocation.SERVER (only call handler for events on the server)
-  //  - MessageLocation.DIRECT_MESSAGE (only call handler for events in DMs) and 
-  //  - MessageLocation.ANYWHERE (call handler regardless of the origin of the event).
-  // The default is MessageLocation.SERVER if channelNames is non-empty, MessageLocation.ANYWHERE otherwise.
+  //  - EventLocation.SERVER (only call handler for events on the server)
+  //  - EventLocation.DIRECT_MESSAGE (only call handler for events in DMs) and 
+  //  - EventLocation.ANYWHERE (call handler regardless of the origin of the event).
+  // The default is EventLocation.SERVER if channelNames is non-empty, EventLocation.ANYWHERE otherwise.
 }
 ```
 
