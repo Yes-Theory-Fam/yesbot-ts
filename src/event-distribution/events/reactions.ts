@@ -56,10 +56,13 @@ export const extractReactionInfo: ExtractInfoForEventFunction<
   ) => (channel.type === "dm" ? channel.id : channel.name);
 
   const channel = reaction.message.channel;
+  const guild = channel.type === "dm" ? null : channel.guild;
+  const member = guild?.member(user) ?? null;
+
   const channelIdentifier = getChannelIdentifier(channel);
   return {
     handlerKeys: [channelIdentifier, reaction.emoji.name],
-    user,
+    member,
     isDirectMessage: reaction.message.channel.type === "dm",
   };
 };

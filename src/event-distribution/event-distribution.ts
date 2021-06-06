@@ -10,7 +10,7 @@ import {
 } from "./types/hioc";
 import { EventHandlerOptions } from "./events";
 import { HandlerClass } from "./types/handler";
-import { DiscordEvent, MessageLocation } from "./types/base";
+import { DiscordEvent, EventLocation } from "./types/base";
 
 const logger = createYesBotLogger("event-distribution", "event-distribution");
 
@@ -29,28 +29,48 @@ export class EventDistribution {
     event: T,
     ...args: Parameters<HandlerFunction<T>>
   ) {
-    const { handlerKeys, isDirectMessage } = extractEventInfo(event, ...args);
-    // TODO Handle Permission / Role checks
+    const { handlerKeys, isDirectMessage, member } = extractEventInfo(
+      event,
+      ...args
+    );
 
+    const roleNames = member?.roles.cache.map((r) => r.name) ?? [];
     const eventHandlers = this.getHandlers(this.handlers[event], handlerKeys);
-    const locationFilteredHandlers = eventHandlers.filter((eh) => {
-      const { location } = eh.options;
-      switch (location) {
-        case MessageLocation.ANYWHERE:
-          return true;
-        case MessageLocation.DIRECT_MESSAGE:
-          return isDirectMessage;
-        case MessageLocation.SERVER:
-          return !isDirectMessage;
-      }
-    });
+    const filteredHandlers = this.filterHandlers(
+      eventHandlers,
+      isDirectMessage,
+      roleNames
+    );
 
-    for (const { ioc } of locationFilteredHandlers) {
+    for (const { ioc } of filteredHandlers) {
       let instance = ioc;
       if (typeof instance === "function") instance = new instance();
 
       instance.handle(...args);
     }
+  }
+
+  private filterHandlers<T extends DiscordEvent>(
+    handlers: HIOC<T>[],
+    isDirectMessage: boolean,
+    roleNames: string[]
+  ): HIOC<T>[] {
+    const locationFilteredHandlers = handlers.filter((eh) => {
+      const { location } = eh.options;
+      switch (location) {
+        case EventLocation.ANYWHERE:
+          return true;
+        case EventLocation.DIRECT_MESSAGE:
+          return isDirectMessage;
+        case EventLocation.SERVER:
+          return !isDirectMessage;
+      }
+    });
+
+    return locationFilteredHandlers.filter((eh) => {
+      const { requiredRoles } = eh.options;
+      return requiredRoles.every((role) => roleNames.includes(role));
+    });
   }
 
   private getHandlers<T extends DiscordEvent>(

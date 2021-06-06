@@ -4,6 +4,10 @@ import { DiscordEvent } from "./base";
 export type HandlerClass<T extends DiscordEvent> = {
   new (...args: any[]): CommandHandler<T>;
   prototype: typeof CommandHandler["prototype"];
+  name: string;
+  constructor: {
+    name: string;
+  };
 };
 
 type PromiseOr<T> = T | Promise<T>;

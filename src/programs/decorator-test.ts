@@ -3,7 +3,7 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-  MessageLocation,
+  EventLocation,
 } from "../event-distribution";
 
 /**
@@ -35,6 +35,8 @@ export class DecoratorTest extends CommandHandler<DiscordEvent.MESSAGE> {
   trigger: "!test",
   stateful: true,
   channelNames: ["bot-output"],
+  location: EventLocation.ANYWHERE,
+  requiredRoles: ["Support"],
 })
 export class DecoratorTest2 extends CommandHandler<DiscordEvent.MESSAGE> {
   called: number = 0;
@@ -53,7 +55,8 @@ export class DecoratorTest2 extends CommandHandler<DiscordEvent.MESSAGE> {
   description: "",
   trigger: "yeet",
   stateful: true,
-  location: MessageLocation.DIRECT_MESSAGE,
+  location: EventLocation.DIRECT_MESSAGE,
+  channelNames: ["bot-output"],
 })
 export class DecoratorTest3 extends CommandHandler<DiscordEvent.MESSAGE> {
   called: number = 0;
