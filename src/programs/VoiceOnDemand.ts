@@ -552,6 +552,7 @@ const requestOwnershipTransfer = async (
         (member) => member !== claimingUserGuild
       );
       const randomUser = memberFilter.random().user; //Randomizer with filter to make sure the user with a room isn't picked again.
+      await transferMessage.delete();
       await botCommands.send(
         `<@${randomUser}> is now the new owner of the room! You can change the limit of it using \`!voice limit\`.`
       );
