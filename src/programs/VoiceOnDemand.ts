@@ -128,14 +128,6 @@ const createOnDemand = async (message: Message, userLimit: number) => {
   const { guild, member } = message;
   const hasExisting = await getVoiceChannel(member);
 
-  if (hasExisting) {
-    await Tools.handleUserError(
-      message,
-      "You already have an existing voice channel!"
-    );
-    return;
-  }
-
   let reaction;
   try {
     reaction = await Tools.createVoteMessage(
@@ -145,6 +137,14 @@ const createOnDemand = async (message: Message, userLimit: number) => {
       true
     );
   } catch {
+    return;
+  }
+
+  if (hasExisting) {
+    await Tools.handleUserError(
+      message,
+      "You already have an existing voice channel!"
+    );
     return;
   }
 
@@ -317,6 +317,14 @@ const changeHostOnDemand = async (message: Message) => {
     await Tools.handleUserError(
       message,
       "You have to mention the user you want to take on ownership of your room."
+    );
+    return;
+  }
+  const mentionedMemberVoiceChannel = await getVoiceChannel(mentionedMember);
+  if (mentionedMemberVoiceChannel) {
+    await Tools.handleUserError(
+      message,
+      "This user already has a voice channel!"
     );
     return;
   }
@@ -515,8 +523,6 @@ const requestOwnershipTransfer = async (
     })
   ).first();
 
-  await transferMessage.delete();
-
   if (getMemberIds().length < 1) {
     return;
   }
@@ -533,11 +539,47 @@ const requestOwnershipTransfer = async (
         .filter((user) => getMemberIds().includes(user.id))
         .first()
     : channel.members.random().user;
-  await botCommands.send(
-    `<@${claimingUser}>, is now the new owner of the room! You can now change the limit of it using \`!voice limit\`.`
-  );
-
-  await transferOwnership(currentMapping, claimingUser, channel);
+  const claimingUserGuild = await channel.guild.members.fetch(claimingUser);
+  const claimingUserVoiceChannel = await getVoiceChannel(claimingUserGuild);
+  if (claimingUserVoiceChannel !== null) {
+    // if no user reacts, this verifies the random user selected does not have a room.
+    if (
+      transferMessage.reactions.cache.get("☝").count === 1 &&
+      claimingUserVoiceChannel !== null
+    ) {
+      const voiceChannelUsers = channel.members;
+      const memberFilter = voiceChannelUsers.filter(
+        (member) => member !== claimingUserGuild
+      );
+      const randomUser = memberFilter.random().user; //Randomizer with filter to make sure the user with a room isn't picked again.
+      await botCommands.send(
+        `<@${randomUser}> is now the new owner of the room! You can change the limit of it using \`!voice limit\`.`
+      );
+      await transferOwnership(currentMapping, randomUser, channel);
+    } else {
+      await transferMessage.delete();
+      await botCommands.send(
+        `<@${claimingUser}>, you cannot claim the room as you already have a room, I shall assign someone randomly!`
+      );
+      //Randomizer with filter to make sure the user with a room isn't picked again.
+      const voiceChannelUsers = channel.members;
+      const memberFilter = voiceChannelUsers.filter(
+        (member) => member !== claimingUserGuild
+      );
+      const randomUser = memberFilter.random().user;
+      await botCommands.send(
+        `<@${randomUser}> is now the new owner of the room! You can change the limit of it using \`!voice limit\`.`
+      );
+      await transferOwnership(currentMapping, randomUser, channel);
+    }
+  }
+  if (claimingUserVoiceChannel === null) {
+    await transferMessage.delete();
+    await botCommands.send(
+      `<@${claimingUser}>, is now the new owner of the room! You can now change the limit of it using \`!voice limit\`.`
+    );
+    await transferOwnership(currentMapping, claimingUser, channel);
+  }
 };
 
 const transferOwnership = async (
