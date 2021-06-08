@@ -51,6 +51,18 @@ export default async function WhereAreYouFromManager(pMessage: Message) {
           `Hey! My name is YesBot, I'm so happy to see you've made it into our world, we really hope you stick around!\n\nIn the meantime, you should checkout ${rules.toString()} and ${generalInfo.toString()} , they contain a lot of good-to-knows about our server and what cool stuff you can do.\nIf you'd like me to change your name on the server for you, just drop me a message and I will help you out! Then I can introduce you to our family :grin:\n\nI know Discord can be a lot to take in at first, trust me, but it's really quite a wonderful place.`
         );
       });
+      if (roleToAssign.name === "I'm from Australia!") {
+        ghostPing(pMessage, "Australia");
+      }
+      if (roleToAssign.name === "I'm from the USA!") {
+        ghostPing(pMessage, "USA");
+      }
+      if (roleToAssign.name === "I'm from Canada!") {
+        ghostPing(pMessage, "Canada");
+      }
+      if (roleToAssign.name === "I'm from the UK!") {
+        ghostPing(pMessage, "UK");
+      }
     }
   }
 }
@@ -106,6 +118,44 @@ export const getRoleForCountry = (country: Country, guild: Guild): Role => {
           (role.name.startsWith("I'm from") &&
             role.name.toLowerCase().endsWith(country.name.toLowerCase() + "!"))
       );
+  }
+};
+
+export const ghostPing = async (message: Message, region: String) => {
+  const ausRegionChannel = message.guild.channels.cache.find(
+    (channel) => channel.name === "australia-regions"
+  ) as TextChannel;
+
+  const usaRegionChannel = message.guild.channels.cache.find(
+    (channel) => channel.name === "usa-regions"
+  ) as TextChannel;
+
+  const caRegionChannel = message.guild.channels.cache.find(
+    (channel) => channel.name === "canada-regions"
+  ) as TextChannel;
+
+  const ukRegionChannel = message.guild.channels.cache.find(
+    (channel) => channel.name === "uk-regions"
+  ) as TextChannel;
+
+  if (region === "Australia") {
+    const ping = await ausRegionChannel.send(`<@${message.member}>`);
+    await ping.delete();
+  }
+
+  if (region === "USA") {
+    const ping = await usaRegionChannel.send(`<@${message.member}>`);
+    await ping.delete();
+  }
+
+  if (region === "Canada") {
+    const ping = await caRegionChannel.send(`<@${message.member}>`);
+    await ping.delete();
+  }
+
+  if (region === "UK") {
+    const ping = await ukRegionChannel.send(`<@${message.member}>`);
+    await ping.delete();
   }
 };
 
