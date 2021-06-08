@@ -24,6 +24,7 @@ import {
 import { createYesBotLogger } from "../log";
 import { dailyChallengeChannelId } from "./DailyChallenge";
 import prisma from "../prisma";
+import DeadchatGroup from "./DeadChatGroup";
 
 const logger = createYesBotLogger("program", "GroupManager");
 
@@ -159,6 +160,10 @@ export default async function GroupManager(
 
     if (matchingGroups.length === 0) {
       await message.reply("I couldn't find that group.");
+      return;
+    }
+
+    if (!(await DeadchatGroup(message))) {
       return;
     }
 
