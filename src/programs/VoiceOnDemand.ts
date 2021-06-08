@@ -145,6 +145,15 @@ const createOnDemand = async (message: Message, userLimit: number) => {
       channel.name.toLowerCase().includes("conversation") &&
       channel.type === "category"
   );
+
+  if (hasExisting) {
+    await Tools.handleUserError(
+      message,
+      "You already have an existing voice channel!"
+    );
+    return;
+  }
+
   if (!hasExisting) {
     const channel = await guild.channels.create(
       getChannelName(message.member, reaction.emoji.name),
@@ -202,11 +211,6 @@ const createOnDemand = async (message: Message, userLimit: number) => {
 
     const timeout = setTimeout(() => deleteIfEmpty(channel), emptyTime);
     state.voiceChannels.set(channel.id, timeout);
-  } else {
-    await Tools.handleUserError(
-      message,
-      "You already have an existing voice channel!"
-    );
   }
 };
 
@@ -544,7 +548,7 @@ const requestOwnershipTransfer = async (
     : channel.members.random().user;
   const claimingUserGuild = await channel.guild.members.fetch(claimingUser);
   const claimingUserVoiceChannel = await getVoiceChannel(claimingUserGuild);
-
+  //This is a rare case, but if someone is purposely attempting to break the bot, this will delete the channel he is currently in.
   if (channel.members.size === 1 && claimingUserVoiceChannel !== null) {
     channel.delete();
     await prisma.voiceOnDemandMapping.delete({
@@ -555,40 +559,39 @@ const requestOwnershipTransfer = async (
       `<@${claimingUser}>, I have deleted the channel you are in as you already have one!`
     );
   }
-
+  //This could happen more often this expected, he cannot react and get the room.
   if (claimingUserVoiceChannel !== null && channel.members.size > 1) {
-    // if no user reacts, this verifies the random user selected does not have a room.
-    if (
-      transferMessage.reactions.cache.get("☝").count === 1 &&
-      claimingUserVoiceChannel !== null
-    ) {
-      const voiceChannelUsers = channel.members;
-      const memberFilter = voiceChannelUsers.filter(
-        (member) => member !== claimingUserGuild
-      );
-      const randomUser = memberFilter.random().user; //Randomizer with filter to make sure the user with a room isn't picked again.
-      await transferMessage.delete();
-      await botCommands.send(
-        `<@${randomUser}> is now the new owner of the room! You can change the limit of it using \`!voice limit\`.`
-      );
-      await transferOwnership(currentMapping, randomUser, channel);
-    } else {
-      await transferMessage.delete();
-      await botCommands.send(
-        `<@${claimingUser}>, you cannot claim the room as you already have a room, I shall assign someone randomly!`
-      );
+    await transferMessage.delete();
+    await botCommands.send(
+      `<@${claimingUser}>, you cannot claim the room as you already have a room, I shall assign someone randomly!`
+    );
 
-      //Randomizer with filter to make sure the user with a room isn't picked again.
-      const voiceChannelUsers = channel.members;
-      const memberFilter = voiceChannelUsers.filter(
-        (member) => member !== claimingUserGuild
-      );
-      const randomUser = memberFilter.random().user;
-      await botCommands.send(
-        `<@${randomUser}> is now the new owner of the room! You can change the limit of it using \`!voice limit\`.`
-      );
-      await transferOwnership(currentMapping, randomUser, channel);
-    }
+    //Randomizer with filter to make sure the user with a room isn't picked again.
+    const voiceChannelUsers = channel.members;
+    const memberFilter = voiceChannelUsers.filter(
+      (member) => member !== claimingUserGuild
+    );
+    const randomUser = memberFilter.random().user;
+    await botCommands.send(
+      `<@${randomUser}> is now the new owner of the room! You can change the limit of it using \`!voice limit\`.`
+    );
+    await transferOwnership(currentMapping, randomUser, channel);
+  }
+  //We make our own luck, since this is based on the random chance someone joins with a vc he cannot claim it will he still has a room.
+  if (
+    transferMessage.reactions.cache.get("☝").count === 1 &&
+    claimingUserVoiceChannel !== null
+  ) {
+    const voiceChannelUsers = channel.members;
+    const memberFilter = voiceChannelUsers.filter(
+      (member) => member !== claimingUserGuild
+    );
+    const randomUser = memberFilter.random().user; //Randomizer with filter to make sure the user with a room isn't picked again.
+    await transferMessage.delete();
+    await botCommands.send(
+      `<@${randomUser}> is now the new owner of the room! You can change the limit of it using \`!voice limit\`.`
+    );
+    await transferOwnership(currentMapping, randomUser, channel);
   }
 
   if (claimingUserVoiceChannel === null) {
