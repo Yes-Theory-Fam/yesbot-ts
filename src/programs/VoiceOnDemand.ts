@@ -548,6 +548,10 @@ const requestOwnershipTransfer = async (
     : channel.members.random().user;
   const claimingUserGuild = await channel.guild.members.fetch(claimingUser);
   const claimingUserVoiceChannel = await getVoiceChannel(claimingUserGuild);
+  const reactions = claim
+    ? claim.users.cache.filter((user) => getMemberIds().includes(user.id))
+    : null;
+
   //This is a rare case, but if someone is purposely attempting to break the bot, this will delete the channel he is currently in.
   if (channel.members.size === 1 && claimingUserVoiceChannel !== null) {
     channel.delete();
@@ -559,8 +563,13 @@ const requestOwnershipTransfer = async (
       `<@${claimingUser}>, I have deleted the channel you are in as you already have one!`
     );
   }
-  //This could happen more often this expected, he cannot react and get the room.
-  if (claimingUserVoiceChannel !== null && channel.members.size > 1) {
+
+  //This could happen more often then expected, he cannot react and get the room.
+  if (
+    claimingUserVoiceChannel !== null &&
+    channel.members.size > 1 &&
+    reactions != null
+  ) {
     await transferMessage.delete();
     await botCommands.send(
       `<@${claimingUser}>, you cannot claim the room as you already have a room, I shall assign someone randomly!`
@@ -577,11 +586,9 @@ const requestOwnershipTransfer = async (
     );
     await transferOwnership(currentMapping, randomUser, channel);
   }
-  //We make our own luck, since this is based on the random chance someone joins with a vc he cannot claim it will he still has a room.
-  if (
-    transferMessage.reactions.cache.get("☝").count === 1 &&
-    claimingUserVoiceChannel !== null
-  ) {
+
+  //We make our own luck, since this is based on the random chance someone joins with a vc with no reactions, he cannot claim it when he still has a room.
+  if (reactions === null && claimingUserVoiceChannel !== null) {
     const voiceChannelUsers = channel.members;
     const memberFilter = voiceChannelUsers.filter(
       (member) => member !== claimingUserGuild
