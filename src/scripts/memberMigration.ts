@@ -24,7 +24,7 @@ interface StoredInformation {
   lastMaxUserId: string;
 }
 
-const infoPath = "./unassignedMigration.json";
+const infoPath = "./memberMigration.json";
 
 const loadStoredInformation = async (): Promise<StoredInformation> => {
   return new Promise((res, rej) => {
@@ -46,14 +46,13 @@ const stopScheduling = (reason: string): Promise<void> => {
 
   const guild = bot.guilds.resolve(guildId);
   const output = guild.channels.cache.find((c) => c.name === "bot-output");
-  const engineer = guild.roles.cache.find((r) => r.name === "Server Engineer");
+  const engineer = guild.roles.cache.find((r) => r.name === "Developer");
   const engPing = `<@&${engineer}>`;
 
   if (!(output instanceof TextChannel)) return;
 
-  const disableCommand =
-    "sudo /bin/systemctl disable unassigned-migration.timer";
-  const stopCommand = "sudo /bin/systemctl stop unassigned-migration";
+  const disableCommand = "sudo /bin/systemctl disable member-migration.timer";
+  const stopCommand = "sudo /bin/systemctl stop member-migration";
 
   const failureMessage = `Failed to stop scheduling the migration! Please run the following commands in the cloud instance:
   ${disableCommand}
@@ -159,8 +158,8 @@ const main = async () => {
   const countryRoles = await getCountryRoles(guild);
   console.log(`Loaded ${countryRoles.length} country roles`);
 
-  const unassignedRole = guild.roles.resolve(roleId);
-  if (!unassignedRole) {
+  const memberRole = guild.roles.resolve(roleId);
+  if (!memberRole) {
     throw new Error("Couldn't find role with id " + roleId);
   }
 
@@ -174,8 +173,8 @@ const main = async () => {
       .filter(
         (member) =>
           !member.user.bot &&
-          (member.roles as unknown as string[]).every(
-            (roleId) => !countryRoles.includes(roleId)
+          (member.roles as unknown as string[]).some((roleId) =>
+            countryRoles.includes(roleId)
           )
       )
       .map((member) => member.user.id);

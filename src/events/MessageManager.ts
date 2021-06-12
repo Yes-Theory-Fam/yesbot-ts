@@ -114,7 +114,7 @@ class MessageManager {
         }
         break;
       case "flag-drop":
-        await WhereAreYouFromManager(this.message);
+        await WhereAreYouFromManager.default(this.message);
         break;
 
       case "chat":

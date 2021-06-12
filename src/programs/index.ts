@@ -10,6 +10,7 @@ import * as TopicManager from "./TopicManager";
 import * as Unassigned from "./Unassigned";
 import * as Valentine from "./Valentine";
 import * as VoiceOnDemandTools from "./VoiceOnDemand";
+import * as WhereAreYouFromManager from "./WhereAreYouFromManager";
 import AdventureGame from "./AdventureGame";
 import BirthdayManager from "./BirthdayManager";
 import Deadchat from "./Deadchat";
@@ -24,7 +25,6 @@ import Someone from "./Someone";
 import TemplateMode from "./TemplateMode";
 import Ticket from "./Ticket";
 import VoiceOnDemand from "./VoiceOnDemand";
-import WhereAreYouFromManager from "./WhereAreYouFromManager";
 
 export {
   AdventureGame,
