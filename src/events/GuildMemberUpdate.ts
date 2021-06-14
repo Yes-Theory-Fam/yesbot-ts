@@ -10,7 +10,7 @@ import {
 } from "discord.js";
 import Tools from "../common/tools";
 import { hasRole } from "../common/moderator";
-import { Separators, NitroColors } from "../programs";
+import { Separators, NitroColors, WhereAreYouFromManager } from "../programs";
 import prisma from "../prisma";
 
 class GuildMemberUpdate {
@@ -20,23 +20,6 @@ class GuildMemberUpdate {
     oldMember: GuildMember | PartialGuildMember,
     newMember: GuildMember | PartialGuildMember
   ) {
-    const regionCountries = ["Australia", "Canada", "the UK", "the USA"];
-    const findGeneralRole = (member: GuildMember | PartialGuildMember) =>
-      member.roles.cache.find(({ name }) => {
-        return regionCountries.some((country) => name.endsWith(`${country}!`));
-      });
-    const hasSpecificRole = (member: GuildMember | PartialGuildMember) =>
-      member.roles.cache.some(({ name }) => {
-        return regionCountries.some((country) =>
-          name.includes(`${country}! (`)
-        );
-      });
-
-    const generalRole = findGeneralRole(oldMember);
-    if (generalRole && hasSpecificRole(newMember)) {
-      newMember.roles.remove(generalRole);
-    }
-
     if (
       gainedRole(oldMember, newMember, "Time Out") ||
       gainedRole(oldMember, newMember, "Break")
@@ -56,8 +39,14 @@ class GuildMemberUpdate {
       unlockCountryChannels(newMember);
     }
 
-    if (gainedRole(oldMember, newMember, "Unassigned")) return;
+    if (
+      gainedRole(oldMember, newMember, "Unassigned") ||
+      gainedRole(oldMember, newMember, "Member")
+    ) {
+      return;
+    }
 
+    WhereAreYouFromManager.updateAfterRegionSelect(oldMember, newMember);
     NitroColors.removeColorIfNotAllowed(newMember);
     Separators.separatorOnRoleAdd(oldMember, newMember);
     Separators.separatorOnRoleRemove(oldMember, newMember);

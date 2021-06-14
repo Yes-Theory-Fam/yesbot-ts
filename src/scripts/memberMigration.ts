@@ -3,6 +3,9 @@
  * The code in this file is ran as single scheduled job and is fully self-contained.
  */
 
+import { config } from "dotenv";
+config();
+
 import {
   Client,
   PartialGuildMember,
@@ -24,7 +27,9 @@ interface StoredInformation {
   lastMaxUserId: string;
 }
 
-const infoPath = "./unassignedMigration.json";
+const infoPath = "./memberMigration.json";
+
+console.log(process.env.ENGINEER_ROLE_NAME);
 
 const loadStoredInformation = async (): Promise<StoredInformation> => {
   return new Promise((res, rej) => {
@@ -46,14 +51,15 @@ const stopScheduling = (reason: string): Promise<void> => {
 
   const guild = bot.guilds.resolve(guildId);
   const output = guild.channels.cache.find((c) => c.name === "bot-output");
-  const engineer = guild.roles.cache.find((r) => r.name === "Server Engineer");
+  const engineer = guild.roles.cache.find(
+    (r) => r.name === process.env.ENGINEER_ROLE_NAME
+  );
   const engPing = `<@&${engineer}>`;
 
   if (!(output instanceof TextChannel)) return;
 
-  const disableCommand =
-    "sudo /bin/systemctl disable unassigned-migration.timer";
-  const stopCommand = "sudo /bin/systemctl stop unassigned-migration";
+  const disableCommand = "sudo /bin/systemctl disable member-migration.timer";
+  const stopCommand = "sudo /bin/systemctl stop member-migration";
 
   const failureMessage = `Failed to stop scheduling the migration! Please run the following commands in the cloud instance:
   ${disableCommand}
@@ -115,8 +121,17 @@ const getMembers = async (lastId: String) => {
 const getCountryRoles = async (guild: Guild): Promise<Snowflake[]> => {
   const updatedManager = await guild.roles.fetch();
   const prefix = "I'm from ";
-  return updatedManager.cache
-    .filter((role) => role.name.startsWith(prefix))
+  const countryRoles = updatedManager.cache.filter((role) =>
+    role.name.startsWith(prefix)
+  );
+
+  const regionCountries = ["Australia", "Canada", "UK", "USA"];
+
+  return countryRoles
+    .filter(
+      (role) =>
+        !regionCountries.some((country) => role.name.endsWith(`${country}!`))
+    )
     .map((role) => role.id);
 };
 
@@ -159,8 +174,8 @@ const main = async () => {
   const countryRoles = await getCountryRoles(guild);
   console.log(`Loaded ${countryRoles.length} country roles`);
 
-  const unassignedRole = guild.roles.resolve(roleId);
-  if (!unassignedRole) {
+  const memberRole = guild.roles.resolve(roleId);
+  if (!memberRole) {
     throw new Error("Couldn't find role with id " + roleId);
   }
 
@@ -171,13 +186,13 @@ const main = async () => {
   try {
     const members = (await getMembers(lastMaxUserId)) as PartialGuildMember[];
     const filteredMembers = members
-      .filter(
-        (member) =>
-          !member.user.bot &&
-          (member.roles as unknown as string[]).every(
-            (roleId) => !countryRoles.includes(roleId)
-          )
-      )
+      .filter((member) => {
+        if (member.user.bot) return false;
+        const roleIds = member.roles as unknown as string[];
+        if (roleIds.includes(roleId)) return false;
+
+        return roleIds.some((roleId) => countryRoles.includes(roleId));
+      })
       .map((member) => member.user.id);
 
     for (let i = 0; i < filteredMembers.length; i++) {

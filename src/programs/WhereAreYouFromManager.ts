@@ -1,7 +1,17 @@
-import { Guild, Message, Role, TextChannel, User } from "discord.js";
+import {
+  Guild,
+  GuildMember,
+  Message,
+  PartialGuildMember,
+  Role,
+  TextChannel,
+  User,
+} from "discord.js";
 import { isRegistered, textLog } from "../common/moderator";
 import { Country, countries } from "../collections/flagEmojis";
 import { Unassigned } from ".";
+
+const regionCountries = ["Australia", "Canada", "UK", "USA"];
 
 export default async function WhereAreYouFromManager(pMessage: Message) {
   const newUser = !isRegistered(pMessage.member);
@@ -35,6 +45,10 @@ export default async function WhereAreYouFromManager(pMessage: Message) {
       }
       await pMessage.member.roles.add(roleToAssign);
       await pMessage.react("👍");
+      const isCountryWithRegionRole = regionCountries.some((country) =>
+        roleToAssign.name.endsWith(`${country}!`)
+      );
+
       pMessage.member.createDM().then((dmChannel) => {
         const rules = pMessage.guild.channels.cache.find(
           (c) => c.name === "rules"
@@ -42,30 +56,36 @@ export default async function WhereAreYouFromManager(pMessage: Message) {
         const generalInfo = pMessage.guild.channels.cache.find(
           (c) => c.name === "general-info"
         );
-        const welcomeChat = <TextChannel>(
-          pMessage.guild.channels.cache.find((c) => c.name === "welcome-chat")
-        );
-        welcomeChat.send(getWelcomeMessage(pMessage.member.user));
+
+        if (!isCountryWithRegionRole) {
+          welcomeMember(pMessage.member.user, pMessage.member.guild);
+        }
         Unassigned.UnassignedMemberUpdate(pMessage.member);
         dmChannel.send(
           `Hey! My name is YesBot, I'm so happy to see you've made it into our world, we really hope you stick around!\n\nIn the meantime, you should checkout ${rules.toString()} and ${generalInfo.toString()} , they contain a lot of good-to-knows about our server and what cool stuff you can do.\nIf you'd like me to change your name on the server for you, just drop me a message and I will help you out! Then I can introduce you to our family :grin:\n\nI know Discord can be a lot to take in at first, trust me, but it's really quite a wonderful place.`
         );
       });
-      if (roleToAssign.name === "I'm from Australia!") {
-        ghostPing(pMessage, "Australia");
-      }
-      if (roleToAssign.name === "I'm from the USA!") {
-        ghostPing(pMessage, "USA");
-      }
-      if (roleToAssign.name === "I'm from Canada!") {
-        ghostPing(pMessage, "Canada");
-      }
-      if (roleToAssign.name === "I'm from the UK!") {
-        ghostPing(pMessage, "UK");
+
+      if (isCountryWithRegionRole) {
+        const countryFromRoleNameRegex = /.*\s(.*)!$/;
+        const lowerCaseCountry = roleToAssign.name
+          .match(countryFromRoleNameRegex)[1]
+          .toLowerCase();
+        await ghostPing(pMessage, lowerCaseCountry);
       }
     }
   }
 }
+
+const welcomeMember = async (user: User, guild: Guild) => {
+  const memberRole = guild.roles.cache.find(({ name }) => name === "Member");
+  await guild.member(user).roles.add(memberRole);
+
+  const welcomeChat = <TextChannel>(
+    guild.channels.cache.find((c) => c.name === "welcome-chat")
+  );
+  await welcomeChat.send(getWelcomeMessage(user));
+};
 
 const getWelcomeMessage = (user: User) => {
   const welcomeMessages = [
@@ -121,42 +141,12 @@ export const getRoleForCountry = (country: Country, guild: Guild): Role => {
   }
 };
 
-export const ghostPing = async (message: Message, region: String) => {
-  const ausRegionChannel = message.guild.channels.cache.find(
-    (channel) => channel.name === "australia-regions"
+const ghostPing = async (message: Message, region: String) => {
+  const regionChannel = message.guild.channels.cache.find(
+    (channel) => channel.name === `${region}-regions`
   ) as TextChannel;
-
-  const usaRegionChannel = message.guild.channels.cache.find(
-    (channel) => channel.name === "usa-regions"
-  ) as TextChannel;
-
-  const caRegionChannel = message.guild.channels.cache.find(
-    (channel) => channel.name === "canada-regions"
-  ) as TextChannel;
-
-  const ukRegionChannel = message.guild.channels.cache.find(
-    (channel) => channel.name === "uk-regions"
-  ) as TextChannel;
-
-  if (region === "Australia") {
-    const ping = await ausRegionChannel.send(`<@${message.member}>`);
-    await ping.delete();
-  }
-
-  if (region === "USA") {
-    const ping = await usaRegionChannel.send(`<@${message.member}>`);
-    await ping.delete();
-  }
-
-  if (region === "Canada") {
-    const ping = await caRegionChannel.send(`<@${message.member}>`);
-    await ping.delete();
-  }
-
-  if (region === "UK") {
-    const ping = await ukRegionChannel.send(`<@${message.member}>`);
-    await ping.delete();
-  }
+  const ping = await regionChannel.send(`<@${message.member}>`);
+  await ping.delete();
 };
 
 export const getCountriesFromMessage = (message: string) => {
@@ -171,4 +161,30 @@ export const getCountriesFromMessage = (message: string) => {
     ({ name: filterName }, index, self) =>
       self.findIndex(({ name }) => name === filterName) === index
   );
+};
+
+export const updateAfterRegionSelect = async (
+  oldMember: GuildMember | PartialGuildMember,
+  newMember: GuildMember | PartialGuildMember
+) => {
+  const findGeneralRole = (member: GuildMember | PartialGuildMember) =>
+    member.roles.cache.find(({ name }) => {
+      return regionCountries.some((country) => name.endsWith(`${country}!`));
+    });
+  const hasSpecificRole = (member: GuildMember | PartialGuildMember) =>
+    member.roles.cache.some(({ name }) => {
+      return regionCountries.some((country) => name.includes(`${country}! (`));
+    });
+
+  const generalRole = findGeneralRole(oldMember);
+  if (generalRole && hasSpecificRole(newMember)) {
+    await newMember.roles.remove(generalRole);
+    const hasNoOtherCountry =
+      oldMember.roles.cache.filter(({ name }) => name.startsWith("I'm from"))
+        .size === 1;
+
+    if (hasNoOtherCountry) {
+      await welcomeMember(oldMember.user, oldMember.guild);
+    }
+  }
 };
