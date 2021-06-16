@@ -51,13 +51,21 @@ bot.on("message", async (msg: Message) => {
 });
 bot.on(
   "messageReactionAdd",
-  (messageReaction: MessageReaction, user: User | PartialUser) =>
-    reactionAdd(messageReaction, user)
+  async (messageReaction: MessageReaction, user: User | PartialUser) => {
+    await reactionAdd(messageReaction, user);
+    distribution.handleEvent(DiscordEvent.REACTION_ADD, messageReaction, user);
+  }
 );
 bot.on(
   "messageReactionRemove",
-  (messageReaction: MessageReaction, user: User | PartialUser) =>
-    reactionRemove(messageReaction, user)
+  async (messageReaction: MessageReaction, user: User | PartialUser) => {
+    await reactionRemove(messageReaction, user);
+    distribution.handleEvent(
+      DiscordEvent.REACTION_REMOVE,
+      messageReaction,
+      user
+    );
+  }
 );
 bot.on("ready", () => ready(bot));
 bot.on("voiceStateUpdate", (oldMember: VoiceState, newMember: VoiceState) =>
