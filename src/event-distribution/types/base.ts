@@ -1,5 +1,5 @@
 import { EventHandlerOptions, HandlerFunction } from "../events";
-import { Guild, GuildMember, User } from "discord.js";
+import { GuildMember } from "discord.js";
 import { CommandHandler } from "./handler";
 import { InstanceOrConstructor, StringIndexedHIOCTree } from "./hioc";
 
@@ -36,7 +36,7 @@ export type HandlerFunctionFor<
 
 export interface HandlerInfo {
   handlerKeys: string[];
-  member: GuildMember | null;
+  member?: GuildMember;
   isDirectMessage: boolean;
 }
 

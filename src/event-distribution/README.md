@@ -32,12 +32,7 @@ interface BaseOptions {
   description: string; // A descriptive string of the event handler
   requiredRoles?: string[]; // An array of role names. All roles listed are required to run the handler.
   channelNames?: string[]; // An array of channel names. The handler will only be called when the event occured in one of the channels listed.
-  location?: MessageLocation; // A location enum setting where events are accepted.
-  // Available values are:
-  //  - EventLocation.SERVER (only call handler for events on the server)
-  //  - EventLocation.DIRECT_MESSAGE (only call handler for events in DMs) and 
-  //  - EventLocation.ANYWHERE (call handler regardless of the origin of the event).
-  // The default is EventLocation.SERVER if channelNames is non-empty, EventLocation.ANYWHERE otherwise.
+  location?: EventLocation; // A location enum setting where events are accepted. The default is EventLocation.SERVER if channelNames or requiredRoles is non-empty, EventLocation.ANYWHERE otherwise.
 }
 ```
 
@@ -53,6 +48,7 @@ The bot receives a message event when anyone sends a message in any channel the 
 ##### Options
 
 Additionally, to the [BaseOptions](#base-options), the following options are available:
+
 ```ts
 interface MessageOptions {
   trigger: string; // Defines the trigger for the handler. This MUST NOT contain spaces, since the distribution instance looks up the handler by first word (split by space).
@@ -74,6 +70,7 @@ The bot receives an event when a reaction is added or removed in any channel vis
 ##### Options
 
 Additionally, to the [BaseOptions](#base-options), the following options are available:
+
 ```ts
 interface ReactionEventHandlerOptions {
   emoji: string; // Defines the emoji triggering the handler
@@ -82,7 +79,8 @@ interface ReactionEventHandlerOptions {
 
 ##### Enum
 
-Use `DiscordEvent.REACTION_ADD` and `DiscordEvent.REACTION_REMOVE` for the respective events as event in the decorator's options and generic argument for the `CommandHandler`;
+Use `DiscordEvent.REACTION_ADD` and `DiscordEvent.REACTION_REMOVE` for the respective events as event in the decorator's
+options and generic argument for the `CommandHandler`;
 
 ##### Arguments
 
