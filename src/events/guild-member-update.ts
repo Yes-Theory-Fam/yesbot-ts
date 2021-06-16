@@ -35,10 +35,7 @@ const guildMemberUpdate = async (
     unlockCountryChannels(newMember);
   }
 
-  if (
-    gainedRole(oldMember, newMember, "Unassigned") ||
-    gainedRole(oldMember, newMember, "Member")
-  ) {
+  if (gainedRole(oldMember, newMember, "Unassigned")) {
     return;
   }
 
@@ -46,7 +43,7 @@ const guildMemberUpdate = async (
   await NitroColors.removeColorIfNotAllowed(newMember);
   Separators.separatorOnRoleAdd(oldMember, newMember);
   Separators.separatorOnRoleRemove(oldMember, newMember);
-}
+};
 
 // A users per-user permissions shall be restored if they have lost one of the switch roles and every role they have is none of the switchRoles
 const resolvePerUserCondition = (
