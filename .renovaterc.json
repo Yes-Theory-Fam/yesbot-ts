@@ -3,8 +3,8 @@
     "every weekend"
   ],
   "extends": [
-    "group:all"
-  ],
+    "config:base"
+  ]
   "rangeStrategy": "pin",
   "labels": [
     "renovate"
