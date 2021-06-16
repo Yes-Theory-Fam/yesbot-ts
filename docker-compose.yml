@@ -9,3 +9,19 @@ services:
       POSTGRES_PASSWORD: yesbot
     ports:
       - 5432:5432
+  yesbot:
+    image: yesbot:latest
+    environment:
+      NODE_ENV: production
+      BOT_TOKEN: "ODQ1MzA0NjU5MzAzODU4MTkx.YKfBTw.h_-nhliH54bnKpsEtiCI9lz_pfE"
+      GUILD_ID: 845306344458027009
+      OUTPUT_CHANNEL_ID: 845306346810638366
+      MAP_LINK: "<>"
+      MAP_ADD_DM_USER_ID: "<>"
+      MODERATOR_ROLE_NAME: "Support"
+      ENGINEER_ROLE_NAME: "Server Engineer"
+      COORDINATOR_ROLE_NAME: "Server Coordinator"
+      BUDDY_PROJECT_MATCHING: "false"
+      PRISMA_DATABASE_URL: "postgresql://yesbot:yesbot@yesbot-ts_postgres_1:5432/yesbot?schema=public"
+    depends_on:
+      - postgres
