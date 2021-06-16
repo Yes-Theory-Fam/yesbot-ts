@@ -10,7 +10,5 @@ declare namespace NodeJS {
     MAP_ADD_DM_USER_ID?: string;
     MODERATOR_ROLE_NAME?: string;
     ENGINEER_ROLE_NAME?: string;
-    COORDINATOR_ROLE_NAME?: string;
-    BUDDY_PROJECT_MATCHING?: string;
   }
 }
