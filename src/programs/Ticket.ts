@@ -11,8 +11,7 @@ export default async function Ticket(pMessage: Message, type: string) {
     guild_name == "Yes Theory Fam" ? "not done" : "695317780198719500";
 
   const ENGINEER_ROLE_ID = "667747778201649172";
-  const COORDINATOR_ROLE_ID = "667747782202884117";
-  const SUPPORT_ROLE_ID = "695317778504089609";
+  const SUPPORT_ROLE_ID = "771496822790160445";
 
   let moderatorRoleName: string;
   let categoryId: string;
@@ -31,12 +30,12 @@ export default async function Ticket(pMessage: Message, type: string) {
       ticketMessage = `Hi ${pMessage.member.toString()}, please list the details of your proposed FiYESta below and read the <#502198786441871381> while you wait.`;
       break;
     case "shoutout":
-      moderatorRoleName = process.env.COORDINATOR_ROLE_NAME;
+      moderatorRoleName = process.env.MODERATOR_ROLE_NAME;
       categoryId = pMessage.guild.channels.cache.find((c) =>
         c.name.toLowerCase().includes("validation")
       ).id;
       moderatorRoleId = pMessage.guild.roles.cache.find(
-        (r) => r.id === COORDINATOR_ROLE_ID
+        (r) => r.id === SUPPORT_ROLE_ID
       ).id;
       ticketMessage = `Hi ${pMessage.member.toString()}, please list the details of your shoutout below.`;
       break;
