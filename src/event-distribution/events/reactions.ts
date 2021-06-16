@@ -9,6 +9,7 @@ import {
   DMChannel,
   MessageReaction,
   NewsChannel,
+  PartialUser,
   TextChannel,
   User,
 } from "discord.js";
@@ -23,7 +24,7 @@ export type ReactionHandlerFunction<T extends DiscordEvent> =
   HandlerFunctionFor<
     T,
     DiscordEvent.REACTION_ADD | DiscordEvent.REACTION_REMOVE,
-    [MessageReaction, User]
+    [MessageReaction, User | PartialUser]
   >;
 
 export const addReactionHandler: AddEventHandlerFunction<ReactionEventHandlerOptions> =
@@ -57,7 +58,7 @@ export const extractReactionInfo: ExtractInfoForEventFunction<
 
   const channel = reaction.message.channel;
   const guild = channel.type === "dm" ? null : channel.guild;
-  const member = guild?.member(user) ?? null;
+  const member = guild?.member(user.id) ?? null;
 
   const channelIdentifier = getChannelIdentifier(channel);
   return {
