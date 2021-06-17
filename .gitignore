@@ -4,3 +4,5 @@
 /.vscode
 /.idea
 /coverage
+src/**/*.js
+**./*.log
