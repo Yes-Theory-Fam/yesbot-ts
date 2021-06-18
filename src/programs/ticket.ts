@@ -102,7 +102,7 @@ const getDetailsForType = (
     case "shoutout":
       return {
         moderatorRole: Tools.getRoleByName(
-          process.env.COORDINATOR_ROLE_NAME,
+          process.env.MODERATOR_ROLE_NAME,
           member.guild
         ),
         ticketMessage: `Hi ${member.toString()}, please list the details of your shoutout below.`,
