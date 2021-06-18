@@ -35,10 +35,6 @@ const guildMemberUpdate = async (
     unlockCountryChannels(newMember);
   }
 
-  if (gainedRole(oldMember, newMember, "Unassigned")) {
-    return;
-  }
-
   await WhereAreYouFrom.updateAfterRegionSelect(oldMember, newMember);
   await NitroColors.removeColorIfNotAllowed(newMember);
   Separators.separatorOnRoleAdd(oldMember, newMember);

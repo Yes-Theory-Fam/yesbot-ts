@@ -10,14 +10,12 @@ import {
   ReactRole,
   Resource,
   Someone,
-  TemplateMode,
   Ticket,
   TopicManager,
   VoiceOnDemand,
   WhereAreYouFrom,
   Game,
   DMMenu,
-  Unassigned,
 } from "../programs";
 import state from "../common/state";
 import { hasRole, textLog, getMember } from "../common/moderator";
@@ -124,15 +122,10 @@ const routeMessage = async (message: Message) => {
       )
         await GroupManager(message, true);
       if (firstWord === "!profile") await Profile(message);
-      if (firstWord === "!templateMode") await TemplateMode(message);
       if (firstWord === "!addChallenge")
         await saveToDb("daily-challenge", restOfMessage, message);
       if (firstWord === "!todayChallenge")
         await postDailyMessage(message.client, message);
-      if (firstWord === "!unassignedRoleToggle")
-        await Unassigned.unassignedRoleAssignToggle(message);
-      if (firstWord === "!unassignedRoleStatus")
-        await Unassigned.unassignedRoleAssignStatus(message);
       break;
     case "bot-commands":
       if (
@@ -178,7 +171,7 @@ const routeMessage = async (message: Message) => {
     );
     await message.member.roles.remove(guildRole);
   }
-  if (firstWord === "!topic") TopicManager.topics(message);
+  if (firstWord === "!topic") await TopicManager.topics(message);
   // if (firstWord === "!fiyesta") Ticket(message, "fiyesta");
   if (firstWord === "!resources") await Resource(message);
   if (firstWord === "!shoutout") await Ticket(message, "shoutout");

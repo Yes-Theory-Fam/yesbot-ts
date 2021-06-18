@@ -4,7 +4,6 @@ import {
   DailyChallenge,
   Game,
   NitroColors,
-  Unassigned,
   VoiceOnDemandTools,
 } from "../programs";
 
@@ -13,7 +12,7 @@ const developerChannelName = "bot-development";
 const logger = createYesBotLogger("events", "ready");
 
 const readyMessageString = (bot: Client, status: string) =>
-  `${bot.user.tag} - Online - ${status} - ${Unassigned.getStatus("Currently")}`;
+  `${bot.user.tag} - Online - ${status}`;
 
 const ready = async (bot: Client) => {
   logger.info(`Bot is online - ${bot.user.tag}`);

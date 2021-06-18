@@ -7,7 +7,6 @@ import * as MapTools from "./map";
 import * as NitroColors from "./nitro-colors";
 import * as Separators from "./separators";
 import * as TopicManager from "./topics";
-import * as Unassigned from "./unassigned";
 import * as VoiceOnDemandTools from "./voice-on-demand";
 import * as WhereAreYouFrom from "./where-are-you-from";
 import BirthdayManager from "./birthday-manager";
@@ -19,7 +18,6 @@ import Profile from "./profile";
 import ReactRole from "./react-role";
 import Resource from "./resources";
 import Someone from "./someone-tag";
-import TemplateMode from "./template-mode";
 import Ticket from "./ticket";
 import VoiceOnDemand from "./voice-on-demand";
 
@@ -41,10 +39,8 @@ export {
   DailyChallenge,
   Separators,
   Someone,
-  TemplateMode,
   Ticket,
   TopicManager,
-  Unassigned,
   VoiceOnDemand,
   VoiceOnDemandTools,
   WhereAreYouFrom,

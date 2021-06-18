@@ -11,7 +11,6 @@ import {
 } from "discord.js";
 import {
   guildMemberUpdate,
-  memberJoin,
   memberLeave,
   messageManager,
   reactionAdd,
@@ -32,9 +31,6 @@ logger.debug("Logging in to Discord Gateway");
 bot.login(process.env.BOT_TOKEN);
 
 //! ================= EVENT HANDLERS ====================
-bot.on("guildMemberAdd", (member: GuildMember | PartialGuildMember) =>
-  memberJoin(member)
-);
 bot.on("guildMemberRemove", (member: GuildMember | PartialGuildMember) =>
   memberLeave(member)
 );
