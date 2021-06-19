@@ -24,7 +24,7 @@
     "axios": "0.21.1",
     "countries-and-timezones": "2.4.0",
     "country-code-emoji": "1.0.0",
-    "date-fns": "2.21.3",
+    "date-fns": "2.22.1",
     "date-fns-tz": "1.1.4",
     "discord.js": "12.5.3",
     "glob": "7.1.7",
