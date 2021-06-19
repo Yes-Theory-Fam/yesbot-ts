@@ -21,6 +21,13 @@
         "prisma"
       ],
       "groupName": "prisma packages"
+    },
+    {
+      "matchPackageNames": [
+        "ts-jest",
+        "jest"
+      ],
+      "groupName": "jest packages"
     }
   ]
 }
