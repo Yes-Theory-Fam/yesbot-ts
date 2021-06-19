@@ -1,4 +1,4 @@
-import { HandlerFunction } from "../events";
+import { HandlerFunction } from "../events/events";
 import { DiscordEvent } from "./base";
 
 export type HandlerClass<T extends DiscordEvent> = {

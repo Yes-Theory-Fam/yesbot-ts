@@ -1,4 +1,4 @@
-import { EventHandlerOptions, HandlerFunction } from "../events";
+import { EventHandlerOptions, HandlerFunction } from "../events/events";
 import { GuildMember } from "discord.js";
 import { CommandHandler } from "./handler";
 import { InstanceOrConstructor, StringIndexedHIOCTree } from "./hioc";

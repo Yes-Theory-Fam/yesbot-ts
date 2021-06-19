@@ -69,7 +69,7 @@ The bot's main code is contained in the `src` directory which contains several s
 - events - Event handlers for the different events discord.js exposes
 - lib - (will be removed once [#193](https://github.com/Yes-Theory-Fam/yesbot-ts/issues/193) is resolved) - Contains
   custom functionality to extend libraries used
-- programs - Code containing logic for all the commands and features of the bot. This directory contains an `index.ts`
+- programs - Code containing logic for all the commands and features of the bot. This directory contains an `events.ts`
   which reexports all exports from all files in this folder, please do so to, when adding your own feature.
 - scripts - Standalone scripts that are designed to be manually run for one-off tasks (like importing birthdays for
   example)
@@ -77,7 +77,7 @@ The bot's main code is contained in the `src` directory which contains several s
 It also contains two single files:
 
 - prisma.ts - Simple setup of the TypeORM database connection
-- index.ts - Creates and exports the discord.js Client used in the entire application. This is the entry point for the
+- events.ts - Creates and exports the discord.js Client used in the entire application. This is the entry point for the
   bot.
 
 ### Requirements

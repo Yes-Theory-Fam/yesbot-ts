@@ -17,6 +17,7 @@ import {
 } from "./reactions";
 import { StringIndexedHIOCTree } from "../types/hioc";
 import { Message, MessageReaction, User } from "discord.js";
+import { CommandHandler } from "../types/handler";
 
 export type EventHandlerOptions =
   | MessageEventHandlerOptions
@@ -27,9 +28,22 @@ export type HandlerFunction<T extends DiscordEvent> =
   | ReactionHandlerFunction<T>;
 
 export const addEventHandler: AddEventHandlerFunction<EventHandlerOptions> = (
-  options,
-  ioc,
-  tree
+  options: MessageEventHandlerOptions | ReactionEventHandlerOptions,
+  ioc:
+    | {
+        new (...args: any[]): CommandHandler<
+          (MessageEventHandlerOptions | ReactionEventHandlerOptions)["event"]
+        >;
+        prototype: any;
+      }
+    | CommandHandler<
+        (MessageEventHandlerOptions | ReactionEventHandlerOptions)["event"]
+      >,
+  tree: StringIndexedHIOCTree<
+    | DiscordEvent.MESSAGE
+    | DiscordEvent.REACTION_ADD
+    | DiscordEvent.REACTION_REMOVE
+  >
 ) => {
   switch (options.event) {
     case DiscordEvent.MESSAGE:
