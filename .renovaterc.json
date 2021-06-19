@@ -15,6 +15,10 @@
         "prisma",
         "typegraphql-prisma"
       ],
+      "labels": [
+        "renovate",
+        "prisma"
+      ],
       "groupName": "prisma packages"
     }
   ]
