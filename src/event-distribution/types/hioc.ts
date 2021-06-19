@@ -1,5 +1,5 @@
 import { CommandHandler } from "./handler";
-import { EventHandlerOptions } from "../events";
+import { EventHandlerOptions } from "../events/events";
 import { DiscordEvent } from "./base";
 
 export type InstanceOrConstructor<T> =

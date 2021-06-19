@@ -1,4 +1,9 @@
-import { addEventHandler, extractEventInfo, HandlerFunction } from "./events";
+import {
+  addEventHandler,
+  EventHandlerOptions,
+  extractEventInfo,
+  HandlerFunction,
+} from "./events/events";
 import glob from "glob";
 import path from "path";
 import { createYesBotLogger } from "../log";
@@ -8,7 +13,6 @@ import {
   StringIndexedHIOCTree,
   StringIndexedHIOCTreeNode,
 } from "./types/hioc";
-import { EventHandlerOptions } from "./events";
 import { HandlerClass } from "./types/handler";
 import { DiscordEvent, EventLocation } from "./types/base";
 
@@ -48,6 +52,45 @@ export class EventDistribution {
 
       instance.handle(...args);
     }
+  }
+
+  addWithOptions<T extends EventHandlerOptions>(
+    options: T,
+    HandlerClass: HandlerClass<T["event"]>
+  ) {
+    const ioc = options.stateful ? new HandlerClass() : HandlerClass;
+    const tree = this.handlers[options.event];
+    addEventHandler(options, ioc, tree);
+  }
+
+  async initialize(): Promise<void> {
+    return new Promise((res, rej) => {
+      glob("src/programs/*.ts", async (e, matches) => {
+        if (e) {
+          logger.error("Error loading commands: ", e);
+          return;
+        }
+
+        const loaders = matches
+          .filter((p) => !p.endsWith(".spec.ts"))
+          .map((p) => {
+            const split = p.split(".");
+            split.unshift();
+            const modulePath = path.join(process.cwd(), split.join("."));
+
+            return import(modulePath);
+          });
+
+        try {
+          await Promise.all(loaders);
+        } catch (e) {
+          logger.error("Error loading commands: ", e);
+          rej(e);
+        }
+        logger.debug("Loading complete!");
+        res();
+      });
+    });
   }
 
   private filterHandlers<T extends DiscordEvent>(
@@ -91,44 +134,5 @@ export class EventDistribution {
     handlers.push(...this.getHandlers(handlerTree[currentKey], restKeys));
 
     return handlers;
-  }
-
-  addWithOptions<T extends EventHandlerOptions>(
-    options: T,
-    HandlerClass: HandlerClass<T["event"]>
-  ) {
-    const ioc = options.stateful ? new HandlerClass() : HandlerClass;
-    const tree = this.handlers[options.event];
-    addEventHandler(options, ioc, tree);
-  }
-
-  async initialize(): Promise<void> {
-    return new Promise((res, rej) => {
-      glob("src/programs/*.ts", async (e, matches) => {
-        if (e) {
-          logger.error("Error loading commands: ", e);
-          return;
-        }
-
-        const loaders = matches
-          .filter((p) => !p.endsWith(".spec.ts"))
-          .map((p) => {
-            const split = p.split(".");
-            split.unshift();
-            const modulePath = path.join(process.cwd(), split.join("."));
-
-            return import(modulePath);
-          });
-
-        try {
-          await Promise.all(loaders);
-        } catch (e) {
-          logger.error("Error loading commands: ", e);
-          rej(e);
-        }
-        logger.debug("Loading complete!");
-        res();
-      });
-    });
   }
 }

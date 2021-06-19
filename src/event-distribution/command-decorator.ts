@@ -1,4 +1,4 @@
-import { EventHandlerOptions } from "./events";
+import { EventHandlerOptions } from "./events/events";
 import { EventLocation } from "./types/base";
 import { HandlerClass } from "./types/handler";
 import distribution from "./index";
