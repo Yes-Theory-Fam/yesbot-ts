@@ -131,8 +131,8 @@ _Skip this step if you have a postgres server with a database `yesbot` with cred
 Run the following command in the root directory of the project to start a docker container with the database:
 
 ```bash
-docker-compose up
-# or docker-compose up -d
+docker-compose up postgres
+# or docker-compose up -d postgres
 # if you want to reuse your terminal; in this case you can shut down the container with docker-compose down in the same directory
 ```
 
