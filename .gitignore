@@ -5,6 +5,5 @@
 /.vscode
 /build
 /coverage
-/coverage/
 /node_modules
 src/**/*.js

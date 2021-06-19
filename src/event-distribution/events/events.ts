@@ -28,22 +28,9 @@ export type HandlerFunction<T extends DiscordEvent> =
   | ReactionHandlerFunction<T>;
 
 export const addEventHandler: AddEventHandlerFunction<EventHandlerOptions> = (
-  options: MessageEventHandlerOptions | ReactionEventHandlerOptions,
-  ioc:
-    | {
-        new (...args: any[]): CommandHandler<
-          (MessageEventHandlerOptions | ReactionEventHandlerOptions)["event"]
-        >;
-        prototype: any;
-      }
-    | CommandHandler<
-        (MessageEventHandlerOptions | ReactionEventHandlerOptions)["event"]
-      >,
-  tree: StringIndexedHIOCTree<
-    | DiscordEvent.MESSAGE
-    | DiscordEvent.REACTION_ADD
-    | DiscordEvent.REACTION_REMOVE
-  >
+  options,
+  ioc,
+  tree
 ) => {
   switch (options.event) {
     case DiscordEvent.MESSAGE:
