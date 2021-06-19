@@ -12,7 +12,12 @@
     "lint:fix": "prettier --write \"src/!(collections)/**/*.(js|ts|json)\"",
     "postinstall": "npm run db:generate",
     "start": "env-cmd ts-node-dev --respawn src/index.ts",
-    "start:prod": "env-cmd ts-node src/index.ts"
+    "start:prodOld": "env-cmd ts-node src/index.ts",
+    "tsc": "tsc",
+    "start:prod": "node build/index.js",
+    "build:prepare": "NODE_ENV=production && rm -rf node_modules && npm install && npm run tsc",
+    "build:docker": "docker build --force-rm --label yesbot --build-arg VCS_REF=$(git rev-parse --short HEAD) -t yesbot .",
+    "build:run": "docker run --link yesbot-ts_postgres_1 ."
   },
   "prisma": {
     "schema": "node_modules/@yes-theory-fam/database/prisma/schema.prisma"
