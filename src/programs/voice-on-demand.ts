@@ -353,7 +353,7 @@ const changeHostOnDemand = async (message: Message) => {
   await transferOwnership(mapping, mentionedMember.user, memberVoiceChannel);
 
   await message.reply(
-    `I transfered ownership of your room to <@${mentionedMember}>!`
+    `I transfered ownership of your room to <@${mentionedMember.id}>!`
   );
 };
 
