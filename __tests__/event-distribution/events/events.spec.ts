@@ -1,4 +1,7 @@
-import { addEventHandler, extractEventInfo } from "../../../src/event-distribution/events/events";
+import {
+  addEventHandler,
+  extractEventInfo,
+} from "../../../src/event-distribution/events/events";
 import {
   addMessageHandler,
   extractMessageInfo,
@@ -28,8 +31,10 @@ describe("EventDistribution events on DiscordEvent.MESSAGE", () => {
         event: DiscordEvent.MESSAGE,
         trigger: "!test",
       },
-      {} as CommandHandler<(MessageEventHandlerOptions | ReactionEventHandlerOptions)["event"]>,
-      {},
+      {} as CommandHandler<
+        (MessageEventHandlerOptions | ReactionEventHandlerOptions)["event"]
+      >,
+      {}
     );
 
     expect(mockedAddMessageHandler).toHaveBeenCalled();
@@ -43,8 +48,10 @@ describe("EventDistribution events on DiscordEvent.MESSAGE", () => {
         event: DiscordEvent.REACTION_REMOVE,
         emoji: "♥️",
       },
-      {} as CommandHandler<(MessageEventHandlerOptions | ReactionEventHandlerOptions)["event"]>,
-      {},
+      {} as CommandHandler<
+        (MessageEventHandlerOptions | ReactionEventHandlerOptions)["event"]
+      >,
+      {}
     );
 
     expect(mockedAddMessageHandler).not.toHaveBeenCalled();
@@ -58,8 +65,10 @@ describe("EventDistribution events on DiscordEvent.MESSAGE", () => {
         event: DiscordEvent.REACTION_ADD,
         emoji: "♥️",
       },
-      {} as CommandHandler<(MessageEventHandlerOptions | ReactionEventHandlerOptions)["event"]>,
-      {},
+      {} as CommandHandler<
+        (MessageEventHandlerOptions | ReactionEventHandlerOptions)["event"]
+      >,
+      {}
     );
     expect(mockedAddMessageHandler).not.toHaveBeenCalled();
     expect(mockedAddReactionHandler).toHaveBeenCalled();
@@ -77,7 +86,10 @@ describe("EventDistribution events on DiscordEvent.MESSAGE", () => {
     const messageReaction = mockedDiscord.getMessageReaction();
     const user = mockedDiscord.getUser();
     extractEventInfo(DiscordEvent.REACTION_ADD, messageReaction, user);
-    expect(mockedExtractReactionInfo).toHaveBeenCalledWith(messageReaction, user);
+    expect(mockedExtractReactionInfo).toHaveBeenCalledWith(
+      messageReaction,
+      user
+    );
   });
 
   it("should call extractMessageInfo from reaction remove", () => {
@@ -85,13 +97,18 @@ describe("EventDistribution events on DiscordEvent.MESSAGE", () => {
     const messageReaction = mockedDiscord.getMessageReaction();
     const user = mockedDiscord.getUser();
     extractEventInfo(DiscordEvent.REACTION_REMOVE, messageReaction, user);
-    expect(mockedExtractReactionInfo).toHaveBeenCalledWith(messageReaction, user);
+    expect(mockedExtractReactionInfo).toHaveBeenCalledWith(
+      messageReaction,
+      user
+    );
   });
 
   it("should throw an error no event is provided", () => {
     const messageReaction = mockedDiscord.getMessageReaction();
     const user = mockedDiscord.getUser();
-    const event = "test" as DiscordEvent
-    expect(()=>extractEventInfo(event, messageReaction, user)).toThrowErrorMatchingSnapshot();
+    const event = "test" as DiscordEvent;
+    expect(() =>
+      extractEventInfo(event, messageReaction, user)
+    ).toThrowErrorMatchingSnapshot();
   });
 });
