@@ -75,7 +75,7 @@ describe("EventDistribution events on DiscordEvent.MESSAGE", () => {
   });
 
   it("should call extractMessageInfo from message", () => {
-    const mockedExtractEventInfoMock = mocked(extractMessageInfo, true);
+    const mockedExtractMessageInfoMock = mocked(extractMessageInfo, true);
     const message = mockedDiscord.getMessage();
     extractEventInfo(DiscordEvent.MESSAGE, message);
     expect(mockedExtractEventInfoMock).toHaveBeenCalledWith(message);
