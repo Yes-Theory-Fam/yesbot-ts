@@ -92,7 +92,7 @@ describe("EventDistribution events on DiscordEvent.MESSAGE", () => {
     );
   });
 
-  it("should call extractMessageInfo from reaction remove", () => {
+  it("should call extractReactionInfo from reaction remove", () => {
     const mockedExtractReactionInfo = mocked(extractReactionInfo, true);
     const messageReaction = mockedDiscord.getMessageReaction();
     const user = mockedDiscord.getUser();
