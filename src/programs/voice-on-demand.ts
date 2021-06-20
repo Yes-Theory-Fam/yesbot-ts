@@ -533,7 +533,7 @@ const requestOwnershipTransfer = async (
         .first()
     : channel.members.random().user;
   await botCommands.send(
-    `<@${claimingUser}>, is now the new owner of the room! You can now change the limit of it using \`!voice limit\`.`
+    `<@${claimingUser.id}>, is now the new owner of the room! You can now change the limit of it using \`!voice limit\`.`
   );
 
   await transferOwnership(currentMapping, claimingUser, channel);
