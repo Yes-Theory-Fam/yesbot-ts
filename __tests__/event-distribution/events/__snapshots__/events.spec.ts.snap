@@ -1,3 +1,3 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`EventDistribution events on DiscordEvent.MESSAGE should throw an error no event is provided 1`] = `"Could not extract info for event test"`;
+exports[`EventDistribution events should throw an error no event is provided 1`] = `"Could not extract info for event test"`;

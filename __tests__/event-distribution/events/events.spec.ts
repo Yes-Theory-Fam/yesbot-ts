@@ -19,12 +19,12 @@ import MockDiscord from "../../mocks";
 jest.mock("../../../src/event-distribution/events/message");
 jest.mock("../../../src/event-distribution/events/reactions");
 
-describe("EventDistribution events on DiscordEvent.MESSAGE", () => {
+describe("EventDistribution events", () => {
   const mockedAddMessageHandler = mocked(addMessageHandler, true);
   const mockedAddReactionHandler = mocked(addReactionHandler, true);
   const mockedDiscord = new MockDiscord();
 
-  it("should call addMessageHandler", () => {
+  it("should call addMessageHandler on DiscordEvent.MESSAGE", () => {
     addEventHandler(
       {
         description: "",
