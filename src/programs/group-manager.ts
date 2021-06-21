@@ -23,6 +23,7 @@ import {
 } from "../common/interfaces";
 import { createYesBotLogger } from "../log";
 import { dailyChallengeChannelId } from "./daily-challenge";
+import { deadchatGroup } from "../programs/deadchat-groups";
 import prisma from "../prisma";
 
 const logger = createYesBotLogger("program", "GroupManager");
@@ -65,9 +66,10 @@ const groupManager = async (message: Message, isConfig: boolean) => {
         "update",
         "toggle",
         "changeCooldown",
+        "changeDeadtime",
       ].includes(action)
     ) {
-      const helpMessage = `Incorrect syntax, please use the following: \`!group join|leave|create|search|delete|update|changeCooldown\`. If you need additional help, react with 🛠️ below to tag a ${process.env.ENGINEER_ROLE_NAME}`;
+      const helpMessage = `Incorrect syntax, please use the following: \`!group join|leave|create|search|delete|update|changeCooldown|changeDeadtime\`. If you need additional help, react with 🛠️ below to tag a ${process.env.ENGINEER_ROLE_NAME}`;
       await message.reply(helpMessage);
       return;
     }
@@ -120,6 +122,17 @@ const groupManager = async (message: Message, isConfig: boolean) => {
             );
         break;
       }
+
+      case "changeDeadtime": {
+        moderator
+          ? await changeDeadtime(message, requestName, description)
+          : await Tools.handleUserError(
+              message,
+              "You do not have permissions to use this command."
+            );
+        break;
+      }
+
       case "changeCooldown": {
         moderator
           ? await changeCooldown(message, requestName, description)
@@ -161,6 +174,10 @@ const groupManager = async (message: Message, isConfig: boolean) => {
 
     const group = matchingGroups[0];
     const timeDifference = (Date.now() - group.lastUsed.getTime()) / 1000 / 60;
+
+    if (!(await deadchatGroup(message, group.name))) {
+      return;
+    }
 
     if (timeDifference < group.cooldown) {
       const remainingCooldown = group.cooldown - Math.round(timeDifference);
@@ -487,6 +504,37 @@ const updateGroup = async (
   );
 };
 
+const changeDeadtime = async (
+  message: Message,
+  requestedGroupName: string,
+  newDeadtime: string
+) => {
+  const deadtimeNumber = Number(newDeadtime);
+  if (isNaN(deadtimeNumber)) {
+    await Tools.handleUserError(
+      message,
+      "Please write a number for the new deadtime! It will be interpreted as minutes for how long the chat needs to be dead for the group to be pinged"
+    );
+    return;
+  }
+
+  const group = await prisma.userGroup.findFirst({
+    where: {
+      name: {
+        equals: requestedGroupName,
+        mode: "insensitive",
+      },
+    },
+  });
+
+  await prisma.userGroup.update({
+    where: { id: group.id },
+    data: { deadtime: deadtimeNumber },
+  });
+
+  await message.react("👍");
+};
+
 const changeCooldown = async (
   message: Message,
   requestedGroupName: string,
@@ -716,7 +764,7 @@ const isChannelAllowed = (channel: Channel): boolean => {
   const allowedCategories = ["hobbies", "gaming"];
   const allowedChannels = [
     "449984633908625409", // chat
-    "623565093166252052", // chat-too
+    "856479423490031640", // chat-too
     "508918747533410304", // learning-spanish
     "450187015221280769", // voice-chat
     "747198251349966977", // voice-chat-2
