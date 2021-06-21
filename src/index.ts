@@ -10,55 +10,62 @@ import {
   VoiceState,
 } from "discord.js";
 import {
-  GuildMemberUpdate,
-  MemberJoin,
-  MemberLeave,
-  MessageManager,
-  ReactionAdd,
-  ReactionRemove,
-  Ready,
-  VoiceStateUpdate,
+  guildMemberUpdate,
+  memberLeave,
+  messageManager,
+  reactionAdd,
+  reactionRemove,
+  ready,
+  voiceStateUpdate,
 } from "./events";
+import distribution, { DiscordEvent } from "./event-distribution";
 
 const logger = createYesBotLogger("main", "index");
 logger.info("Starting YesBot");
+
+logger.info("Initializing event-distribution");
+distribution.initialize();
 
 const bot = new Client({ partials: ["REACTION", "MESSAGE"] });
 logger.debug("Logging in to Discord Gateway");
 bot.login(process.env.BOT_TOKEN);
 
 //! ================= EVENT HANDLERS ====================
-bot.on(
-  "guildMemberAdd",
-  (member: GuildMember | PartialGuildMember) => new MemberJoin(member)
-);
-bot.on(
-  "guildMemberRemove",
-  (member: GuildMember | PartialGuildMember) => new MemberLeave(member)
+bot.on("guildMemberRemove", (member: GuildMember | PartialGuildMember) =>
+  memberLeave(member)
 );
 bot.on(
   "guildMemberUpdate",
   (
     oldMember: GuildMember | PartialGuildMember,
     newMember: GuildMember | PartialGuildMember
-  ) => new GuildMemberUpdate(oldMember, newMember)
+  ) => guildMemberUpdate(oldMember, newMember)
 );
-bot.on("message", (msg: Message) => new MessageManager(msg));
+bot.on("message", async (msg: Message) => {
+  await messageManager(msg);
+  distribution.handleEvent(DiscordEvent.MESSAGE, msg);
+});
 bot.on(
   "messageReactionAdd",
-  (messageReaction: MessageReaction, user: User | PartialUser) =>
-    new ReactionAdd(messageReaction, user)
+  async (messageReaction: MessageReaction, user: User | PartialUser) => {
+    await reactionAdd(messageReaction, user);
+    distribution.handleEvent(DiscordEvent.REACTION_ADD, messageReaction, user);
+  }
 );
 bot.on(
   "messageReactionRemove",
-  (messageReaction: MessageReaction, user: User | PartialUser) =>
-    new ReactionRemove(messageReaction, user)
+  async (messageReaction: MessageReaction, user: User | PartialUser) => {
+    await reactionRemove(messageReaction, user);
+    distribution.handleEvent(
+      DiscordEvent.REACTION_REMOVE,
+      messageReaction,
+      user
+    );
+  }
 );
-bot.on("ready", () => new Ready(bot));
-bot.on(
-  "voiceStateUpdate",
-  (oldMember: VoiceState, newMember: VoiceState) =>
-    new VoiceStateUpdate(oldMember, newMember)
+bot.on("ready", () => ready(bot));
+bot.on("voiceStateUpdate", (oldMember: VoiceState, newMember: VoiceState) =>
+  voiceStateUpdate(oldMember, newMember)
 );
 //! ================= /EVENT HANDLERS ===================
 
