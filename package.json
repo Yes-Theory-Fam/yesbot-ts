@@ -17,7 +17,8 @@
     "start": "env-cmd ts-node-dev --respawn src/index.ts",
     "start:prod": "node build/index.js",
     "start:prodOld": "env-cmd ts-node src/index.ts",
-    "test": "jest --forceExit",
+    "test": "jest",
+    "tes:cov": "jest --coverage",
     "tsc": "tsc"
   },
   "prisma": {
