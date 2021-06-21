@@ -77,7 +77,7 @@ export default class MockDiscord {
   };
 
   private mockClient(): void {
-    this.client = new Discord.Client({restSweepInterval: 0})
+    this.client = new Discord.Client({ restSweepInterval: 0 });
 
     this.client.users.fetch = jest.fn(() => Promise.resolve(this.getUser()));
     this.client.login = jest.fn(() => Promise.resolve("LOGIN_TOKEN"));
