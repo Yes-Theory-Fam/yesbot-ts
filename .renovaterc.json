@@ -3,19 +3,31 @@
     "every weekend"
   ],
   "extends": [
-    "group:all"
+    "config:base"
   ],
   "rangeStrategy": "pin",
   "labels": [
     "renovate"
   ],
+  "lockFileMaintenance": { "enabled": true },
   "packageRules": [
     {
       "matchPackageNames": [
         "prisma",
         "typegraphql-prisma"
       ],
+      "labels": [
+        "renovate",
+        "prisma"
+      ],
       "groupName": "prisma packages"
+    },
+    {
+      "matchPackageNames": [
+        "ts-jest",
+        "jest"
+      ],
+      "groupName": "jest packages"
     }
   ]
 }

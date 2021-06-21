@@ -91,7 +91,7 @@ To work on the bot you need the following:
       launch one in one command
     - [Download](https://www.postgresql.org/download/) and install PostgreSQL on your host system, then create and
       configure a database following the requirements above
-- A Discord server created from [this template](https://discord.com/template/7wc3BmmACSbr)
+- A Discord server created from [this template](https://discord.com/template/TEFgdaFHR9xR)
 - A Discord application with a bot token (get started
   at [https://discord.com/developers](https://discord.com/developers))
     - After creating a Discord application click on (Bot → Add Bot).
@@ -131,8 +131,8 @@ _Skip this step if you have a postgres server with a database `yesbot` with cred
 Run the following command in the root directory of the project to start a docker container with the database:
 
 ```bash
-docker-compose up
-# or docker-compose up -d
+docker-compose up postgres
+# or docker-compose up -d postgres
 # if you want to reuse your terminal; in this case you can shut down the container with docker-compose down in the same directory
 ```
 

@@ -5,14 +5,21 @@
   "main": "index.js",
   "prettier": "@yestheoryfam/prettier-config",
   "scripts": {
-    "db:prisma": "npx prisma",
+    "build:docker": "docker build --force-rm --label yesbot --build-arg VCS_REF=$(git rev-parse --short HEAD) -t yesbot .",
+    "build:prepare": "NODE_ENV=production && rm -rf node_modules && npm install && npm run tsc",
+    "build:run": "docker run --link yesbot-ts_postgres_1 .",
     "db:generate": "npm run db:prisma generate",
     "db:migrate": "env-cmd npm run db:prisma migrate",
-    "lint": "prettier --check \"src/!(collections)/**/*.(js|ts|json)\"",
-    "lint:fix": "prettier --write \"src/!(collections)/**/*.(js|ts|json)\"",
+    "db:prisma": "npx prisma",
+    "lint": "prettier --check \"src/!(collections)/**/*.(js|ts|json)\" \"__tests__/**/*.(js|ts|json)\"",
+    "lint:fix": "prettier --write \"src/!(collections)/**/*.(js|ts|json)\" \"__tests__/**/*.(js|ts|json)\"",
     "postinstall": "npm run db:generate",
     "start": "env-cmd ts-node-dev --respawn src/index.ts",
-    "start:prod": "env-cmd ts-node src/index.ts"
+    "start:prod": "node build/index.js",
+    "start:prodOld": "env-cmd ts-node src/index.ts",
+    "test": "jest",
+    "test:cov": "jest --coverage",
+    "tsc": "tsc"
   },
   "prisma": {
     "schema": "node_modules/@yes-theory-fam/database/prisma/schema.prisma"
@@ -20,29 +27,34 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@yes-theory-fam/database": "0.5.1",
+    "@yes-theory-fam/database": "0.6.0",
     "axios": "0.21.1",
     "countries-and-timezones": "2.4.0",
-    "country-code-emoji": "1.0.0",
-    "date-fns": "2.21.3",
+    "country-code-emoji": "2.3.0",
+    "date-fns": "2.22.1",
     "date-fns-tz": "1.1.4",
     "discord.js": "12.5.3",
+    "glob": "7.1.7",
     "path": "0.12.7",
     "pg": "8.6.0",
     "reflect-metadata": "0.1.13",
-    "ts-node": "8.10.2",
+    "ts-node": "10.0.0",
     "winston": "3.3.3"
   },
   "devDependencies": {
     "@types/countries-and-timezones": "2.0.3",
-    "@types/node": "13.13.52",
-    "@types/ws": "7.4.4",
+    "@types/glob": "7.1.3",
+    "@types/jest": "26.0.23",
+    "@types/node": "14.17.3",
+    "@types/ws": "7.4.5",
     "@yestheoryfam/prettier-config": "1.0.0",
     "env-cmd": "10.1.0",
-    "prettier": "2.3.0",
-    "prisma": "2.22.1",
+    "jest": "27.0.4",
+    "prettier": "2.3.1",
+    "prisma": "2.25.0",
+    "ts-jest": "27.0.3",
     "ts-node-dev": "1.1.6",
-    "typegraphql-prisma": "0.14.2",
-    "typescript": "4.2.4"
+    "typegraphql-prisma": "0.14.4",
+    "typescript": "4.3.4"
   }
 }

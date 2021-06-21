@@ -1,6 +1,9 @@
-/node_modules
-/build
+**./*.log
 .env
-/.vscode
+.npmrc
 /.idea
+/.vscode
+/build
 /coverage
+/node_modules
+src/**/*.js
