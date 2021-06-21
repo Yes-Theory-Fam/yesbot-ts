@@ -23,7 +23,6 @@ import {
 } from "../common/interfaces";
 import { createYesBotLogger } from "../log";
 import { dailyChallengeChannelId } from "./daily-challenge";
-import { deadchatGroup } from "../programs/deadchat-groups";
 import prisma from "../prisma";
 
 const logger = createYesBotLogger("program", "GroupManager");
@@ -174,8 +173,13 @@ const groupManager = async (message: Message, isConfig: boolean) => {
 
     const group = matchingGroups[0];
     const timeDifference = (Date.now() - group.lastUsed.getTime()) / 1000 / 60;
+    const timeRemainingForDeadchat = await isChatDead(message, group.name)
 
-    if (!(await deadchatGroup(message, group.name))) {
+    if (timeRemainingForDeadchat >= group.deadtime) {
+      await Tools.handleUserError(
+        message,
+        `Chat is not dead! You can ping this group if there have been no messages in the next ${timeRemainingForDeadchat} minutes.`
+      );
       return;
     }
 
@@ -764,7 +768,7 @@ const isChannelAllowed = (channel: Channel): boolean => {
   const allowedCategories = ["hobbies", "gaming"];
   const allowedChannels = [
     "449984633908625409", // chat
-    "856479423490031640", // chat-too
+    "623565093166252052", // chat-too
     "508918747533410304", // learning-spanish
     "450187015221280769", // voice-chat
     "747198251349966977", // voice-chat-2
@@ -782,6 +786,31 @@ const isChannelAllowed = (channel: Channel): boolean => {
     return true;
 
   return allowedChannels.includes(channel.id);
+};
+
+const isChatDead = async (
+  message: Message,
+  requestedGroup: string
+) => {
+  const group = await prisma.userGroup.findFirst({
+    where: {
+      name: {
+        equals: requestedGroup,
+        mode: "insensitive",
+      },
+    },
+  });
+
+  const deadTime = group.deadtime;
+
+  const timeDifference =
+    (Date.now() -
+    (await message.channel.messages.fetch({ limit: 2 })).array()[1]
+      .createdTimestamp) / 1000 / 60
+
+  const timeRemaining = deadTime - Math.round(timeDifference)
+
+  return timeRemaining
 };
 
 export default groupManager;
