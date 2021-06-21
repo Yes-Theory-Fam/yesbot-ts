@@ -173,7 +173,7 @@ const groupManager = async (message: Message, isConfig: boolean) => {
 
     const group = matchingGroups[0];
     const timeDifference = (Date.now() - group.lastUsed.getTime()) / 1000 / 60;
-    const timeRemainingForDeadchat = await isChatDead(message, group.name)
+    const timeRemainingForDeadchat = await isChatDead(message, group)
 
     if (timeRemainingForDeadchat >= group.deadtime) {
       await Tools.handleUserError(
@@ -790,16 +790,8 @@ const isChannelAllowed = (channel: Channel): boolean => {
 
 const isChatDead = async (
   message: Message,
-  requestedGroup: string
+  group: UserGroup
 ) => {
-  const group = await prisma.userGroup.findFirst({
-    where: {
-      name: {
-        equals: requestedGroup,
-        mode: "insensitive",
-      },
-    },
-  });
 
   const deadTime = group.deadtime;
 
