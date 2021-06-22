@@ -125,7 +125,7 @@ const getCountryRoles = async (guild: Guild): Promise<Snowflake[]> => {
     role.name.startsWith(prefix)
   );
 
-  const regionCountries = ["Australia", "Canada", "UK", "USA"];
+  const regionCountries = ["USA"];
 
   return countryRoles
     .filter(
