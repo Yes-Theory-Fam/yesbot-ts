@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Reactions should extract reaction from direct message 1`] = `
+Object {
+  "handlerKeys": Array [
+    "channel-id",
+    undefined,
+  ],
+  "isDirectMessage": true,
+  "member": null,
+}
+`;
+
+exports[`Reactions should extract reaction from public channel 1`] = `
+Object {
+  "handlerKeys": Array [
+    "guild-channel",
+    undefined,
+  ],
+  "isDirectMessage": false,
+  "member": Object {
+    "deleted": false,
+    "displayName": "user username",
+    "guildID": "guild-id",
+    "joinedTimestamp": null,
+    "lastMessageChannelID": null,
+    "nickname": null,
+    "premiumSinceTimestamp": null,
+    "userID": "222222222222222200",
+  },
+}
+`;

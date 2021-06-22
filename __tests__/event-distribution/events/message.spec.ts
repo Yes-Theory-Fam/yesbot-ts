@@ -2,7 +2,10 @@ import { extractMessageInfo } from "../../../src/event-distribution/events/messa
 import MockDiscord from "../../mocks";
 
 describe("Messages", () => {
-  const mockDiscord = new MockDiscord();
+  let mockDiscord: MockDiscord;
+  beforeEach(() => {
+    mockDiscord = new MockDiscord();
+  });
 
   it("should extract messages from public channel", () => {
     const message = mockDiscord.getMessage();
