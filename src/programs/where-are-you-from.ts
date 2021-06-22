@@ -10,7 +10,7 @@ import {
 import { isRegistered, textLog } from "../common/moderator";
 import { Country, countries } from "../collections/flagEmojis";
 
-const regionCountries = ["Australia", "Canada", "UK", "USA"];
+const regionCountries = ["USA"];
 
 const whereAreYouFrom = async (message: Message) => {
   const newUser = !isRegistered(message.member);
@@ -103,40 +103,18 @@ const getWelcomeMessage = (user: User) => {
 };
 
 export const getRoleForCountry = (country: Country, guild: Guild): Role => {
-  const isOutlier = [
-    "Australia",
-    "United States",
-    "United Kingdom",
-    "Canada",
-  ].find((each) => country.title.includes(each));
-
-  const regionOverrides: { [key: string]: string } = {
-    England: "I'm from the UK! (England)",
-    Scotland: "I'm from the UK! (Scotland)",
+  const regionOverrides: Record<string, string> = {
+    England: "I'm from the UK!",
+    Scotland: "I'm from the UK!",
+    Wales: "I'm from the UK!",
   };
 
-  switch (isOutlier) {
-    case "Australia":
-      return guild.roles.cache.find(
-        (role) => role.name === "I'm from Australia!"
-      );
-    case "United Kingdom":
-      return guild.roles.cache.find((role) => role.name === "I'm from the UK!");
-    case "United States":
-      return guild.roles.cache.find(
-        (role) => role.name === "I'm from the USA!"
-      );
-    case "Canada":
-      return guild.roles.cache.find((role) => role.name === "I'm from Canada!");
-
-    default:
-      return guild.roles.cache.find(
-        (role) =>
-          role.name === regionOverrides[country.name] ||
-          (role.name.startsWith("I'm from") &&
-            role.name.toLowerCase().endsWith(country.name.toLowerCase() + "!"))
-      );
-  }
+  return guild.roles.cache.find(
+    (role) =>
+      role.name === regionOverrides[country.name] ||
+      (role.name.startsWith("I'm from") &&
+        role.name.toLowerCase().endsWith(country.name.toLowerCase() + "!"))
+  );
 };
 
 const ghostPing = async (message: Message, region: String) => {
