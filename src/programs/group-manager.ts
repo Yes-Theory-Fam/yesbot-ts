@@ -22,6 +22,7 @@ import {
   GroupInteractionSuccess,
 } from "../common/interfaces";
 import { createYesBotLogger } from "../log";
+import { ChatNames } from "../collections/chat-names";
 import prisma from "../prisma";
 
 const logger = createYesBotLogger("program", "GroupManager");
@@ -714,14 +715,14 @@ const isChannelAllowed = (channel: Channel): boolean => {
 
   const allowedCategories = ["hobbies", "gaming"];
   const allowedChannels = [
-    channel.guild.channels.cache.find((channel) => channel.name === "chat").id, // chat
-    channel.guild.channels.cache.find((channel) => channel.name === "chat-too").id, // chat-too
-    channel.guild.channels.cache.find((channel) => channel.name === "learning-spanish").id, // learning-spanish
-    channel.guild.channels.cache.find((channel) => channel.name === "voice-chat").id, // voice-chat
-    channel.guild.channels.cache.find((channel) => channel.name === "voice-chat-2").id, // voice-chat-2
-    channel.guild.channels.cache.find((channel) => channel.name === "4th-chat").id, // 4th-chat
-    channel.guild.channels.cache.find((channel) => channel.name === "self-development").id, // self-development
-    channel.guild.channels.cache.find((channel) => channel.name === "daily-challenge").id
+    channel.guild.channels.cache.find((channel) => channel.name === ChatNames.CHAT).id, // chat
+    channel.guild.channels.cache.find((channel) => channel.name === ChatNames.CHAT_TOO).id, // chat-too
+    channel.guild.channels.cache.find((channel) => channel.name === ChatNames.LEARNING_SPANISH).id, // learning-spanish
+    channel.guild.channels.cache.find((channel) => channel.name === ChatNames.VOICE_CHAT).id, // voice-chat
+    channel.guild.channels.cache.find((channel) => channel.name === ChatNames.VOICE_CHAT_TWO).id, // voice-chat-2
+    channel.guild.channels.cache.find((channel) => channel.name === ChatNames.FOURTH_CHAT).id, // 4th-chat
+    channel.guild.channels.cache.find((channel) => channel.name === ChatNames.SELF_DEVELOPMENT).id, // self-development
+    channel.guild.channels.cache.find((channel) => channel.name === ChatNames.DAILY_CHALLENGE).id
   ];
 
   if (
