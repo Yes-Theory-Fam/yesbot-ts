@@ -715,13 +715,13 @@ const isChannelAllowed = (channel: Channel): boolean => {
 
   const allowedCategories = ["hobbies", "gaming"];
   const allowedChannels = [
-    channel.guild.channels.cache.find((channel) => channel.name === ChatNames.CHAT).id, // chat
-    channel.guild.channels.cache.find((channel) => channel.name === ChatNames.CHAT_TOO).id, // chat-too
-    channel.guild.channels.cache.find((channel) => channel.name === ChatNames.LEARNING_SPANISH).id, // learning-spanish
-    channel.guild.channels.cache.find((channel) => channel.name === ChatNames.VOICE_CHAT).id, // voice-chat
-    channel.guild.channels.cache.find((channel) => channel.name === ChatNames.VOICE_CHAT_TWO).id, // voice-chat-2
-    channel.guild.channels.cache.find((channel) => channel.name === ChatNames.FOURTH_CHAT).id, // 4th-chat
-    channel.guild.channels.cache.find((channel) => channel.name === ChatNames.SELF_DEVELOPMENT).id, // self-development
+    channel.guild.channels.cache.find((channel) => channel.name === ChatNames.CHAT).id,
+    channel.guild.channels.cache.find((channel) => channel.name === ChatNames.CHAT_TOO).id,
+    channel.guild.channels.cache.find((channel) => channel.name === ChatNames.LEARNING_SPANISH).id,
+    channel.guild.channels.cache.find((channel) => channel.name === ChatNames.VOICE_CHAT).id,
+    channel.guild.channels.cache.find((channel) => channel.name === ChatNames.VOICE_CHAT_TWO).id,
+    channel.guild.channels.cache.find((channel) => channel.name === ChatNames.FOURTH_CHAT).id,
+    channel.guild.channels.cache.find((channel) => channel.name === ChatNames.SELF_DEVELOPMENT).id, 
     channel.guild.channels.cache.find((channel) => channel.name === ChatNames.DAILY_CHALLENGE).id
   ];
 
