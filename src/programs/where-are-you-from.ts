@@ -148,7 +148,9 @@ export const updateAfterRegionSelect = async (
   if (generalRole && hasSpecificRole(newMember)) {
     await newMember.roles.remove(generalRole);
     const hasNoOtherCountry =
-      oldMember.roles.cache.filter((role) => role.name === "Member").size === 1;
+      oldMember.roles.cache.filter(
+        (role) => role.id === process.env.MEMBER_ROLE_ID
+      ).size === 1;
 
     if (hasNoOtherCountry) {
       await welcomeMember(oldMember.user, oldMember.guild);
