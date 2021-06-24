@@ -1,5 +1,6 @@
 import { Message } from "discord.js";
 import Tools from "../common/tools";
+import { CountryRoleFinder } from "../utils/country-role-finder";
 
 export const map = async (message: Message) => {
   await message.reply(
@@ -23,8 +24,16 @@ export const mapAdd = async (message: Message) => {
 
   const prefix = "I'm from ";
   const countries = message.member.roles.cache
-    .filter((r) => r.name.startsWith(prefix))
-    .map((r) => r.name.substring(prefix.length, r.name.length - 1));
+    .filter(
+      (role) =>
+        role.name.startsWith(prefix) ||
+        CountryRoleFinder.isCountryRole(role.name)
+    )
+    .map(
+      (role) =>
+        role.name.substring(prefix.length, role.name.length - 1) ||
+        CountryRoleFinder.getCountryByRole(role.name)
+    );
 
   const maintainerDm = await message.guild.members
     .resolve(process.env.MAP_ADD_DM_USER_ID)

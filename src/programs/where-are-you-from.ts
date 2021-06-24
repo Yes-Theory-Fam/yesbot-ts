@@ -9,6 +9,7 @@ import {
 } from "discord.js";
 import { isRegistered, textLog } from "../common/moderator";
 import { Country, countries } from "../collections/flagEmojis";
+import { CountryRoleFinder } from "../utils/country-role-finder";
 
 const regionCountries = ["USA"];
 
@@ -111,6 +112,7 @@ export const getRoleForCountry = (country: Country, guild: Guild): Role => {
 
   return guild.roles.cache.find(
     (role) =>
+      CountryRoleFinder.isCountryRole(role.name) ||
       role.name === regionOverrides[country.name] ||
       (role.name.startsWith("I'm from") &&
         role.name.toLowerCase().endsWith(country.name.toLowerCase() + "!"))
@@ -156,8 +158,11 @@ export const updateAfterRegionSelect = async (
   if (generalRole && hasSpecificRole(newMember)) {
     await newMember.roles.remove(generalRole);
     const hasNoOtherCountry =
-      oldMember.roles.cache.filter(({ name }) => name.startsWith("I'm from"))
-        .size === 1;
+      oldMember.roles.cache.filter(
+        (role) =>
+          CountryRoleFinder.isCountryRole(role.name) ||
+          role.name.startsWith("I'm from")
+      ).size === 1;
 
     if (hasNoOtherCountry) {
       await welcomeMember(oldMember.user, oldMember.guild);
