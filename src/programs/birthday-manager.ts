@@ -15,10 +15,10 @@ import { textLog, isAuthorModerator } from "../common/moderator";
 import { createYesBotLogger } from "../log";
 import prisma from "../prisma";
 import { Birthday } from "@yes-theory-fam/database/client";
+import { CountryRoleFinder } from "../utils/country-role-finder";
 
 const logger = createYesBotLogger("programs", "BirthdayManager");
 
-const IM_FROM = "I'm from ";
 const months = [
   "jan",
   "feb",
@@ -322,9 +322,9 @@ async function fetchUserCountryRoles(
   user: GuildMember
 ): Promise<CountryWithRegion[]> {
   return user.roles.cache
-    .filter((role) => role.name.startsWith("I'm from "))
+    .filter((role) => CountryRoleFinder.isCountryRole(role.name))
     .map<CountryWithRegion>((role) => ({
-      country: role.name.substring(IM_FROM.length, role.name.indexOf("!")),
+      country: CountryRoleFinder.getCountryByRole(role.name),
       region: role.name.substring(
         role.name.indexOf("(") + 1,
         role.name.indexOf(")")
