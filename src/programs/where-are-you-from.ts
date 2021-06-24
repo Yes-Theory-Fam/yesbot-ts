@@ -47,8 +47,9 @@ const whereAreYouFrom = async (message: Message) => {
       }
       await message.member.roles.add(roleToAssign);
       await message.react("👍");
-      const isCountryWithRegionRole = regionCountries.some((country) =>
-        roleToAssign.name.endsWith(`${country}!`)
+      const isCountryWithRegionRole = regionCountries.some(
+        (countryName) =>
+          CountryRoleFinder.getCountryByRole(roleToAssign.name) === countryName
       );
 
       const rules = message.guild.channels.cache.find(
@@ -66,10 +67,9 @@ const whereAreYouFrom = async (message: Message) => {
       );
 
       if (isCountryWithRegionRole) {
-        const countryFromRoleNameRegex = /.*\s(.*)!$/;
-        const lowerCaseCountry = roleToAssign.name
-          .match(countryFromRoleNameRegex)[1]
-          .toLowerCase();
+        const lowerCaseCountry = CountryRoleFinder.getCountryByRole(
+          roleToAssign.name
+        ).toLowerCase();
         await ghostPing(message, lowerCaseCountry);
       }
     }

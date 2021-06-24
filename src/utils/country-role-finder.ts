@@ -30,9 +30,19 @@ export class CountryRoleFinder {
     return countries.find((country) => this.check(country, input));
   }
 
+  private static emojiOverrides: Record<string, string> = {
+    "🇺🇲": "🇺🇸",
+    "🇨🇵": "🇫🇷",
+    "🇲🇫": "🇫🇷",
+    "🇪🇦": "🇪🇸",
+    "🇮🇴": "🇬🇧",
+  };
+
   private static check(country: FinderCountryProperties, compare: string) {
-    return (
-      compare.includes(country.emoji) || compare === `I'm from ${country.name}!`
-    );
+    if (compare.match(/\(.*\)/)) return false;
+
+    const emoji = this.emojiOverrides[country.emoji] ?? country.emoji;
+
+    return compare.includes(emoji) || compare === `I'm from ${country.name}!`;
   }
 }
