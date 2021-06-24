@@ -31,18 +31,13 @@ const getProfileEmbed = async (
   message: Message
 ): Promise<MessageEmbed> => {
   const profileEmbed = new MessageEmbed();
-  const countryRole = member.roles.cache.find(
-    (role) =>
-      role.name.includes("I'm from") ||
-      CountryRoleFinder.isCountryRole(role.name)
+  const countryRole = member.roles.cache.find((role) =>
+    CountryRoleFinder.isCountryRole(role.name)
   );
   let countryString = "";
   member.roles.cache.forEach((role) => {
-    if (
-      role.name.includes("I'm from") ||
-      CountryRoleFinder.isCountryRole(role.name)
-    ) {
-      countryString = countryString + role.name + "\n";
+    if (CountryRoleFinder.isCountryRole(role.name)) {
+      countryString += role.name + "\n";
     }
   });
   const yesEmoji = member.guild.emojis.cache.find((e) => e.name == "yes");

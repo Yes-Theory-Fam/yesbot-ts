@@ -25,10 +25,8 @@ export const hasRole = (
 export const isRegistered = (
   member: GuildMember | PartialGuildMember
 ): boolean => {
-  return !!member.roles.cache.find(
-    (role) =>
-      role.name.startsWith("I'm from ") ||
-      CountryRoleFinder.isCountryRole(role.name)
+  return !!member.roles.cache.find((role) =>
+    CountryRoleFinder.isCountryRole(role.name)
   );
 };
 

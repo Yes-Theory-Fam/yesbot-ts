@@ -18,11 +18,7 @@ const main = async () => {
 
   const regionRoleMatcher = /I'm from .*?! \(.*\)/g;
   const regionRoles = guild.roles.cache
-    .filter(
-      ({ name }) =>
-        CountryRoleFinder.isCountryRole(name) ||
-        name.match(regionRoleMatcher) !== null
-    )
+    .filter(({ name }) => CountryRoleFinder.isCountryRole(name))
     .array();
 
   const regionToMemberMatch: Record<string, Snowflake[]> = {};

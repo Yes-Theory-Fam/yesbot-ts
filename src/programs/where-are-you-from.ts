@@ -110,12 +110,8 @@ export const getRoleForCountry = (country: Country, guild: Guild): Role => {
     Wales: "I'm from the UK!",
   };
 
-  return guild.roles.cache.find(
-    (role) =>
-      CountryRoleFinder.isCountryRole(role.name) ||
-      role.name === regionOverrides[country.name] ||
-      (role.name.startsWith("I'm from") &&
-        role.name.toLowerCase().endsWith(country.name.toLowerCase() + "!"))
+  return guild.roles.cache.find((role) =>
+    CountryRoleFinder.isCountryRole(role.name)
   );
 };
 
