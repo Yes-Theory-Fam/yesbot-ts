@@ -19,6 +19,7 @@ describe("CountryRoleFinder", () => {
     expect(CountryRoleFinder.isCountryRole("Germany :flag_DE")).toBeFalsy();
     expect(CountryRoleFinder.isCountryRole("Award Winner :eyes:")).toBeFalsy();
     expect(CountryRoleFinder.isCountryRole("Award Winner 🏅")).toBeFalsy();
+    expect(CountryRoleFinder.isCountryRole("USA (Northeast) 🇺🇸")).toBeFalsy();
   });
 
   it("should return the country-name", () => {
@@ -73,6 +74,20 @@ describe("CountryRoleFinder", () => {
       title: "flag for Wales",
     };
     role.name = "the UK 🇬🇧";
+    expect(CountryRoleFinder.isRoleFromCountry(country, role)).toBeTruthy();
+  });
+
+  it("should work with flag emojis that have manual overrides", () => {
+    const mockDiscord = new MockDiscord();
+    const role = mockDiscord.getRole();
+    const country = {
+      code: "EA",
+      emoji: "🇪🇦",
+      unicode: "U+1F1EA U+1F1E6",
+      name: "Spain",
+      title: "flag for Spain",
+    };
+    role.name = "Spain 🇪🇸";
     expect(CountryRoleFinder.isRoleFromCountry(country, role)).toBeTruthy();
   });
 });
