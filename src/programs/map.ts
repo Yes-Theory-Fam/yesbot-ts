@@ -22,18 +22,9 @@ export const mapAdd = async (message: Message) => {
     return;
   }
 
-  const prefix = "I'm from ";
   const countries = message.member.roles.cache
-    .filter(
-      (role) =>
-        role.name.startsWith(prefix) ||
-        CountryRoleFinder.isCountryRole(role.name)
-    )
-    .map(
-      (role) =>
-        role.name.substring(prefix.length, role.name.length - 1) ||
-        CountryRoleFinder.getCountryByRole(role.name)
-    );
+    .filter((role) => CountryRoleFinder.isCountryRole(role.name))
+    .map((role) => CountryRoleFinder.getCountryByRole(role.name));
 
   const maintainerDm = await message.guild.members
     .resolve(process.env.MAP_ADD_DM_USER_ID)

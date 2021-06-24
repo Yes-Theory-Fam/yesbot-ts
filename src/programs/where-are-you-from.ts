@@ -104,18 +104,8 @@ const getWelcomeMessage = (user: User) => {
 };
 
 export const getRoleForCountry = (country: Country, guild: Guild): Role => {
-  const regionOverrides: Record<string, string> = {
-    England: "I'm from the UK!",
-    Scotland: "I'm from the UK!",
-    Wales: "I'm from the UK!",
-  };
-
-  return guild.roles.cache.find(
-    (role) =>
-      CountryRoleFinder.isCountryRole(role.name) ||
-      role.name === regionOverrides[country.name] ||
-      (role.name.startsWith("I'm from") &&
-        role.name.toLowerCase().endsWith(country.name.toLowerCase() + "!"))
+  return guild.roles.cache.find((role) =>
+    CountryRoleFinder.isRoleFromCountry(country, role)
   );
 };
 
@@ -158,11 +148,7 @@ export const updateAfterRegionSelect = async (
   if (generalRole && hasSpecificRole(newMember)) {
     await newMember.roles.remove(generalRole);
     const hasNoOtherCountry =
-      oldMember.roles.cache.filter(
-        (role) =>
-          CountryRoleFinder.isCountryRole(role.name) ||
-          role.name.startsWith("I'm from")
-      ).size === 1;
+      oldMember.roles.cache.filter((role) => role.name === "Member").size === 1;
 
     if (hasNoOtherCountry) {
       await welcomeMember(oldMember.user, oldMember.guild);

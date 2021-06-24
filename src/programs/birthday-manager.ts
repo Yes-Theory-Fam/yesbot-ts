@@ -19,7 +19,6 @@ import { CountryRoleFinder } from "../utils/country-role-finder";
 
 const logger = createYesBotLogger("programs", "BirthdayManager");
 
-const IM_FROM = "I'm from ";
 const months = [
   "jan",
   "feb",
@@ -323,15 +322,9 @@ async function fetchUserCountryRoles(
   user: GuildMember
 ): Promise<CountryWithRegion[]> {
   return user.roles.cache
-    .filter(
-      (role) =>
-        role.name.startsWith("I'm from ") ||
-        CountryRoleFinder.isCountryRole(role.name)
-    )
+    .filter((role) => CountryRoleFinder.isCountryRole(role.name))
     .map<CountryWithRegion>((role) => ({
-      country:
-        role.name.substring(IM_FROM.length, role.name.indexOf("!")) ||
-        CountryRoleFinder.getCountryByRole(role.name),
+      country: CountryRoleFinder.getCountryByRole(role.name),
       region: role.name.substring(
         role.name.indexOf("(") + 1,
         role.name.indexOf(")")

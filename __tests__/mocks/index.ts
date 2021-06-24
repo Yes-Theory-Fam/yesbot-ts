@@ -6,6 +6,7 @@ import Discord, {
   GuildMember,
   Message,
   MessageReaction,
+  Role,
   TextChannel,
   User,
 } from "discord.js";
@@ -20,6 +21,7 @@ export default class MockDiscord {
   private textChannel!: TextChannel;
   private user!: User;
   private guildMember!: GuildMember;
+  private role!: Role;
 
   constructor() {
     this.mockClient();
@@ -32,6 +34,7 @@ export default class MockDiscord {
     this.addMember();
     this.mockMessage();
     this.mockMessageReaction();
+    this.mockRole();
   }
 
   public getClient(): Client {
@@ -68,6 +71,10 @@ export default class MockDiscord {
 
   public getMessageReaction(): MessageReaction {
     return this.messageReaction;
+  }
+
+  public getRole(): Role {
+    return this.role;
   }
 
   private addMember = () => {
@@ -209,5 +216,9 @@ export default class MockDiscord {
       },
       this.message
     );
+  }
+
+  private mockRole() {
+    this.role = new Role(this.client, {}, this.guild);
   }
 }
