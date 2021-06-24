@@ -16,6 +16,7 @@ import {
 import { writeFile, readFile } from "fs";
 import { get, request, RequestOptions } from "https";
 import { exec } from "child_process";
+import { CountryRoleFinder } from "../utils/country-role-finder";
 
 const [, , guildId, roleId, token, limit] = process.argv;
 const bot = new Client({
@@ -120,9 +121,8 @@ const getMembers = async (lastId: String) => {
 
 const getCountryRoles = async (guild: Guild): Promise<Snowflake[]> => {
   const updatedManager = await guild.roles.fetch();
-  const prefix = "I'm from ";
   const countryRoles = updatedManager.cache.filter((role) =>
-    role.name.startsWith(prefix)
+    CountryRoleFinder.isCountryRole(role.name)
   );
 
   const regionCountries = ["USA"];

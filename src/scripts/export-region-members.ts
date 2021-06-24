@@ -1,6 +1,7 @@
 import { config } from "dotenv";
 import { Client, Snowflake } from "discord.js";
 import { writeFile } from "fs/promises";
+import { CountryRoleFinder } from "../utils/country-role-finder";
 
 config();
 
@@ -15,9 +16,8 @@ const main = async () => {
     throw new Error("Couldn't find specified guild.");
   }
 
-  const regionRoleMatcher = /I'm from .*?! \(.*\)/g;
   const regionRoles = guild.roles.cache
-    .filter(({ name }) => name.match(regionRoleMatcher) !== null)
+    .filter(({ name }) => CountryRoleFinder.isCountryRole(name))
     .array();
 
   const regionToMemberMatch: Record<string, Snowflake[]> = {};

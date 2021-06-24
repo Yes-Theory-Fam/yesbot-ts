@@ -2,6 +2,7 @@ import { GuildMember, Message, MessageEmbed } from "discord.js";
 import Tools from "../common/tools";
 import { formatBirthday, getUserBirthday } from "./birthday-manager";
 import prisma from "../prisma";
+import { CountryRoleFinder } from "../utils/country-role-finder";
 
 const profile = async (message: Message) => {
   const { content } = message;
@@ -30,12 +31,12 @@ const getProfileEmbed = async (
   message: Message
 ): Promise<MessageEmbed> => {
   const profileEmbed = new MessageEmbed();
-  const countryRole = member.roles.cache.find((r) =>
-    r.name.includes("I'm from")
+  const countryRole = member.roles.cache.find((role) =>
+    CountryRoleFinder.isCountryRole(role.name)
   );
   let countryString = "";
   member.roles.cache.forEach((role) => {
-    if (role.name.includes("I'm from")) {
+    if (CountryRoleFinder.isCountryRole(role.name)) {
       countryString = countryString + role.name + "\n";
     }
   });

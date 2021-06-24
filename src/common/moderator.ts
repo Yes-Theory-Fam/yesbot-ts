@@ -5,6 +5,7 @@ import {
   TextChannel,
   Client,
 } from "discord.js";
+import { CountryRoleFinder } from "../utils/country-role-finder";
 
 export const isAuthorModerator = (message: Message): boolean => {
   if (message.member.roles.hoist) {
@@ -24,7 +25,9 @@ export const hasRole = (
 export const isRegistered = (
   member: GuildMember | PartialGuildMember
 ): boolean => {
-  return !!member.roles.cache.find((role) => role.name.startsWith("I'm from "));
+  return !!member.roles.cache.find(
+    (role) => role.id === process.env.MEMBER_ROLE_ID
+  );
 };
 
 export const textLog = (text: string): Promise<Message> => {

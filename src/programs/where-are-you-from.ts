@@ -9,6 +9,7 @@ import {
 } from "discord.js";
 import { isRegistered, textLog } from "../common/moderator";
 import { Country, countries } from "../collections/flagEmojis";
+import { CountryRoleFinder } from "../utils/country-role-finder";
 
 const regionCountries = ["USA"];
 
@@ -103,17 +104,8 @@ const getWelcomeMessage = (user: User) => {
 };
 
 export const getRoleForCountry = (country: Country, guild: Guild): Role => {
-  const regionOverrides: Record<string, string> = {
-    England: "I'm from the UK!",
-    Scotland: "I'm from the UK!",
-    Wales: "I'm from the UK!",
-  };
-
-  return guild.roles.cache.find(
-    (role) =>
-      role.name === regionOverrides[country.name] ||
-      (role.name.startsWith("I'm from") &&
-        role.name.toLowerCase().endsWith(country.name.toLowerCase() + "!"))
+  return guild.roles.cache.find((role) =>
+    CountryRoleFinder.isRoleFromCountry(country, role)
   );
 };
 
@@ -156,8 +148,9 @@ export const updateAfterRegionSelect = async (
   if (generalRole && hasSpecificRole(newMember)) {
     await newMember.roles.remove(generalRole);
     const hasNoOtherCountry =
-      oldMember.roles.cache.filter(({ name }) => name.startsWith("I'm from"))
-        .size === 1;
+      oldMember.roles.cache.filter(
+        (role) => role.id === process.env.MEMBER_ROLE_ID
+      ).size === 1;
 
     if (hasNoOtherCountry) {
       await welcomeMember(oldMember.user, oldMember.guild);
