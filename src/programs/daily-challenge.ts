@@ -5,7 +5,6 @@ import prisma from "../prisma";
 
 const logger = createYesBotLogger("programs", "dailyChallenge");
 
-export const dailyChallengeChannelId = "474197374684758025";
 const UTC_HOUR_POSTED = 8;
 
 export const dailyChallenge = async (message: Message) => {
@@ -56,7 +55,7 @@ export const postDailyMessage = async (
   withPing: boolean = false
 ) => {
   let messageChannel = <TextChannel>(
-    bot.channels.resolve(dailyChallengeChannelId)
+    bot.channels.resolve(message.guild.channels.cache.find((channel) => channel.name === "daily-challenge").id)
   );
   const res = await prisma.dailyChallenge.findFirst({
     orderBy: { lastUsed: "asc" },
