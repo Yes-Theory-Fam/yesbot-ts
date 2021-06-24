@@ -56,7 +56,11 @@ export const postDailyMessage = async (
   withPing: boolean = false
 ) => {
   let messageChannel = <TextChannel>(
-    bot.channels.resolve(message.guild.channels.cache.find((channel) => channel.name === ChatNames.DAILY_CHALLENGE).id)
+    bot.channels.resolve(
+      message.guild.channels.cache.find(
+        (channel) => channel.name === ChatNames.DAILY_CHALLENGE
+      ).id
+    )
   );
   const res = await prisma.dailyChallenge.findFirst({
     orderBy: { lastUsed: "asc" },

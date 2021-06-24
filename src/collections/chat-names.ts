@@ -6,6 +6,6 @@ export enum ChatNames {
     VOICE_CHAT_TWO = "voice-chat-2",
     FOURTH_CHAT = "4th-chat",
     SELF_DEVELOPMENT = "self-development",
-    DAILY_CHALLENGE = "daily-challenge"
-
+    DAILY_CHALLENGE = "daily-challenge",
+    CHAT_FIVE = "chat-v",
 }
