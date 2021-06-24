@@ -61,4 +61,18 @@ describe("CountryRoleFinder", () => {
     role.name = "Germany 🇩🇪";
     expect(CountryRoleFinder.isRoleFromCountry(country, role)).toBeTruthy();
   });
+
+  it("should match the role even if it includes other terms", () => {
+    const mockDiscord = new MockDiscord();
+    const role = mockDiscord.getRole();
+    const country = {
+      code: "WA",
+      emoji: "🏴󠁧󠁢󠁷󠁬󠁳󠁿",
+      unicode: "U+1F3F4󠁧+U+E0067󠁢+U+E0062󠁷+U+E0077󠁬+U+E006C󠁳+U+E0073󠁿+U+E007F",
+      name: "Wales",
+      title: "flag for Wales",
+    };
+    role.name = "the UK 🇬🇧";
+    expect(CountryRoleFinder.isRoleFromCountry(country, role)).toBeTruthy();
+  });
 });
