@@ -101,6 +101,7 @@ const routeMessage = async (message: Message) => {
     case "chat":
     case "chat-too":
     case "4th-chat":
+    case "chat-v":
       if (firstWord === "@someone") await Someone(message);
       if (firstWord === "!deadchat") await Deadchat(message);
       if (firstWord === "!translate") abuseMe(message);

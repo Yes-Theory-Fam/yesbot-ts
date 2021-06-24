@@ -721,6 +721,7 @@ const isChannelAllowed = (channel: Channel): boolean => {
     "450187015221280769", // voice-chat
     "747198251349966977", // voice-chat-2
     "747189756302983199", // 4th-chat
+    "857635480685772810", // chat-v
     "793179253440118794", // self-development
     dailyChallengeChannelId,
   ];
