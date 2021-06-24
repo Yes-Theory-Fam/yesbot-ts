@@ -1,6 +1,8 @@
 import { countries, Country } from "../collections/flagEmojis";
 import { Role } from "discord.js";
 
+type FinderCountryProperties = Pick<Country, "name" | "emoji">;
+
 export class CountryRoleFinder {
   static getCountryByRole(input: string): string {
     const result = this.getMatches(input);
@@ -18,29 +20,19 @@ export class CountryRoleFinder {
       country.name === "Scotland" ||
       country.name === "Wales"
     ) {
-      return (
-        role.name === `I'm from UK` ||
-        role.name === `I'm from UK!` ||
-        role.name === `I'm from UK! 🇬🇧` ||
-        role.name === `UK 🇬🇧`
-      );
+      return this.check({ name: "UK", emoji: "🇬🇧" }, role.name);
     }
-    return (
-      role.name === `I'm from ${country.name}` ||
-      role.name === `I'm from ${country.name}!` ||
-      role.name === `I'm from ${country.name}! ${country.emoji}` ||
-      role.name === `${country.name} ${country.emoji}`
-    );
+
+    return this.check(country, role.name);
   }
 
   private static getMatches(input: string): Country {
-    return countries.find((country) => {
-      return (
-        input === `I'm from ${country.name}` ||
-        input === `I'm from ${country.name}!` ||
-        input === `I'm from ${country.name}! ${country.emoji}` ||
-        input === `${country.name} ${country.emoji}`
-      );
-    });
+    return countries.find((country) => this.check(country, input));
+  }
+
+  private static check(country: FinderCountryProperties, compare: string) {
+    return (
+      compare.includes(country.emoji) || compare === `I'm from ${country.name}!`
+    );
   }
 }
