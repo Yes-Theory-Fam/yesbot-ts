@@ -135,6 +135,9 @@ export const updateAfterRegionSelect = async (
   oldMember: GuildMember | PartialGuildMember,
   newMember: GuildMember | PartialGuildMember
 ) => {
+  const gainedRole = oldMember.roles.cache.size < newMember.roles.cache.size;
+  if (!gainedRole) return;
+
   const findGeneralRole = (member: GuildMember | PartialGuildMember) =>
     member.roles.cache.find(({ name }) => {
       return regionCountries.some(
