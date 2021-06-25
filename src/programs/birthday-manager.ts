@@ -322,9 +322,9 @@ async function fetchUserCountryRoles(
   user: GuildMember
 ): Promise<CountryWithRegion[]> {
   return user.roles.cache
-    .filter((role) => CountryRoleFinder.isCountryRole(role.name))
+    .filter((role) => CountryRoleFinder.isCountryRole(role.name, true))
     .map<CountryWithRegion>((role) => ({
-      country: CountryRoleFinder.getCountryByRole(role.name),
+      country: CountryRoleFinder.getCountryByRole(role.name, true),
       region: role.name.substring(
         role.name.indexOf("(") + 1,
         role.name.indexOf(")")
@@ -336,7 +336,7 @@ function timezonesFromRole(props: CountryWithRegion): readonly string[] {
   const { country, region } = props;
   // Edge cases
   switch (country) {
-    case "the USA":
+    case "USA":
       switch (region) {
         case "Southwest": {
           return ["America/Shiprock", "America/Phoenix"];
@@ -389,7 +389,7 @@ function timezonesFromRole(props: CountryWithRegion): readonly string[] {
             .filter((tz) => tz !== null);
         }
       }
-    case "the UK":
+    case "UK":
       return getCountry("GB").timezones;
     case "Mexico":
       return getCountry("MX")
@@ -441,7 +441,7 @@ function timezonesFromRole(props: CountryWithRegion): readonly string[] {
     case "Chile": {
       return ["America/Santiago"];
     }
-    case "the UAE": {
+    case "UAE": {
       return getCountry("AE").timezones;
     }
     case "Russia": {
