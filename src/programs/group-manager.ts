@@ -715,33 +715,15 @@ const isChannelAllowed = (channel: Channel): boolean => {
 
   const allowedCategories = ["hobbies", "gaming"];
   const allowedChannels = [
-    channel.guild.channels.cache.find(
-      (channel) => channel.name === ChatNames.CHAT
-    ).id,
-    channel.guild.channels.cache.find(
-      (channel) => channel.name === ChatNames.CHAT_TOO
-    ).id,
-    channel.guild.channels.cache.find(
-      (channel) => channel.name === ChatNames.LEARNING_SPANISH
-    ).id,
-    channel.guild.channels.cache.find(
-      (channel) => channel.name === ChatNames.VOICE_CHAT
-    ).id,
-    channel.guild.channels.cache.find(
-      (channel) => channel.name === ChatNames.VOICE_CHAT_TWO
-    ).id,
-    channel.guild.channels.cache.find(
-      (channel) => channel.name === ChatNames.FOURTH_CHAT
-    ).id,
-    channel.guild.channels.cache.find(
-      (channel) => channel.name === ChatNames.CHAT_FIVE
-    ).id,
-    channel.guild.channels.cache.find(
-      (channel) => channel.name === ChatNames.SELF_DEVELOPMENT
-    ).id,
-    channel.guild.channels.cache.find(
-      (channel) => channel.name === ChatNames.DAILY_CHALLENGE
-    ).id,
+    ChatNames.CHAT.toString(),
+    ChatNames.CHAT_TOO.toString(),
+    ChatNames.FOURTH_CHAT.toString(),
+    ChatNames.CHAT_FIVE.toString(),
+    ChatNames.VOICE_CHAT.toString(),
+    ChatNames.VOICE_CHAT_TWO.toString(),
+    ChatNames.SELF_DEVELOPMENT.toString(),
+    ChatNames.LEARNING_SPANISH.toString(),
+    ChatNames.DAILY_CHALLENGE.toString(),
   ];
 
   if (
@@ -751,7 +733,7 @@ const isChannelAllowed = (channel: Channel): boolean => {
   )
     return true;
 
-  return allowedChannels.includes(channel.id);
+  return allowedChannels.includes(channel.name);
 };
 
 export default groupManager;
