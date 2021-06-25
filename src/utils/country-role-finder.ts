@@ -4,9 +4,9 @@ import { Role } from "discord.js";
 type FinderCountryProperties = Pick<Country, "name" | "emoji">;
 
 export class CountryRoleFinder {
-  static getCountryByRole(input: string): string {
+  static getCountryByRole(input: string): string | null {
     const result = this.getMatches(input);
-    return result.name;
+    return result?.name;
   }
 
   static isCountryRole(input: string): boolean {
