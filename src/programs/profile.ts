@@ -21,30 +21,25 @@ const profile = async (message: Message) => {
       );
       return;
     }
-    const profileEmbed = await getProfileEmbed(requestedMember, message);
+    const profileEmbed = await getProfileEmbed(requestedMember);
     await message.channel.send(profileEmbed);
   }
 };
 
 const getProfileEmbed = async (
-  member: GuildMember,
-  message: Message
-): Promise<MessageEmbed> => {
+  member: GuildMember
+): Promise<MessageEmbed | string> => {
   const profileEmbed = new MessageEmbed();
-  const countryRole = member.roles.cache.find((role) =>
-    CountryRoleFinder.isCountryRole(role.name)
-  );
-  let countryString = "";
-  member.roles.cache.forEach((role) => {
-    if (CountryRoleFinder.isCountryRole(role.name)) {
-      countryString = countryString + role.name + "\n";
-    }
-  });
+  const countries = member.roles.cache
+    .filter((role) => {
+      return CountryRoleFinder.isCountryRole(role.name, true);
+    })
+    .map(({ name }) => name);
+  const countryString = countries.join("\n");
   const yesEmoji = member.guild.emojis.cache.find((e) => e.name == "yes");
   const birthdayString = formatBirthday(await getUserBirthday(member.user.id));
-  if (!countryRole) {
-    await message.reply("That user isn't registered here!");
-    return null;
+  if (countries.length === 0) {
+    return "That user isn't registered here!";
   }
 
   const memberWithGroups = await prisma.groupMember.findFirst({
