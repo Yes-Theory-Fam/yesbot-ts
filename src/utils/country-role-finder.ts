@@ -9,8 +9,8 @@ export class CountryRoleFinder {
     return result?.name;
   }
 
-  static isCountryRole(input: string): boolean {
-    const result = this.getMatches(input);
+  static isCountryRole(input: string, allowRegions = false): boolean {
+    const result = this.getMatches(input, allowRegions);
     return !!result;
   }
 
@@ -26,8 +26,10 @@ export class CountryRoleFinder {
     return this.check(country, role.name);
   }
 
-  private static getMatches(input: string): Country {
-    return countries.find((country) => this.check(country, input));
+  private static getMatches(input: string, allowRegions = false): Country {
+    return countries.find((country) =>
+      this.check(country, input, allowRegions)
+    );
   }
 
   private static emojiOverrides: Record<string, string> = {
@@ -38,11 +40,22 @@ export class CountryRoleFinder {
     "🇮🇴": "🇬🇧",
   };
 
-  private static check(country: FinderCountryProperties, compare: string) {
-    if (compare.match(/\(.*\)/)) return false;
+  private static check(
+    country: FinderCountryProperties,
+    compare: string,
+    allowRegions = false
+  ) {
+    if (!allowRegions && compare.match(/\(.*\)/)) return false;
 
     const emoji = this.emojiOverrides[country.emoji] ?? country.emoji;
 
-    return compare.includes(emoji) || compare === `I'm from ${country.name}!`;
+    const comparator = (a: string, b: string) =>
+      allowRegions ? a.startsWith(b) : a === b;
+
+    return (
+      compare.includes(emoji) ||
+      comparator(compare, `I'm from ${country.name}!`) ||
+      comparator(compare, `I'm from the ${country.name}!`)
+    );
   }
 }

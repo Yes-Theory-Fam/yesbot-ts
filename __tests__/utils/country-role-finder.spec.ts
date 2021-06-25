@@ -11,6 +11,12 @@ describe("CountryRoleFinder", () => {
     expect(
       CountryRoleFinder.isCountryRole("I'm from Åland Islands! 🇦🇽")
     ).toBeTruthy();
+
+    expect(CountryRoleFinder.isCountryRole("I'm from the USA!")).toBeTruthy();
+    expect(
+      CountryRoleFinder.isCountryRole("I'm from the USA! (West)", true)
+    ).toBeTruthy();
+    expect(CountryRoleFinder.isCountryRole("USA (West) 🇺🇸", true)).toBeTruthy();
   });
 
   it("should not find as country-role", () => {
