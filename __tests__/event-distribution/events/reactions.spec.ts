@@ -3,7 +3,6 @@ import { extractMessageInfo } from "../../../src/event-distribution/events/messa
 import { extractReactionInfo } from "../../../src/event-distribution/events/reactions";
 
 describe("Reactions", () => {
-
   let mockDiscord: MockDiscord;
   beforeEach(() => {
     mockDiscord = new MockDiscord();
