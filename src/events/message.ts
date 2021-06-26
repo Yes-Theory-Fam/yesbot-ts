@@ -206,7 +206,7 @@ const routeMessage = async (message: Message) => {
 
   if (words.includes("@group")) await GroupManager(message, false);
   if (channel.name === ChatNames.YESTHEORY_POSTED)
-    await YesTheoryUploadedPing(message); //as long as no support sends anything in that channel this won't be called
+    await YesTheoryUploadedPing(message);
 };
 
 const routeDm = async (message: Message) => {
