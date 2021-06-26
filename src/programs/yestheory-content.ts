@@ -1,4 +1,4 @@
-import Discord, { Guild, GuildMember, Message, TextChannel } from "discord.js";
+import Discord, { Message, TextChannel } from "discord.js";
 import { ChatNames } from "../collections/chat-names";
 import { hasRole } from "../common/moderator";
 
