@@ -50,7 +50,7 @@
     "@yestheoryfam/prettier-config": "1.0.0",
     "env-cmd": "10.1.0",
     "jest": "27.0.4",
-    "prettier": "2.3.1",
+    "prettier": "2.3.2",
     "prisma": "2.25.0",
     "ts-jest": "27.0.3",
     "ts-node-dev": "1.1.6",
