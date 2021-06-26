@@ -8,4 +8,6 @@ export enum ChatNames {
     SELF_DEVELOPMENT = "self-development",
     DAILY_CHALLENGE = "daily-challenge",
     CHAT_FIVE = "chat-v",
+    YESTHEORY_POSTED = "yestheoryposted",
+    YESTHEORY_DISCUSSION = "yestheory-discussion"
 }
