@@ -32,6 +32,8 @@ import {
   postDailyMessage,
   saveToDb,
 } from "../programs/daily-challenge";
+import { ChatNames } from "../collections/chat-names";
+import YesTheoryUploadedPing from "../programs/yestheory-content";
 
 const message = async (msg: Message) => {
   if (msg.channel.type === "dm" && !msg.author.bot) {
@@ -203,6 +205,8 @@ const routeMessage = async (message: Message) => {
     await GroupManager(message, true);
 
   if (words.includes("@group")) await GroupManager(message, false);
+  if (channel.name === ChatNames.YESTHEORY_POSTED)
+    await YesTheoryUploadedPing(message);
 };
 
 const routeDm = async (message: Message) => {
