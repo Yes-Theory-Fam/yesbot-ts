@@ -11,7 +11,10 @@ import {
 import { CommandHandler, DiscordEvent } from "../../../src/event-distribution";
 
 describe("Messages", () => {
-  const mockDiscord = new MockDiscord();
+  let mockDiscord: MockDiscord;
+  beforeEach(() => {
+    mockDiscord = new MockDiscord();
+  });
 
   it("should extract messages from public channel", () => {
     const message = mockDiscord.getMessage();
