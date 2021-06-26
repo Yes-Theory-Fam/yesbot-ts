@@ -724,6 +724,7 @@ const isChannelAllowed = (channel: Channel): boolean => {
     ChatNames.SELF_DEVELOPMENT.toString(),
     ChatNames.LEARNING_SPANISH.toString(),
     ChatNames.DAILY_CHALLENGE.toString(),
+    ChatNames.YESTHEORY_DISCUSSION.toString(),
   ];
 
   if (
