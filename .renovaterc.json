@@ -9,7 +9,13 @@
   "labels": [
     "renovate"
   ],
-  "lockFileMaintenance": { "enabled": true },
+  "lockFileMaintenance": {
+    "enabled": true
+  },
+  "enabledManagers": [
+    "npm",
+    "dockerfile"
+  ],
   "packageRules": [
     {
       "matchPackageNames": [
@@ -28,6 +34,18 @@
         "jest"
       ],
       "groupName": "jest packages"
+    },
+    {
+      "rangeStrategy": "replace",
+      "matchPackageNames": [
+        "@types/node"
+      ],
+      "fileMatch": [
+        "(^|/)\\.nvmrc$",
+        "(^|/|\\.)Dockerfile$",
+        "(^|/)Dockerfile\\.[^/]*$"
+      ],
+      "groupName": "node version"
     }
   ]
 }
