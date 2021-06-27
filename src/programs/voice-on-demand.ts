@@ -126,15 +126,6 @@ const getDownLimit = (channel: VoiceChannel) =>
 
 const createOnDemand = async (message: Message, userLimit: number) => {
   const { guild, member } = message;
-  const hasExisting = await getVoiceChannel(member);
-
-  if (hasExisting) {
-    await Tools.handleUserError(
-      message,
-      "You already have an existing voice channel!"
-    );
-    return;
-  }
 
   let reaction;
   try {
@@ -145,6 +136,16 @@ const createOnDemand = async (message: Message, userLimit: number) => {
       true
     );
   } catch {
+    return;
+  }
+
+  const hasExisting = await getVoiceChannel(member);
+
+  if (hasExisting) {
+    await Tools.handleUserError(
+      message,
+      "You already have an existing voice channel!"
+    );
     return;
   }
 
@@ -329,6 +330,15 @@ const changeHostOnDemand = async (message: Message) => {
   const mentionedMemberInVoiceChannel = memberVoiceChannel.members.has(
     mentionedMember.id
   );
+  const mentionedMemberHasVoiceChannel = await getVoiceChannel(mentionedMember);
+
+  if (mentionedMemberHasVoiceChannel) {
+    await Tools.handleUserError(
+      message,
+      "This user already has a voice channel"
+    );
+    return;
+  }
 
   if (!mentionedMemberInVoiceChannel) {
     await Tools.handleUserError(
@@ -527,11 +537,52 @@ const requestOwnershipTransfer = async (
     );
   }
 
+  const userIdsInChannel = new Set(
+    await prisma.voiceOnDemandMapping.findMany({
+      select: { userId: true },
+      where: { userId: { in: getMemberIds() } },
+    })
+  ); //rourou
+
+  const allowedUsersListForHost = getMemberIds().filter((memberId) =>
+    userIdsInChannel.has({ userId: memberId })
+  );
+
+  const randomizer =
+    allowedUsersListForHost[
+      Math.floor(Math.random() * allowedUsersListForHost.length)
+    ];
+
   const claimingUser = claim
     ? claim.users.cache
         .filter((user) => getMemberIds().includes(user.id))
         .first()
-    : channel.members.random().user;
+    : (await channel.guild.members.fetch(randomizer)).user;
+
+  if (allowedUsersListForHost.length === 0) {
+    await botCommands.send(
+      getPingAll() +
+        `None of you can claim this channel as you already have a channel, it has been deleted!`
+    );
+    channel.delete();
+    return;
+  }
+
+  if (!allowedUsersListForHost.includes(claimingUser.id)) {
+    await botCommands.send(
+      `<@${claimingUser.id}>, you cannot claim the room as you already have a room so I shall assign someone randomly!`
+    );
+    const newClaimingUser = (await channel.guild.members.fetch(randomizer))
+      .user;
+
+    await botCommands.send(
+      `<@${newClaimingUser.id}>, is now the new owner of the room! You can now change the limit of it using \`!voice limit\`.`
+    );
+
+    await transferOwnership(currentMapping, newClaimingUser, channel);
+    return;
+  }
+
   await botCommands.send(
     `<@${claimingUser.id}>, is now the new owner of the room! You can now change the limit of it using \`!voice limit\`.`
   );

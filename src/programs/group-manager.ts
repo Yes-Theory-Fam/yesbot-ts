@@ -22,7 +22,7 @@ import {
   GroupInteractionSuccess,
 } from "../common/interfaces";
 import { createYesBotLogger } from "../log";
-import { dailyChallengeChannelId } from "./daily-challenge";
+import { ChatNames } from "../collections/chat-names";
 import prisma from "../prisma";
 
 const logger = createYesBotLogger("program", "GroupManager");
@@ -767,15 +767,16 @@ const isChannelAllowed = (channel: Channel): boolean => {
 
   const allowedCategories = ["hobbies", "gaming"];
   const allowedChannels = [
-    "449984633908625409", // chat
-    "623565093166252052", // chat-too
-    "508918747533410304", // learning-spanish
-    "450187015221280769", // voice-chat
-    "747198251349966977", // voice-chat-2
-    "747189756302983199", // 4th-chat
-    "857635480685772810", // chat-v
-    "793179253440118794", // self-development
-    dailyChallengeChannelId,
+    ChatNames.CHAT.toString(),
+    ChatNames.CHAT_TOO.toString(),
+    ChatNames.FOURTH_CHAT.toString(),
+    ChatNames.CHAT_FIVE.toString(),
+    ChatNames.VOICE_CHAT.toString(),
+    ChatNames.VOICE_CHAT_TWO.toString(),
+    ChatNames.SELF_DEVELOPMENT.toString(),
+    ChatNames.LEARNING_SPANISH.toString(),
+    ChatNames.DAILY_CHALLENGE.toString(),
+    ChatNames.YESTHEORY_DISCUSSION.toString(),
   ];
 
   if (
@@ -785,7 +786,7 @@ const isChannelAllowed = (channel: Channel): boolean => {
   )
     return true;
 
-  return allowedChannels.includes(channel.id);
+  return allowedChannels.includes(channel.name);
 };
 
 const isChatDead = async (

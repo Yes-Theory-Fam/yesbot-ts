@@ -135,22 +135,34 @@ export const updateAfterRegionSelect = async (
   oldMember: GuildMember | PartialGuildMember,
   newMember: GuildMember | PartialGuildMember
 ) => {
+  const gainedRole = oldMember.roles.cache.size < newMember.roles.cache.size;
+  if (!gainedRole) return;
+
   const findGeneralRole = (member: GuildMember | PartialGuildMember) =>
     member.roles.cache.find(({ name }) => {
-      return regionCountries.some((country) => name.endsWith(`${country}!`));
-    });
-  const hasSpecificRole = (member: GuildMember | PartialGuildMember) =>
-    member.roles.cache.some(({ name }) => {
-      return regionCountries.some((country) => name.includes(`${country}! (`));
+      return regionCountries.some(
+        (countryName) =>
+          CountryRoleFinder.getCountryByRole(name) === countryName
+      );
     });
 
+  const hasSpecificRole = (
+    member: GuildMember | PartialGuildMember,
+    role: Role
+  ) => {
+    const emoji = role.name.split(" ").pop();
+
+    return member.roles.cache.some(
+      ({ name }) => name.includes("(") && name.includes(emoji)
+    );
+  };
+
   const generalRole = findGeneralRole(oldMember);
-  if (generalRole && hasSpecificRole(newMember)) {
+  if (generalRole && hasSpecificRole(newMember, generalRole)) {
     await newMember.roles.remove(generalRole);
-    const hasNoOtherCountry =
-      oldMember.roles.cache.filter(
-        (role) => role.id === process.env.MEMBER_ROLE_ID
-      ).size === 1;
+    const hasNoOtherCountry = oldMember.roles.cache.every(
+      (role) => role.id !== process.env.MEMBER_ROLE_ID
+    );
 
     if (hasNoOtherCountry) {
       await welcomeMember(oldMember.user, oldMember.guild);

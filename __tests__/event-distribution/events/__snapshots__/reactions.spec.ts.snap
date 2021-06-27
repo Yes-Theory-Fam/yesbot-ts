@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Messages should add data to the tree 1`] = `
+exports[`Reactions should add data to the tree 1`] = `
 Object {
   "bot-output": Object {
-    "!test": Array [
+    "♥️": Array [
       Object {
         "ioc": Object {},
         "options": Object {
@@ -11,8 +11,8 @@ Object {
             "bot-output",
           ],
           "description": "test",
-          "event": "MESSAGE",
-          "trigger": "!test",
+          "emoji": "♥️",
+          "event": "REACTION_ADD",
         },
       },
     ],
@@ -21,10 +21,10 @@ Object {
 }
 `;
 
-exports[`Messages should add data to the tree 2`] = `
+exports[`Reactions should add data to the tree 2`] = `
 Object {
   "bot-output": Object {
-    "!test": Array [
+    "♥️": Array [
       Object {
         "ioc": Object {},
         "options": Object {
@@ -32,8 +32,8 @@ Object {
             "bot-output",
           ],
           "description": "test",
-          "event": "MESSAGE",
-          "trigger": "!test",
+          "emoji": "♥️",
+          "event": "REACTION_ADD",
         },
       },
       Object {
@@ -43,11 +43,11 @@ Object {
             "bot-output",
           ],
           "description": "test",
-          "event": "MESSAGE",
+          "emoji": "♥️",
+          "event": "REACTION_REMOVE",
           "requiredRoles": Array [
             "Support",
           ],
-          "trigger": "!test",
         },
       },
     ],
@@ -56,10 +56,10 @@ Object {
 }
 `;
 
-exports[`Messages should add data to the tree 3`] = `
+exports[`Reactions should add data to the tree 3`] = `
 Object {
   "bot-development": Object {
-    "!otherTrigger": Array [
+    "😘️": Array [
       Object {
         "ioc": Object {},
         "options": Object {
@@ -68,17 +68,17 @@ Object {
             "bot-test-channel",
           ],
           "description": "test",
-          "event": "MESSAGE",
+          "emoji": "😘️",
+          "event": "REACTION_ADD",
           "requiredRoles": Array [
             "Developer",
           ],
-          "trigger": "!otherTrigger",
         },
       },
     ],
   },
   "bot-output": Object {
-    "!test": Array [
+    "♥️": Array [
       Object {
         "ioc": Object {},
         "options": Object {
@@ -86,8 +86,8 @@ Object {
             "bot-output",
           ],
           "description": "test",
-          "event": "MESSAGE",
-          "trigger": "!test",
+          "emoji": "♥️",
+          "event": "REACTION_ADD",
         },
       },
       Object {
@@ -97,17 +97,17 @@ Object {
             "bot-output",
           ],
           "description": "test",
-          "event": "MESSAGE",
+          "emoji": "♥️",
+          "event": "REACTION_REMOVE",
           "requiredRoles": Array [
             "Support",
           ],
-          "trigger": "!test",
         },
       },
     ],
   },
   "bot-test-channel": Object {
-    "!otherTrigger": Array [
+    "😘️": Array [
       Object {
         "ioc": Object {},
         "options": Object {
@@ -116,11 +116,11 @@ Object {
             "bot-test-channel",
           ],
           "description": "test",
-          "event": "MESSAGE",
+          "emoji": "😘️",
+          "event": "REACTION_ADD",
           "requiredRoles": Array [
             "Developer",
           ],
-          "trigger": "!otherTrigger",
         },
       },
     ],
@@ -129,31 +129,22 @@ Object {
 }
 `;
 
-exports[`Messages should extract messages from direct message 1`] = `
+exports[`Reactions should extract reaction from direct message 1`] = `
 Object {
   "handlerKeys": Array [
     "channel-id",
-    "this",
+    undefined,
   ],
   "isDirectMessage": true,
-  "member": Object {
-    "deleted": false,
-    "displayName": "user username",
-    "guildID": "guild-id",
-    "joinedTimestamp": null,
-    "lastMessageChannelID": null,
-    "nickname": null,
-    "premiumSinceTimestamp": null,
-    "userID": "222222222222222200",
-  },
+  "member": null,
 }
 `;
 
-exports[`Messages should extract messages from public channel 1`] = `
+exports[`Reactions should extract reaction from public channel 1`] = `
 Object {
   "handlerKeys": Array [
     "guild-channel",
-    "this",
+    undefined,
   ],
   "isDirectMessage": false,
   "member": Object {
