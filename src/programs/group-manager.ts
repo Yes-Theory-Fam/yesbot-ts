@@ -798,7 +798,6 @@ const isChannelAllowed = (channel: Channel): boolean => {
   return allowedChannels.includes(channel.name);
 };
 
-
 const timeRemainingForDeadchat = async (message: Message, group: UserGroup) => {
   const deadTime = group.deadtime;
 
@@ -812,13 +811,11 @@ const timeRemainingForDeadchat = async (message: Message, group: UserGroup) => {
   const timeRemaining = deadTime - Math.round(timeDifference);
 
   return timeRemaining;
- 
 };
 
 const isGroupAllowed = (groupName: string) => {
   const memberDisabledGroups = ["yestheoryuploads"];
   return !memberDisabledGroups.includes(groupName.toLowerCase());
-
 };
 
 export default groupManager;
