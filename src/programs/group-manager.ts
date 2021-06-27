@@ -174,8 +174,9 @@ const groupManager = async (message: Message, isConfig: boolean) => {
     const group = matchingGroups[0];
     const timeDifference = (Date.now() - group.lastUsed.getTime()) / 1000 / 60;
     const timeRemainingForDeadchat = await isChatDead(message, group)
+    console.log(timeRemainingForDeadchat)
 
-    if (timeRemainingForDeadchat >= group.deadtime) {
+    if (timeRemainingForDeadchat >= 0) {
       await Tools.handleUserError(
         message,
         `Chat is not dead! You can ping this group if there have been no messages in the next ${timeRemainingForDeadchat} minutes.`
@@ -802,6 +803,8 @@ const isChatDead = async (
       .createdTimestamp) / 1000 / 60
 
   const timeRemaining = deadTime - Math.round(timeDifference)
+
+  console.log(timeRemaining)
 
   return timeRemaining
 };
