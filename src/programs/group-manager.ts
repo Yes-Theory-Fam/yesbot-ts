@@ -182,7 +182,10 @@ const groupManager = async (message: Message, isConfig: boolean) => {
 
     const group = matchingGroups[0];
     const timeDifference = (Date.now() - group.lastUsed.getTime()) / 1000 / 60;
-    const deadChatTimeRemaining  = await timeRemainingForDeadchat(message, group);
+    const deadChatTimeRemaining = await timeRemainingForDeadchat(
+      message,
+      group
+    );
 
     if (deadChatTimeRemaining >= 0) {
       await Tools.handleUserError(
