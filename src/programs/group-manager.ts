@@ -144,6 +144,15 @@ const groupManager = async (message: Message, isConfig: boolean) => {
 
     args.shift();
     const [requestName] = args;
+
+    if (!message.author.bot && !isGroupAllowed(requestName)) {
+      await Tools.handleUserError(
+        message,
+        "That group is not pingable by members, sorry!"
+      );
+      return;
+    }
+
     const groups = await prisma.userGroup.findMany({
       include: {
         userGroupMembersGroupMembers: { include: { groupMember: true } },
@@ -735,6 +744,11 @@ const isChannelAllowed = (channel: Channel): boolean => {
     return true;
 
   return allowedChannels.includes(channel.name);
+};
+
+const isGroupAllowed = (groupName: string) => {
+  const memberDisabledGroups = ["yestheoryuploads"];
+  return !memberDisabledGroups.includes(groupName.toLowerCase());
 };
 
 export default groupManager;
