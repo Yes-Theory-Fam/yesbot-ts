@@ -173,8 +173,8 @@ const groupManager = async (message: Message, isConfig: boolean) => {
 
     const group = matchingGroups[0];
     const timeDifference = (Date.now() - group.lastUsed.getTime()) / 1000 / 60;
-    const timeRemainingForDeadchat = await isChatDead(message, group)
-    console.log(timeRemainingForDeadchat)
+    const timeRemainingForDeadchat = await isChatDead(message, group);
+    console.log(timeRemainingForDeadchat);
 
     if (timeRemainingForDeadchat >= 0) {
       await Tools.handleUserError(
@@ -790,23 +790,19 @@ const isChannelAllowed = (channel: Channel): boolean => {
   return allowedChannels.includes(channel.name);
 };
 
-const isChatDead = async (
-  message: Message,
-  group: UserGroup
-) => {
-
+const isChatDead = async (message: Message, group: UserGroup) => {
   const deadTime = group.deadtime;
 
   const timeDifference =
     (Date.now() -
-    (await message.channel.messages.fetch({ limit: 2 })).array()[1]
-      .createdTimestamp) / 1000 / 60
+      (await message.channel.messages.fetch({ limit: 2 })).array()[1]
+        .createdTimestamp) /
+    1000 /
+    60;
 
-  const timeRemaining = deadTime - Math.round(timeDifference)
+  const timeRemaining = deadTime - Math.round(timeDifference);
 
-  console.log(timeRemaining)
-
-  return timeRemaining
+  return timeRemaining;
 };
 
 export default groupManager;
