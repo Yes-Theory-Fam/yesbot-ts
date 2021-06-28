@@ -241,7 +241,7 @@ export function getUserBirthdate(message: string): Date | null {
     return null;
   }
 
-  return new Date(1970, month, day);
+  return new Date(1972, month, day);
 }
 
 async function getUserTimezone(message: Message): Promise<string> {
