@@ -542,8 +542,8 @@ const requestOwnershipTransfer = async (
     where: { userId: { in: getMemberIds() } },
   }); //rourou
 
-  const allowedUsersListForHost = getMemberIds().filter(
-    (memberId) => userIdsInChannel.every((user) => user.userId !== memberId)
+  const allowedUsersListForHost = getMemberIds().filter((memberId) =>
+    userIdsInChannel.every((user) => user.userId !== memberId)
   );
 
   const randomizer =
