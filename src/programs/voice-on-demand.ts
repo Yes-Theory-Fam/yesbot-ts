@@ -537,15 +537,13 @@ const requestOwnershipTransfer = async (
     );
   }
 
-  const userIdsInChannel = new Set(
-    await prisma.voiceOnDemandMapping.findMany({
-      select: { userId: true },
-      where: { userId: { in: getMemberIds() } },
-    })
-  ); //rourou
+  const userIdsInChannel = await prisma.voiceOnDemandMapping.findMany({
+    select: { userId: true },
+    where: { userId: { in: getMemberIds() } },
+  }); //rourou
 
-  const allowedUsersListForHost = getMemberIds().filter((memberId) =>
-    userIdsInChannel.has({ userId: memberId })
+  const allowedUsersListForHost = getMemberIds().filter(
+    (memberId) => userIdsInChannel.every((user) => user.userId !== memberId)
   );
 
   const randomizer =
@@ -564,7 +562,10 @@ const requestOwnershipTransfer = async (
       getPingAll() +
         `None of you can claim this channel as you already have a channel, it has been deleted!`
     );
-    channel.delete();
+    await prisma.voiceOnDemandMapping.delete({
+      where: { channelId: channel.id },
+    });
+    await channel.delete();
     return;
   }
 
