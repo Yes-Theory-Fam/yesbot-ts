@@ -1,13 +1,13 @@
-name: Node.js CI Linting Test
+name: Testing
 
-on: [ push, pull_request]
+on: [ push, pull_request ]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [14.x]
+        node-version: [ 14.x ]
     steps:
       - uses: actions/checkout@v2
       - name: Cache node modules
@@ -17,16 +17,18 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-      - name: Node ${{ matrix.node-version }}
+
+      - name: install on node ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@Yes-Theory-Fam'
           node-version: ${{ matrix.node-version }}
-      - name: Write authentication to file
-        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> .npmrc
-      - name: install and lint
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           npm ci
-          npm run lint
+
       - name: testing
         run: |
           npm run test
