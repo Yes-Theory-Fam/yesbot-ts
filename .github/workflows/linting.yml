@@ -24,7 +24,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: stup node ${{ matrix.node-version }}
+      - name: setup node ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
           registry-url: 'https://npm.pkg.github.com'
