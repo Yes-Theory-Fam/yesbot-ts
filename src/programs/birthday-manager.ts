@@ -396,27 +396,13 @@ function timezonesFromRole(props: CountryWithRegion): readonly string[] {
         .timezones // BajaSur and BajaNorth are invalid in JS.
         .filter((tz) => !tz.startsWith("Mexico/Baja"));
     case "Australia": {
-      switch (region) {
-        case "Western":
-          return ["Australia/Perth"];
-        case "Northern Territory":
-          return ["Australia/Darwin"];
-        case "Southern":
-          return ["Australia/Adelaide"];
-        case "Queensland":
-          return ["Australia/Brisbane"];
-        case "NSW + Victoria":
-          return ["Australia/Sydney"];
-        default:
-          return getCountry("AU")
-            .timezones // Invalid JS timezones
-            .filter(
-              (tz) =>
-                tz !== "Australia/LHI" &&
-                tz !== "Australia/ACT" &&
-                tz !== "Australia/NSW"
-            );
-      }
+      return [
+        "Australia/Perth",
+        "Australia/Darwin",
+        "Australia/Adelaide",
+        "Australia/Brisbane",
+        "Australia/Sydney",
+      ];
     }
     case "Canada": {
       return getCountry("CA").timezones.filter((tz) =>
