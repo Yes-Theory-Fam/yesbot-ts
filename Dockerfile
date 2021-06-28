@@ -1,21 +1,11 @@
-# Install dependencies only when needed
-FROM node:14.17-alpine AS deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
+FROM node:14.17-alpine AS builder
 RUN apk add --no-cache libc6-compat
 WORKDIR /usr/src/app
-COPY ./package.json ./package.json
-COPY ./package-lock.json ./package-lock.json
-COPY ./.npmrc ./.npmrc
-RUN npm ci
-
-# Rebuild the source code only when needed
-FROM node:14.17-alpine AS builder
-WORKDIR /usr/src/app
 COPY . .
-COPY --from=deps /usr/src/app/node_modules ./node_modules
 RUN npm run tsc
 
 FROM node:14.17-alpine
+RUN apk add --no-cache libc6-compat
 # Create app directory
 WORKDIR /usr/src/app
 
