@@ -1,6 +1,6 @@
 import { getUserBirthdate } from "../../src/programs/birthday-manager";
 
-const messages = [
+const messages: Array<Array<string | Date | null>> = [
   ["dec-24", new Date(1972, 11, 24)],
   ["dec 4", new Date(1972, 11, 4)],
   ["Dec 4", new Date(1972, 11, 4)],
@@ -19,29 +19,11 @@ const messages = [
 ];
 
 describe("birthday manager", () => {
-  it("should handle the expected list correctly", () => {
-    const errors = messages
-      .map((m) => {
-        const dateStr = m[0] as string;
-        const expected = m[1] as Date | null;
-
-        const birthdate = getUserBirthdate(dateStr);
-        if (expected === null && birthdate === null) {
-          // Both are null, all is OK
-          return "";
-        }
-
-        if (birthdate === null || (expected === null && birthdate !== null)) {
-          return `Got '${birthdate}', expected '${expected}' for '${dateStr}'`;
-        }
-
-        // They should have same date, so only return those with different dates
-        return getUserBirthdate(dateStr).getTime() === expected.getTime()
-          ? ""
-          : `Got '${birthdate}', expected '${expected}' for '${dateStr}'`;
-      })
-      .filter((m) => m.length > 0);
-
-    expect(errors.length).toBe(0);
+  messages.forEach((msg) => {
+    it('should match the expected date', () => {
+      const dateStr = msg[0] as string;
+      const date = msg[1] as Date | null;
+      expect(getUserBirthdate(dateStr)).toEqual(date);
+    })
   });
 });
