@@ -9,5 +9,5 @@ export enum ChatNames {
     DAILY_CHALLENGE = "daily-challenge",
     CHAT_FIVE = "chat-v",
     YESTHEORY_POSTED = "yestheoryposted",
-    YESTHEORY_DISCUSSION = "yestheory-discussion"
+    YESTHEORY_DISCUSSION = "yestheory-discussions"
 }
