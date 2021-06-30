@@ -36,10 +36,17 @@ bot.on("guildMemberRemove", (member: GuildMember | PartialGuildMember) =>
 );
 bot.on(
   "guildMemberUpdate",
-  (
+  async (
     oldMember: GuildMember | PartialGuildMember,
     newMember: GuildMember | PartialGuildMember
-  ) => guildMemberUpdate(oldMember, newMember)
+  ) => {
+    await guildMemberUpdate(oldMember, newMember);
+    distribution.handleEvent(
+      DiscordEvent.GUILD_MEMBER_UPDATE,
+      oldMember,
+      newMember
+    );
+  }
 );
 bot.on("message", async (msg: Message) => {
   await messageManager(msg);
