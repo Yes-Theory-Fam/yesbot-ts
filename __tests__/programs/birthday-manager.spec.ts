@@ -15,6 +15,7 @@ const messages = [
   ["12 12", new Date(1972, 11, 12)],
   ["november 3rd", new Date(1972, 10, 3)],
   ["05.20", new Date(1972, 4, 20)],
+  ["02.29", new Date(1972, 1, 29)], // Allow having birthday on 29th of february
 ];
 
 describe("birthday manager", () => {
