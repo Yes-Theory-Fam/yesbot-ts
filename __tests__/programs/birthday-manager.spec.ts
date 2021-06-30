@@ -20,10 +20,10 @@ const messages: Array<Array<string | Date | null>> = [
 
 describe("birthday manager", () => {
   messages.forEach((msg) => {
-    it('should match the expected date', () => {
+    it("should match the expected date", () => {
       const dateStr = msg[0] as string;
       const date = msg[1] as Date | null;
       expect(getUserBirthdate(dateStr)).toEqual(date);
-    })
+    });
   });
 });
