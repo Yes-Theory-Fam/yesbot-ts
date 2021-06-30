@@ -187,7 +187,7 @@ const groupManager = async (message: Message, isConfig: boolean) => {
       group
     );
 
-    if (deadChatTimeRemaining >= 0) {
+    if (deadChatTimeRemaining > 0) {
       await Tools.handleUserError(
         message,
         `Chat is not dead! You can ping this group if there have been no messages in the next ${deadChatTimeRemaining} minutes.`
@@ -803,17 +803,17 @@ const isChannelAllowed = (channel: Channel): boolean => {
 
 const timeRemainingForDeadchat = async (message: Message, group: UserGroup) => {
   const deadTime = group.deadtime;
+  const lastMessages = (
+    await message.channel.messages.fetch({ limit: 2 })
+  ).array();
+  let timeDifference = deadTime;
 
-  const timeDifference =
-    (Date.now() -
-      (await message.channel.messages.fetch({ limit: 2 })).array()[1]
-        .createdTimestamp) /
-    1000 /
-    60;
+  if (lastMessages.length === 2) {
+    timeDifference =
+      (Date.now() - lastMessages[1].createdTimestamp) / 1000 / 60;
+  }
 
-  const timeRemaining = deadTime - Math.round(timeDifference);
-
-  return timeRemaining;
+  return deadTime - Math.round(timeDifference);
 };
 
 const isGroupAllowed = (groupName: string) => {
