@@ -7,9 +7,13 @@ env:
 on:
   release:
     types: [ created ]
+
 jobs:
   build-and-push-image:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 14.x ]
     permissions:
       contents: read
       packages: write
@@ -17,14 +21,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
           registry: ${{ env.REGISTRY }}
-          scope: '@Yes-Theory-Fam'
           password: ${{ secrets.GITHUB_TOKEN }}
+          node-version: ${{ matrix.node-version }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - run: npm ci
 
       - name: Log in to the Container registry
         uses: docker/login-action@v1
