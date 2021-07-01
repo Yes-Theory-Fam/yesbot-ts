@@ -38,7 +38,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - run: npm ci
+      - run: yarn install --frozen-lockfile
 
       - name: Log in to the Container registry
         uses: docker/login-action@v1

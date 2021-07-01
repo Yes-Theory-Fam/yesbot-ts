@@ -34,5 +34,5 @@ jobs:
 
       - name: install and lint
         run: |
-          npm ci
-          npm run lint
+          yarn install --frozen-lockfile
+          yarn run lint

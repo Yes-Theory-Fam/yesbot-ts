@@ -2,7 +2,7 @@ FROM node:14.17-alpine AS builder
 RUN apk add --no-cache libc6-compat
 WORKDIR /usr/src/app
 COPY . .
-RUN npm run tsc
+RUN yarn run tsc
 
 FROM node:14.17-alpine
 RUN apk add --no-cache libc6-compat
@@ -36,4 +36,4 @@ ENV ENGINEER_ROLE_NAME $ENGINEER_ROLE_NAME
 ENV PRISMA_DATABASE_URL $PRISMA_DATABASE_URL
 ENV VCS_REF $VCS_REF
 
-CMD [ "npm", "run", "start:prod" ]
+CMD [ "yarn", "run", "start:prod" ]
