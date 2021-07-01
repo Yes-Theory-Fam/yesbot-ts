@@ -169,8 +169,8 @@ const example = {
 }
 ```
 
-- `selection` - (required) An array of at least two, at max twenty strings. If `type` is `"emoji"`, all of them have to be an
-  emoji.
+- `selection` - (required) An array of at least two, at max twenty strings. If `type` is `"emoji"`, all of them have to
+  be an emoji.
 
 #### `InputConfigurationKey<string>`
 

@@ -1,8 +1,10 @@
-import { DMChannel, Message, TextChannel, GuildChannel } from "discord.js";
+import { DMChannel, GuildChannel, Message, TextChannel } from "discord.js";
 import {
   BirthdayManager,
   Deadchat,
+  DMMenu,
   ExportManager,
+  Game,
   GroupManager,
   MapTools,
   Polls,
@@ -14,11 +16,9 @@ import {
   TopicManager,
   VoiceOnDemand,
   WhereAreYouFrom,
-  Game,
-  DMMenu,
 } from "../programs";
 import state from "../common/state";
-import { hasRole, textLog, getMember } from "../common/moderator";
+import { getMember, hasRole, textLog } from "../common/moderator";
 import {
   abuseMe,
   addVote,

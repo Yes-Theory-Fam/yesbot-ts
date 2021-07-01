@@ -1,10 +1,4 @@
-import {
-  GuildMember,
-  Message,
-  Snowflake,
-  TextChannel,
-  VoiceChannel,
-} from "discord.js";
+import { Message, Snowflake } from "discord.js";
 import { GameConfig, GameSession, SessionConfig } from "../game-session";
 import Tools from "../../common/tools";
 import { locations } from "./locations";

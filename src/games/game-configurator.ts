@@ -44,6 +44,60 @@ export class GameConfigurator<GameConfig extends SessionConfig> {
     private channel: TextChannel
   ) {}
 
+  private static nodeToField<K>(
+    node: ConfigurationNode<K>,
+    key: string,
+    value: K
+  ): EmbedFieldData {
+    const getValue = (
+      displayName?: string,
+      description?: string,
+      value?: string
+    ) =>
+      `${displayName ?? key}${description ? ": " + description : ""}${
+        value ?? ""
+      }`;
+
+    if (isConfigKey(node)) {
+      const getValueString = () => {
+        if (value === undefined || value === null) {
+          return "";
+        }
+
+        let valueString = value.toString();
+        if (node.type === "string") {
+          valueString = `"${valueString}"`;
+        }
+
+        if ("suffix" in node || "prefix" in node) {
+          valueString = `${node.prefix ?? ""}${valueString}${
+            node.suffix ?? ""
+          }`;
+        }
+
+        return ` (${valueString})`;
+      };
+
+      return {
+        name: node.emoji,
+        value: getValue(node.displayName, node.description, getValueString()),
+      };
+    }
+
+    const { emoji, displayName, description } = node.properties;
+    return { name: emoji, value: getValue(displayName, description) };
+  }
+
+  private static getEmoji<K>(node: ConfigurationNode<K>): string {
+    if (isConfigKey(node)) {
+      return node.emoji;
+    }
+
+    return node.properties.emoji;
+  }
+
+  // If someone has a better idea for this, please go ahead; I gave up after 5
+
   public async createConfiguration(): Promise<Partial<GameConfig>> {
     // TODO Add logic to the validator that emojis may not double on the same layer
     const rootNode: ConfigurationNode<GameConfig> = {
@@ -68,7 +122,6 @@ export class GameConfigurator<GameConfig extends SessionConfig> {
     return this.getSubConfiguration(node, message);
   }
 
-  // If someone has a better idea for this, please go ahead; I gave up after 5
   //  attempts and I am getting desperate
   private getKeyConfiguration<K>(
     node: TypedConfigurationKey<K>,
@@ -557,50 +610,6 @@ export class GameConfigurator<GameConfig extends SessionConfig> {
     return defaults;
   }
 
-  private static nodeToField<K>(
-    node: ConfigurationNode<K>,
-    key: string,
-    value: K
-  ): EmbedFieldData {
-    const getValue = (
-      displayName?: string,
-      description?: string,
-      value?: string
-    ) =>
-      `${displayName ?? key}${description ? ": " + description : ""}${
-        value ?? ""
-      }`;
-
-    if (isConfigKey(node)) {
-      const getValueString = () => {
-        if (value === undefined || value === null) {
-          return "";
-        }
-
-        let valueString = value.toString();
-        if (node.type === "string") {
-          valueString = `"${valueString}"`;
-        }
-
-        if ("suffix" in node || "prefix" in node) {
-          valueString = `${node.prefix ?? ""}${valueString}${
-            node.suffix ?? ""
-          }`;
-        }
-
-        return ` (${valueString})`;
-      };
-
-      return {
-        name: node.emoji,
-        value: getValue(node.displayName, node.description, getValueString()),
-      };
-    }
-
-    const { emoji, displayName, description } = node.properties;
-    return { name: emoji, value: getValue(displayName, description) };
-  }
-
   private buildSelectionEmbed(fields: EmbedFieldData[]): MessageEmbed {
     const embed = new MessageEmbed();
     const inlineFields = fields.map((value) => ({ ...value, inline: true }));
@@ -629,14 +638,6 @@ export class GameConfigurator<GameConfig extends SessionConfig> {
     }
 
     return result;
-  }
-
-  private static getEmoji<K>(node: ConfigurationNode<K>): string {
-    if (isConfigKey(node)) {
-      return node.emoji;
-    }
-
-    return node.properties.emoji;
   }
 
   private getDefaultValue<K>(node: ConfigurationNode<K>): K {

@@ -1,15 +1,15 @@
 import {
+  CategoryChannel,
+  Guild,
+  GuildChannel,
   GuildMember,
   PartialGuildMember,
-  TextChannel,
-  Guild,
-  CategoryChannel,
   Permissions,
-  GuildChannel,
+  TextChannel,
 } from "discord.js";
 import Tools from "../common/tools";
 import { hasRole } from "../common/moderator";
-import { Separators, NitroColors, WhereAreYouFrom } from "../programs";
+import { NitroColors, Separators, WhereAreYouFrom } from "../programs";
 import prisma from "../prisma";
 
 const guildMemberUpdate = async (

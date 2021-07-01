@@ -4,10 +4,10 @@ import {
   Message,
   MessageReaction,
   Permissions,
+  TextChannel,
   User,
   VoiceChannel,
   VoiceState,
-  TextChannel,
 } from "discord.js";
 
 import { hasRole } from "../common/moderator";
