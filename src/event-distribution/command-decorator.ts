@@ -9,24 +9,14 @@ const explanation =
   "Commands that require roles or channel names won't work in DMs since the roles cannot be read from DM events.";
 
 export const Command = <T extends EventHandlerOptions>(options: T) => {
-  // TODO this needs a neater way of doing things...
   if (options.event !== DiscordEvent.GUILD_MEMBER_UPDATE) {
-    const channels = options.channelNames ?? [];
-    const roles = options.requiredRoles ?? [];
-    const requiresServer = channels.length > 0 || roles.length > 0;
-
-    if (!options.location) {
-      options.location = requiresServer
-        ? EventLocation.SERVER
-        : EventLocation.ANYWHERE;
-    }
+    setDefaultOnBaseOptions(options);
   }
 
   return <U extends HandlerClass<T["event"]>>(target: U) => {
     const commandClassName = target.name;
     logger.debug(`Loading new command: ${target.name}`);
 
-    // TODO a much neater way.
     if (options.event !== DiscordEvent.GUILD_MEMBER_UPDATE) {
       checkBaseOptions(options, commandClassName);
     }
@@ -47,6 +37,14 @@ const baseOptionsRequireServer = (options: BaseOptions) => {
   const channels = options.channelNames ?? [];
   const roles = options.requiredRoles ?? [];
   return channels.length > 0 || roles.length > 0;
+};
+
+const setDefaultOnBaseOptions = (options: BaseOptions) => {
+  if (!options.location) {
+    options.location = baseOptionsRequireServer(options)
+      ? EventLocation.SERVER
+      : EventLocation.ANYWHERE;
+  }
 };
 
 const checkBaseOptions = (options: BaseOptions, commandClassName: string) => {
