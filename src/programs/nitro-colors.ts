@@ -1,12 +1,12 @@
 import bot from "../index";
 import {
-  Snowflake,
-  TextChannel,
-  Role,
   Collection,
   GuildMember,
-  PartialGuildMember,
   Message,
+  PartialGuildMember,
+  Role,
+  Snowflake,
+  TextChannel,
 } from "discord.js";
 import { hasRole } from "../common/moderator";
 import { createYesBotLogger } from "../log";

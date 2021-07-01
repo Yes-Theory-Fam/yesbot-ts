@@ -7,7 +7,7 @@ import {
   Snowflake,
   TextChannel,
 } from "discord.js";
-import { GameConfig, GameSession } from "./game-session";
+import { GameSession } from "./game-session";
 import Tools from "../common/tools";
 import { ConfiguratorValidator } from "./configurator-validator";
 import { GameConfigurator } from "./game-configurator";
@@ -18,14 +18,41 @@ type Config = { clazz: new (hub: GameHub) => GameSession<any>; name: string };
 
 export default class GameHub {
   channel: TextChannel;
+  private games: Record<string, Config> = {};
+  private sessions: Record<string, GameSession<any>> = {};
 
   get guild() {
     return this.channel.guild;
   }
 
-  private games: Record<string, Config> = {};
-
-  private sessions: Record<string, GameSession<any>> = {};
+  private static handleGeneralCommand<T extends GameSession<any>>(
+    command: string,
+    session: T,
+    message: Message
+  ) {
+    const constructor = session.constructor as typeof GameSession;
+    const config = constructor.config;
+    switch (command) {
+      case "!rules":
+        message.reply(config.rules);
+        break;
+      case "!howtoplay":
+        message.reply(config.howToPlay);
+        break;
+      case "!end":
+        if (session.leader.id == message.author.id) {
+          session.channel
+            .send("The gameleader has decided to end the game!")
+            .then(() => session.end());
+        } else {
+          Tools.handleUserError(
+            message,
+            "Only the game leader can end the game."
+          );
+        }
+        break;
+    }
+  }
 
   // Typing (?)
   announce(message: string): Promise<Message> {
@@ -84,42 +111,6 @@ export default class GameHub {
 
   getEmojis(): string[] {
     return Object.keys(this.games);
-  }
-
-  private getChannelPermissions(
-    cleanedPlayers: GuildMember[]
-  ): OverwriteResolvable[] {
-    const support = Tools.getRoleByName("Support", this.guild);
-    const playerPermissions: OverwriteResolvable[] = cleanedPlayers.map(
-      (member) => ({
-        id: member.user.id,
-        allow: [
-          Permissions.FLAGS.VIEW_CHANNEL,
-          Permissions.FLAGS.SEND_MESSAGES,
-          Permissions.FLAGS.CONNECT,
-        ],
-        type: "member",
-      })
-    );
-
-    return [
-      {
-        id: this.guild.roles.everyone,
-        allow: [],
-        deny: [Permissions.FLAGS.VIEW_CHANNEL],
-        type: "role",
-      },
-      {
-        id: support,
-        allow: [
-          Permissions.FLAGS.VIEW_CHANNEL,
-          Permissions.FLAGS.SEND_MESSAGES,
-          Permissions.FLAGS.CONNECT,
-        ],
-        type: "role",
-      },
-      ...playerPermissions,
-    ];
   }
 
   async createChannel(config: Config, permissions: OverwriteResolvable[]) {
@@ -388,33 +379,40 @@ export default class GameHub {
     session.handleInput(message);
   }
 
-  private static handleGeneralCommand<T extends GameSession<any>>(
-    command: string,
-    session: T,
-    message: Message
-  ) {
-    const constructor = session.constructor as typeof GameSession;
-    const config = constructor.config;
-    switch (command) {
-      case "!rules":
-        message.reply(config.rules);
-        break;
-      case "!howtoplay":
-        message.reply(config.howToPlay);
-        break;
-      case "!end":
-        if (session.leader.id == message.author.id) {
-          session.channel
-            .send("The gameleader has decided to end the game!")
-            .then(() => session.end());
-        } else {
-          Tools.handleUserError(
-            message,
-            "Only the game leader can end the game."
-          );
-        }
-        break;
-    }
+  private getChannelPermissions(
+    cleanedPlayers: GuildMember[]
+  ): OverwriteResolvable[] {
+    const support = Tools.getRoleByName("Support", this.guild);
+    const playerPermissions: OverwriteResolvable[] = cleanedPlayers.map(
+      (member) => ({
+        id: member.user.id,
+        allow: [
+          Permissions.FLAGS.VIEW_CHANNEL,
+          Permissions.FLAGS.SEND_MESSAGES,
+          Permissions.FLAGS.CONNECT,
+        ],
+        type: "member",
+      })
+    );
+
+    return [
+      {
+        id: this.guild.roles.everyone,
+        allow: [],
+        deny: [Permissions.FLAGS.VIEW_CHANNEL],
+        type: "role",
+      },
+      {
+        id: support,
+        allow: [
+          Permissions.FLAGS.VIEW_CHANNEL,
+          Permissions.FLAGS.SEND_MESSAGES,
+          Permissions.FLAGS.CONNECT,
+        ],
+        type: "role",
+      },
+      ...playerPermissions,
+    ];
   }
 
   private routeDMMessage(message: Message) {

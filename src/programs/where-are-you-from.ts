@@ -8,7 +8,7 @@ import {
   User,
 } from "discord.js";
 import { isRegistered, textLog } from "../common/moderator";
-import { Country, countries } from "../collections/flagEmojis";
+import { countries, Country } from "../collections/flagEmojis";
 import { CountryRoleFinder } from "../utils/country-role-finder";
 
 const regionCountries = ["USA"];

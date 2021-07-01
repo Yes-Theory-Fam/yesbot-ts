@@ -1,15 +1,15 @@
 import fs from "fs";
 import {
+  Channel,
+  Collection,
   Guild,
   GuildMember,
   Message,
+  MessageReaction,
   PartialGuildMember,
   Snowflake,
   TextChannel,
   User,
-  Channel,
-  MessageReaction,
-  Collection,
 } from "discord.js";
 import { textLog } from "./moderator";
 import { createYesBotLogger } from "../log";
@@ -199,33 +199,6 @@ class Tools {
     });
   }
 
-  /**
-   * @param reaction The reaction added by a user
-   * @param user The user adding the reaction
-   */
-  private static signUpFilter(
-    reaction: MessageReaction,
-    user: User,
-    voters: Snowflake[],
-    currentVotes: Record<string, Snowflake[]>,
-    allowChangeVote: boolean
-  ): boolean {
-    if (user.bot) return false;
-
-    const disallowedSecondVote =
-      !allowChangeVote &&
-      Object.values(currentVotes).some((voteArray) =>
-        voteArray.includes(user.id)
-      );
-
-    if (!voters.includes(user.id) || disallowedSecondVote) {
-      reaction.users.remove(user);
-      return false;
-    }
-
-    return true;
-  }
-
   static async addVote(
     toMessage: Message,
     pickOptions: string[],
@@ -234,6 +207,7 @@ class Tools {
     deleteMessage?: boolean,
     timeout?: number
   ): Promise<Collection<Snowflake, MessageReaction>>;
+
   static async addVote(
     toMessage: Message,
     pickOptions: string[],
@@ -242,6 +216,7 @@ class Tools {
     deleteMessage?: boolean,
     timeout?: number
   ): Promise<MessageReaction>;
+
   static async addVote(
     toMessage: Message,
     pickOptions: string[],
@@ -250,6 +225,7 @@ class Tools {
     deleteMessage?: boolean,
     timeout?: number
   ): Promise<MessageReaction | Collection<Snowflake, MessageReaction>>;
+
   static async addVote(
     toMessage: Message,
     pickOptions: string[],
@@ -314,6 +290,7 @@ class Tools {
     single: false,
     timeout?: number
   ): Promise<Collection<Snowflake, MessageReaction>>;
+
   static async createVoteMessage(
     toReplyMessage: Message,
     callToActionMessage: string,
@@ -321,6 +298,7 @@ class Tools {
     single: true,
     timeout?: number
   ): Promise<MessageReaction>;
+
   static async createVoteMessage(
     toReplyMessage: Message,
     callToActionMessage: string,
@@ -328,6 +306,7 @@ class Tools {
     single: boolean,
     timeout?: number
   ): Promise<MessageReaction | Collection<Snowflake, MessageReaction>>;
+
   static async createVoteMessage(
     toReplyMessage: Message,
     callToActionMessage: string,
@@ -357,6 +336,33 @@ class Tools {
     }
 
     return shallowCopy;
+  }
+
+  /**
+   * @param reaction The reaction added by a user
+   * @param user The user adding the reaction
+   */
+  private static signUpFilter(
+    reaction: MessageReaction,
+    user: User,
+    voters: Snowflake[],
+    currentVotes: Record<string, Snowflake[]>,
+    allowChangeVote: boolean
+  ): boolean {
+    if (user.bot) return false;
+
+    const disallowedSecondVote =
+      !allowChangeVote &&
+      Object.values(currentVotes).some((voteArray) =>
+        voteArray.includes(user.id)
+      );
+
+    if (!voters.includes(user.id) || disallowedSecondVote) {
+      reaction.users.remove(user);
+      return false;
+    }
+
+    return true;
   }
 }
 

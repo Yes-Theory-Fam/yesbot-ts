@@ -35,6 +35,8 @@ export abstract class GameSession<T extends SessionConfig> {
   public static config: GameConfig<any>;
   protected abstract sessionConfig: Partial<T>;
 
+  public constructor(protected hub: GameHub) {}
+
   public get channel(): TextChannel {
     return this.sessionConfig.channel;
   }
@@ -49,16 +51,6 @@ export abstract class GameSession<T extends SessionConfig> {
 
   public get leader(): GuildMember {
     return this.channel.guild.member(this.sessionConfig.leaderId);
-  }
-
-  public constructor(protected hub: GameHub) {}
-
-  // This is for a future feature
-  protected loadGame(gameConfig: T) {}
-
-  // This is for a future feature
-  protected saveGame() {
-    return this.sessionConfig;
   }
 
   public async signUp(): Promise<GuildMember[]> {
@@ -143,5 +135,13 @@ export abstract class GameSession<T extends SessionConfig> {
         "> channel now as this session is closed and the channel(s) will be deleted in a minute."
     );
     this.hub.closeSession(this);
+  }
+
+  // This is for a future feature
+  protected loadGame(gameConfig: T) {}
+
+  // This is for a future feature
+  protected saveGame() {
+    return this.sessionConfig;
   }
 }

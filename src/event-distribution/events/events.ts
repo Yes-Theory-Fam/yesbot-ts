@@ -17,7 +17,6 @@ import {
 } from "./reactions";
 import { StringIndexedHIOCTree } from "../types/hioc";
 import { Message, MessageReaction, User } from "discord.js";
-import { CommandHandler } from "../types/handler";
 
 export type EventHandlerOptions =
   | MessageEventHandlerOptions
