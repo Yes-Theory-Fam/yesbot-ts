@@ -41,13 +41,13 @@ This codebase uses Prettier for consistent formatting. Before submitting a PR fo
 issues using
 
 ```bash
-npm run lint
+yarn run lint
 ```
 
 then fix potential errors and warnings you might find. Quite a few can be fixed automatically using
 
 ```bash
-npm run lint:fix
+yarn run lint:fix
 ```
 
 ### Merge conflicts
@@ -76,7 +76,7 @@ The bot's main code is contained in the `src` directory which contains several s
 
 It also contains two single files:
 
-- prisma.ts - Simple setup of the TypeORM database connection
+- prisma.ts - Simple setup of the Prisma database connection
 - index.ts - Creates and exports the discord.js Client used in the entire application. This is the entry point for the
   bot.
 
@@ -146,7 +146,7 @@ Ensure that you have Docker running and no other connections on Port 5432 as thi
 2. Install the dependencies:
 
 ```bash
-npm install
+yarn install
 ```
 
 3. Create an `.env` in the root directory and copy the `.env.example`. Change the values to match your test server.
@@ -154,7 +154,7 @@ npm install
 4. Start the bot
 
 ```bash
-npm run start
+yarn run start
 ```
 
 The bot should now start up, connect to the database and send a ready message in the channel you specified in
