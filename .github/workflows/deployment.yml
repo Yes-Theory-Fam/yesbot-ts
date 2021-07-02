@@ -13,4 +13,4 @@ jobs:
           key: ${{ secrets.DEPLOYMENT_KEY }}
           username: ${{ secrets.YESBOT_USERNAME }}
           script: |
-            pwd
+            ./updater.sh
