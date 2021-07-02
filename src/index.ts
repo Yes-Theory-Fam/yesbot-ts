@@ -71,8 +71,8 @@ bot.on(
   }
 );
 bot.on("ready", async () => {
-  await ready(bot);
   distribution.handleEvent(DiscordEvent.READY, bot);
+  await ready(bot);
 });
 bot.on("voiceStateUpdate", (oldMember: VoiceState, newMember: VoiceState) =>
   voiceStateUpdate(oldMember, newMember)
