@@ -1,4 +1,4 @@
-import { Message, Snowflake, MessageEmbed } from "discord.js";
+import { Message, MessageEmbed, Snowflake } from "discord.js";
 import Tools from "../common/tools";
 import { isAuthorModerator } from "../common/moderator";
 import { createYesBotLogger } from "../log";

@@ -7,11 +7,11 @@ import {
   MessageReaction,
   User,
 } from "discord.js";
-import { zonedTimeToUtc, utcToZonedTime } from "date-fns-tz";
+import { utcToZonedTime, zonedTimeToUtc } from "date-fns-tz";
 import { getAllCountries, getCountry } from "countries-and-timezones";
 
 import Tools from "../common/tools";
-import { textLog, isAuthorModerator } from "../common/moderator";
+import { isAuthorModerator, textLog } from "../common/moderator";
 import { createYesBotLogger } from "../log";
 import prisma from "../prisma";
 import { Birthday } from "@yes-theory-fam/database/client";
@@ -241,7 +241,7 @@ export function getUserBirthdate(message: string): Date | null {
     return null;
   }
 
-  return new Date(1970, month, day);
+  return new Date(1972, month, day);
 }
 
 async function getUserTimezone(message: Message): Promise<string> {
@@ -396,27 +396,13 @@ function timezonesFromRole(props: CountryWithRegion): readonly string[] {
         .timezones // BajaSur and BajaNorth are invalid in JS.
         .filter((tz) => !tz.startsWith("Mexico/Baja"));
     case "Australia": {
-      switch (region) {
-        case "Western":
-          return ["Australia/Perth"];
-        case "Northern Territory":
-          return ["Australia/Darwin"];
-        case "Southern":
-          return ["Australia/Adelaide"];
-        case "Queensland":
-          return ["Australia/Brisbane"];
-        case "NSW + Victoria":
-          return ["Australia/Sydney"];
-        default:
-          return getCountry("AU")
-            .timezones // Invalid JS timezones
-            .filter(
-              (tz) =>
-                tz !== "Australia/LHI" &&
-                tz !== "Australia/ACT" &&
-                tz !== "Australia/NSW"
-            );
-      }
+      return [
+        "Australia/Perth",
+        "Australia/Darwin",
+        "Australia/Adelaide",
+        "Australia/Brisbane",
+        "Australia/Sydney",
+      ];
     }
     case "Canada": {
       return getCountry("CA").timezones.filter((tz) =>

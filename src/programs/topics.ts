@@ -1,4 +1,4 @@
-import { Message, TextChannel, MessageAttachment } from "discord.js";
+import { Message, MessageAttachment, TextChannel } from "discord.js";
 import axios from "axios";
 import { isAuthorModerator } from "../common/moderator";
 import { createYesBotLogger } from "../log";

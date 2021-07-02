@@ -17,15 +17,23 @@ import {
 } from "./reactions";
 import { StringIndexedHIOCTree } from "../types/hioc";
 import { Message, MessageReaction, User } from "discord.js";
-import { CommandHandler } from "../types/handler";
+import {
+  addGuildMemberUpdateHandler,
+  extractGuildMemberUpdateInfo,
+  GuildMemberUpdateArgument,
+  GuildMemberUpdateEventHandlerOptions,
+  GuildMemberUpdateHandlerFunction,
+} from "./guild-member-update";
 
 export type EventHandlerOptions =
   | MessageEventHandlerOptions
-  | ReactionEventHandlerOptions;
+  | ReactionEventHandlerOptions
+  | GuildMemberUpdateEventHandlerOptions;
 
 export type HandlerFunction<T extends DiscordEvent> =
   | MessageHandlerFunction<T>
-  | ReactionHandlerFunction<T>;
+  | ReactionHandlerFunction<T>
+  | GuildMemberUpdateHandlerFunction<T>;
 
 export const addEventHandler: AddEventHandlerFunction<EventHandlerOptions> = (
   options,
@@ -48,6 +56,12 @@ export const addEventHandler: AddEventHandlerFunction<EventHandlerOptions> = (
           DiscordEvent.REACTION_ADD | DiscordEvent.REACTION_REMOVE
         >
       );
+    case DiscordEvent.GUILD_MEMBER_UPDATE:
+      return addGuildMemberUpdateHandler(
+        options,
+        ioc,
+        tree as StringIndexedHIOCTree<DiscordEvent.GUILD_MEMBER_UPDATE>
+      );
   }
 };
 
@@ -55,13 +69,23 @@ export const extractEventInfo: ExtractInfoFunction<DiscordEvent> = (
   event,
   ...args
 ) => {
-  switch (event) {
-    case DiscordEvent.MESSAGE:
-      return extractMessageInfo(args[0] as Message);
-    case DiscordEvent.REACTION_ADD:
-    case DiscordEvent.REACTION_REMOVE:
-      return extractReactionInfo(args[0] as MessageReaction, args[1] as User);
-    default:
-      throw new Error("Could not extract info for event " + event);
-  }
+  const getInfos = () => {
+    switch (event) {
+      case DiscordEvent.MESSAGE:
+        return extractMessageInfo(args[0] as Message);
+      case DiscordEvent.REACTION_ADD:
+      case DiscordEvent.REACTION_REMOVE:
+        return extractReactionInfo(args[0] as MessageReaction, args[1] as User);
+      case DiscordEvent.GUILD_MEMBER_UPDATE:
+        return extractGuildMemberUpdateInfo(
+          args[0] as GuildMemberUpdateArgument,
+          args[1] as GuildMemberUpdateArgument
+        );
+      default:
+        throw new Error("Could not extract info for event " + event);
+    }
+  };
+  const infos = getInfos();
+
+  return Array.isArray(infos) ? infos : [infos];
 };

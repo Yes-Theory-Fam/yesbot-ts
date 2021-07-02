@@ -4,19 +4,19 @@
  */
 
 import { config } from "dotenv";
-config();
-
 import {
   Client,
-  PartialGuildMember,
   Guild,
+  PartialGuildMember,
   Snowflake,
   TextChannel,
 } from "discord.js";
-import { writeFile, readFile } from "fs";
+import { readFile, writeFile } from "fs";
 import { get, request, RequestOptions } from "https";
 import { exec } from "child_process";
 import { CountryRoleFinder } from "../utils/country-role-finder";
+
+config();
 
 const [, , guildId, roleId, token, limit] = process.argv;
 const bot = new Client({

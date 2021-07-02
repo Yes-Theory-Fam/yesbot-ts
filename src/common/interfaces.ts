@@ -1,4 +1,4 @@
-import { OverwriteResolvable, ChannelResolvable } from "discord.js";
+import { ChannelResolvable, OverwriteResolvable } from "discord.js";
 
 export interface TextChannelOptions {
   topic?: string;

@@ -27,30 +27,32 @@ export class EventDistribution {
     [DiscordEvent.MESSAGE]: {},
     [DiscordEvent.REACTION_ADD]: {},
     [DiscordEvent.REACTION_REMOVE]: {},
+    [DiscordEvent.GUILD_MEMBER_UPDATE]: {},
   };
 
   handleEvent<T extends DiscordEvent>(
     event: T,
     ...args: Parameters<HandlerFunction<T>>
   ) {
-    const { handlerKeys, isDirectMessage, member } = extractEventInfo(
-      event,
-      ...args
-    );
+    const infos = extractEventInfo(event, ...args);
 
-    const roleNames = member?.roles.cache.map((r) => r.name) ?? [];
-    const eventHandlers = this.getHandlers(this.handlers[event], handlerKeys);
-    const filteredHandlers = this.filterHandlers(
-      eventHandlers,
-      isDirectMessage,
-      roleNames
-    );
+    for (const info of infos) {
+      const { handlerKeys, isDirectMessage, member } = info;
 
-    for (const { ioc } of filteredHandlers) {
-      let instance = ioc;
-      if (typeof instance === "function") instance = new instance();
+      const roleNames = member?.roles.cache.map((r) => r.name) ?? [];
+      const eventHandlers = this.getHandlers(this.handlers[event], handlerKeys);
+      const filteredHandlers = this.filterHandlers(
+        eventHandlers,
+        isDirectMessage,
+        roleNames
+      );
 
-      instance.handle(...args);
+      for (const { ioc } of filteredHandlers) {
+        let instance = ioc;
+        if (typeof instance === "function") instance = new instance();
+
+        instance.handle(...args);
+      }
     }
   }
 
@@ -99,6 +101,8 @@ export class EventDistribution {
     roleNames: string[]
   ): HIOC<T>[] {
     const locationFilteredHandlers = handlers.filter((eh) => {
+      if (eh.options.event === DiscordEvent.GUILD_MEMBER_UPDATE) return true;
+
       const { location } = eh.options;
       switch (location) {
         case EventLocation.ANYWHERE:
@@ -111,6 +115,8 @@ export class EventDistribution {
     });
 
     return locationFilteredHandlers.filter((eh) => {
+      if (eh.options.event === DiscordEvent.GUILD_MEMBER_UPDATE) return true;
+
       const { requiredRoles } = eh.options;
       return requiredRoles.every((role) => roleNames.includes(role));
     });

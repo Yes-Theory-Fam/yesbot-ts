@@ -1,13 +1,4 @@
-import {
-  Guild,
-  Message,
-  MessageReaction,
-  PartialUser,
-  Snowflake,
-  TextChannel,
-  User,
-  Client,
-} from "discord.js";
+import { Message, MessageReaction, PartialUser, User } from "discord.js";
 import Tools from "../common/tools";
 import { GroupManagerTools, NitroColors } from "../programs";
 import { hasRole } from "../common/moderator";

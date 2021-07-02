@@ -7,9 +7,13 @@ services:
       - .env
     ports:
       - 5432:5432
+    volumes:
+      - ./db:/var/lib/postgresql/data
   yesbot:
     image: yesbot:latest
     env_file:
       - .env
     depends_on:
+      - postgres
+    links:
       - postgres

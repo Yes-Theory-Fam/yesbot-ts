@@ -1,5 +1,5 @@
 import { EventHandlerOptions, HandlerFunction } from "../events/events";
-import { GuildMember } from "discord.js";
+import { GuildMember, PartialGuildMember } from "discord.js";
 import { CommandHandler } from "./handler";
 import { InstanceOrConstructor, StringIndexedHIOCTree } from "./hioc";
 
@@ -7,6 +7,7 @@ export const enum DiscordEvent {
   MESSAGE = "MESSAGE",
   REACTION_ADD = "REACTION_ADD",
   REACTION_REMOVE = "REACTION_REMOVE",
+  GUILD_MEMBER_UPDATE = "GUILD_MEMBER_UPDATE",
 }
 
 export const enum EventLocation {
@@ -36,18 +37,18 @@ export type HandlerFunctionFor<
 
 export interface HandlerInfo {
   handlerKeys: string[];
-  member?: GuildMember;
+  member?: GuildMember | PartialGuildMember;
   isDirectMessage: boolean;
 }
 
 export type ExtractInfoFunction<T extends DiscordEvent> = (
   event: T,
   ...args: Parameters<HandlerFunction<T>>
-) => HandlerInfo;
+) => HandlerInfo[];
 
 export type ExtractInfoForEventFunction<T extends DiscordEvent> = (
   ...args: Parameters<HandlerFunction<T>>
-) => HandlerInfo;
+) => HandlerInfo | HandlerInfo[];
 
 export type AddEventHandlerFunction<T extends EventHandlerOptions> = (
   options: T,
