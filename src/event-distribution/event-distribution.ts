@@ -68,14 +68,17 @@ export class EventDistribution {
 
   async initialize(): Promise<void> {
     return new Promise((res, rej) => {
-      glob("src/programs/*.ts", async (e, matches) => {
+      const extension = process.env.NODE_ENV === "production" ? ".js" : ".ts";
+      const directory = process.env.NODE_ENV === "production" ? "build" : "src";
+
+      glob(`${directory}/programs/*${extension}`, async (e, matches) => {
         if (e) {
           logger.error("Error loading commands: ", e);
           return;
         }
 
         const loaders = matches
-          .filter((p) => !p.endsWith(".spec.ts"))
+          .filter((p) => !p.endsWith(`.spec${extension}`))
           .map((p) => {
             const split = p.split(".");
             split.unshift();
