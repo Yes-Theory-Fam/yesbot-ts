@@ -11,7 +11,7 @@ WORKDIR /usr/src/app
 
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/package.json ./package.json
-COPY --from=builder /usr/src/app/package-lock.json ./package-lock.json
+COPY --from=builder /usr/src/app/yarn.lock ./yarn.lock
 COPY --from=builder /usr/src/app/build ./build
 
 ARG NODE_ENV=production
