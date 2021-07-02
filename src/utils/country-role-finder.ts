@@ -4,6 +4,14 @@ import { Role } from "discord.js";
 type FinderCountryProperties = Pick<Country, "name" | "emoji">;
 
 export class CountryRoleFinder {
+  private static emojiOverrides: Record<string, string> = {
+    "🇺🇲": "🇺🇸",
+    "🇨🇵": "🇫🇷",
+    "🇲🇫": "🇫🇷",
+    "🇪🇦": "🇪🇸",
+    "🇮🇴": "🇬🇧",
+  };
+
   static getCountryByRole(input: string, allowRegions = false): string | null {
     const result = this.getMatches(input, allowRegions);
     return result?.name;
@@ -31,14 +39,6 @@ export class CountryRoleFinder {
       this.check(country, input, allowRegions)
     );
   }
-
-  private static emojiOverrides: Record<string, string> = {
-    "🇺🇲": "🇺🇸",
-    "🇨🇵": "🇫🇷",
-    "🇲🇫": "🇫🇷",
-    "🇪🇦": "🇪🇸",
-    "🇮🇴": "🇬🇧",
-  };
 
   private static check(
     country: FinderCountryProperties,

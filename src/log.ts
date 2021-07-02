@@ -13,7 +13,9 @@ const fmt = format.printf(({ level, message, timestamp, ...meta }) => {
 
   // Add a json-kinda dict with metadata if present
   if (Object.keys(fields).length > 0) {
-    return `${out}${level} [${kind}] [${program}]: ${message} ${JSON.stringify(fields)}`;
+    return `${out}${level} [${kind}] [${program}]: ${message} ${JSON.stringify(
+      fields
+    )}`;
   }
   return `${out}${level} [${kind}] [${program}]: ${message}`;
 });
@@ -27,28 +29,30 @@ if (USE_COLORS) {
 
 // And some simple timestamps
 if (SHOW_TIMESTAMP) {
-  formatters.push(format.timestamp({
-    format: "HH:mm:ss.SSS",
-  }));
+  formatters.push(
+    format.timestamp({
+      format: "HH:mm:ss.SSS",
+    })
+  );
 }
 
 // Lastly, add our own formatter.
 formatters.push(fmt);
 
 const loggerOpts: winston.LoggerOptions = {
-  level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+  level: process.env.NODE_ENV === "production" ? "info" : "debug",
   format: format.combine(...formatters),
-  transports: [
-    new transports.Console(),
-  ]
+  transports: [new transports.Console()],
 };
 
 const rootLogger = createLogger(loggerOpts);
 
-export function createYesBotLogger(kind: string, program: string): winston.Logger {
+export function createYesBotLogger(
+  kind: string,
+  program: string
+): winston.Logger {
   return rootLogger.child({
     kind,
     program,
   });
 }
-

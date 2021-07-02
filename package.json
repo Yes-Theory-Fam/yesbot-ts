@@ -6,14 +6,14 @@
   "prettier": "@yestheoryfam/prettier-config",
   "scripts": {
     "build:docker": "docker build --force-rm --label yesbot --build-arg VCS_REF=$(git rev-parse --short HEAD) -t yesbot .",
-    "build:prepare": "NODE_ENV=production && rm -rf node_modules && npm install && npm run tsc",
+    "build:prepare": "NODE_ENV=production && rm -rf node_modules && yarn install && yarn run tsc",
     "build:run": "docker run --link yesbot-ts_postgres_1 .",
-    "db:generate": "npm run db:prisma generate",
-    "db:migrate": "env-cmd npm run db:prisma migrate",
+    "db:generate": "yarn run db:prisma generate",
+    "db:migrate": "env-cmd yarn run db:prisma migrate",
     "db:prisma": "npx prisma",
-    "lint": "prettier --check \"src/!(collections)/**/*.(js|ts|json)\" \"__tests__/**/*.(js|ts|json)\"",
-    "lint:fix": "prettier --write \"src/!(collections)/**/*.(js|ts|json)\" \"__tests__/**/*.(js|ts|json)\"",
-    "postinstall": "npm run db:generate",
+    "lint": "prettier --check \"src/**/*.(js|ts|json)\" \"__tests__/**/*.(js|ts|json)\"",
+    "lint:fix": "prettier --write \"src/**/*.(js|ts|json)\" \"__tests__/**/*.(js|ts|json)\"",
+    "postinstall": "yarn run db:generate",
     "start": "env-cmd ts-node-dev --respawn src/index.ts",
     "start:prod": "node build/index.js",
     "start:prodOld": "env-cmd ts-node src/index.ts",
@@ -27,7 +27,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@yes-theory-fam/database": "0.6.1",
+    "@yes-theory-fam/database": "0.7.1",
     "axios": "0.21.1",
     "countries-and-timezones": "2.4.0",
     "country-code-emoji": "2.3.0",
@@ -51,10 +51,10 @@
     "env-cmd": "10.1.0",
     "jest": "27.0.5",
     "prettier": "2.3.2",
-    "prisma": "2.25.0",
+    "prisma": "2.26.0",
     "ts-jest": "27.0.3",
     "ts-node-dev": "1.1.6",
-    "typegraphql-prisma": "0.14.4",
+    "typegraphql-prisma": "0.14.5",
     "typescript": "4.3.4"
   }
 }

@@ -85,3 +85,29 @@ options and generic argument for the `CommandHandler`;
 ##### Arguments
 
 The handler function is called with the Discord.JS `MessageReaction` and `User` objects received as event.
+
+### Guild Member Update
+
+The bot receives an event when a guild member is updated. That includes role changes and nickname changes for example.
+
+#### Options
+
+The following options are available:
+
+```ts
+interface GuildMemberUpdateEventHandlerOptions {
+  event: DiscordEvent.GUILD_MEMBER_UPDATE;
+  roleNamesAdded?: string[]; // When any of these roles are added, the handler is called
+  roleNamesRemoved?: string[]; // When any of these roles are removed, the handler is called
+}
+```
+
+#### Enum
+
+Use `DiscordEvent.GUILD_MEMBER_UPDATE` as event in the decorator's options and generic argument for the `CommandHandler`.
+
+#### Arguments
+
+The handler function is called with two `GuildMember | PartialGuildMember` objects, the first representing the member before the change, the second after the change.
+
+

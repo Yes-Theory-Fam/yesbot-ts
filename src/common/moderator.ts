@@ -1,11 +1,10 @@
 import {
-  Message,
+  Client,
   GuildMember,
+  Message,
   PartialGuildMember,
   TextChannel,
-  Client,
 } from "discord.js";
-import { CountryRoleFinder } from "../utils/country-role-finder";
 
 export const isAuthorModerator = (message: Message): boolean => {
   if (message.member.roles.hoist) {

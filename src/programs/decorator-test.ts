@@ -1,10 +1,11 @@
-import { Message } from "discord.js";
+import { Message, MessageReaction, User } from "discord.js";
 import {
   Command,
   CommandHandler,
   DiscordEvent,
   EventLocation,
 } from "../event-distribution";
+import { GuildMemberUpdateArgument } from "../event-distribution/events/guild-member-update";
 
 /**
  * Example of a stateless message handler (stateful: true missing in config).
@@ -64,5 +65,39 @@ export class DecoratorTest3 extends CommandHandler<DiscordEvent.MESSAGE> {
   handle(message: Message): void {
     ++this.called;
     console.log(`Called handler 3 ${this.called} times`);
+  }
+}
+
+/**
+ * Example of a ReactionAdd Handler.
+ */
+@Command({
+  event: DiscordEvent.REACTION_ADD,
+  description: "What gives?",
+  stateful: false,
+  emoji: "🤓",
+  channelNames: ["bot-output"],
+})
+export class DecoratorTest4 extends CommandHandler<DiscordEvent.REACTION_ADD> {
+  handle(reaction: MessageReaction, user: User): void {
+    console.log(`Called handler 4`);
+  }
+}
+
+/**
+ * Example of a MemberUpdate Handler
+ */
+@Command({
+  event: DiscordEvent.GUILD_MEMBER_UPDATE,
+  description: "Weee",
+  roleNamesAdded: ["Yes Theory"],
+  roleNamesRemoved: ["Seek Discomfort"],
+})
+export class DecoratorTest5 extends CommandHandler<DiscordEvent.GUILD_MEMBER_UPDATE> {
+  handle(
+    oldMember: GuildMemberUpdateArgument,
+    newMember: GuildMemberUpdateArgument
+  ): void {
+    console.log(`Called handler 5`);
   }
 }
