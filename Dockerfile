@@ -13,6 +13,7 @@ COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/package.json ./package.json
 COPY --from=builder /usr/src/app/yarn.lock ./yarn.lock
 COPY --from=builder /usr/src/app/build ./build
+COPY /deployment/docker-entrypoint.sh ./docker-entrypoint.sh
 
 ARG NODE_ENV=production
 ARG BOT_TOKEN
@@ -36,4 +37,4 @@ ENV ENGINEER_ROLE_NAME $ENGINEER_ROLE_NAME
 ENV PRISMA_DATABASE_URL $PRISMA_DATABASE_URL
 ENV VCS_REF $VCS_REF
 
-CMD [ "yarn", "run", "start:prod" ]
+ENTRYPOINT ["./docker-entrypoint.sh"]
