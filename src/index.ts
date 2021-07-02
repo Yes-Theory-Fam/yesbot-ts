@@ -70,7 +70,10 @@ bot.on(
     );
   }
 );
-bot.on("ready", () => ready(bot));
+bot.on("ready", async () => {
+  await ready(bot);
+  distribution.handleEvent(DiscordEvent.READY, bot);
+});
 bot.on("voiceStateUpdate", (oldMember: VoiceState, newMember: VoiceState) =>
   voiceStateUpdate(oldMember, newMember)
 );

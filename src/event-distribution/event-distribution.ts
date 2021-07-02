@@ -28,6 +28,7 @@ export class EventDistribution {
     [DiscordEvent.REACTION_ADD]: {},
     [DiscordEvent.REACTION_REMOVE]: {},
     [DiscordEvent.GUILD_MEMBER_UPDATE]: {},
+    [DiscordEvent.READY]: {},
   };
 
   handleEvent<T extends DiscordEvent>(
@@ -101,7 +102,11 @@ export class EventDistribution {
     roleNames: string[]
   ): HIOC<T>[] {
     const locationFilteredHandlers = handlers.filter((eh) => {
-      if (eh.options.event === DiscordEvent.GUILD_MEMBER_UPDATE) return true;
+      if (
+        eh.options.event === DiscordEvent.GUILD_MEMBER_UPDATE ||
+        eh.options.event === DiscordEvent.READY
+      )
+        return true;
 
       const { location } = eh.options;
       switch (location) {
@@ -115,7 +120,11 @@ export class EventDistribution {
     });
 
     return locationFilteredHandlers.filter((eh) => {
-      if (eh.options.event === DiscordEvent.GUILD_MEMBER_UPDATE) return true;
+      if (
+        eh.options.event === DiscordEvent.GUILD_MEMBER_UPDATE ||
+        eh.options.event === DiscordEvent.READY
+      )
+        return true;
 
       const { requiredRoles } = eh.options;
       return requiredRoles.every((role) => roleNames.includes(role));

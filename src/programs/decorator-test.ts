@@ -1,4 +1,4 @@
-import { Message, MessageReaction, User } from "discord.js";
+import { Client, Message, MessageReaction, User } from "discord.js";
 import {
   Command,
   CommandHandler,
@@ -80,7 +80,7 @@ export class DecoratorTest3 extends CommandHandler<DiscordEvent.MESSAGE> {
 })
 export class DecoratorTest4 extends CommandHandler<DiscordEvent.REACTION_ADD> {
   handle(reaction: MessageReaction, user: User): void {
-    console.log(`Called handler 4`);
+    console.log("Called handler 4");
   }
 }
 
@@ -98,6 +98,18 @@ export class DecoratorTest5 extends CommandHandler<DiscordEvent.GUILD_MEMBER_UPD
     oldMember: GuildMemberUpdateArgument,
     newMember: GuildMemberUpdateArgument
   ): void {
-    console.log(`Called handler 5`);
+    console.log("Called handler 5");
+  }
+}
+
+/**
+ * Example of a Ready Handler
+ */
+@Command({
+  event: DiscordEvent.READY,
+})
+export class DecoratorTest6 extends CommandHandler<DiscordEvent.READY> {
+  handle(client: Client): void {
+    console.log("Called handler 6");
   }
 }
