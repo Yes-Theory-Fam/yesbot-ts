@@ -1,11 +1,14 @@
-name: remote ssh command
-on: [push]
+name: Deploy new Version
+on:
+  release:
+    types: [ created ]
 jobs:
   deploy:
     name: Deploy
+    needs: build-and-push-image
     runs-on: ubuntu-latest
     steps:
-      - name: executing remote ssh commands using password
+      - name: deploy new bot version
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.YESBOT_HOSTNAME }}
@@ -13,4 +16,4 @@ jobs:
           key: ${{ secrets.DEPLOYMENT_KEY }}
           username: ${{ secrets.YESBOT_USERNAME }}
           script: |
-            ./updater.sh
+            sudo ./updater.sh
