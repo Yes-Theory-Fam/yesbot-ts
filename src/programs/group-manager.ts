@@ -526,10 +526,10 @@ const changeDeadtime = async (
   newDeadtime: string
 ) => {
   const deadtimeNumber = Number(newDeadtime);
-  if (isNaN(deadtimeNumber)) {
+  if (isNaN(deadtimeNumber) || deadtimeNumber < 0) {
     await Tools.handleUserError(
       message,
-      "Please write a number for the new deadtime! It will be interpreted as minutes for how long the chat needs to be dead for the group to be pinged"
+      "Please write a postive number for the new deadtime! It will be interpreted as minutes for how long the chat needs to be dead for the group to be pinged"
     );
     return;
   }
@@ -543,10 +543,20 @@ const changeDeadtime = async (
     },
   });
 
-  await prisma.userGroup.update({
-    where: { id: group.id },
-    data: { deadtime: deadtimeNumber },
-  });
+  if (!group) {
+    await message.reply("That group doesn't exist!");
+    return;
+  }
+
+  try {
+    await prisma.userGroup.update({
+      where: { id: group.id },
+      data: { deadtime: deadtimeNumber },
+    });
+  } catch (error) {
+    logger.error("Failed to update database group deadTime," + error);
+    await message.react("👎");
+  }
 
   await message.react("👍");
 };
@@ -802,18 +812,18 @@ const isChannelAllowed = (channel: Channel): boolean => {
 };
 
 const timeRemainingForDeadchat = async (message: Message, group: UserGroup) => {
-  const deadTime = group.deadtime;
   const lastMessages = (
     await message.channel.messages.fetch({ limit: 2 })
   ).array();
-  let timeDifference = deadTime;
 
-  if (lastMessages.length === 2) {
-    timeDifference =
-      (Date.now() - lastMessages[1].createdTimestamp) / 1000 / 60;
+  if (lastMessages.length < 2) {
+    return 0;
   }
 
-  return deadTime - Math.round(timeDifference);
+  const timeDifference =
+    (Date.now() - lastMessages[1].createdTimestamp) / 1000 / 60;
+
+  return group.deadtime - Math.round(timeDifference);
 };
 
 const isGroupAllowed = (groupName: string) => {
