@@ -65,9 +65,10 @@ const groupManager = async (message: Message, isConfig: boolean) => {
         "update",
         "toggle",
         "changeCooldown",
+        "changeDeadtime",
       ].includes(action)
     ) {
-      const helpMessage = `Incorrect syntax, please use the following: \`!group join|leave|create|search|delete|update|changeCooldown\`. If you need additional help, react with 🛠️ below to tag a ${process.env.ENGINEER_ROLE_NAME}`;
+      const helpMessage = `Incorrect syntax, please use the following: \`!group join|leave|create|search|delete|update|changeCooldown|changeDeadtime\`. If you need additional help, react with 🛠️ below to tag a ${process.env.ENGINEER_ROLE_NAME}`;
       await message.reply(helpMessage);
       return;
     }
@@ -120,6 +121,17 @@ const groupManager = async (message: Message, isConfig: boolean) => {
             );
         break;
       }
+
+      case "changeDeadtime": {
+        moderator
+          ? await changeDeadtime(message, requestName, description)
+          : await Tools.handleUserError(
+              message,
+              "You do not have permissions to use this command."
+            );
+        break;
+      }
+
       case "changeCooldown": {
         moderator
           ? await changeCooldown(message, requestName, description)
@@ -170,6 +182,18 @@ const groupManager = async (message: Message, isConfig: boolean) => {
 
     const group = matchingGroups[0];
     const timeDifference = (Date.now() - group.lastUsed.getTime()) / 1000 / 60;
+    const deadChatTimeRemaining = await timeRemainingForDeadchat(
+      message,
+      group
+    );
+
+    if (deadChatTimeRemaining > 0) {
+      await Tools.handleUserError(
+        message,
+        `Chat is not dead! You can ping this group if there have been no messages in the next ${deadChatTimeRemaining} minutes.`
+      );
+      return;
+    }
 
     if (timeDifference < group.cooldown) {
       const remainingCooldown = group.cooldown - Math.round(timeDifference);
@@ -496,6 +520,48 @@ const updateGroup = async (
   );
 };
 
+const changeDeadtime = async (
+  message: Message,
+  requestedGroupName: string,
+  newDeadtime: string
+) => {
+  const deadtimeNumber = Number(newDeadtime);
+  if (isNaN(deadtimeNumber) || deadtimeNumber < 0) {
+    await Tools.handleUserError(
+      message,
+      "Please write a postive number for the new deadtime! It will be interpreted as minutes for how long the chat needs to be dead for the group to be pinged"
+    );
+    return;
+  }
+
+  const group = await prisma.userGroup.findFirst({
+    where: {
+      name: {
+        equals: requestedGroupName,
+        mode: "insensitive",
+      },
+    },
+  });
+
+  if (!group) {
+    await message.reply("That group doesn't exist!");
+    return;
+  }
+
+  try {
+    await prisma.userGroup.update({
+      where: { id: group.id },
+      data: { deadtime: deadtimeNumber },
+    });
+  } catch (error) {
+    logger.error("Failed to update database group deadTime," + error);
+    await message.react("👎");
+    return;
+  }
+
+  await message.react("👍");
+};
+
 const changeCooldown = async (
   message: Message,
   requestedGroupName: string,
@@ -744,6 +810,21 @@ const isChannelAllowed = (channel: Channel): boolean => {
     return true;
 
   return allowedChannels.includes(channel.name);
+};
+
+const timeRemainingForDeadchat = async (message: Message, group: UserGroup) => {
+  const lastMessages = (
+    await message.channel.messages.fetch({ limit: 2 })
+  ).array();
+
+  if (lastMessages.length < 2) {
+    return 0;
+  }
+
+  const timeDifference =
+    (Date.now() - lastMessages[1].createdTimestamp) / 1000 / 60;
+
+  return group.deadtime - Math.round(timeDifference);
 };
 
 const isGroupAllowed = (groupName: string) => {
