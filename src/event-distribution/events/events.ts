@@ -16,7 +16,7 @@ import {
   ReactionHandlerFunction,
 } from "./reactions";
 import { StringIndexedHIOCTree } from "../types/hioc";
-import { Message, MessageReaction, User } from "discord.js";
+import { Client, Message, MessageReaction, User } from "discord.js";
 import {
   addGuildMemberUpdateHandler,
   extractGuildMemberUpdateInfo,
@@ -24,15 +24,23 @@ import {
   GuildMemberUpdateEventHandlerOptions,
   GuildMemberUpdateHandlerFunction,
 } from "./guild-member-update";
+import {
+  addReadyHandler,
+  extractReadyInfo,
+  ReadyEventHandlerOptions,
+  ReadyHandlerFunction,
+} from "./ready";
 
 export type EventHandlerOptions =
   | MessageEventHandlerOptions
   | ReactionEventHandlerOptions
+  | ReadyEventHandlerOptions
   | GuildMemberUpdateEventHandlerOptions;
 
 export type HandlerFunction<T extends DiscordEvent> =
   | MessageHandlerFunction<T>
   | ReactionHandlerFunction<T>
+  | ReadyHandlerFunction<T>
   | GuildMemberUpdateHandlerFunction<T>;
 
 export const addEventHandler: AddEventHandlerFunction<EventHandlerOptions> = (
@@ -62,6 +70,12 @@ export const addEventHandler: AddEventHandlerFunction<EventHandlerOptions> = (
         ioc,
         tree as StringIndexedHIOCTree<DiscordEvent.GUILD_MEMBER_UPDATE>
       );
+    case DiscordEvent.READY:
+      return addReadyHandler(
+        options,
+        ioc,
+        tree as StringIndexedHIOCTree<DiscordEvent.READY>
+      );
   }
 };
 
@@ -81,6 +95,8 @@ export const extractEventInfo: ExtractInfoFunction<DiscordEvent> = (
           args[0] as GuildMemberUpdateArgument,
           args[1] as GuildMemberUpdateArgument
         );
+      case DiscordEvent.READY:
+        return extractReadyInfo(args[0] as Client);
       default:
         throw new Error("Could not extract info for event " + event);
     }

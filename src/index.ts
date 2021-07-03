@@ -23,12 +23,12 @@ import distribution, { DiscordEvent } from "./event-distribution";
 const logger = createYesBotLogger("main", "index");
 logger.info("Starting YesBot");
 
-logger.info("Initializing event-distribution");
-distribution.initialize();
-
 const bot = new Client({ partials: ["REACTION", "MESSAGE"] });
-logger.debug("Logging in to Discord Gateway");
-bot.login(process.env.BOT_TOKEN);
+logger.info("Initializing event-distribution");
+distribution.initialize().then(() => {
+  logger.debug("Logging in to Discord Gateway");
+  return bot.login(process.env.BOT_TOKEN);
+});
 
 //! ================= EVENT HANDLERS ====================
 bot.on("guildMemberRemove", (member: GuildMember | PartialGuildMember) =>
@@ -70,7 +70,10 @@ bot.on(
     );
   }
 );
-bot.on("ready", () => ready(bot));
+bot.on("ready", async () => {
+  distribution.handleEvent(DiscordEvent.READY, bot);
+  await ready(bot);
+});
 bot.on("voiceStateUpdate", (oldMember: VoiceState, newMember: VoiceState) =>
   voiceStateUpdate(oldMember, newMember)
 );
