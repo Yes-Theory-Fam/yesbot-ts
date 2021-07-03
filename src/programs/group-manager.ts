@@ -556,6 +556,7 @@ const changeDeadtime = async (
   } catch (error) {
     logger.error("Failed to update database group deadTime," + error);
     await message.react("👎");
+    return;
   }
 
   await message.react("👍");
