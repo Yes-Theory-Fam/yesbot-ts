@@ -28,6 +28,7 @@ export class EventDistribution {
     [DiscordEvent.REACTION_ADD]: {},
     [DiscordEvent.REACTION_REMOVE]: {},
     [DiscordEvent.GUILD_MEMBER_UPDATE]: {},
+    [DiscordEvent.READY]: {},
   };
 
   handleEvent<T extends DiscordEvent>(
@@ -67,14 +68,17 @@ export class EventDistribution {
 
   async initialize(): Promise<void> {
     return new Promise((res, rej) => {
-      glob("src/programs/*.ts", async (e, matches) => {
+      const extension = process.env.NODE_ENV === "production" ? ".js" : ".ts";
+      const directory = process.env.NODE_ENV === "production" ? "build" : "src";
+
+      glob(`${directory}/programs/*${extension}`, async (e, matches) => {
         if (e) {
           logger.error("Error loading commands: ", e);
           return;
         }
 
         const loaders = matches
-          .filter((p) => !p.endsWith(".spec.ts"))
+          .filter((p) => !p.endsWith(`.spec${extension}`))
           .map((p) => {
             const split = p.split(".");
             split.unshift();
@@ -101,7 +105,11 @@ export class EventDistribution {
     roleNames: string[]
   ): HIOC<T>[] {
     const locationFilteredHandlers = handlers.filter((eh) => {
-      if (eh.options.event === DiscordEvent.GUILD_MEMBER_UPDATE) return true;
+      if (
+        eh.options.event === DiscordEvent.GUILD_MEMBER_UPDATE ||
+        eh.options.event === DiscordEvent.READY
+      )
+        return true;
 
       const { location } = eh.options;
       switch (location) {
@@ -115,7 +123,11 @@ export class EventDistribution {
     });
 
     return locationFilteredHandlers.filter((eh) => {
-      if (eh.options.event === DiscordEvent.GUILD_MEMBER_UPDATE) return true;
+      if (
+        eh.options.event === DiscordEvent.GUILD_MEMBER_UPDATE ||
+        eh.options.event === DiscordEvent.READY
+      )
+        return true;
 
       const { requiredRoles } = eh.options;
       return requiredRoles.every((role) => roleNames.includes(role));

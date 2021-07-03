@@ -9,7 +9,10 @@ const explanation =
   "Commands that require roles or channel names won't work in DMs since the roles cannot be read from DM events.";
 
 export const Command = <T extends EventHandlerOptions>(options: T) => {
-  if (options.event !== DiscordEvent.GUILD_MEMBER_UPDATE) {
+  if (
+    options.event !== DiscordEvent.GUILD_MEMBER_UPDATE &&
+    options.event !== DiscordEvent.READY
+  ) {
     setDefaultOnBaseOptions(options);
   }
 
@@ -17,7 +20,10 @@ export const Command = <T extends EventHandlerOptions>(options: T) => {
     const commandClassName = target.name;
     logger.debug(`Loading new command: ${target.name}`);
 
-    if (options.event !== DiscordEvent.GUILD_MEMBER_UPDATE) {
+    if (
+      options.event !== DiscordEvent.GUILD_MEMBER_UPDATE &&
+      options.event !== DiscordEvent.READY
+    ) {
       checkBaseOptions(options, commandClassName);
     }
 

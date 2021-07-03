@@ -5,19 +5,27 @@ import {
 import {
   addMessageHandler,
   extractMessageInfo,
-  MessageEventHandlerOptions,
 } from "../../../src/event-distribution/events/message";
 import { CommandHandler, DiscordEvent } from "../../../src/event-distribution";
 import {
   addReactionHandler,
   extractReactionInfo,
-  ReactionEventHandlerOptions,
 } from "../../../src/event-distribution/events/reactions";
 import { mocked } from "ts-jest/utils";
 import MockDiscord from "../../mocks";
+import {
+  addReadyHandler,
+  extractReadyInfo,
+} from "../../../src/event-distribution/events/ready";
+import {
+  addGuildMemberUpdateHandler,
+  extractGuildMemberUpdateInfo,
+} from "../../../src/event-distribution/events/guild-member-update";
 
+jest.mock("../../../src/event-distribution/events/guild-member-update");
 jest.mock("../../../src/event-distribution/events/message");
 jest.mock("../../../src/event-distribution/events/reactions");
+jest.mock("../../../src/event-distribution/events/ready");
 
 describe("EventDistribution events", () => {
   const mockedAddMessageHandler = mocked(addMessageHandler, true);
@@ -31,9 +39,7 @@ describe("EventDistribution events", () => {
         event: DiscordEvent.MESSAGE,
         trigger: "!test",
       },
-      {} as CommandHandler<
-        (MessageEventHandlerOptions | ReactionEventHandlerOptions)["event"]
-      >,
+      {} as CommandHandler<DiscordEvent>,
       {}
     );
 
@@ -48,9 +54,7 @@ describe("EventDistribution events", () => {
         event: DiscordEvent.REACTION_REMOVE,
         emoji: "♥️",
       },
-      {} as CommandHandler<
-        (MessageEventHandlerOptions | ReactionEventHandlerOptions)["event"]
-      >,
+      {} as CommandHandler<DiscordEvent>,
       {}
     );
 
@@ -65,13 +69,38 @@ describe("EventDistribution events", () => {
         event: DiscordEvent.REACTION_ADD,
         emoji: "♥️",
       },
-      {} as CommandHandler<
-        (MessageEventHandlerOptions | ReactionEventHandlerOptions)["event"]
-      >,
+      {} as CommandHandler<DiscordEvent>,
       {}
     );
     expect(mockedAddMessageHandler).not.toHaveBeenCalled();
     expect(mockedAddReactionHandler).toHaveBeenCalled();
+  });
+
+  it("should call addGuildMemberUpdateHandler on DiscordEvent.GUILD_MEMBER_UPDATE", () => {
+    addEventHandler(
+      {
+        event: DiscordEvent.GUILD_MEMBER_UPDATE,
+      },
+      {} as CommandHandler<DiscordEvent>,
+      {}
+    );
+
+    const mockedAddGuildMemberUpdateHandler = mocked(
+      addGuildMemberUpdateHandler,
+      true
+    );
+    expect(mockedAddGuildMemberUpdateHandler).toHaveBeenCalled();
+  });
+
+  it("should call addReadyHandler on DiscordEvent.READY", () => {
+    addEventHandler(
+      { event: DiscordEvent.READY },
+      {} as CommandHandler<DiscordEvent>,
+      {}
+    );
+
+    const mockedAddReadyHandler = mocked(addReadyHandler, true);
+    expect(mockedAddReadyHandler).toHaveBeenCalled();
   });
 
   it("should call extractMessageInfo from message", () => {
@@ -101,6 +130,27 @@ describe("EventDistribution events", () => {
       messageReaction,
       user
     );
+  });
+
+  it("should call extractGuildMemberUpdateInfo from guild member update", () => {
+    const mockedExtractGuildMemberUpdateInfo = mocked(
+      extractGuildMemberUpdateInfo,
+      true
+    );
+    const oldMember = mockedDiscord.getGuildMember();
+    const newMember = mockedDiscord.getGuildMember();
+    extractEventInfo(DiscordEvent.GUILD_MEMBER_UPDATE, oldMember, newMember);
+    expect(mockedExtractGuildMemberUpdateInfo).toHaveBeenCalledWith(
+      oldMember,
+      newMember
+    );
+  });
+
+  it("should call extractReadyInfo from ready", () => {
+    const mockedExtractReadyInfo = mocked(extractReadyInfo, true);
+    const client = mockedDiscord.getClient();
+    extractEventInfo(DiscordEvent.READY, client);
+    expect(mockedExtractReadyInfo).toHaveBeenCalledWith(client);
   });
 
   it("should throw an error no event is provided", () => {
