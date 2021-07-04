@@ -21,11 +21,17 @@ import {
   addGuildMemberUpdateHandler,
   extractGuildMemberUpdateInfo,
 } from "../../../src/event-distribution/events/guild-member-update";
+import {
+  addVoiceStateUpdateHandler,
+  extractVoiceStateUpdateInfo,
+  VoiceStateChange,
+} from "../../../src/event-distribution/events/voice-state-update";
 
 jest.mock("../../../src/event-distribution/events/guild-member-update");
 jest.mock("../../../src/event-distribution/events/message");
 jest.mock("../../../src/event-distribution/events/reactions");
 jest.mock("../../../src/event-distribution/events/ready");
+jest.mock("../../../src/event-distribution/events/voice-state-update");
 
 describe("EventDistribution events", () => {
   const mockedAddMessageHandler = mocked(addMessageHandler, true);
@@ -103,6 +109,23 @@ describe("EventDistribution events", () => {
     expect(mockedAddReadyHandler).toHaveBeenCalled();
   });
 
+  it("should call addVoiceStateUpdateHandler on DiscordEvent.READY", () => {
+    addEventHandler(
+      {
+        event: DiscordEvent.VOICE_STATE_UPDATE,
+        changes: [VoiceStateChange.JOINED],
+      },
+      {} as CommandHandler<DiscordEvent>,
+      {}
+    );
+
+    const mockedAddVoiceStateUpdateHandler = mocked(
+      addVoiceStateUpdateHandler,
+      true
+    );
+    expect(mockedAddVoiceStateUpdateHandler).toHaveBeenCalled();
+  });
+
   it("should call extractMessageInfo from message", () => {
     const mockedExtractMessageInfoMock = mocked(extractMessageInfo, true);
     const message = mockedDiscord.getMessage();
@@ -151,6 +174,17 @@ describe("EventDistribution events", () => {
     const client = mockedDiscord.getClient();
     extractEventInfo(DiscordEvent.READY, client);
     expect(mockedExtractReadyInfo).toHaveBeenCalledWith(client);
+  });
+
+  it("should call extractVoiceStateUpdateInfo from voice state update", () => {
+    const mockedVoiceStateUpdateInfo = mocked(
+      extractVoiceStateUpdateInfo,
+      true
+    );
+    const oldState = mockedDiscord.getVoiceState();
+    const newState = mockedDiscord.getVoiceState();
+    extractEventInfo(DiscordEvent.VOICE_STATE_UPDATE, oldState, newState);
+    expect(mockedVoiceStateUpdateInfo).toHaveBeenCalledWith(oldState, newState);
   });
 
   it("should throw an error no event is provided", () => {

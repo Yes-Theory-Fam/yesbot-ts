@@ -29,6 +29,7 @@ export class EventDistribution {
     [DiscordEvent.REACTION_REMOVE]: {},
     [DiscordEvent.GUILD_MEMBER_UPDATE]: {},
     [DiscordEvent.READY]: {},
+    [DiscordEvent.VOICE_STATE_UPDATE]: {},
   };
 
   handleEvent<T extends DiscordEvent>(
@@ -107,6 +108,7 @@ export class EventDistribution {
     const locationFilteredHandlers = handlers.filter((eh) => {
       if (
         eh.options.event === DiscordEvent.GUILD_MEMBER_UPDATE ||
+        eh.options.event === DiscordEvent.VOICE_STATE_UPDATE ||
         eh.options.event === DiscordEvent.READY
       )
         return true;
@@ -125,6 +127,7 @@ export class EventDistribution {
     return locationFilteredHandlers.filter((eh) => {
       if (
         eh.options.event === DiscordEvent.GUILD_MEMBER_UPDATE ||
+        eh.options.event === DiscordEvent.VOICE_STATE_UPDATE ||
         eh.options.event === DiscordEvent.READY
       )
         return true;

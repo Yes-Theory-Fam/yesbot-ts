@@ -9,7 +9,10 @@ import Discord, {
   Role,
   TextChannel,
   User,
+  VoiceState,
 } from "discord.js";
+
+type Writeable<T> = { -readonly [P in keyof T]: T[P] };
 
 export default class MockDiscord {
   public message!: Message;
@@ -22,6 +25,7 @@ export default class MockDiscord {
   private user!: User;
   private guildMember!: GuildMember;
   private role!: Role;
+  private voiceState!: VoiceState;
 
   constructor() {
     this.mockClient();
@@ -35,6 +39,7 @@ export default class MockDiscord {
     this.mockMessage();
     this.mockMessageReaction();
     this.mockRole();
+    this.mockVoiceState();
   }
 
   public getClient(): Client {
@@ -75,6 +80,10 @@ export default class MockDiscord {
 
   public getRole(): Role {
     return this.role;
+  }
+
+  public getVoiceState(): Writeable<VoiceState> {
+    return this.voiceState;
   }
 
   private addMember = () => {
@@ -220,5 +229,9 @@ export default class MockDiscord {
 
   private mockRole() {
     this.role = new Role(this.client, {}, this.guild);
+  }
+
+  private mockVoiceState() {
+    this.voiceState = new VoiceState(this.guild, {});
   }
 }

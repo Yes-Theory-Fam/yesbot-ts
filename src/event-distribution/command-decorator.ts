@@ -11,6 +11,7 @@ const explanation =
 export const Command = <T extends EventHandlerOptions>(options: T) => {
   if (
     options.event !== DiscordEvent.GUILD_MEMBER_UPDATE &&
+    options.event !== DiscordEvent.VOICE_STATE_UPDATE &&
     options.event !== DiscordEvent.READY
   ) {
     setDefaultOnBaseOptions(options);
@@ -22,6 +23,7 @@ export const Command = <T extends EventHandlerOptions>(options: T) => {
 
     if (
       options.event !== DiscordEvent.GUILD_MEMBER_UPDATE &&
+      options.event !== DiscordEvent.VOICE_STATE_UPDATE &&
       options.event !== DiscordEvent.READY
     ) {
       checkBaseOptions(options, commandClassName);

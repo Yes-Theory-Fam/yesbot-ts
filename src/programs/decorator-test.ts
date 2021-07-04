@@ -1,4 +1,4 @@
-import { Client, Message, MessageReaction, User } from "discord.js";
+import { Client, Message, MessageReaction, User, VoiceState } from "discord.js";
 import {
   Command,
   CommandHandler,
@@ -6,6 +6,7 @@ import {
   EventLocation,
 } from "../event-distribution";
 import { GuildMemberUpdateArgument } from "../event-distribution/events/guild-member-update";
+import { VoiceStateChange } from "../event-distribution/events/voice-state-update";
 
 /**
  * Example of a stateless message handler (stateful: true missing in config).
@@ -111,5 +112,18 @@ export class DecoratorTest5 extends CommandHandler<DiscordEvent.GUILD_MEMBER_UPD
 export class DecoratorTest6 extends CommandHandler<DiscordEvent.READY> {
   handle(client: Client): void {
     console.log("Called handler 6");
+  }
+}
+
+/**
+ * Example of a VoiceStateUpdate Handler on join and switch channel
+ */
+@Command({
+  event: DiscordEvent.VOICE_STATE_UPDATE,
+  changes: [VoiceStateChange.JOINED, VoiceStateChange.SWITCHED_CHANNEL],
+})
+export class DecoratorTest7 extends CommandHandler<DiscordEvent.VOICE_STATE_UPDATE> {
+  handle(oldState: VoiceState, newState: VoiceState): void {
+    console.log("Called handler 7");
   }
 }
