@@ -9,6 +9,7 @@ export const enum DiscordEvent {
   REACTION_ADD = "REACTION_ADD",
   REACTION_REMOVE = "REACTION_REMOVE",
   READY = "READY",
+  VOICE_STATE_UPDATE = "VOICE_STATE_UPDATE",
 }
 
 export const enum EventLocation {

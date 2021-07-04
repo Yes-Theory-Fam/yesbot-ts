@@ -1,0 +1,83 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Voice State Update should add data to the tree 1`] = `
+Object {
+  "MUTED": Array [
+    Object {
+      "ioc": Object {},
+      "options": Object {
+        "changes": Array [
+          "MUTED",
+        ],
+        "event": "VOICE_STATE_UPDATE",
+      },
+    },
+  ],
+}
+`;
+
+exports[`Voice State Update should add data to the tree 2`] = `
+Object {
+  "JOINED": Array [
+    Object {
+      "ioc": Object {},
+      "options": Object {
+        "changes": Array [
+          "MUTED",
+          "JOINED",
+        ],
+        "event": "VOICE_STATE_UPDATE",
+      },
+    },
+  ],
+  "MUTED": Array [
+    Object {
+      "ioc": Object {},
+      "options": Object {
+        "changes": Array [
+          "MUTED",
+        ],
+        "event": "VOICE_STATE_UPDATE",
+      },
+    },
+    Object {
+      "ioc": Object {},
+      "options": Object {
+        "changes": Array [
+          "MUTED",
+          "JOINED",
+        ],
+        "event": "VOICE_STATE_UPDATE",
+      },
+    },
+  ],
+}
+`;
+
+exports[`Voice State Update should extract information from multiple events 1`] = `
+Array [
+  Object {
+    "handlerKeys": Array [
+      "MUTED",
+    ],
+    "isDirectMessage": false,
+  },
+  Object {
+    "handlerKeys": Array [
+      "JOINED",
+    ],
+    "isDirectMessage": false,
+  },
+]
+`;
+
+exports[`Voice State Update should extract information from mute events 1`] = `
+Array [
+  Object {
+    "handlerKeys": Array [
+      "MUTED",
+    ],
+    "isDirectMessage": false,
+  },
+]
+`;

@@ -16,7 +16,7 @@ import {
   ReactionHandlerFunction,
 } from "./reactions";
 import { StringIndexedHIOCTree } from "../types/hioc";
-import { Client, Message, MessageReaction, User } from "discord.js";
+import { Client, Message, MessageReaction, User, VoiceState } from "discord.js";
 import {
   addGuildMemberUpdateHandler,
   extractGuildMemberUpdateInfo,
@@ -30,18 +30,26 @@ import {
   ReadyEventHandlerOptions,
   ReadyHandlerFunction,
 } from "./ready";
+import {
+  addVoiceStateUpdateHandler,
+  extractVoiceStateUpdateInfo,
+  VoiceStateHandlerFunction,
+  VoiceStateUpdateEventHandlerOptions,
+} from "./voice-state-update";
 
 export type EventHandlerOptions =
   | MessageEventHandlerOptions
   | ReactionEventHandlerOptions
   | ReadyEventHandlerOptions
-  | GuildMemberUpdateEventHandlerOptions;
+  | GuildMemberUpdateEventHandlerOptions
+  | VoiceStateUpdateEventHandlerOptions;
 
 export type HandlerFunction<T extends DiscordEvent> =
   | MessageHandlerFunction<T>
   | ReactionHandlerFunction<T>
   | ReadyHandlerFunction<T>
-  | GuildMemberUpdateHandlerFunction<T>;
+  | GuildMemberUpdateHandlerFunction<T>
+  | VoiceStateHandlerFunction<T>;
 
 export const addEventHandler: AddEventHandlerFunction<EventHandlerOptions> = (
   options,
@@ -76,6 +84,13 @@ export const addEventHandler: AddEventHandlerFunction<EventHandlerOptions> = (
         ioc,
         tree as StringIndexedHIOCTree<DiscordEvent.READY>
       );
+
+    case DiscordEvent.VOICE_STATE_UPDATE:
+      return addVoiceStateUpdateHandler(
+        options,
+        ioc,
+        tree as StringIndexedHIOCTree<DiscordEvent.VOICE_STATE_UPDATE>
+      );
   }
 };
 
@@ -97,6 +112,11 @@ export const extractEventInfo: ExtractInfoFunction<DiscordEvent> = (
         );
       case DiscordEvent.READY:
         return extractReadyInfo(args[0] as Client);
+      case DiscordEvent.VOICE_STATE_UPDATE:
+        return extractVoiceStateUpdateInfo(
+          args[0] as VoiceState,
+          args[1] as VoiceState
+        );
       default:
         throw new Error("Could not extract info for event " + event);
     }

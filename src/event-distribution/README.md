@@ -86,28 +86,63 @@ options and generic argument for the `CommandHandler`;
 
 The handler function is called with the Discord.JS `MessageReaction` and `User` objects received as event.
 
-### Guild Member Update
+#### Guild Member Update
 
 The bot receives an event when a guild member is updated. That includes role changes and nickname changes for example.
 
-#### Options
+##### Options
 
 The following options are available:
 
 ```ts
 interface GuildMemberUpdateEventHandlerOptions {
-  event: DiscordEvent.GUILD_MEMBER_UPDATE;
   roleNamesAdded?: string[]; // When any of these roles are added, the handler is called
   roleNamesRemoved?: string[]; // When any of these roles are removed, the handler is called
 }
 ```
 
-#### Enum
+##### Enum
 
 Use `DiscordEvent.GUILD_MEMBER_UPDATE` as event in the decorator's options and generic argument for the `CommandHandler`.
 
-#### Arguments
+##### Arguments
 
 The handler function is called with two `GuildMember | PartialGuildMember` objects, the first representing the member before the change, the second after the change.
 
+#### Ready
 
+The bot receives an event when it has successfully logged into the Discord Gateway.
+
+##### Options
+
+This event has no additional options besides the event enum.
+
+##### Enum
+
+Use `DiscordEvent.READY` as event in the decorator's options and generic argument for the `CommandHandler`.
+
+##### Arguments
+
+The handler function is called with the `Client` that is now ready.
+
+#### Voice State Update
+
+The bot receives an event when a member's voice state changes. This includes muting, deafening, joining and leaving rooms, etc.
+
+##### Options
+
+The following options are available:
+
+```ts
+export interface VoiceStateUpdateEventHandlerOptions {
+  changes: [VoiceStateChange, ...VoiceStateChange[]]; // A list of all changes that should trigger the handler
+}
+```
+
+##### Enum
+
+Use `DiscordEvent.VOICE_STATE_UPDATE` as event in the decorator's options and generic argument for the `CommandHandler`.
+
+##### Arguments
+
+The handler is called with two `VoiceState` objects. The first containing the state before, the second after the change.
