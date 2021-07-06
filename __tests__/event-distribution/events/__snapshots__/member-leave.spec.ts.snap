@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Member Leave should add data to the tree 1`] = `
+Object {
+  "": Array [
+    Object {
+      "ioc": Object {},
+      "options": Object {
+        "event": "MEMBER_LEAVE",
+      },
+    },
+  ],
+}
+`;
+
+exports[`Member Leave should extract member from leaving member 1`] = `
+Object {
+  "handlerKeys": Array [
+    "",
+  ],
+  "isDirectMessage": false,
+  "member": Object {
+    "deleted": false,
+    "displayName": "nick",
+    "guildID": "guild-id",
+    "joinedTimestamp": 1577836800000,
+    "lastMessageChannelID": null,
+    "nickname": "nick",
+    "premiumSinceTimestamp": null,
+    "userID": "222222222222222200",
+  },
+}
+`;

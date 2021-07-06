@@ -124,6 +124,21 @@ Use `DiscordEvent.READY` as event in the decorator's options and generic argumen
 ##### Arguments
 
 The handler function is called with the `Client` that is now ready.
+#### Member Leave
+
+The bot receives an event when a guild member leaves, is kicked or banned.
+
+##### Options
+
+There are no options available for this event.
+
+##### Enum
+
+Use `DiscordEvent.MEMBER_LEAVE` as event in the decorator's options and generic argument for the `CommandHandler`.
+
+##### Arguments
+
+The handler function is called with one `GuildMember | PartialGuildMember` object, which represents the member that left the server.
 
 #### Voice State Update
 

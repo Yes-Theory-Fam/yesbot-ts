@@ -6,6 +6,7 @@ import {
   EventLocation,
 } from "../event-distribution";
 import { GuildMemberUpdateArgument } from "../event-distribution/events/guild-member-update";
+import { MemberLeaveArgument } from "../event-distribution/events/member-leave";
 import { VoiceStateChange } from "../event-distribution/events/voice-state-update";
 
 /**
@@ -125,5 +126,17 @@ export class DecoratorTest6 extends CommandHandler<DiscordEvent.READY> {
 export class DecoratorTest7 extends CommandHandler<DiscordEvent.VOICE_STATE_UPDATE> {
   handle(oldState: VoiceState, newState: VoiceState): void {
     console.log("Called handler 7");
+  }
+}
+
+/**
+ * Example of a MemberLeave Handler
+ */
+@Command({
+  event: DiscordEvent.MEMBER_LEAVE,
+})
+export class DecoratorTest8 extends CommandHandler<DiscordEvent.MEMBER_LEAVE> {
+  handle(member: MemberLeaveArgument): void {
+    console.log("Called handler 8");
   }
 }
