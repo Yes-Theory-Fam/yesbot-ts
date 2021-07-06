@@ -31,8 +31,12 @@ distribution.initialize().then(() => {
 });
 
 //! ================= EVENT HANDLERS ====================
-bot.on("guildMemberRemove", (member: GuildMember | PartialGuildMember) =>
-  memberLeave(member)
+bot.on(
+  "guildMemberRemove",
+  async (member: GuildMember | PartialGuildMember) => {
+    distribution.handleEvent(DiscordEvent.MEMBER_LEAVE, member);
+    await memberLeave(member);
+  }
 );
 bot.on(
   "guildMemberUpdate",

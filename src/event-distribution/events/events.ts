@@ -31,6 +31,13 @@ import {
   ReadyHandlerFunction,
 } from "./ready";
 import {
+  addMemberLeaveHandler,
+  extractMemberLeaveInfo,
+  MemberLeaveArgument,
+  MemberLeaveEventHandlerOptions,
+  MemberLeaveHandlerFunction,
+} from "./member-leave";
+import {
   addVoiceStateUpdateHandler,
   extractVoiceStateUpdateInfo,
   VoiceStateHandlerFunction,
@@ -38,6 +45,7 @@ import {
 } from "./voice-state-update";
 
 export type EventHandlerOptions =
+  | MemberLeaveEventHandlerOptions
   | MessageEventHandlerOptions
   | ReactionEventHandlerOptions
   | ReadyEventHandlerOptions
@@ -45,6 +53,7 @@ export type EventHandlerOptions =
   | VoiceStateUpdateEventHandlerOptions;
 
 export type HandlerFunction<T extends DiscordEvent> =
+  | MemberLeaveHandlerFunction<T>
   | MessageHandlerFunction<T>
   | ReactionHandlerFunction<T>
   | ReadyHandlerFunction<T>
@@ -57,6 +66,12 @@ export const addEventHandler: AddEventHandlerFunction<EventHandlerOptions> = (
   tree
 ) => {
   switch (options.event) {
+    case DiscordEvent.MEMBER_LEAVE:
+      return addMemberLeaveHandler(
+        options,
+        ioc,
+        tree as StringIndexedHIOCTree<DiscordEvent.MEMBER_LEAVE>
+      );
     case DiscordEvent.MESSAGE:
       return addMessageHandler(
         options,
@@ -100,6 +115,8 @@ export const extractEventInfo: ExtractInfoFunction<DiscordEvent> = (
 ) => {
   const getInfos = () => {
     switch (event) {
+      case DiscordEvent.MEMBER_LEAVE:
+        return extractMemberLeaveInfo(args[0] as MemberLeaveArgument);
       case DiscordEvent.MESSAGE:
         return extractMessageInfo(args[0] as Message);
       case DiscordEvent.REACTION_ADD:

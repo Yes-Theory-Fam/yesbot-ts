@@ -24,6 +24,7 @@ type EventDistributionHandlers = {
 
 export class EventDistribution {
   handlers: EventDistributionHandlers = {
+    [DiscordEvent.MEMBER_LEAVE]: {},
     [DiscordEvent.MESSAGE]: {},
     [DiscordEvent.REACTION_ADD]: {},
     [DiscordEvent.REACTION_REMOVE]: {},
@@ -108,6 +109,7 @@ export class EventDistribution {
     const locationFilteredHandlers = handlers.filter((eh) => {
       if (
         eh.options.event === DiscordEvent.GUILD_MEMBER_UPDATE ||
+        eh.options.event === DiscordEvent.MEMBER_LEAVE ||
         eh.options.event === DiscordEvent.VOICE_STATE_UPDATE ||
         eh.options.event === DiscordEvent.READY
       )
@@ -127,6 +129,7 @@ export class EventDistribution {
     return locationFilteredHandlers.filter((eh) => {
       if (
         eh.options.event === DiscordEvent.GUILD_MEMBER_UPDATE ||
+        eh.options.event === DiscordEvent.MEMBER_LEAVE ||
         eh.options.event === DiscordEvent.VOICE_STATE_UPDATE ||
         eh.options.event === DiscordEvent.READY
       )

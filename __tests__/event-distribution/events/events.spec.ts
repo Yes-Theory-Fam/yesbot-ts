@@ -22,12 +22,17 @@ import {
   extractGuildMemberUpdateInfo,
 } from "../../../src/event-distribution/events/guild-member-update";
 import {
+  addMemberLeaveHandler,
+  extractMemberLeaveInfo,
+} from "../../../src/event-distribution/events/member-leave";
+import {
   addVoiceStateUpdateHandler,
   extractVoiceStateUpdateInfo,
   VoiceStateChange,
 } from "../../../src/event-distribution/events/voice-state-update";
 
 jest.mock("../../../src/event-distribution/events/guild-member-update");
+jest.mock("../../../src/event-distribution/events/member-leave");
 jest.mock("../../../src/event-distribution/events/message");
 jest.mock("../../../src/event-distribution/events/reactions");
 jest.mock("../../../src/event-distribution/events/ready");
@@ -38,6 +43,18 @@ describe("EventDistribution events", () => {
   const mockedAddReactionHandler = mocked(addReactionHandler, true);
   const mockedDiscord = new MockDiscord();
 
+  it("should call addMemberLeaveHandler on DiscordEvent.MEMBER_LEAVE", () => {
+    addEventHandler(
+      {
+        event: DiscordEvent.MEMBER_LEAVE,
+      },
+      {} as CommandHandler<DiscordEvent>,
+      {}
+    );
+
+    const mockedAddMemberLeaveHandler = mocked(addMemberLeaveHandler, true);
+    expect(mockedAddMemberLeaveHandler).toHaveBeenCalled();
+  });
   it("should call addMessageHandler on DiscordEvent.MESSAGE", () => {
     addEventHandler(
       {
@@ -174,6 +191,13 @@ describe("EventDistribution events", () => {
     const client = mockedDiscord.getClient();
     extractEventInfo(DiscordEvent.READY, client);
     expect(mockedExtractReadyInfo).toHaveBeenCalledWith(client);
+  });
+
+  it("should call extractMemberLeaveInfo from member leave", () => {
+    const mockedExtractMemberLeaveInfo = mocked(extractMemberLeaveInfo, true);
+    const member = mockedDiscord.getGuildMember();
+    extractEventInfo(DiscordEvent.MEMBER_LEAVE, member);
+    expect(mockedExtractMemberLeaveInfo).toHaveBeenCalledWith(member);
   });
 
   it("should call extractVoiceStateUpdateInfo from voice state update", () => {
