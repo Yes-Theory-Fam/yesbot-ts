@@ -38,7 +38,7 @@
     "path": "0.12.7",
     "pg": "8.6.0",
     "reflect-metadata": "0.1.13",
-    "ts-node": "10.0.0",
+    "ts-node": "10.1.0",
     "winston": "3.3.3"
   },
   "devDependencies": {
