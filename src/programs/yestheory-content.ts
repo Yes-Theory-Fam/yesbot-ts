@@ -3,7 +3,7 @@ import { ChatNames } from "../collections/chat-names";
 
 //keep in mind this is very temporarily basic code, until we have the new events up and ready
 const YesTheoryUploadedPing = async (message: Message) => {
-  if (message.author.bot) {
+  if (message.webhookID) {
     const channelDiscussion = message.guild.channels.cache.find(
       (channel) => channel.name === ChatNames.YESTHEORY_DISCUSSION.toString()
     ) as TextChannel;
