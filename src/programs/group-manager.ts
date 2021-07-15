@@ -10,7 +10,7 @@ import {
   User,
 } from "discord.js";
 import Tools from "../common/tools";
-import { isAuthorModerator } from "../common/moderator";
+import { hasRole, isAuthorModerator } from "../common/moderator";
 import {
   GroupMember,
   Message as MessageEntity,
@@ -66,6 +66,8 @@ const groupManager = async (message: Message, isConfig: boolean) => {
         "toggle",
         "changeCooldown",
         "changeDeadtime",
+        "changeGroupPingSettings",
+        ``,
       ].includes(action)
     ) {
       const helpMessage = `Incorrect syntax, please use the following: \`!group join|leave|create|search|delete|update|changeCooldown|changeDeadtime\`. If you need additional help, react with 🛠️ below to tag a ${process.env.ENGINEER_ROLE_NAME}`;
@@ -132,6 +134,16 @@ const groupManager = async (message: Message, isConfig: boolean) => {
         break;
       }
 
+      case "changeGroupPingSettings": {
+        moderator
+          ? await changeGroupPingSettings(message, requestName, description)
+          : await Tools.handleUserError(
+              message,
+              "You do not have permissions to use this command."
+            );
+        break;
+      }
+
       case "changeCooldown": {
         moderator
           ? await changeCooldown(message, requestName, description)
@@ -186,6 +198,32 @@ const groupManager = async (message: Message, isConfig: boolean) => {
       message,
       group
     );
+
+    const setting = group.groupPingOption;
+
+    if (setting === "moderator" && !hasRole(message.member, "Support")) {
+      await Tools.handleUserError(
+        message,
+        "Sorry! This group is only pingable by moderators."
+      );
+      return;
+    }
+
+    if (setting === "bot" && !message.author.bot) {
+      await Tools.handleUserError(
+        message,
+        "Sorry! This group is only pingable by YesBot."
+      );
+      return;
+    }
+
+    if (setting === "off") {
+      await Tools.handleUserError(
+        message,
+        "Sorry! This group is not pingable by members."
+      );
+      return;
+    }
 
     if (deadChatTimeRemaining > 0) {
       await Tools.handleUserError(
@@ -555,6 +593,54 @@ const changeDeadtime = async (
     });
   } catch (error) {
     logger.error("Failed to update database group deadTime," + error);
+    await message.react("👎");
+    return;
+  }
+
+  await message.react("👍");
+};
+
+const changeGroupPingSettings = async (
+  message: Message,
+  requestedGroupName: string,
+  option: string
+) => {
+  const setting = option.toLocaleLowerCase();
+
+  if (
+    (setting !== "moderator" &&
+      setting !== "member" &&
+      setting !== "bot" &&
+      setting !== "off") ||
+    !setting
+  ) {
+    await Tools.handleUserError(
+      message,
+      "Please write a valid setting for the group ping! Youre options are `moderator`, `member`, `bot` or `off`"
+    );
+    return;
+  }
+  const group = await prisma.userGroup.findFirst({
+    where: {
+      name: {
+        equals: requestedGroupName,
+        mode: "insensitive",
+      },
+    },
+  });
+
+  if (!group) {
+    await message.reply("That group doesn't exist!");
+    return;
+  }
+
+  try {
+    await prisma.userGroup.update({
+      where: { id: group.id },
+      data: { groupPingOption: setting },
+    });
+  } catch (error) {
+    logger.error("Failed to update database group ping settings," + error);
     await message.react("👎");
     return;
   }
