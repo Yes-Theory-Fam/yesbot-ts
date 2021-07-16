@@ -10,7 +10,7 @@ import {
   User,
 } from "discord.js";
 import Tools from "../common/tools";
-import { hasRole, isAuthorModerator } from "../common/moderator";
+import { isAuthorModerator } from "../common/moderator";
 import {
   GroupMember,
   Message as MessageEntity,
@@ -199,9 +199,10 @@ const groupManager = async (message: Message, isConfig: boolean) => {
       group
     );
 
+    const moderator = isAuthorModerator(message);
     const setting = group.groupPingOption;
 
-    if (setting === "moderator" && !hasRole(message.member, "Support")) {
+    if (setting === "moderator" && !moderator) {
       await Tools.handleUserError(
         message,
         "Sorry! This group is only pingable by moderators."
