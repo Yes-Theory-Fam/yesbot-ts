@@ -888,10 +888,10 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-"@yes-theory-fam/database@0.8.0":
-  version "0.8.0"
-  resolved "https://npm.pkg.github.com/download/@yes-theory-fam/database/0.8.0/b3ce43e34ebc54091c5e49f16692209d9b8b380fca7cc46d3656e5425fa4797f#d1cce41b66a527b5ff99e5c784e95278175c3425"
-  integrity sha512-UQWe9RwqrHBUoprs3RbmKaXAiqdrfDzwwk/X3chcJfpwSD5ATv3epn2UZa7YbJPjB0AmLtoGM2eZe1sdET1Tyg==
+"@yes-theory-fam/database@0.9.1":
+  version "0.9.1"
+  resolved "https://npm.pkg.github.com/download/@yes-theory-fam/database/0.9.1/b858ed05116a4d102758cdd3162c43fde442e465955d82d9a9c868c5ce215717#edcef65a188562ae1f039fddcadcc981b3dbcf96"
+  integrity sha512-ECXV4gc1HkFnxIPDKnmbum6t8O+ZZP2zAFOlxhMh0mQBIaXLmDnnLiGDcI7T2R8a+ZfytNQxVopDc0oq7shuPQ==
   dependencies:
     "@prisma/client" "~2.26.0"
 

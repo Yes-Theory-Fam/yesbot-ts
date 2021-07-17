@@ -73,7 +73,7 @@ export class EventDistribution {
       const extension = process.env.NODE_ENV === "production" ? ".js" : ".ts";
       const directory = process.env.NODE_ENV === "production" ? "build" : "src";
 
-      glob(`${directory}/programs/*${extension}`, async (e, matches) => {
+      glob(`${directory}/programs/**/*${extension}`, async (e, matches) => {
         if (e) {
           logger.error("Error loading commands: ", e);
           return;
