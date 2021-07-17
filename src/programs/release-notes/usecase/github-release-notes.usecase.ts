@@ -4,7 +4,7 @@ import {
   GithubReleaseRepositoryType,
 } from "../types/github-release.types";
 import prisma from "../../../prisma";
-import { Release } from "@yes-theory-fam/database";
+import { Release } from "@yes-theory-fam/database/client";
 
 interface ResponseType {
   releaseNotes: string;
