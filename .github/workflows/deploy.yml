@@ -1,7 +1,13 @@
 name: Build and deploy new Version
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 on:
   release:
     types: [ created ]
+
 jobs:
   deploy:
     name: Deploy
