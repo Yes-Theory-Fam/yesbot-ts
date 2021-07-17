@@ -1,10 +1,10 @@
 import { GithubReleaseNotesAccessor } from "../acessor/github-release-notes.accessor";
-import prisma from "../../../prisma";
 import {
   Edge,
   GithubReleaseRepositoryType,
 } from "../types/github-release.types";
-import { Release } from "../../../../../database";
+import prisma from "../../../prisma";
+import { Release } from "@yes-theory-fam/database";
 
 interface ResponseType {
   releaseNotes: string;
