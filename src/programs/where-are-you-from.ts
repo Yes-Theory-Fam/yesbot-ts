@@ -29,7 +29,7 @@ const whereAreYouFrom = async (message: Message) => {
     const countryToAssign = matchedCountries[0];
     if (countryToAssign) {
       const roleToAssign = getRoleForCountry(countryToAssign, message.guild);
-      const memberDm = await message.author.createDM();
+      // const memberDm = await message.author.createDM();
 
       if (!roleToAssign) {
         const moderatorRole = message.guild.roles.cache.find(
@@ -62,9 +62,9 @@ const whereAreYouFrom = async (message: Message) => {
       if (!isCountryWithRegionRole) {
         await welcomeMember(message.member.user, message.member.guild);
       }
-      await memberDm.send(
-        `Hey! My name is YesBot, I'm so happy to see you've made it into our world, we really hope you stick around!\n\nIn the meantime, you should checkout ${rules.toString()} and ${generalInfo.toString()} , they contain a lot of good-to-knows about our server and what cool stuff you can do.\nIf you'd like me to change your name on the server for you, just message me \`!menu\` and I will help you out! Then I can introduce you to our family :grin:\n\nI know Discord can be a lot to take in at first, trust me, but it's really quite a wonderful place.`
-      );
+      // await memberDm.send(
+      //   `Hey! My name is YesBot, I'm so happy to see you've made it into our world, we really hope you stick around!\n\nIn the meantime, you should checkout ${rules.toString()} and ${generalInfo.toString()} , they contain a lot of good-to-knows about our server and what cool stuff you can do.\nIf you'd like me to change your name on the server for you, just message me \`!menu\` and I will help you out! Then I can introduce you to our family :grin:\n\nI know Discord can be a lot to take in at first, trust me, but it's really quite a wonderful place.`
+      // );
 
       if (isCountryWithRegionRole) {
         const lowerCaseCountry = CountryRoleFinder.getCountryByRole(
