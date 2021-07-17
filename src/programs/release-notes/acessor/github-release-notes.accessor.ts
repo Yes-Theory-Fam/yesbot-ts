@@ -17,6 +17,7 @@ export class GithubReleaseNotesAccessor {
                 name
                 publishedAt
                 tagName
+                description
               }
             }
           }
