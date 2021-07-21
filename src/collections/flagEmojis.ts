@@ -512,13 +512,6 @@ export const countries: Country[] = [
     title: "flag for Ethiopia",
   },
   {
-    code: "EU",
-    emoji: "🇪🇺",
-    unicode: "U+1F1EA U+1F1FA",
-    name: "European Union",
-    title: "flag for European Union",
-  },
-  {
     code: "FI",
     emoji: "🇫🇮",
     unicode: "U+1F1EB U+1F1EE",
