@@ -18,7 +18,12 @@ import {
   WhereAreYouFrom,
 } from "../programs";
 import state from "../common/state";
-import { getMember, hasRole, textLog } from "../common/moderator";
+import {
+  getMember,
+  hasRole,
+  removeTimeOutRole,
+  textLog,
+} from "../common/moderator";
 import {
   abuseMe,
   addVote,
@@ -185,6 +190,10 @@ const routeMessage = async (message: Message) => {
   if (firstWord === "!timeout")
     hasRole(message.member, "Support") || hasRole(message.member, "Companion")
       ? await timeoutUser(message)
+      : null;
+  if (firstWord === "!removeTimeOut")
+    hasRole(message.member, "Support") || hasRole(message.member, "Companion")
+      ? await removeTimeOutRole(message)
       : null;
   if (firstWord === "!role") await ReactRole(message);
   if (firstWord === "F") await message.react("🇫");

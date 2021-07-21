@@ -12,4 +12,5 @@ export enum ChatNames {
   VOICE_CHAT_TWO = "voice-chat-2",
   YESTHEORY_DISCUSSION = "yestheory-discussions",
   YESTHEORY_POSTED = "yestheoryposted",
+  BOT_OUTPUT = "bot-output",
 }
