@@ -31,7 +31,15 @@ const guildMemberUpdate = async (
     lockCountryChannels(newMember);
   }
 
+  if (gainedRole(oldMember, newMember, "Time Out")) {
+    lockCountryChannels(newMember);
+  }
+
   if (lostRole(oldMember, newMember, "Break")) {
+    unlockCountryChannels(newMember);
+  }
+
+  if (lostRole(oldMember, newMember, "Time Out")) {
     unlockCountryChannels(newMember);
   }
 
