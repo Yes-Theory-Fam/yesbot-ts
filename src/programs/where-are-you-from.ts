@@ -7,13 +7,24 @@ import {
   TextChannel,
   User,
 } from "discord.js";
-import { isRegistered, textLog } from "../common/moderator";
+import { isRegistered, isUserTimedOut, textLog } from "../common/moderator";
 import { CountryRoleFinder } from "../utils/country-role-finder";
+import { ChatNames } from "../collections/chat-names";
 
 const regionCountries = ["USA"];
 
 const whereAreYouFrom = async (message: Message) => {
   const newUser = !isRegistered(message.member);
+
+  if (await isUserTimedOut(message.member)) {
+    const botOutputChannel = message.guild.channels.cache.find(
+      (channel) => channel.name === ChatNames.BOT_OUTPUT.toString()
+    ) as TextChannel;
+    botOutputChannel.send(
+      `<@${message.member.id}>, tried joining the server when he is Timed Out, you can allow him in by using !removeTimeOut`
+    );
+    return;
+  }
 
   if (newUser) {
     const matchedCountries = CountryRoleFinder.getCountriesFromString(
