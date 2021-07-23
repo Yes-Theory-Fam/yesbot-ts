@@ -95,6 +95,7 @@ export class EventDistribution {
         } catch (e) {
           logger.error("Error loading commands: ", e);
           rej(e);
+          return;
         }
         logger.debug("Loading complete!");
         res();
