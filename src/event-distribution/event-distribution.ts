@@ -76,6 +76,7 @@ export class EventDistribution {
       glob(`${directory}/programs/**/*${extension}`, async (e, matches) => {
         if (e) {
           logger.error("Error loading commands: ", e);
+          rej(e);
           return;
         }
 
