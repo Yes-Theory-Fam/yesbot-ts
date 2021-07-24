@@ -68,7 +68,6 @@ const groupManager = async (message: Message, isConfig: boolean) => {
         "changeCooldown",
         "changeDeadtime",
         "changeGroupPingSettings",
-        ``,
       ].includes(action)
     ) {
       const helpMessage = `Incorrect syntax, please use the following: \`!group join|leave|create|search|delete|update|changeCooldown|changeDeadtime\`. If you need additional help, react with 🛠️ below to tag a ${process.env.ENGINEER_ROLE_NAME}`;
