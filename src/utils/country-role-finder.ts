@@ -5,6 +5,10 @@ type FinderCountryProperties = Pick<Country, "name" | "emoji">;
 
 export class CountryRoleFinder {
   private static emojiOverrides: Record<string, string> = {
+    "🇦🇽": "🇫🇮",
+    "🇧🇻": "🇳🇴",
+    "🇸🇯": "🇳🇴",
+    "🇬🇮": "🇬🇧",
     "🇺🇲": "🇺🇸",
     "🇨🇵": "🇫🇷",
     "🇲🇫": "🇫🇷",
