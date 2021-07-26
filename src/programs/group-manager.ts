@@ -14,7 +14,7 @@ import { isAuthorModerator } from "../common/moderator";
 import {
   GroupMember,
   Message as MessageEntity,
-  Setting,
+  GroupPingSetting,
   UserGroup,
   UserGroupMembersGroupMember,
 } from "@yes-theory-fam/database/client";
@@ -202,7 +202,7 @@ const groupManager = async (message: Message, isConfig: boolean) => {
     const moderator = isAuthorModerator(message);
     const setting = group.groupPingOption;
 
-    if (setting === Setting.MODERATOR && !moderator) {
+    if (setting === GroupPingSetting.MODERATOR && !moderator) {
       await Tools.handleUserError(
         message,
         "Sorry! This group is only pingable by moderators."
@@ -210,7 +210,7 @@ const groupManager = async (message: Message, isConfig: boolean) => {
       return;
     }
 
-    if (setting === Setting.BOT && !message.author.bot) {
+    if (setting === GroupPingSetting.BOT && !message.author.bot) {
       await Tools.handleUserError(
         message,
         "Sorry! This group is only pingable by YesBot."
@@ -218,7 +218,7 @@ const groupManager = async (message: Message, isConfig: boolean) => {
       return;
     }
 
-    if (setting === Setting.OFF) {
+    if (setting === GroupPingSetting.OFF) {
       await Tools.handleUserError(
         message,
         "Sorry! This group is not pingable by members."
