@@ -36,8 +36,10 @@ describe("CountryRoleFinder", () => {
     expect(CountryRoleFinder.getCountryByRole("I'm from Germany! 🇩🇪")).toMatch(
       "Germany"
     );
+
+    // Works with overrides
     expect(CountryRoleFinder.getCountryByRole("Åland Islands 🇦🇽")).toMatch(
-      "Åland Islands"
+      "Finland"
     );
   });
 
