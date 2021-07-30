@@ -11,11 +11,6 @@ export const map = async (message: Message) => {
 };
 
 export const mapAdd = async (message: Message) => {
-  await message.reply(
-    "Hey, unfortunately this command is disabled at the moment as the bot currently isn't allowed to send DMs. This is being worked on :) Make sure to check #updates regularly to see when it's working again. Sorry about the inconveniences!"
-  );
-  return;
-
   const split = message.content.split(" ");
   split.shift();
   const city = split.join(" ");
