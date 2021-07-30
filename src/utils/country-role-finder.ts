@@ -1,5 +1,5 @@
 import { countries, Country } from "../collections/flagEmojis";
-import { Role } from "discord.js";
+import { Guild, Role } from "discord.js";
 
 type FinderCountryProperties = Pick<Country, "name" | "emoji">;
 
@@ -45,6 +45,12 @@ export class CountryRoleFinder {
         self.findIndex(({ name }) => name === filterName) === index
     );
   };
+
+  static getRoleForCountry(country: Country, guild: Guild): Role {
+    return guild.roles.cache.find((role) =>
+      CountryRoleFinder.isRoleFromCountry(country, role)
+    );
+  }
 
   static getCountryByRole(input: string, allowRegions = false): string | null {
     const result = this.getMatches(input, allowRegions);

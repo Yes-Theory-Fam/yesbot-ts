@@ -8,7 +8,6 @@ import {
   User,
 } from "discord.js";
 import { isRegistered, textLog } from "../common/moderator";
-import { Country } from "../collections/flagEmojis";
 import { CountryRoleFinder } from "../utils/country-role-finder";
 
 const regionCountries = ["USA"];
@@ -30,7 +29,10 @@ const whereAreYouFrom = async (message: Message) => {
 
     const countryToAssign = matchedCountries[0];
     if (countryToAssign) {
-      const roleToAssign = getRoleForCountry(countryToAssign, message.guild);
+      const roleToAssign = CountryRoleFinder.getRoleForCountry(
+        countryToAssign,
+        message.guild
+      );
       // const memberDm = await message.author.createDM();
 
       if (!roleToAssign) {
@@ -103,12 +105,6 @@ const getWelcomeMessage = (user: User) => {
     `${user.toString()} just landed :rocket:`,
   ];
   return welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
-};
-
-export const getRoleForCountry = (country: Country, guild: Guild): Role => {
-  return guild.roles.cache.find((role) =>
-    CountryRoleFinder.isRoleFromCountry(country, role)
-  );
 };
 
 const ghostPing = async (message: Message, region: String) => {
