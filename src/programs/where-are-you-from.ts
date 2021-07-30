@@ -8,7 +8,7 @@ import {
   User,
 } from "discord.js";
 import { isRegistered, textLog } from "../common/moderator";
-import { countries, Country } from "../collections/flagEmojis";
+import { Country } from "../collections/flagEmojis";
 import { CountryRoleFinder } from "../utils/country-role-finder";
 
 const regionCountries = ["USA"];
@@ -17,7 +17,9 @@ const whereAreYouFrom = async (message: Message) => {
   const newUser = !isRegistered(message.member);
 
   if (newUser) {
-    const matchedCountries = getCountriesFromMessage(message.content);
+    const matchedCountries = CountryRoleFinder.getCountriesFromString(
+      message.content
+    );
 
     if (matchedCountries.length > 1) {
       await message.reply(
@@ -115,20 +117,6 @@ const ghostPing = async (message: Message, region: String) => {
   ) as TextChannel;
   const ping = await regionChannel.send(`<@${message.member}>`);
   await ping.delete();
-};
-
-export const getCountriesFromMessage = (message: string) => {
-  const matchedCountries = countries.filter((country: Country) => {
-    return (
-      message.includes(country.emoji) ||
-      message.match(RegExp(`\\b${country.name}\\b`, "i"))
-    );
-  });
-
-  return matchedCountries.filter(
-    ({ name: filterName }, index, self) =>
-      self.findIndex(({ name }) => name === filterName) === index
-  );
 };
 
 export const updateAfterRegionSelect = async (
