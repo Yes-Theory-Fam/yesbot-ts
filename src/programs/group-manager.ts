@@ -14,6 +14,7 @@ import { isAuthorModerator } from "../common/moderator";
 import {
   GroupMember,
   Message as MessageEntity,
+  GroupPingSetting,
   UserGroup,
   UserGroupMembersGroupMember,
 } from "@yes-theory-fam/database/client";
@@ -66,6 +67,7 @@ const groupManager = async (message: Message, isConfig: boolean) => {
         "toggle",
         "changeCooldown",
         "changeDeadtime",
+        "changeGroupPingSettings",
       ].includes(action)
     ) {
       const helpMessage = `Incorrect syntax, please use the following: \`!group join|leave|create|search|delete|update|changeCooldown|changeDeadtime\`. If you need additional help, react with 🛠️ below to tag a ${process.env.ENGINEER_ROLE_NAME}`;
@@ -132,6 +134,16 @@ const groupManager = async (message: Message, isConfig: boolean) => {
         break;
       }
 
+      case "changeGroupPingSettings": {
+        moderator
+          ? await changeGroupPingSettings(message, requestName, description)
+          : await Tools.handleUserError(
+              message,
+              "You do not have permissions to use this command."
+            );
+        break;
+      }
+
       case "changeCooldown": {
         moderator
           ? await changeCooldown(message, requestName, description)
@@ -157,14 +169,6 @@ const groupManager = async (message: Message, isConfig: boolean) => {
     args.shift();
     const [requestName] = args;
 
-    if (!message.author.bot && !isGroupAllowed(requestName)) {
-      await Tools.handleUserError(
-        message,
-        "That group is not pingable by members, sorry!"
-      );
-      return;
-    }
-
     const groups = await prisma.userGroup.findMany({
       include: {
         userGroupMembersGroupMembers: { include: { groupMember: true } },
@@ -186,6 +190,33 @@ const groupManager = async (message: Message, isConfig: boolean) => {
       message,
       group
     );
+
+    const moderator = isAuthorModerator(message);
+    const setting = group.groupPingSetting;
+
+    if (setting === GroupPingSetting.MODERATOR && !moderator) {
+      await Tools.handleUserError(
+        message,
+        "Sorry! This group is only pingable by moderators."
+      );
+      return;
+    }
+
+    if (setting === GroupPingSetting.BOT && !message.author.bot) {
+      await Tools.handleUserError(
+        message,
+        "Sorry! This group is only pingable by YesBot."
+      );
+      return;
+    }
+
+    if (setting === GroupPingSetting.OFF) {
+      await Tools.handleUserError(
+        message,
+        "Sorry! This group is not pingable by members."
+      );
+      return;
+    }
 
     if (deadChatTimeRemaining > 0) {
       await Tools.handleUserError(
@@ -562,6 +593,53 @@ const changeDeadtime = async (
   await message.react("👍");
 };
 
+const changeGroupPingSettings = async (
+  message: Message,
+  requestedGroupName: string,
+  option: string
+) => {
+  const setting = option.toUpperCase();
+
+  if (
+    setting !== GroupPingSetting.MODERATOR &&
+    setting !== GroupPingSetting.MEMBER &&
+    setting !== GroupPingSetting.BOT &&
+    setting !== GroupPingSetting.OFF
+  ) {
+    await Tools.handleUserError(
+      message,
+      "Please write a valid setting for the group ping! The options are `moderator`, `member`, `bot` or `off`."
+    );
+    return;
+  }
+  const group = await prisma.userGroup.findFirst({
+    where: {
+      name: {
+        equals: requestedGroupName,
+        mode: "insensitive",
+      },
+    },
+  });
+
+  if (!group) {
+    await message.reply("That group doesn't exist!");
+    return;
+  }
+
+  try {
+    await prisma.userGroup.update({
+      where: { id: group.id },
+      data: { groupPingSetting: GroupPingSetting[setting] },
+    });
+  } catch (error) {
+    logger.error("Failed to update database group ping settings," + error);
+    await message.react("👎");
+    return;
+  }
+
+  await message.react("👍");
+};
+
 const changeCooldown = async (
   message: Message,
   requestedGroupName: string,
@@ -825,11 +903,6 @@ const timeRemainingForDeadchat = async (message: Message, group: UserGroup) => {
     (Date.now() - lastMessages[1].createdTimestamp) / 1000 / 60;
 
   return group.deadtime - Math.round(timeDifference);
-};
-
-const isGroupAllowed = (groupName: string) => {
-  const memberDisabledGroups = ["yestheoryuploads"];
-  return !memberDisabledGroups.includes(groupName.toLowerCase());
 };
 
 export default groupManager;
