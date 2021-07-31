@@ -169,14 +169,6 @@ const groupManager = async (message: Message, isConfig: boolean) => {
     args.shift();
     const [requestName] = args;
 
-    if (!message.author.bot && !isGroupAllowed(requestName)) {
-      await Tools.handleUserError(
-        message,
-        "That group is not pingable by members, sorry!"
-      );
-      return;
-    }
-
     const groups = await prisma.userGroup.findMany({
       include: {
         userGroupMembersGroupMembers: { include: { groupMember: true } },
@@ -911,11 +903,6 @@ const timeRemainingForDeadchat = async (message: Message, group: UserGroup) => {
     (Date.now() - lastMessages[1].createdTimestamp) / 1000 / 60;
 
   return group.deadtime - Math.round(timeDifference);
-};
-
-const isGroupAllowed = (groupName: string) => {
-  const memberDisabledGroups = ["yestheoryuploads"];
-  return !memberDisabledGroups.includes(groupName.toLowerCase());
 };
 
 export default groupManager;
