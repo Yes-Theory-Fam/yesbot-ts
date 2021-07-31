@@ -896,9 +896,8 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-
 "@yes-theory-fam/database@0.11.0":
-  version "0.8.0"
+  version "0.11.0"
   resolved "https://npm.pkg.github.com/download/@yes-theory-fam/database/0.8.0/b3ce43e34ebc54091c5e49f16692209d9b8b380fca7cc46d3656e5425fa4797f#d1cce41b66a527b5ff99e5c784e95278175c3425"
   integrity sha512-UQWe9RwqrHBUoprs3RbmKaXAiqdrfDzwwk/X3chcJfpwSD5ATv3epn2UZa7YbJPjB0AmLtoGM2eZe1sdET1Tyg==
   dependencies:
