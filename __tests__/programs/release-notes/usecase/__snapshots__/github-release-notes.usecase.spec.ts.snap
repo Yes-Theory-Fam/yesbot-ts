@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GithubReleaseNotesUsecase should create release notes 1`] = `
+"Hello everyone :wave: I'm back after a short break :sleeping:
+During this time I have been worked on a lot. Here is a small overview:
+
+> * chore(DOCKERFILE): docker image migrates th database by start
+> * chore(DOCKERFILE): docker image migrates th database by start
+
+So now back to work :tools:     
+"
+`;
+
+exports[`GithubReleaseNotesUsecase should return git commit message 1`] = `
+"> * chore(DOCKERFILE): docker image migrates th database by start
+> * chore(DOCKERFILE): docker image migrates th database by start
+"
+`;

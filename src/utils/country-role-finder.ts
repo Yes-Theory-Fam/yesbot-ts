@@ -1,16 +1,56 @@
 import { countries, Country } from "../collections/flagEmojis";
-import { Role } from "discord.js";
+import { Guild, Role } from "discord.js";
 
 type FinderCountryProperties = Pick<Country, "name" | "emoji">;
 
 export class CountryRoleFinder {
   private static emojiOverrides: Record<string, string> = {
+    "🇦🇽": "🇫🇮",
+    "🇧🇻": "🇳🇴",
+    "🇸🇯": "🇳🇴",
+    "🇬🇮": "🇬🇧",
     "🇺🇲": "🇺🇸",
     "🇨🇵": "🇫🇷",
     "🇲🇫": "🇫🇷",
     "🇪🇦": "🇪🇸",
     "🇮🇴": "🇬🇧",
   };
+
+  private static emojiToCountryOverrides: Record<string, Country> =
+    CountryRoleFinder.generateEmojiToCountryOverrides();
+
+  private static generateEmojiToCountryOverrides(): Record<string, Country> {
+    const result: Record<string, Country> = {};
+
+    for (const key in CountryRoleFinder.emojiOverrides) {
+      const value = CountryRoleFinder.emojiOverrides[key];
+      result[key] = countries.find((c) => c.emoji == value);
+    }
+
+    return result;
+  }
+
+  static getCountriesFromString = (input: string) => {
+    const matchedCountries = countries
+      .filter((country: Country) => {
+        return (
+          input.includes(country.emoji) ||
+          input.match(RegExp(`\\b${country.name}\\b`, "i"))
+        );
+      })
+      .map((c) => CountryRoleFinder.emojiToCountryOverrides[c.emoji] ?? c);
+
+    return matchedCountries.filter(
+      ({ name: filterName }, index, self) =>
+        self.findIndex(({ name }) => name === filterName) === index
+    );
+  };
+
+  static getRoleForCountry(country: Country, guild: Guild): Role {
+    return guild.roles.cache.find((role) =>
+      CountryRoleFinder.isRoleFromCountry(country, role)
+    );
+  }
 
   static getCountryByRole(input: string, allowRegions = false): string | null {
     const result = this.getMatches(input, allowRegions);
@@ -28,29 +68,34 @@ export class CountryRoleFinder {
       country.name === "Scotland" ||
       country.name === "Wales"
     ) {
-      return this.check({ name: "UK", emoji: "🇬🇧" }, role.name);
+      return this.check({ name: "UK", emoji: "🇬🇧" }, role.name, false, true);
     }
 
-    return this.check(country, role.name);
+    return this.check(country, role.name, false, true);
   }
 
   private static getMatches(input: string, allowRegions = false): Country {
-    return countries.find((country) =>
+    const match = countries.find((country) =>
       this.check(country, input, allowRegions)
     );
+
+    return CountryRoleFinder.emojiToCountryOverrides[match?.emoji] ?? match;
   }
 
   private static check(
     country: FinderCountryProperties,
     compare: string,
-    allowRegions = false
+    allowRegions = false,
+    useOverrides = false
   ) {
     if (!allowRegions && compare.match(/\(.*\)/)) return false;
 
-    const emoji = this.emojiOverrides[country.emoji] ?? country.emoji;
-
     const comparator = (a: string, b: string) =>
       allowRegions ? a.startsWith(b) : a === b;
+
+    const emoji = useOverrides
+      ? this.emojiOverrides[country.emoji] ?? country.emoji
+      : country.emoji;
 
     return (
       compare.includes(emoji) ||

@@ -8,7 +8,6 @@ import {
   User,
 } from "discord.js";
 import { isRegistered, textLog } from "../common/moderator";
-import { countries, Country } from "../collections/flagEmojis";
 import { CountryRoleFinder } from "../utils/country-role-finder";
 
 const regionCountries = ["USA"];
@@ -17,7 +16,9 @@ const whereAreYouFrom = async (message: Message) => {
   const newUser = !isRegistered(message.member);
 
   if (newUser) {
-    const matchedCountries = getCountriesFromMessage(message.content);
+    const matchedCountries = CountryRoleFinder.getCountriesFromString(
+      message.content
+    );
 
     if (matchedCountries.length > 1) {
       await message.reply(
@@ -28,7 +29,10 @@ const whereAreYouFrom = async (message: Message) => {
 
     const countryToAssign = matchedCountries[0];
     if (countryToAssign) {
-      const roleToAssign = getRoleForCountry(countryToAssign, message.guild);
+      const roleToAssign = CountryRoleFinder.getRoleForCountry(
+        countryToAssign,
+        message.guild
+      );
       const memberDm = await message.author.createDM();
 
       if (!roleToAssign) {
@@ -103,32 +107,12 @@ const getWelcomeMessage = (user: User) => {
   return welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
 };
 
-export const getRoleForCountry = (country: Country, guild: Guild): Role => {
-  return guild.roles.cache.find((role) =>
-    CountryRoleFinder.isRoleFromCountry(country, role)
-  );
-};
-
 const ghostPing = async (message: Message, region: String) => {
   const regionChannel = message.guild.channels.cache.find(
     (channel) => channel.name === `${region}-regions`
   ) as TextChannel;
   const ping = await regionChannel.send(`<@${message.member}>`);
   await ping.delete();
-};
-
-export const getCountriesFromMessage = (message: string) => {
-  const matchedCountries = countries.filter((country: Country) => {
-    return (
-      message.includes(country.emoji) ||
-      message.match(RegExp(`\\b${country.name}\\b`, "i"))
-    );
-  });
-
-  return matchedCountries.filter(
-    ({ name: filterName }, index, self) =>
-      self.findIndex(({ name }) => name === filterName) === index
-  );
 };
 
 export const updateAfterRegionSelect = async (

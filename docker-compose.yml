@@ -11,7 +11,7 @@ services:
     volumes:
       - ./db:/var/lib/postgresql/data
   yesbot:
-    image: yesbot:latest
+    image: ghcr.io/yes-theory-fam/yesbot-ts:latest
     pull_policy: always
     restart: unless-stopped
     env_file:

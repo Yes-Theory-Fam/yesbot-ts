@@ -1,5 +1,7 @@
 import { CountryRoleFinder } from "../../src/utils/country-role-finder";
 import MockDiscord from "../mocks";
+import { Collection, Role, RoleManager } from "discord.js";
+import { countries } from "../../src/collections/flagEmojis";
 
 describe("CountryRoleFinder", () => {
   it("should find as country-role", () => {
@@ -36,8 +38,10 @@ describe("CountryRoleFinder", () => {
     expect(CountryRoleFinder.getCountryByRole("I'm from Germany! 🇩🇪")).toMatch(
       "Germany"
     );
+
+    // Works with overrides
     expect(CountryRoleFinder.getCountryByRole("Åland Islands 🇦🇽")).toMatch(
-      "Åland Islands"
+      "Finland"
     );
   });
 
@@ -94,6 +98,54 @@ describe("CountryRoleFinder", () => {
       title: "flag for Spain",
     };
     role.name = "Spain 🇪🇸";
+
     expect(CountryRoleFinder.isRoleFromCountry(country, role)).toBeTruthy();
+  });
+
+  it("should find countries in messages", () => {
+    const cases: [string, string[]][] = [
+      ["Finland", ["Finland"]],
+      ["🇪🇦", ["Spain"]],
+      ["the UK 🇬🇧", ["UK"]],
+      ["🏴󠁧󠁢󠁷󠁬󠁳󠁿", ["Wales"]],
+      ["🇦🇽 Finland", ["Finland"]],
+      ["🇮🇳 🇮🇳 🇮🇳 🇮🇳", ["India"]],
+      // ["🇮🇳🇮🇳🇮🇳", ["India"]], TODO fix this (https://github.com/Yes-Theory-Fam/yesbot-ts/issues/382
+    ];
+
+    for (const [input, expected] of cases) {
+      const countries = CountryRoleFinder.getCountriesFromString(input);
+      const names = countries.map((c) => c.name);
+      expect(names).toEqual(expected);
+    }
+  });
+
+  it("should pick the correct role for a country", () => {
+    const roleNames = ["Rwanda 🇷🇼", "Finland 🇫🇮", "United Kingdom 🇬🇧"];
+    const roles = roleNames.map((n) => {
+      const discord = new MockDiscord();
+      const role = discord.getRole();
+      role.name = n;
+      return role;
+    });
+
+    const collectionEntries: [string, Role][] = roles.map((r) => [r.name, r]);
+
+    const discord = new MockDiscord();
+    const guild = discord.getGuild();
+    guild.roles = { cache: new Collection(collectionEntries) } as RoleManager;
+
+    const cases: [string, Role | undefined][] = [
+      ["Rwanda", roles[0]],
+      ["Åland Islands", roles[1]],
+      ["Wales", roles[2]],
+    ];
+
+    for (const [input, expected] of cases) {
+      const country = countries.find((c) => c.name === input);
+      if (!country) throw input;
+      const foundRole = CountryRoleFinder.getRoleForCountry(country, guild);
+      expect(foundRole).toEqual(expected);
+    }
   });
 });

@@ -1,4 +1,4 @@
-name: Build and Publish Dockerimage
+name: Build and deploy new Version
 
 env:
   REGISTRY: ghcr.io
@@ -9,6 +9,21 @@ on:
     types: [ created ]
 
 jobs:
+  deploy:
+    name: Deploy
+    needs: build-and-push-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: deploy new bot version
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.YESBOT_HOSTNAME }}
+          port: ${{ secrets.YESBOT_PORT }}
+          key: ${{ secrets.DEPLOYMENT_KEY }}
+          username: ${{ secrets.YESBOT_USERNAME }}
+          script: |
+            sudo ./updater.sh
+
   build-and-push-image:
     runs-on: ubuntu-latest
     strategy:
