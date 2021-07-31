@@ -29,7 +29,7 @@
   "dependencies": {
     "@yes-theory-fam/database": "0.10.0",
     "axios": "0.21.1",
-    "countries-and-timezones": "2.5.0",
+    "countries-and-timezones": "3.0.1",
     "country-code-emoji": "2.3.0",
     "date-fns": "2.23.0",
     "date-fns-tz": "1.1.4",
