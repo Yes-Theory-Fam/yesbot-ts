@@ -36,7 +36,7 @@
     "discord.js": "12.5.3",
     "glob": "7.1.7",
     "path": "0.12.7",
-    "pg": "8.6.0",
+    "pg": "8.7.1",
     "reflect-metadata": "0.1.13",
     "ts-node": "10.1.0",
     "winston": "3.3.3"
