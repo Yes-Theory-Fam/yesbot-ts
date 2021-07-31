@@ -200,7 +200,7 @@ const groupManager = async (message: Message, isConfig: boolean) => {
     );
 
     const moderator = isAuthorModerator(message);
-    const setting = group.groupPingOption;
+    const setting = group.groupPingSetting;
 
     if (setting === GroupPingSetting.MODERATOR && !moderator) {
       await Tools.handleUserError(
@@ -609,15 +609,14 @@ const changeGroupPingSettings = async (
   const setting = option.toUpperCase();
 
   if (
-    (setting !== "MODERATOR" &&
-      setting !== "MEMBER" &&
-      setting !== "BOT" &&
-      setting !== "OFF") ||
-    !setting
+    setting !== GroupPingSetting.MODERATOR &&
+    setting !== GroupPingSetting.MEMBER &&
+    setting !== GroupPingSetting.BOT &&
+    setting !== GroupPingSetting.OFF
   ) {
     await Tools.handleUserError(
       message,
-      "Please write a valid setting for the group ping! Youre options are `moderator`, `member`, `bot` or `off`"
+      "Please write a valid setting for the group ping! The options are `moderator`, `member`, `bot` or `off`."
     );
     return;
   }
@@ -638,7 +637,7 @@ const changeGroupPingSettings = async (
   try {
     await prisma.userGroup.update({
       where: { id: group.id },
-      data: { groupPingOption: setting },
+      data: { groupPingSetting: GroupPingSetting[setting] },
     });
   } catch (error) {
     logger.error("Failed to update database group ping settings," + error);
