@@ -4,7 +4,8 @@ import { GithubReleaseRepositoryType } from "../types/github-release.types";
 import { GitHubCommitMessages } from "../types/github-commits-messages.types";
 
 export class GithubReleaseNotesAccessor {
-  private GITHUB_GRAPHQL_ENDPOINT: string = process.env.GITHUB_GRAPHQL_ENDPOINT;
+  private GITHUB_GRAPHQL_ENDPOINT: string =
+    process.env.GITHUB_GRAPHQL_ENDPOINT || "https://api.github.com/graphql";
   private GITHUB_TOKEN: string = process.env.GITHUB_TOKEN;
 
   public async getLastTwoTags(): Promise<GithubReleaseRepositoryType> {
