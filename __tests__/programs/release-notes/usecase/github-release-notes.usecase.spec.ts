@@ -95,4 +95,9 @@ describe("GithubReleaseNotesUsecase", () => {
       githubReleaseNotesUsecase["createReleaseNotes"](releaseNotes);
     expect(result).toMatchSnapshot();
   });
+
+  it("should not replace @ mentions with a < in front (such as <@userid>)", () => {
+    const release = githubReleaseNotesUsecase["createReleaseNotes"]("<@foo>");
+    expect(release).toMatchSnapshot();
+  });
 });

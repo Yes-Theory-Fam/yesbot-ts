@@ -5,6 +5,7 @@ import {
 } from "../types/github-release.types";
 import prisma from "../../../prisma";
 import { Release } from "@yes-theory-fam/database/client";
+import { githubUserToDiscordMention } from "../config/github-to-discord-names";
 
 interface ResponseType {
   releaseNotes: string;
@@ -101,10 +102,14 @@ export class GithubReleaseNotesUsecase {
   }
 
   private createReleaseNotes(releaseNotes: string) {
+    const releaseNotesWithGithubUserMentions = releaseNotes.replace(
+      /^(?!<)@[a-zA-Z0-9-_.]+$/,
+      githubUserToDiscordMention
+    );
     return `Hello everyone :wave: I'm back after a short break :sleeping:
 During this time I have been worked on a lot. Here is a small overview:
 
-${releaseNotes}
+${releaseNotesWithGithubUserMentions}
 So now back to work :tools:     
 `;
   }

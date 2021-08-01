@@ -1,7 +1,7 @@
 module.exports = {
   preset: "ts-jest",
   testEnvironment: "node",
-  modulePathIgnorePatterns: ["<rootDir>/__tests__/mocks", "<rootDir>/src", "<rootDir>/node_modules", "<rootDir>/build", "<rootDir>/coverage"],
+  modulePathIgnorePatterns: ["<rootDir>/__tests__/mocks", "<rootDir>/node_modules", "<rootDir>/build", "<rootDir>/coverage"],
   collectCoverageFrom: [
     "src/**/*.{ts}",
     "!**/node_modules/**",
