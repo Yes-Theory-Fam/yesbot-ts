@@ -10,7 +10,7 @@ import { HIOC, StringIndexedHIOCTree } from "../types/hioc";
 
 export interface MessageEventHandlerOptions extends BaseOptions {
   event: DiscordEvent.MESSAGE;
-  trigger: string;
+  trigger?: string;
 }
 
 export type MessageHandlerFunction<T extends DiscordEvent> = HandlerFunctionFor<

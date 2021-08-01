@@ -43,6 +43,13 @@ import {
   VoiceStateHandlerFunction,
   VoiceStateUpdateEventHandlerOptions,
 } from "./voice-state-update";
+import {
+  addTimerHandler,
+  extractTimerInfo,
+  TimerEventHandlerOptions,
+  TimerHandlerFunction,
+} from "../../events/timer";
+import { Prisma, Timer } from "@yes-theory-fam/database/client";
 
 export type EventHandlerOptions =
   | MemberLeaveEventHandlerOptions
@@ -50,6 +57,7 @@ export type EventHandlerOptions =
   | ReactionEventHandlerOptions
   | ReadyEventHandlerOptions
   | GuildMemberUpdateEventHandlerOptions
+  | TimerEventHandlerOptions
   | VoiceStateUpdateEventHandlerOptions;
 
 export type HandlerFunction<T extends DiscordEvent> =
@@ -58,6 +66,7 @@ export type HandlerFunction<T extends DiscordEvent> =
   | ReactionHandlerFunction<T>
   | ReadyHandlerFunction<T>
   | GuildMemberUpdateHandlerFunction<T>
+  | TimerHandlerFunction<T>
   | VoiceStateHandlerFunction<T>;
 
 export const addEventHandler: AddEventHandlerFunction<EventHandlerOptions> = (
@@ -99,7 +108,12 @@ export const addEventHandler: AddEventHandlerFunction<EventHandlerOptions> = (
         ioc,
         tree as StringIndexedHIOCTree<DiscordEvent.READY>
       );
-
+    case DiscordEvent.TIMER:
+      return addTimerHandler(
+        options,
+        ioc,
+        tree as StringIndexedHIOCTree<DiscordEvent.TIMER>
+      );
     case DiscordEvent.VOICE_STATE_UPDATE:
       return addVoiceStateUpdateHandler(
         options,
@@ -129,6 +143,8 @@ export const extractEventInfo: ExtractInfoFunction<DiscordEvent> = (
         );
       case DiscordEvent.READY:
         return extractReadyInfo(args[0] as Client);
+      case DiscordEvent.TIMER:
+        return extractTimerInfo(args[0] as Timer);
       case DiscordEvent.VOICE_STATE_UPDATE:
         return extractVoiceStateUpdateInfo(
           args[0] as VoiceState,
