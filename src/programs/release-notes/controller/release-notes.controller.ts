@@ -20,7 +20,6 @@ export class ReleaseNotesController extends CommandHandler<DiscordEvent.READY> {
   }
 
   handle(client: Client): void {
-    console.log("start");
     this.githubReleaseNotesUseCase.handle().then(async (message) => {
       if (!!message.tagMessage) {
         const updateChannel = client.guilds
