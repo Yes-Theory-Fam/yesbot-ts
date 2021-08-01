@@ -71,7 +71,6 @@ export class GithubReleaseNotesUsecase {
       lastRelease.releaseTime,
       tagName
     );
-    console.log("response", JSON.stringify(response));
     let releaseNotes: string = "";
     response.repository.object.history.nodes.forEach((value) => {
       releaseNotes += `> * ${value.messageHeadline}\n`;
