@@ -23,6 +23,7 @@ export class GithubReleaseNotesUsecase {
       await this.fetchLatestReleasesFormGitHub();
     const latestRelease = await prisma.release.findFirst({
       where: { releaseTime: newRelease.node.publishedAt },
+      orderBy: { releaseTime: "desc" },
     });
     let tagMessage = !!newRelease.node.description
       ? newRelease.node.description
