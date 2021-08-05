@@ -5,10 +5,10 @@ import { Timer } from "@yes-theory-fam/database/client";
 import bot from "../index";
 
 const quoteVotingIdentifier = "quotevoting";
-const positiveEmoji = "👍";
-const negativeEmoji = "👎";
+const positiveEmojiName = "haha";
+const negativeEmojiName = "eeeh";
 
-const deleteRatio = 4;
+const deleteRatio = 4 / 3;
 const pinRatio = 9;
 
 interface QuoteVotingTimerData {
@@ -27,6 +27,11 @@ class QuoteMessage implements CommandHandler<DiscordEvent.MESSAGE> {
       await message.delete();
       return;
     }
+
+    const emojiByName = (name: string) =>
+      message.guild.emojis.cache.find((e) => e.name === name);
+    const positiveEmoji = emojiByName(positiveEmojiName);
+    const negativeEmoji = emojiByName(negativeEmojiName);
 
     await message.react(positiveEmoji);
     await message.react(negativeEmoji);
@@ -53,8 +58,8 @@ class QuoteTally implements CommandHandler<DiscordEvent.TIMER> {
     const countByEmoji = (name: string) =>
       message.reactions.cache.find((reaction) => reaction.emoji.name === name)
         .count ?? 0;
-    const positiveReactions = countByEmoji(positiveEmoji);
-    const negativeReactions = countByEmoji(negativeEmoji);
+    const positiveReactions = countByEmoji(positiveEmojiName);
+    const negativeReactions = countByEmoji(negativeEmojiName);
 
     if (positiveReactions / negativeReactions < deleteRatio) {
       await message.delete();
