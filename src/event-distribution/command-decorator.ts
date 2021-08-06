@@ -13,6 +13,7 @@ export const Command = <T extends EventHandlerOptions>(options: T) => {
     options.event !== DiscordEvent.GUILD_MEMBER_UPDATE &&
     options.event !== DiscordEvent.MEMBER_LEAVE &&
     options.event !== DiscordEvent.VOICE_STATE_UPDATE &&
+    options.event !== DiscordEvent.TIMER &&
     options.event !== DiscordEvent.READY
   ) {
     setDefaultOnBaseOptions(options);
@@ -26,6 +27,7 @@ export const Command = <T extends EventHandlerOptions>(options: T) => {
       options.event !== DiscordEvent.GUILD_MEMBER_UPDATE &&
       options.event !== DiscordEvent.MEMBER_LEAVE &&
       options.event !== DiscordEvent.VOICE_STATE_UPDATE &&
+      options.event !== DiscordEvent.TIMER &&
       options.event !== DiscordEvent.READY
     ) {
       checkBaseOptions(options, commandClassName);
@@ -50,11 +52,11 @@ const baseOptionsRequireServer = (options: BaseOptions) => {
 };
 
 const setDefaultOnBaseOptions = (options: BaseOptions) => {
-  if (!options.location) {
-    options.location = baseOptionsRequireServer(options)
-      ? EventLocation.SERVER
-      : EventLocation.ANYWHERE;
-  }
+  options.location ??= baseOptionsRequireServer(options)
+    ? EventLocation.SERVER
+    : EventLocation.ANYWHERE;
+
+  options.requiredRoles ??= [];
 };
 
 const checkBaseOptions = (options: BaseOptions, commandClassName: string) => {
