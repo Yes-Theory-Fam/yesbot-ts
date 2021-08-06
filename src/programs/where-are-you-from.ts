@@ -15,12 +15,12 @@ const regionCountries = ["USA"];
 const whereAreYouFrom = async (message: Message) => {
   const newUser = !isRegistered(message.member);
 
-  if (newUser) {
+  if (newUser && !message.author.bot) {
     const matchedCountries = CountryRoleFinder.getCountriesFromString(
       message.content
     );
 
-    if (matchedCountries.length > 1) {
+    if (await multipleCountries(message.content)) {
       await message.reply(
         "Please only tell me 1 country for now, you can ask a member of the Support team about multiple nationalities :grin:"
       );
@@ -153,5 +153,13 @@ export const updateAfterRegionSelect = async (
     }
   }
 };
+
+const multipleCountries = async (message: string): Promise<boolean> => {
+  const seperatedEmojis = message.match(/\p{Emoji_Presentation}/gu)
+  if (seperatedEmojis[0] + seperatedEmojis[1] !== seperatedEmojis[2] + seperatedEmojis[3] && seperatedEmojis.length > 2) {
+    return true
+  }
+  return false
+}
 
 export default whereAreYouFrom;
