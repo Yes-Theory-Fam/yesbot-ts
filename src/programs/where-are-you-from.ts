@@ -155,11 +155,15 @@ export const updateAfterRegionSelect = async (
 };
 
 const multipleCountries = async (message: string): Promise<boolean> => {
-  const seperatedEmojis = message.match(/\p{Emoji_Presentation}/gu)
-  if (seperatedEmojis[0] + seperatedEmojis[1] !== seperatedEmojis[2] + seperatedEmojis[3] && seperatedEmojis.length > 2) {
-    return true
+  const seperatedEmojis = message.match(/\p{Emoji_Presentation}/gu);
+  if (
+    seperatedEmojis[0] + seperatedEmojis[1] !==
+      seperatedEmojis[2] + seperatedEmojis[3] &&
+    seperatedEmojis.length > 2
+  ) {
+    return true;
   }
-  return false
-}
+  return false;
+};
 
 export default whereAreYouFrom;
