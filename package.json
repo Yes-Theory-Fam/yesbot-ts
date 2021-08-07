@@ -33,7 +33,7 @@
     "country-code-emoji": "2.3.0",
     "date-fns": "2.23.0",
     "date-fns-tz": "1.1.6",
-    "discord.js": "12.5.3",
+    "discord.js": "13.0.0",
     "glob": "7.1.7",
     "path": "0.12.7",
     "pg": "8.7.1",
