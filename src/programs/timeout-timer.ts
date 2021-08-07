@@ -17,7 +17,6 @@ const timeoutTimerIdentifier = "timeouttimer";
 
 interface TimeoutTimerData {
   userId: Snowflake;
-  channelId: Snowflake;
 }
 
 @Command({
@@ -28,33 +27,14 @@ interface TimeoutTimerData {
 })
 class TimeoutTimer implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
-    if (message.system) {
-      await message.delete();
-      return;
-    }
-
     const words = message.content.split(/\s+/);
     const targetedUser = message.mentions.users.first();
     const time = Number(words[2]);
 
-    if (!targetedUser && !time) {
+    if (!targetedUser || !time) {
       return Tools.handleUserError(
         message,
         "The syntax for this command is `!timeoutTimer` {USER} {TIME IN MINUTES} {REASON (OPTIONAL)}"
-      );
-    }
-
-    if (!targetedUser) {
-      return Tools.handleUserError(
-        message,
-        "You have to ping the user you want to timeout!"
-      );
-    }
-
-    if (!time) {
-      return Tools.handleUserError(
-        message,
-        "You must set a time, it is interpreted in minutes"
       );
     }
 
@@ -78,7 +58,6 @@ class TimeoutTimer implements CommandHandler<DiscordEvent.MESSAGE> {
     executeTime.setMinutes(executeTime.getMinutes() + time);
     await TimerService.createTimer(timeoutTimerIdentifier, executeTime, {
       userId: targetedUser.id,
-      channelId: message.channel.id,
     });
   }
 }
@@ -90,21 +69,19 @@ class TimeoutTimer implements CommandHandler<DiscordEvent.MESSAGE> {
 class TimeoutPardon implements CommandHandler<DiscordEvent.TIMER> {
   async handle(timer: Timer): Promise<void> {
     const data = timer.data as unknown as TimeoutTimerData;
-    const channel = bot.channels.resolve(data.channelId) as TextChannel;
-    const memberGuild = channel.guild.members.resolve(data.userId);
-    const logChannel = channel.guild.channels.cache.find(
+    const guild = bot.guilds.resolve(process.env.GUILD_ID);
+    const guildMember = guild.members.resolve(data.userId);
+    const logChannel = guild.channels.cache.find(
       (channel) => channel.name === "bot-output"
     ) as TextChannel;
-    const timeoutRole = channel.guild.roles.cache.find(
-      (r) => r.name === "Time Out"
-    );
+    const timeoutRole = guild.roles.cache.find((r) => r.name === "Time Out");
 
     try {
-      await memberGuild.roles.remove(timeoutRole);
-      await logChannel.send(`<@${memberGuild.id}> was pardoned!`);
+      await guildMember.roles.remove(timeoutRole);
+      await logChannel.send(`<@${guildMember.id}> was pardoned!`);
     } catch (e) {
       await logChannel.send(
-        `I could not remove the time out role from <@${memberGuild.id}>, was it removed manually?`
+        `I could not remove the time out role from <@${guildMember.id}>, was it removed manually?`
       );
     }
   }
