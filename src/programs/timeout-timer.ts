@@ -1,12 +1,5 @@
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
-import {
-  DiscordAPIError,
-  GuildMember,
-  Message,
-  Snowflake,
-  TextChannel,
-  User,
-} from "discord.js";
+import { Message, Snowflake, TextChannel } from "discord.js";
 import { TimerService } from "./timer/timer.service";
 import { Timer } from "@yes-theory-fam/database/client";
 import bot from "../index";
