@@ -12,7 +12,7 @@ import { Timer } from "@yes-theory-fam/database/client";
 import bot from "../index";
 import Tools from "../common/tools";
 import { hasRole } from "../common/moderator";
-//I have absolute no idea wtf i am doing :)
+
 const timeoutTimerIdentifier = "timeouttimer";
 
 interface TimeoutTimerData {
