@@ -11,7 +11,7 @@ import {
   TextChannel,
   User,
 } from "discord.js";
-import { textLog } from "./moderator";
+import { hasRole, textLog } from "./moderator";
 import { createYesBotLogger } from "../log";
 import prisma from "../prisma";
 
@@ -87,6 +87,22 @@ class Tools {
       message.delete();
       msg.delete({ timeout: 10000 });
     });
+  }
+
+  static async gainedRole(
+    oldMember: GuildMember | PartialGuildMember,
+    newMember: GuildMember | PartialGuildMember,
+    roleName: string
+  ) {
+    return !!(!hasRole(oldMember, roleName) && hasRole(newMember, roleName));
+  }
+
+  static async lostRole(
+    oldMember: GuildMember | PartialGuildMember,
+    newMember: GuildMember | PartialGuildMember,
+    roleName: string
+  ) {
+    return !!(hasRole(oldMember, roleName) && !hasRole(newMember, roleName));
   }
 
   static async addPerUserPermissions(

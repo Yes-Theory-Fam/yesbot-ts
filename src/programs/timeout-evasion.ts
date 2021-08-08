@@ -1,12 +1,7 @@
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 import { GuildMember, PartialGuildMember } from "discord.js";
 import bot from "../index";
-import {
-  gainedRole,
-  isUserTimedOut,
-  lostRole,
-  textLog,
-} from "../common/moderator";
+import { isUserTimedOut, textLog } from "../common/moderator";
 import Tools from "../common/tools";
 import prisma from "../prisma";
 
@@ -22,7 +17,7 @@ class TimeoutRoleStatus
     oldMember: GuildMember | PartialGuildMember,
     newMember: GuildMember | PartialGuildMember
   ): Promise<void> {
-    if (lostRole(oldMember, newMember, "Time Out")) {
+    if (await Tools.lostRole(oldMember, newMember, "Time Out")) {
       try {
         await prisma.timedOutUsers.delete({
           where: {
@@ -36,7 +31,7 @@ class TimeoutRoleStatus
       }
     }
     if (
-      gainedRole(oldMember, newMember, "Time Out") &&
+      (await Tools.gainedRole(oldMember, newMember, "Time Out")) &&
       !(await isUserTimedOut(newMember))
     ) {
       try {
