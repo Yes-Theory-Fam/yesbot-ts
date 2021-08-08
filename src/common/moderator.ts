@@ -3,6 +3,7 @@ import {
   GuildMember,
   Message,
   PartialGuildMember,
+  Role,
   TextChannel,
 } from "discord.js";
 
@@ -40,4 +41,9 @@ export const textLog = (text: string): Promise<Message> => {
 export const getMember = (userId: string): GuildMember => {
   const bot = require("..") as Client;
   return bot.guilds.resolve(process.env.GUILD_ID).members.resolve(userId);
+};
+
+export const getRole = (roleName: string): Role => {
+  const bot = require("..") as Client;
+  return bot.guilds.resolve(process.env.GUILD_ID).roles.resolve(roleName);
 };
