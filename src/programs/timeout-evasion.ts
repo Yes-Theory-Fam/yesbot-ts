@@ -24,7 +24,6 @@ class TimeoutRoleStatus
   ): Promise<void> {
     if (lostRole(oldMember, newMember, "Time Out")) {
       try {
-        console.log("Test2");
         await prisma.timedOutUsers.delete({
           where: {
             userId: newMember.id,
@@ -41,7 +40,6 @@ class TimeoutRoleStatus
       !(await isUserTimedOut(newMember))
     ) {
       try {
-        console.log("Test1");
         await prisma.timedOutUsers.create({
           data: {
             userId: newMember.id,
@@ -62,9 +60,7 @@ class TimeoutRoleStatus
 })
 class ReportUserOnLeave implements CommandHandler<DiscordEvent.MEMBER_LEAVE> {
   async handle(member: GuildMember): Promise<void> {
-    console.log("Test3");
     if (!(await isUserTimedOut(member))) return;
-    console.log("Test4");
     await textLog(`<@${member.id}>, left the server when he was timed out!`);
   }
 }
@@ -75,9 +71,7 @@ class ReportUserOnLeave implements CommandHandler<DiscordEvent.MEMBER_LEAVE> {
 })
 class ReportUserOnJoin implements CommandHandler<DiscordEvent.MEMBER_JOIN> {
   async handle(member: GuildMember): Promise<void> {
-    console.log("Test5");
     if (!(await isUserTimedOut(member))) return;
-    console.log("Test6");
     const guild = bot.guilds.resolve(process.env.GUILD_ID);
     const timeoutRole = Tools.getRoleByName("Time Out", guild);
     await member.roles.add(timeoutRole);
