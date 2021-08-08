@@ -53,17 +53,6 @@ export const isUserTimedOut = async (
   }));
 };
 
-export const wasUserTimedOut = async (
-  member: GuildMember | PartialGuildMember
-): Promise<boolean> => {
-  return !!(await prisma.timedOutUsers.findFirst({
-    where: {
-      userId: member.id,
-      TimedOutStatus: "ADDED",
-    },
-  }));
-};
-
 export const gainedRole = (
   oldMember: GuildMember | PartialGuildMember,
   newMember: GuildMember | PartialGuildMember,
