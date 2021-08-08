@@ -51,6 +51,7 @@ import {
 } from "../../events/timer";
 import { Prisma, Timer } from "@yes-theory-fam/database/client";
 import {
+  addMemberJoinHandler,
   extractMemberJoinInfo,
   MemberJoinArgument,
   MemberJoinEventHandlerOptions,
@@ -88,6 +89,12 @@ export const addEventHandler: AddEventHandlerFunction<EventHandlerOptions> = (
         options,
         ioc,
         tree as StringIndexedHIOCTree<DiscordEvent.MEMBER_LEAVE>
+      );
+    case DiscordEvent.MEMBER_JOIN:
+      return addMemberJoinHandler(
+        options,
+        ioc,
+        tree as StringIndexedHIOCTree<DiscordEvent.MEMBER_JOIN>
       );
     case DiscordEvent.MESSAGE:
       return addMessageHandler(
