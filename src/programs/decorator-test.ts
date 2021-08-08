@@ -140,3 +140,18 @@ export class DecoratorTest8 extends CommandHandler<DiscordEvent.MEMBER_LEAVE> {
     console.log("Called handler 8");
   }
 }
+
+/**
+ * Example of a Message handler with a subtrigger
+ */
+@Command({
+  event: DiscordEvent.MESSAGE,
+  trigger: "!test",
+  subTrigger: "case",
+  description: "",
+})
+export class DecoratorTest9 extends CommandHandler<DiscordEvent.MESSAGE> {
+  handle(message: Message): void {
+    console.log("Called handler 9");
+  }
+}

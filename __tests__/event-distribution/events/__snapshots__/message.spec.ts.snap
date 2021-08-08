@@ -3,19 +3,21 @@
 exports[`Messages should add data to the tree 1`] = `
 Object {
   "bot-output": Object {
-    "!test": Array [
-      Object {
-        "ioc": Object {},
-        "options": Object {
-          "channelNames": Array [
-            "bot-output",
-          ],
-          "description": "test",
-          "event": "MESSAGE",
-          "trigger": "!test",
+    "!test": Object {
+      "": Array [
+        Object {
+          "ioc": Object {},
+          "options": Object {
+            "channelNames": Array [
+              "bot-output",
+            ],
+            "description": "test",
+            "event": "MESSAGE",
+            "trigger": "!test",
+          },
         },
-      },
-    ],
+      ],
+    },
   },
   "channel": Object {},
 }
@@ -24,33 +26,35 @@ Object {
 exports[`Messages should add data to the tree 2`] = `
 Object {
   "bot-output": Object {
-    "!test": Array [
-      Object {
-        "ioc": Object {},
-        "options": Object {
-          "channelNames": Array [
-            "bot-output",
-          ],
-          "description": "test",
-          "event": "MESSAGE",
-          "trigger": "!test",
+    "!test": Object {
+      "": Array [
+        Object {
+          "ioc": Object {},
+          "options": Object {
+            "channelNames": Array [
+              "bot-output",
+            ],
+            "description": "test",
+            "event": "MESSAGE",
+            "trigger": "!test",
+          },
         },
-      },
-      Object {
-        "ioc": Object {},
-        "options": Object {
-          "allowedRoles": Array [
-            "Support",
-          ],
-          "channelNames": Array [
-            "bot-output",
-          ],
-          "description": "test",
-          "event": "MESSAGE",
-          "trigger": "!test",
+        Object {
+          "ioc": Object {},
+          "options": Object {
+            "allowedRoles": Array [
+              "Support",
+            ],
+            "channelNames": Array [
+              "bot-output",
+            ],
+            "description": "test",
+            "event": "MESSAGE",
+            "trigger": "!test",
+          },
         },
-      },
-    ],
+      ],
+    },
   },
   "channel": Object {},
 }
@@ -59,71 +63,77 @@ Object {
 exports[`Messages should add data to the tree 3`] = `
 Object {
   "bot-development": Object {
-    "!otherTrigger": Array [
-      Object {
-        "ioc": Object {},
-        "options": Object {
-          "allowedRoles": Array [
-            "Developer",
-          ],
-          "channelNames": Array [
-            "bot-development",
-            "bot-test-channel",
-          ],
-          "description": "test",
-          "event": "MESSAGE",
-          "trigger": "!otherTrigger",
+    "!otherTrigger": Object {
+      "": Array [
+        Object {
+          "ioc": Object {},
+          "options": Object {
+            "allowedRoles": Array [
+              "Developer",
+            ],
+            "channelNames": Array [
+              "bot-development",
+              "bot-test-channel",
+            ],
+            "description": "test",
+            "event": "MESSAGE",
+            "trigger": "!otherTrigger",
+          },
         },
-      },
-    ],
+      ],
+    },
   },
   "bot-output": Object {
-    "!test": Array [
-      Object {
-        "ioc": Object {},
-        "options": Object {
-          "channelNames": Array [
-            "bot-output",
-          ],
-          "description": "test",
-          "event": "MESSAGE",
-          "trigger": "!test",
+    "!test": Object {
+      "": Array [
+        Object {
+          "ioc": Object {},
+          "options": Object {
+            "channelNames": Array [
+              "bot-output",
+            ],
+            "description": "test",
+            "event": "MESSAGE",
+            "trigger": "!test",
+          },
         },
-      },
-      Object {
-        "ioc": Object {},
-        "options": Object {
-          "allowedRoles": Array [
-            "Support",
-          ],
-          "channelNames": Array [
-            "bot-output",
-          ],
-          "description": "test",
-          "event": "MESSAGE",
-          "trigger": "!test",
+        Object {
+          "ioc": Object {},
+          "options": Object {
+            "allowedRoles": Array [
+              "Support",
+            ],
+            "channelNames": Array [
+              "bot-output",
+            ],
+            "description": "test",
+            "event": "MESSAGE",
+            "trigger": "!test",
+          },
         },
-      },
-    ],
+      ],
+    },
   },
   "bot-test-channel": Object {
-    "!otherTrigger": Array [
-      Object {
-        "ioc": Object {},
-        "options": Object {
-          "allowedRoles": Array [
-            "Developer",
-          ],
-          "channelNames": Array [
-            "bot-development",
-            "bot-test-channel",
-          ],
-          "description": "test",
-          "event": "MESSAGE",
-          "trigger": "!otherTrigger",
+    "!otherTrigger": Object {
+      "": Array [
+        Object {
+          "ioc": Object {},
+          "options": Object {
+            "allowedRoles": Array [
+              "Developer",
+            ],
+            "channelNames": Array [
+              "bot-development",
+              "bot-test-channel",
+            ],
+            "description": "test",
+            "event": "MESSAGE",
+            "trigger": "!otherTrigger",
+          },
         },
-      },
-    ],
+      ],
+    },
   },
   "channel": Object {},
 }
@@ -134,6 +144,7 @@ Object {
   "handlerKeys": Array [
     "channel-id",
     "this",
+    "is",
   ],
   "isDirectMessage": true,
   "member": Object {
@@ -154,6 +165,7 @@ Object {
   "handlerKeys": Array [
     "guild-channel",
     "this",
+    "is",
   ],
   "isDirectMessage": false,
   "member": Object {

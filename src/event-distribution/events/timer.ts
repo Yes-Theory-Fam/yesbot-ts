@@ -7,6 +7,7 @@ import {
 import { createYesBotLogger } from "../../log";
 import { HIOC } from "../types/hioc";
 import { Timer } from "@yes-theory-fam/database/client";
+import { addToTree } from "../helper";
 
 export interface TimerEventHandlerOptions {
   event: DiscordEvent.TIMER;
@@ -33,9 +34,7 @@ export const addTimerHandler: AddEventHandlerFunction<TimerEventHandlerOptions> 
       );
     }
 
-    tree[key] ??= [];
-    const handlers = tree[key] as HIOC<DiscordEvent.TIMER>[];
-    handlers.push({ ioc, options });
+    addToTree([key], { ioc, options }, tree);
   };
 
 export const extractTimerInfo: ExtractInfoForEventFunction<DiscordEvent.TIMER> =
