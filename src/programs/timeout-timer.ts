@@ -4,7 +4,7 @@ import { TimerService } from "./timer/timer.service";
 import { Timer } from "@yes-theory-fam/database/client";
 import bot from "../index";
 import Tools from "../common/tools";
-import { hasRole } from "../common/moderator";
+import { hasRole, textLog } from "../common/moderator";
 
 const timeoutTimerIdentifier = "timeouttimer";
 
@@ -64,16 +64,13 @@ class TimeoutPardon implements CommandHandler<DiscordEvent.TIMER> {
     const data = timer.data as unknown as TimeoutTimerData;
     const guild = bot.guilds.resolve(process.env.GUILD_ID);
     const guildMember = guild.members.resolve(data.userId);
-    const logChannel = guild.channels.cache.find(
-      (channel) => channel.name === "bot-output"
-    ) as TextChannel;
     const timeoutRole = guild.roles.cache.find((r) => r.name === "Time Out");
 
     try {
       await guildMember.roles.remove(timeoutRole);
-      await logChannel.send(`<@${guildMember.id}> was pardoned!`);
+      await textLog(`<@${guildMember.id}> was pardoned!`);
     } catch (e) {
-      await logChannel.send(
+      await textLog(
         `I could not remove the time out role from <@${guildMember.id}>, was it removed manually?`
       );
     }
