@@ -12,6 +12,7 @@ export const enum DiscordEvent {
   READY = "READY",
   TIMER = "TIMER",
   VOICE_STATE_UPDATE = "VOICE_STATE_UPDATE",
+  MEMBER_JOIN = "MEMBER_JOIN",
 }
 
 export const enum EventLocation {

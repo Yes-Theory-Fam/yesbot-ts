@@ -14,7 +14,8 @@ export const Command = <T extends EventHandlerOptions>(options: T) => {
     options.event !== DiscordEvent.MEMBER_LEAVE &&
     options.event !== DiscordEvent.VOICE_STATE_UPDATE &&
     options.event !== DiscordEvent.TIMER &&
-    options.event !== DiscordEvent.READY
+    options.event !== DiscordEvent.READY &&
+    options.event !== DiscordEvent.MEMBER_JOIN
   ) {
     setDefaultOnBaseOptions(options);
   }
@@ -28,7 +29,8 @@ export const Command = <T extends EventHandlerOptions>(options: T) => {
       options.event !== DiscordEvent.MEMBER_LEAVE &&
       options.event !== DiscordEvent.VOICE_STATE_UPDATE &&
       options.event !== DiscordEvent.TIMER &&
-      options.event !== DiscordEvent.READY
+      options.event !== DiscordEvent.READY &&
+      options.event !== DiscordEvent.MEMBER_JOIN
     ) {
       checkBaseOptions(options, commandClassName);
     }

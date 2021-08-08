@@ -32,6 +32,7 @@ export class EventDistribution {
     [DiscordEvent.READY]: {},
     [DiscordEvent.TIMER]: {},
     [DiscordEvent.VOICE_STATE_UPDATE]: {},
+    [DiscordEvent.MEMBER_JOIN]: {},
   };
 
   handleEvent<T extends DiscordEvent>(
@@ -115,7 +116,8 @@ export class EventDistribution {
         eh.options.event === DiscordEvent.MEMBER_LEAVE ||
         eh.options.event === DiscordEvent.VOICE_STATE_UPDATE ||
         eh.options.event === DiscordEvent.TIMER ||
-        eh.options.event === DiscordEvent.READY
+        eh.options.event === DiscordEvent.READY ||
+        eh.options.event === DiscordEvent.MEMBER_JOIN
       )
         return true;
 
@@ -136,7 +138,8 @@ export class EventDistribution {
         eh.options.event === DiscordEvent.MEMBER_LEAVE ||
         eh.options.event === DiscordEvent.VOICE_STATE_UPDATE ||
         eh.options.event === DiscordEvent.TIMER ||
-        eh.options.event === DiscordEvent.READY
+        eh.options.event === DiscordEvent.READY ||
+        eh.options.event === DiscordEvent.MEMBER_JOIN
       )
         return true;
 
