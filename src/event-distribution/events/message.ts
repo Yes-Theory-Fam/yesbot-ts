@@ -6,11 +6,12 @@ import {
   HandlerFunctionFor,
 } from "../types/base";
 import { DMChannel, Message, NewsChannel, TextChannel } from "discord.js";
-import { HIOC, StringIndexedHIOCTree } from "../types/hioc";
+import { addToTree } from "../helper";
 
 export interface MessageEventHandlerOptions extends BaseOptions {
   event: DiscordEvent.MESSAGE;
   trigger?: string;
+  subTrigger?: string;
 }
 
 export type MessageHandlerFunction<T extends DiscordEvent> = HandlerFunctionFor<
@@ -25,17 +26,10 @@ export const addMessageHandler: AddEventHandlerFunction<MessageEventHandlerOptio
     if (channels.length === 0) channels.push("");
 
     const trigger = options.trigger ?? "";
+    const subTrigger = options.subTrigger ?? "";
 
     for (const channel of channels) {
-      tree[channel] ??= {};
-      const channelTree = tree[
-        channel
-      ] as StringIndexedHIOCTree<DiscordEvent.MESSAGE>;
-
-      channelTree[trigger] ??= [];
-      const triggerHiocs = channelTree[trigger] as HIOC<DiscordEvent.MESSAGE>[];
-
-      triggerHiocs.push({ ioc, options });
+      addToTree([channel, trigger, subTrigger], { options, ioc }, tree);
     }
   };
 
@@ -48,8 +42,12 @@ export const extractMessageInfo: ExtractInfoForEventFunction<DiscordEvent.MESSAG
     const channel = message.channel;
     const channelIdentifier = getChannelIdentifier(channel);
 
+    const split = message.content.split(" ");
+    const trigger = split[0];
+    const subTrigger = split[1];
+
     return {
-      handlerKeys: [channelIdentifier, message.content.split(" ")[0]],
+      handlerKeys: [channelIdentifier, trigger, subTrigger],
       member: message.member,
       isDirectMessage: message.channel.type === "dm",
     };

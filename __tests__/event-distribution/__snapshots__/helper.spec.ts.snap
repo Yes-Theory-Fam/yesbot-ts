@@ -1,0 +1,50 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Event Distribution helper Adds a three key event to the tree 1`] = `
+Object {
+  "channel": Object {
+    "trigger": Object {
+      "subTrigger": Array [
+        Object {},
+      ],
+    },
+  },
+}
+`;
+
+exports[`Event Distribution helper Adds a two key event to the tree 1`] = `
+Object {
+  "first": Object {
+    "second": Array [
+      Object {},
+    ],
+  },
+}
+`;
+
+exports[`Event Distribution helper Works with a bunch of combinations 1`] = `
+Object {
+  "first": Object {
+    "": Array [
+      Object {},
+    ],
+    "second": Array [
+      Object {},
+    ],
+    "third": Array [
+      Object {},
+      Object {},
+    ],
+  },
+  "second": Array [
+    Object {},
+  ],
+  "third": Object {
+    "example": Object {
+      "sub": Array [
+        Object {},
+      ],
+    },
+  },
+}
+`;
