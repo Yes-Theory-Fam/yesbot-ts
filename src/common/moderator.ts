@@ -52,15 +52,3 @@ export const isUserTimedOut = async (
     },
   }));
 };
-
-export const gainedRole = (
-  oldMember: GuildMember | PartialGuildMember,
-  newMember: GuildMember | PartialGuildMember,
-  roleName: string
-) => !hasRole(oldMember, roleName) && hasRole(newMember, roleName);
-
-export const lostRole = (
-  oldMember: GuildMember | PartialGuildMember,
-  newMember: GuildMember | PartialGuildMember,
-  roleName: string
-) => hasRole(oldMember, roleName) && !hasRole(newMember, roleName);
