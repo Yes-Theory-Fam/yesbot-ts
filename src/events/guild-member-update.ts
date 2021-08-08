@@ -11,7 +11,6 @@ import Tools from "../common/tools";
 import { hasRole } from "../common/moderator";
 import { NitroColors, Separators, WhereAreYouFrom } from "../programs";
 import prisma from "../prisma";
-import { ChatNames } from "../collections/chat-names";
 
 const guildMemberUpdate = async (
   oldMember: GuildMember | PartialGuildMember,
@@ -88,23 +87,6 @@ const revokePerUserPermissions = async (
   targetChannels.forEach((channel) =>
     channel.permissionOverwrites.get(newMember.id)?.delete()
   );
-
-  try {
-    await prisma.timedOutUsers.create({
-      data: {
-        userId: newMember.id,
-      },
-    });
-  } catch (e) {
-    if (e) {
-      const botOutputChannel = newMember.guild.channels.cache.find(
-        (channel) => channel.name === ChatNames.BOT_OUTPUT.toString()
-      ) as TextChannel;
-      botOutputChannel.send(
-        `Failed to add ${newMember.id} from Time Out DB, please contact a @Developer`
-      );
-    }
-  }
 };
 
 type ChannelAccessToggleMessages = {
@@ -165,20 +147,6 @@ const resolvePerUserPermissions = async (
         messageId,
         newMember.guild,
         newMember
-      );
-    }
-  }
-  try {
-    await prisma.timedOutUsers.delete({
-      where: { userId: newMember.id },
-    });
-  } catch (e) {
-    if (e) {
-      const botOutputChannel = newMember.guild.channels.cache.find(
-        (channel) => channel.name === ChatNames.BOT_OUTPUT.toString()
-      ) as TextChannel;
-      botOutputChannel.send(
-        `I could not remove <@${newMember.id}> from from the DB, please contact a @Developer`
       );
     }
   }

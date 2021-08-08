@@ -1,15 +1,13 @@
-import { GuildMember, PartialGuildMember, TextChannel } from "discord.js";
-import { isUserTimedOut, textLog } from "../common/moderator";
+import { GuildMember, PartialGuildMember } from "discord.js";
+import { textLog } from "../common/moderator";
 import prisma from "../prisma";
 import { createYesBotLogger } from "../log";
-import { ChatNames } from "../collections/chat-names";
 
 const logger = createYesBotLogger("events", "memberLeave");
 
 const memberLeave = async (member: GuildMember | PartialGuildMember) => {
   await removeFromBirthdays(member.id);
   await removeFromGroups(member.id);
-  await reportUser(member);
 };
 
 // See https://www.prisma.io/docs/reference/api-reference/error-reference#p2025
@@ -42,17 +40,6 @@ const removeFromGroups = async (memberId: string) => {
       );
     }
   }
-};
-
-const reportUser = async (member: GuildMember | PartialGuildMember) => {
-  if (!isUserTimedOut(member)) return;
-
-  const botOutputChannel = member.guild.channels.cache.find(
-    (channel) => channel.name === ChatNames.BOT_OUTPUT.toString()
-  ) as TextChannel;
-  botOutputChannel.send(
-    `<@${member.id}>, left the server when he is still Timed Out!`
-  );
 };
 
 export default memberLeave;
