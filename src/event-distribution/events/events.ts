@@ -50,7 +50,12 @@ import {
   TimerHandlerFunction,
 } from "../../events/timer";
 import { Prisma, Timer } from "@yes-theory-fam/database/client";
-import { extractMemberJoinInfo, MemberJoinArgument, MemberJoinEventHandlerOptions, MemberJoinHandlerFunction } from "./member-join";
+import {
+  extractMemberJoinInfo,
+  MemberJoinArgument,
+  MemberJoinEventHandlerOptions,
+  MemberJoinHandlerFunction,
+} from "./member-join";
 
 export type EventHandlerOptions =
   | MemberLeaveEventHandlerOptions
@@ -135,7 +140,7 @@ export const extractEventInfo: ExtractInfoFunction<DiscordEvent> = (
       case DiscordEvent.MEMBER_LEAVE:
         return extractMemberLeaveInfo(args[0] as MemberLeaveArgument);
       case DiscordEvent.MEMBER_JOIN:
-        return extractMemberJoinInfo(args[0] as MemberJoinArgument)
+        return extractMemberJoinInfo(args[0] as MemberJoinArgument);
       case DiscordEvent.MESSAGE:
         return extractMessageInfo(args[0] as Message);
       case DiscordEvent.REACTION_ADD:
