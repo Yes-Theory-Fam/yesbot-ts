@@ -48,7 +48,7 @@ import {
   extractTimerInfo,
   TimerEventHandlerOptions,
   TimerHandlerFunction,
-} from "../../events/timer";
+} from "./timer";
 import { Prisma, Timer } from "@yes-theory-fam/database/client";
 
 export type EventHandlerOptions =

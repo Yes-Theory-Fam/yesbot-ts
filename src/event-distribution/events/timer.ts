@@ -3,9 +3,9 @@ import {
   DiscordEvent,
   ExtractInfoForEventFunction,
   HandlerFunctionFor,
-} from "../event-distribution";
-import { createYesBotLogger } from "../log";
-import { HIOC } from "../event-distribution/types/hioc";
+} from "..";
+import { createYesBotLogger } from "../../log";
+import { HIOC } from "../types/hioc";
 import { Timer } from "@yes-theory-fam/database/client";
 
 export interface TimerEventHandlerOptions {
