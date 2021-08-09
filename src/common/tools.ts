@@ -89,22 +89,6 @@ class Tools {
     });
   }
 
-  static async gainedRole(
-    oldMember: GuildMember | PartialGuildMember,
-    newMember: GuildMember | PartialGuildMember,
-    roleName: string
-  ) {
-    return !!(!hasRole(oldMember, roleName) && hasRole(newMember, roleName));
-  }
-
-  static async lostRole(
-    oldMember: GuildMember | PartialGuildMember,
-    newMember: GuildMember | PartialGuildMember,
-    roleName: string
-  ) {
-    return !!(hasRole(oldMember, roleName) && !hasRole(newMember, roleName));
-  }
-
   static async addPerUserPermissions(
     reactionName: string,
     messageId: string,
