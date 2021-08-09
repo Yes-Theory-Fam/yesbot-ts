@@ -94,8 +94,7 @@ class ReportUserOnLeave implements CommandHandler<DiscordEvent.MEMBER_LEAVE> {
 class ReportUserOnJoin implements CommandHandler<DiscordEvent.MEMBER_JOIN> {
   async handle(member: GuildMember): Promise<void> {
     if (!(await isUserTimedOut(member))) return;
-    const guild = bot.guilds.resolve(process.env.GUILD_ID);
-    const timeoutRole = Tools.getRoleByName("Time Out", guild);
+    const timeoutRole = Tools.getRoleByName("Time Out", member.guild);
     await member.roles.add(timeoutRole);
     await textLog(
       `<@${member.id}>, has rejoined and was assigned the timeout role for evading timeout`
