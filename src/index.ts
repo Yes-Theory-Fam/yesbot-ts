@@ -38,6 +38,9 @@ bot.on(
     await memberLeave(member);
   }
 );
+bot.on("guildMemberAdd", async (member: GuildMember | PartialGuildMember) => {
+  distribution.handleEvent(DiscordEvent.MEMBER_JOIN, member);
+});
 bot.on(
   "guildMemberUpdate",
   async (
