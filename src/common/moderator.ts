@@ -5,7 +5,6 @@ import {
   PartialGuildMember,
   TextChannel,
 } from "discord.js";
-import prisma from "../prisma";
 
 export const isAuthorModerator = (message: Message): boolean => {
   if (message.member.roles.hoist) {
@@ -41,14 +40,4 @@ export const textLog = (text: string): Promise<Message> => {
 export const getMember = (userId: string): GuildMember => {
   const bot = require("..") as Client;
   return bot.guilds.resolve(process.env.GUILD_ID).members.resolve(userId);
-};
-
-export const isUserTimedOut = async (
-  member: GuildMember | PartialGuildMember
-): Promise<boolean> => {
-  return !!(await prisma.timedOutUsers.findFirst({
-    where: {
-      userId: member.id,
-    },
-  }));
 };
