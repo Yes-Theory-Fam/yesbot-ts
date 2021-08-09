@@ -11,7 +11,7 @@ import {
   TextChannel,
   User,
 } from "discord.js";
-import { hasRole, textLog } from "./moderator";
+import { textLog } from "./moderator";
 import { createYesBotLogger } from "../log";
 import prisma from "../prisma";
 
