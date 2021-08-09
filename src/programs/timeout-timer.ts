@@ -1,5 +1,5 @@
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
-import { Message, Snowflake, TextChannel } from "discord.js";
+import { Message, Snowflake } from "discord.js";
 import { TimerService } from "./timer/timer.service";
 import { Timer } from "@yes-theory-fam/database/client";
 import bot from "../index";
@@ -32,9 +32,7 @@ class TimeoutTimer implements CommandHandler<DiscordEvent.MESSAGE> {
     }
 
     const targetedGuildMember = message.guild.members.resolve(targetedUser);
-    const timeoutRole = message.guild.roles.cache.find(
-      (r) => r.name === "Time Out"
-    );
+    const timeoutRole = Tools.getRoleByName("Time Out", message.guild);
 
     if (hasRole(targetedGuildMember, "Time Out")) {
       return Tools.handleUserError(message, "User is already timed out!");
@@ -64,7 +62,7 @@ class TimeoutPardon implements CommandHandler<DiscordEvent.TIMER> {
     const data = timer.data as unknown as TimeoutTimerData;
     const guild = bot.guilds.resolve(process.env.GUILD_ID);
     const guildMember = guild.members.resolve(data.userId);
-    const timeoutRole = guild.roles.cache.find((r) => r.name === "Time Out");
+    const timeoutRole = Tools.getRoleByName("Time Out", guild);
 
     try {
       await guildMember.roles.remove(timeoutRole);
