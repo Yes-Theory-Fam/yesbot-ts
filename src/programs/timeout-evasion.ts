@@ -1,6 +1,5 @@
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 import { GuildMember, PartialGuildMember } from "discord.js";
-import bot from "../index";
 import { textLog } from "../common/moderator";
 import Tools from "../common/tools";
 import prisma from "../prisma";
