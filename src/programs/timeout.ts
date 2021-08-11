@@ -1,11 +1,8 @@
 import { Message, TextChannel } from "discord.js";
-import { hasRole } from "../common/moderator";
+import { hasRole, textLog } from "../common/moderator";
 import Tools from "../common/tools";
 
 const timeoutUser = async (message: Message) => {
-  const logChannel = message.guild.channels.cache.find(
-    (channel) => channel.name === "bot-output"
-  ) as TextChannel;
   const targetedUser = message.mentions.users.first();
   if (!targetedUser) {
     return Tools.handleUserError(
@@ -23,7 +20,7 @@ const timeoutUser = async (message: Message) => {
   }
   await targetedGuildMember.roles.add(timeoutRole);
   message.reply(`<@${targetedUser.id}> was timed out!`);
-  logChannel.send(
+  await textLog(
     `<@${targetedUser.id}> has been timed out! By ${message.author}`
   );
 };
