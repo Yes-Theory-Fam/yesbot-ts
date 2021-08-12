@@ -27,10 +27,6 @@ class TimeOutAdded implements CommandHandler<DiscordEvent.GUILD_MEMBER_UPDATE> {
   async handle(member: GuildMember): Promise<void> {
     if (await isUserTimedOut(member)) return;
 
-    const engineerRole = Tools.getRoleByName(
-      process.env.ENGINEER_ROLE_NAME,
-      member.guild
-    );
     try {
       await prisma.timedOutUsers.create({
         data: {
@@ -38,7 +34,11 @@ class TimeOutAdded implements CommandHandler<DiscordEvent.GUILD_MEMBER_UPDATE> {
         },
       });
     } catch (e) {
-      logger.error("Failed to add user to the DB " + e);
+      const engineerRole = Tools.getRoleByName(
+        process.env.ENGINEER_ROLE_NAME,
+        member.guild
+      );
+      logger.error("Failed to add user to the DB ", e);
       await textLog(
         `Failed to register <@${member.id}> to the DB, please contact a <@&${engineerRole.id}>`
       );
@@ -56,10 +56,6 @@ class TimeOutRemoved
   implements CommandHandler<DiscordEvent.GUILD_MEMBER_UPDATE>
 {
   async handle(member: GuildMember): Promise<void> {
-    const engineerRole = Tools.getRoleByName(
-      process.env.ENGINEER_ROLE_NAME,
-      member.guild
-    );
     try {
       await prisma.timedOutUsers.delete({
         where: {
@@ -67,7 +63,11 @@ class TimeOutRemoved
         },
       });
     } catch (e) {
-      logger.error("Failed to remove user from the DB " + e);
+      const engineerRole = Tools.getRoleByName(
+        process.env.ENGINEER_ROLE_NAME,
+        member.guild
+      );
+      logger.error("Failed to remove user from the DB ", e);
       await textLog(
         `Failed to remove <@${member.id}> from timed out DB, please contact a <@&${engineerRole.id}>`
       );
