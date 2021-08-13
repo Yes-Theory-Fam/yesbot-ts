@@ -8,7 +8,7 @@ const metaEmojiName = "eeeh";
 @Command({
   event: DiscordEvent.MESSAGE,
   trigger: "!meta",
-  description: "penis",
+  description: "This handler is for the meta command",
 })
 class MetaCommand implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
