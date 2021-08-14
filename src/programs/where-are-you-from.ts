@@ -20,6 +20,11 @@ const whereAreYouFrom = async (message: Message) => {
       message.content
     );
 
+    if (matchedCountries.length === 0) {
+      await message.reply("You must send the flag of the country you are in!");
+      return;
+    }
+
     if (matchedCountries.length > 1) {
       await message.reply(
         "Please only tell me 1 country for now, you can ask a member of the Support team about multiple nationalities :grin:"

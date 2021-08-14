@@ -110,7 +110,7 @@ describe("CountryRoleFinder", () => {
       ["🏴󠁧󠁢󠁷󠁬󠁳󠁿", ["Wales"]],
       ["🇦🇽 Finland", ["Finland"]],
       ["🇮🇳 🇮🇳 🇮🇳 🇮🇳", ["India"]],
-      // ["🇮🇳🇮🇳🇮🇳", ["India"]], TODO fix this (https://github.com/Yes-Theory-Fam/yesbot-ts/issues/382
+      ["🇮🇳🇮🇳🇮🇳", ["India"]],
     ];
 
     for (const [input, expected] of cases) {
