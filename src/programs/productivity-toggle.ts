@@ -89,6 +89,7 @@ class RemoveBreakRoleOnLeave
 {
   async handle(oldState: VoiceState, newState: VoiceState): Promise<void> {
     const channel = oldState.channel.name;
+
     if (
       channel === ChatNames.PRODUCTIVITY ||
       channel === ChatNames.WATCH_ME_WORK ||
