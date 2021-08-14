@@ -8,7 +8,7 @@ import {
   User,
 } from "discord.js";
 import { utcToZonedTime, zonedTimeToUtc } from "date-fns-tz";
-import { getAllCountries, getCountry } from "countries-and-timezones";
+import { Country, getAllCountries, getCountry } from "countries-and-timezones";
 
 import Tools from "../common/tools";
 import { isAuthorModerator, textLog } from "../common/moderator";
@@ -454,10 +454,11 @@ function timezonesFromRole(props: CountryWithRegion): readonly string[] {
 
   // REALLY
   const countries = getAllCountries();
-  const countryId = Object.keys(countries).find(
-    (id) => countries[id].name === fixedCountry
+  const correctCountry = Object.values(countries).find(
+    (country) => country.name === fixedCountry
   );
-  return countries[countryId].timezones;
+
+  return correctCountry?.timezones ?? [];
 }
 
 export async function getUserBirthday(userId: string): Promise<Date | null> {
