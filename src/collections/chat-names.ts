@@ -21,4 +21,5 @@ export enum ChatNames {
   WATCH_ME_WORK = "• 🔨 Watch Me Work",
   WATCH_ME_WORK_TOO = "• 🔨 Watch Me Work Too",
   PRODUCTIVITY = "• 💪 Productivity (Push2Talk)",
+  VOICE_CHAT_WIP = "voice-chat-wip",
 }
