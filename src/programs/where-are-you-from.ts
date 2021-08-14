@@ -20,7 +20,7 @@ const whereAreYouFrom = async (message: Message) => {
       message.content
     );
 
-    if (await multipleCountries(message.content)) {
+    if (matchedCountries.length > 1) {
       await message.reply(
         "Please only tell me 1 country for now, you can ask a member of the Support team about multiple nationalities :grin:"
       );
