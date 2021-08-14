@@ -33,24 +33,25 @@ export class CountryRoleFinder {
   static getCountriesFromString = (input: string) => {
     const seperatedEmojis = input.match(/\p{Emoji_Presentation}/gu);
     const flagEmojis: string[] = [];
-    
+
     if (seperatedEmojis && seperatedEmojis.length > 1) {
-    while (seperatedEmojis.length > 0) {
-      flagEmojis.push(seperatedEmojis[0] + seperatedEmojis[1]);
-      seperatedEmojis.splice(0, 2);
+      while (seperatedEmojis.length > 0) {
+        flagEmojis.push(seperatedEmojis[0] + seperatedEmojis[1]);
+        seperatedEmojis.splice(0, 2);
+      }
     }
-  };
     if (seperatedEmojis && seperatedEmojis.length === 1) {
-      flagEmojis.push(input)
-    };
+      flagEmojis.push(input);
+    }
     const matchedCountries = countries
       .filter((country: Country) => {
         return (
           flagEmojis.includes(country.emoji) ||
-          input.match(RegExp(`\\b${country.name}\\b`, "i"))); 
+          input.match(RegExp(`\\b${country.name}\\b`, "i"))
+        );
       })
       .map((c) => CountryRoleFinder.emojiToCountryOverrides[c.emoji] ?? c);
-      return matchedCountries.filter(
+    return matchedCountries.filter(
       ({ name: filterName }, index, self) =>
         self.findIndex(({ name }) => name === filterName) === index
     );
