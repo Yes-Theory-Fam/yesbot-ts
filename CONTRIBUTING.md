@@ -117,7 +117,7 @@ will need the code on your computer, so:
 
 1. [Fork](https://github.com/Yes-Theory-Fam/yesbot-ts/fork) the repository to your user
 
-2. Clone the repo and install the dependencies:
+2. Clone the repo and change the directory to the project for all future commands:
 
 ```bash
 git clone https://github.com/your-username/yesbot-ts.git
