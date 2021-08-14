@@ -151,7 +151,13 @@ yarn install
 
 3. Create an `.env` in the root directory and copy the `.env.example`. Change the values to match your test server.
 
-4. Start the bot
+4. Set up the tables in the database
+
+```bash
+yarn prisma db push
+```
+
+5. Start the bot
 
 ```bash
 yarn run start
