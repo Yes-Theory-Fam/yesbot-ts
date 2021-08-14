@@ -12,6 +12,14 @@ const metaEmojiName = "eeeh";
 })
 class MetaCommand implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
+    if (!message.reference) {
+      await Tools.handleUserError(
+        message,
+        "You must reply to the message you want to use this command on!"
+      );
+      return;
+    }
+
     const referencedMessageId = message.reference.messageID;
     const channelId = message.reference.channelID;
     const channel = bot.channels.resolve(channelId) as TextChannel;
@@ -26,13 +34,13 @@ class MetaCommand implements CommandHandler<DiscordEvent.MESSAGE> {
       message.guild.emojis.cache.find((e) => e.name === name);
     const metaEmoji = emojiByName(metaEmojiName);
 
-    const messageReactions = referenceMessage.reactions.cache.some(
+    const didBotReact = referenceMessage.reactions.cache.some(
       (reaction) => reaction.me
     );
-    if (messageReactions) {
-      Tools.handleUserError(
+    if (didBotReact) {
+      await Tools.handleUserError(
         message,
-        "This command was already used on this user!"
+        "This command was already used on this message!"
       );
       return;
     }
