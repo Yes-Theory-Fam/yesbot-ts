@@ -111,6 +111,9 @@ describe("CountryRoleFinder", () => {
       ["🇦🇽 Finland", ["Finland"]],
       ["🇮🇳 🇮🇳 🇮🇳 🇮🇳", ["India"]],
       ["🇮🇳🇮🇳🇮🇳", ["India"]],
+      ["🏴󠁧󠁢󠁷󠁬󠁳󠁿🇮🇳", ["India", "Wales"]],
+      ["🇮🇳🇳🇮", ["India", "Nicaragua"]],
+      ["🏴󠁧󠁢󠁷󠁬󠁳󠁿🇮🇳🇳🇮 Finland", ["Finland", "India", "Nicaragua", "Wales"]],
     ];
 
     for (const [input, expected] of cases) {

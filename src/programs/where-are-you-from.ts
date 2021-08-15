@@ -21,7 +21,9 @@ const whereAreYouFrom = async (message: Message) => {
     );
 
     if (matchedCountries.length === 0) {
-      await message.reply("You must send the flag of the country you are in!");
+      await message.reply(
+        "You must send the flag or name of the country you are in!"
+      );
       return;
     }
 
