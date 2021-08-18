@@ -15,10 +15,17 @@ const regionCountries = ["USA"];
 const whereAreYouFrom = async (message: Message) => {
   const newUser = !isRegistered(message.member);
 
-  if (newUser) {
+  if (newUser && !message.author.bot) {
     const matchedCountries = CountryRoleFinder.getCountriesFromString(
       message.content
     );
+
+    if (matchedCountries.length === 0) {
+      await message.reply(
+        "You must send the flag or name of the country you are in!"
+      );
+      return;
+    }
 
     if (matchedCountries.length > 1) {
       await message.reply(
@@ -152,6 +159,18 @@ export const updateAfterRegionSelect = async (
       await welcomeMember(oldMember.user, oldMember.guild);
     }
   }
+};
+
+const multipleCountries = async (message: string): Promise<boolean> => {
+  const seperatedEmojis = message.match(/\p{Emoji_Presentation}/gu);
+  if (
+    seperatedEmojis[0] + seperatedEmojis[1] !==
+      seperatedEmojis[2] + seperatedEmojis[3] &&
+    seperatedEmojis.length > 2
+  ) {
+    return true;
+  }
+  return false;
 };
 
 export default whereAreYouFrom;

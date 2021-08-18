@@ -31,15 +31,20 @@ export class CountryRoleFinder {
   }
 
   static getCountriesFromString = (input: string) => {
+    const flagEmojiRegex = /[\u{1f1e6}-\u{1f1ff}]{2}/gmu;
+    const flagsInInput = input.match(flagEmojiRegex) ?? [];
+
     const matchedCountries = countries
       .filter((country: Country) => {
+        const isEmojiInInput = country.emoji.match(flagEmojiRegex)
+          ? flagsInInput.includes(country.emoji)
+          : input.includes(country.emoji);
+
         return (
-          input.includes(country.emoji) ||
-          input.match(RegExp(`\\b${country.name}\\b`, "i"))
+          isEmojiInInput || input.match(RegExp(`\\b${country.name}\\b`, "i"))
         );
       })
       .map((c) => CountryRoleFinder.emojiToCountryOverrides[c.emoji] ?? c);
-
     return matchedCountries.filter(
       ({ name: filterName }, index, self) =>
         self.findIndex(({ name }) => name === filterName) === index
