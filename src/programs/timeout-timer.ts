@@ -27,7 +27,7 @@ class TimeoutTimer implements CommandHandler<DiscordEvent.MESSAGE> {
     if (!targetedUser || !time) {
       return Tools.handleUserError(
         message,
-        "The syntax for this command is `!timeoutTimer` {USER} {TIME IN MINUTES} {REASON (OPTIONAL)}"
+        "The syntax for this command is `!timeoutTimer` {USER} {TIME IN MINUTES}"
       );
     }
 
