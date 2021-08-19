@@ -19,7 +19,7 @@ const isDead = async (message: Message): Promise<boolean> => {
   event: DiscordEvent.MESSAGE,
   trigger: "!deadchat",
   channelNames: ["chat", "chat-too", "4th-chat", "chat-v"],
-  description: "This handler bla bla bla",
+  description: "This handler is for the deadchat command",
 })
 class DeadchatCommand implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
