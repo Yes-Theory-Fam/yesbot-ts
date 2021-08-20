@@ -7,7 +7,6 @@ import {
   Game,
   GroupManager,
   MapTools,
-  Polls,
   Profile,
   ReactRole,
   Resource,
@@ -146,10 +145,6 @@ const routeMessage = async (message: Message) => {
       }
       if (firstWord === "!map") await MapTools.map(message);
       if (firstWord === "!mapadd") await MapTools.mapAdd(message);
-      break;
-
-    case "polls":
-      await Polls(message);
       break;
 
     case "feature-requests":

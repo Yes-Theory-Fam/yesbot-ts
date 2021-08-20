@@ -14,7 +14,6 @@ import VoiceOnDemand from "./voice-on-demand";
 import * as WhereAreYouFrom from "./where-are-you-from";
 import Deadchat from "./deadchat";
 import ExportManager from "./export-manager";
-import Polls from "./polls";
 import Profile from "./profile";
 import ReactRole from "./react-role";
 import Resource from "./resources";
@@ -32,7 +31,6 @@ export {
   GroupManagerTools,
   MapTools,
   NitroColors,
-  Polls,
   Profile,
   ReactRole,
   Resource,

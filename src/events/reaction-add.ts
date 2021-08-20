@@ -2,7 +2,6 @@ import { Message, MessageReaction, PartialUser, User } from "discord.js";
 import Tools from "../common/tools";
 import { GroupManagerTools, NitroColors } from "../programs";
 import { hasRole } from "../common/moderator";
-import { moderatorPollMirror } from "../programs/polls";
 import prisma from "../prisma";
 
 const reactionAdd = async (
@@ -14,7 +13,6 @@ const reactionAdd = async (
     messageReaction.emoji.name,
     user
   );
-  await moderatorPollMirror(messageReaction, user);
   await addRolesFromReaction(messageReaction, user);
 };
 
