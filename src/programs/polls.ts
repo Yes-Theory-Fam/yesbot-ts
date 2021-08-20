@@ -119,14 +119,17 @@ class Polls implements CommandHandler<DiscordEvent.MESSAGE> {
 @Command({
   event: DiscordEvent.REACTION_ADD,
   channelNames: ["polls"],
-  requiredRoles: ["Support"],
+  description: "This... I actually have no idea",
   emoji: "",
-  description:
-    "This handler mirrors a Support member's new reaction on a poll.",
 })
 class ModeratorPollMirror implements CommandHandler<DiscordEvent.REACTION_ADD> {
   async handle(reaction: MessageReaction, user: User | PartialUser) {
     const { message } = reaction;
+    const { channel } = message;
+    if (channel instanceof DMChannel || channel.name !== "polls") return;
+    const member = channel.guild.member(user.id);
+  
+    if (!hasRole(member, "Support")) return;
     const fetched = await reaction.users.fetch();
     if (fetched.size > 1) return;
   
