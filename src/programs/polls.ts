@@ -86,7 +86,7 @@ const removeSpecialCharactersFromBeginning = (content: string) => {
 @Command({
   event: DiscordEvent.MESSAGE,
   channelNames: ["polls"],
-  description: "This handler is to add the emojis to the polls"
+  description: "This handler is to add the emojis to the polls",
 })
 class Polls implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
@@ -103,11 +103,11 @@ class Polls implements CommandHandler<DiscordEvent.MESSAGE> {
       (e, i) => resolvedEmojis.indexOf(e) === i
     );
     const partitioned = partition(unique, 20);
-  
+
     for (let i = 0; i < partitioned.length; i++) {
       const reactMessage =
         i === 0 ? message : await message.channel.send("More options");
-  
+
       const partition = partitioned[i];
       for (const emoji of partition) {
         await reactMessage.react(emoji);
@@ -128,11 +128,11 @@ class ModeratorPollMirror implements CommandHandler<DiscordEvent.REACTION_ADD> {
     const { channel } = message;
     if (channel instanceof DMChannel || channel.name !== "polls") return;
     const member = channel.guild.member(user.id);
-  
+
     if (!hasRole(member, "Support")) return;
     const fetched = await reaction.users.fetch();
     if (fetched.size > 1) return;
-  
+
     await message.react(reaction.emoji);
     await reaction.users.remove(user.id);
   }
