@@ -127,7 +127,11 @@ class Polls implements CommandHandler<DiscordEvent.MESSAGE> {
 class ModeratorPollMirror implements CommandHandler<DiscordEvent.REACTION_ADD> {
   async handle(reaction: MessageReaction, user: User | PartialUser) {
     const { message } = reaction;
+    const { channel } = message;
+    if (channel instanceof DMChannel || channel.name !== "polls") return;
+    const member = channel.guild.member(user.id);
 
+    if (!hasRole(member, "Support")) return;
     const fetched = await reaction.users.fetch();
     if (fetched.size > 1) return;
 
