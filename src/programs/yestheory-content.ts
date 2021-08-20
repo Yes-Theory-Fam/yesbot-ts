@@ -5,7 +5,8 @@ import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 @Command({
   event: DiscordEvent.MESSAGE,
   channelNames: ["yestheoryposted"],
-  description: "This handler is for when yestheory uploads user in the specified group are pinged",
+  description:
+    "This handler is for when yestheory uploads user in the specified group are pinged",
 })
 class YesTheoryUploadedPing implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message) {
