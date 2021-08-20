@@ -19,7 +19,7 @@ import Ticket from "./ticket";
 export {
   BirthdayManager,
   BirthdayManagerTools,
-  DMMenu,
+  Deadchat,
   ExportManager,
   Game,
   GroupManager,
