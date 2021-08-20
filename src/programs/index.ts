@@ -17,7 +17,6 @@ import ExportManager from "./export-manager";
 import Polls from "./polls";
 import Profile from "./profile";
 import ReactRole from "./react-role";
-import Resource from "./resources";
 import Someone from "./someone-tag";
 import Ticket from "./ticket";
 
@@ -35,7 +34,6 @@ export {
   Polls,
   Profile,
   ReactRole,
-  Resource,
   DailyChallenge,
   Separators,
   Someone,

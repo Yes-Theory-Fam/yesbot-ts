@@ -1,21 +1,28 @@
 import { Message, TextChannel } from "discord.js";
+import { ChatNames } from "../collections/chat-names";
+import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 
-const resources = async (message: Message) => {
-  const channel = message.channel as TextChannel;
-  switch (channel.name) {
-    case "coding":
+@Command({
+  event: DiscordEvent.MESSAGE,
+  trigger: "!resources",
+  channelNames: ["coding", "learning-spanish"],
+  description: "This handler is for the resources command",
+})
+class Resources implements CommandHandler<DiscordEvent.MESSAGE> {
+  async handle(message: Message): Promise<void> {
+    const channel = message.channel as TextChannel;
+
+    if (channel.name === ChatNames.CODING) {
       await message.channel.send(RESOURCES_CODING);
-      break;
-    case "learning-spanish":
+      return;
+    }
+
+    if (channel.name === ChatNames.LEARNING_SPANISH) {
       await message.channel.send(RESOURCES_SPANISH);
-      break;
-
-    default:
-      break;
+      return;
+    }
   }
-};
-
-export default resources;
+}
 
 const RESOURCES_CODING = `
 
