@@ -1,7 +1,6 @@
 import * as BirthdayManagerTools from "./birthday-manager";
 import BirthdayManager from "./birthday-manager";
 import * as DailyChallenge from "./daily-challenge";
-import * as DMMenu from "./dm-menu";
 import * as Game from "./game";
 import * as GroupManagerTools from "./group-manager";
 import GroupManager from "./group-manager";
@@ -24,7 +23,6 @@ export {
   BirthdayManager,
   BirthdayManagerTools,
   Deadchat,
-  DMMenu,
   ExportManager,
   Game,
   GroupManager,
