@@ -14,7 +14,6 @@ import {
   Ticket,
   TopicManager,
   VoiceOnDemand,
-  WhereAreYouFrom,
 } from "../programs";
 import state from "../common/state";
 import { getMember, hasRole, textLog } from "../common/moderator";
@@ -95,9 +94,6 @@ const routeMessage = async (message: Message) => {
       if (firstWord === "!video") {
         await message.reply("https://youtu.be/v-JOe-xqPN0");
       }
-      break;
-    case "flag-drop":
-      await WhereAreYouFrom.default(message);
       break;
 
     case "chat":
