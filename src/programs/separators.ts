@@ -1,14 +1,16 @@
 import { GuildMember, PartialGuildMember } from "discord.js";
+import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 
 const separatorStart = "\u2063";
 
-export const separatorOnRoleAdd = (
-  oldMember: GuildMember | PartialGuildMember,
-  newMember: GuildMember | PartialGuildMember
-) => {
-  // No role added
-  if (oldMember.roles.cache.size >= newMember.roles.cache.size) return;
-  const addedRole = newMember.roles.cache
+@Command({
+  event: DiscordEvent.GUILD_MEMBER_UPDATE,
+  description: "This handler is to add the separator role if necessary"
+})
+class SeparatorOnRoleAdd implements CommandHandler<DiscordEvent.GUILD_MEMBER_UPDATE> {
+  async handle(oldMember: GuildMember | PartialGuildMember, newMember: GuildMember | PartialGuildMember) {
+    if (oldMember.roles.cache.size >= newMember.roles.cache.size) return;
+    const addedRole = newMember.roles.cache
     .filter(
       (role) => !oldMember.roles.cache.some((oldRole) => oldRole.id === role.id)
     )
@@ -32,13 +34,16 @@ export const separatorOnRoleAdd = (
   if (separatorIndex < 0) return;
 
   newMember.roles.add(sorted[separatorIndex]);
-};
+  }
+}
 
-export const separatorOnRoleRemove = (
-  oldMember: GuildMember | PartialGuildMember,
-  newMember: GuildMember | PartialGuildMember
-) => {
-  if (oldMember.roles.cache.size <= newMember.roles.cache.size) return;
+@Command({
+  event: DiscordEvent.GUILD_MEMBER_UPDATE,
+  description: "This handler is to remove the separator role if necessary"
+})
+class SeparatorOnRoleRemove implements CommandHandler<DiscordEvent.GUILD_MEMBER_UPDATE> {
+  async handle(oldMember: GuildMember | PartialGuildMember,  newMember: GuildMember | PartialGuildMember) {
+    if (oldMember.roles.cache.size <= newMember.roles.cache.size) return;
 
   const memberRolesSorted = newMember.roles.cache
     .array()
@@ -53,4 +58,6 @@ export const separatorOnRoleRemove = (
   );
 
   separatorsToRemove.forEach((role) => newMember.roles.remove(role));
-};
+  }
+}
+

@@ -7,7 +7,6 @@ import * as GroupManagerTools from "./group-manager";
 import GroupManager from "./group-manager";
 import * as MapTools from "./map";
 import * as NitroColors from "./nitro-colors";
-import * as Separators from "./separators";
 import * as TopicManager from "./topics";
 import * as VoiceOnDemandTools from "./voice-on-demand";
 import VoiceOnDemand from "./voice-on-demand";
@@ -30,7 +29,6 @@ export {
   Profile,
   ReactRole,
   DailyChallenge,
-  Separators,
   Someone,
   Ticket,
   TopicManager,
