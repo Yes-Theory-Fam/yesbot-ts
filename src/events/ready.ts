@@ -1,11 +1,6 @@
 import { Client, Guild, Message, TextChannel } from "discord.js";
 import { createYesBotLogger } from "../log";
-import {
-  DailyChallenge,
-  Game,
-  NitroColors,
-  VoiceOnDemandTools,
-} from "../programs";
+import { Game, NitroColors, VoiceOnDemandTools } from "../programs";
 
 const developerChannelName = "bot-development";
 
