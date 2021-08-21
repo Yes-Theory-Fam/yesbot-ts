@@ -39,15 +39,15 @@ Object {
       Object {
         "ioc": Object {},
         "options": Object {
+          "allowedRoles": Array [
+            "Support",
+          ],
           "channelNames": Array [
             "bot-output",
           ],
           "description": "test",
           "emoji": "♥️",
           "event": "REACTION_REMOVE",
-          "requiredRoles": Array [
-            "Support",
-          ],
         },
       },
     ],
@@ -63,6 +63,9 @@ Object {
       Object {
         "ioc": Object {},
         "options": Object {
+          "allowedRoles": Array [
+            "Developer",
+          ],
           "channelNames": Array [
             "bot-development",
             "bot-test-channel",
@@ -70,9 +73,6 @@ Object {
           "description": "test",
           "emoji": "😘️",
           "event": "REACTION_ADD",
-          "requiredRoles": Array [
-            "Developer",
-          ],
         },
       },
     ],
@@ -93,15 +93,15 @@ Object {
       Object {
         "ioc": Object {},
         "options": Object {
+          "allowedRoles": Array [
+            "Support",
+          ],
           "channelNames": Array [
             "bot-output",
           ],
           "description": "test",
           "emoji": "♥️",
           "event": "REACTION_REMOVE",
-          "requiredRoles": Array [
-            "Support",
-          ],
         },
       },
     ],
@@ -111,6 +111,9 @@ Object {
       Object {
         "ioc": Object {},
         "options": Object {
+          "allowedRoles": Array [
+            "Developer",
+          ],
           "channelNames": Array [
             "bot-development",
             "bot-test-channel",
@@ -118,9 +121,6 @@ Object {
           "description": "test",
           "emoji": "😘️",
           "event": "REACTION_ADD",
-          "requiredRoles": Array [
-            "Developer",
-          ],
         },
       },
     ],
