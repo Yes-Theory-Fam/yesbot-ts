@@ -1,7 +1,7 @@
 import { DMChannel, GuildChannel, Message, TextChannel } from "discord.js";
 import {
   BirthdayManager,
-  Deadchat,
+  DMMenu,
   ExportManager,
   Game,
   GroupManager,
