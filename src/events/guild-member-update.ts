@@ -9,7 +9,7 @@ import {
 } from "discord.js";
 import Tools from "../common/tools";
 import { hasRole } from "../common/moderator";
-import { NitroColors, Separators, WhereAreYouFrom } from "../programs";
+import { NitroColors, Separators } from "../programs";
 import prisma from "../prisma";
 
 const guildMemberUpdate = async (
@@ -35,7 +35,6 @@ const guildMemberUpdate = async (
     unlockCountryChannels(newMember);
   }
 
-  await WhereAreYouFrom.updateAfterRegionSelect(oldMember, newMember);
   await NitroColors.removeColorIfNotAllowed(newMember);
   Separators.separatorOnRoleAdd(oldMember, newMember);
   Separators.separatorOnRoleRemove(oldMember, newMember);
