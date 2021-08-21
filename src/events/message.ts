@@ -1,7 +1,7 @@
 import { DMChannel, GuildChannel, Message, TextChannel } from "discord.js";
 import {
   BirthdayManager,
-  Deadchat,
+  DMMenu,
   ExportManager,
   Game,
   GroupManager,
@@ -103,7 +103,6 @@ const routeMessage = async (message: Message) => {
     case "4th-chat":
     case "chat-v":
       if (firstWord === "@someone") await Someone(message);
-      if (firstWord === "!deadchat") await Deadchat(message);
       if (firstWord === "!translate") abuseMe(message);
       break;
 
