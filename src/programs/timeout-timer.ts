@@ -14,7 +14,7 @@ interface TimeoutTimerData {
 
 @Command({
   event: DiscordEvent.MESSAGE,
-  requiredRoles: ["Support"],
+  allowedRoles: ["Support"],
   trigger: "!timeoutTimer",
   description: "This handler starts the timeout timer for the timedout user",
 })
