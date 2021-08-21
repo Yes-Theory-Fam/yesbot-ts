@@ -8,7 +8,6 @@ import {
   MapTools,
   Profile,
   ReactRole,
-  Resource,
   Someone,
   Ticket,
   TopicManager,
@@ -165,7 +164,6 @@ const routeMessage = async (message: Message) => {
   }
   if (firstWord === "!topic") await TopicManager.topics(message);
   // if (firstWord === "!fiyesta") Ticket(message, "fiyesta");
-  if (firstWord === "!resources") await Resource(message);
   if (firstWord === "!shoutout") await Ticket(message, "shoutout");
   if (firstWord === "!addvote") await addVote(message);
   if (firstWord === "!delete")

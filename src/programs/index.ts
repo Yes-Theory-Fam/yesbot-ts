@@ -13,7 +13,6 @@ import VoiceOnDemand from "./voice-on-demand";
 import ExportManager from "./export-manager";
 import Profile from "./profile";
 import ReactRole from "./react-role";
-import Resource from "./resources";
 import Someone from "./someone-tag";
 import Ticket from "./ticket";
 
@@ -29,7 +28,6 @@ export {
   NitroColors,
   Profile,
   ReactRole,
-  Resource,
   DailyChallenge,
   Separators,
   Someone,
