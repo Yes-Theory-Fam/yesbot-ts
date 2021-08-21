@@ -12,7 +12,6 @@ import * as TopicManager from "./topics";
 import * as VoiceOnDemandTools from "./voice-on-demand";
 import VoiceOnDemand from "./voice-on-demand";
 import * as WhereAreYouFrom from "./where-are-you-from";
-import Deadchat from "./deadchat";
 import ExportManager from "./export-manager";
 import Polls from "./polls";
 import Profile from "./profile";
@@ -24,7 +23,6 @@ import Ticket from "./ticket";
 export {
   BirthdayManager,
   BirthdayManagerTools,
-  Deadchat,
   DMMenu,
   ExportManager,
   Game,
