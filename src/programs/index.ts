@@ -12,7 +12,6 @@ import * as TopicManager from "./topics";
 import * as VoiceOnDemandTools from "./voice-on-demand";
 import VoiceOnDemand from "./voice-on-demand";
 import ExportManager from "./export-manager";
-import Polls from "./polls";
 import Profile from "./profile";
 import ReactRole from "./react-role";
 import Someone from "./someone-tag";
@@ -28,7 +27,6 @@ export {
   GroupManagerTools,
   MapTools,
   NitroColors,
-  Polls,
   Profile,
   ReactRole,
   DailyChallenge,

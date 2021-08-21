@@ -9,6 +9,7 @@ import {
 } from "discord.js";
 import { hasRole } from "../common/moderator";
 import { unicodeEmojiRegex } from "../common/tools";
+import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 
 // Resolves emojis (unicode and discord) at the start of a line
 const getEmojis = (lines: string[], bot: Client): string[] => {
@@ -78,51 +79,59 @@ const partition = <T>(items: T[], size: number): T[][] => {
   return output;
 };
 
-const polls = async (message: Message) => {
-  if (message.author.bot) {
-    return;
-  }
-
-  const lines = message.cleanContent.split("\n");
-  const resolvedEmojis = resolveEmojis(
-    lines.map(removeSpecialCharactersFromBeginning),
-    message.client
-  );
-  const unique = resolvedEmojis.filter(
-    (e, i) => resolvedEmojis.indexOf(e) === i
-  );
-  const partitioned = partition(unique, 20);
-
-  for (let i = 0; i < partitioned.length; i++) {
-    const reactMessage =
-      i === 0 ? message : await message.channel.send("More options");
-
-    const partition = partitioned[i];
-    for (const emoji of partition) {
-      await reactMessage.react(emoji);
-    }
-  }
-};
-
 const removeSpecialCharactersFromBeginning = (content: string) => {
   return content.replace(/^\p{P}*/u, "");
 };
 
-export const moderatorPollMirror = async (
-  reaction: MessageReaction,
-  user: User | PartialUser
-) => {
-  const { message } = reaction;
-  const { channel } = message;
-  if (channel instanceof DMChannel || channel.name !== "polls") return;
-  const member = channel.guild.member(user.id);
+@Command({
+  event: DiscordEvent.MESSAGE,
+  channelNames: ["polls"],
+  description: "This handler is to add the emojis to the polls",
+})
+class Polls implements CommandHandler<DiscordEvent.MESSAGE> {
+  async handle(message: Message): Promise<void> {
+    if (message.author.bot) {
+      return;
+    }
 
-  if (!hasRole(member, "Support")) return;
-  const fetched = await reaction.users.fetch();
-  if (fetched.size > 1) return;
+    const lines = message.cleanContent.split("\n");
+    const resolvedEmojis = resolveEmojis(
+      lines.map(removeSpecialCharactersFromBeginning),
+      message.client
+    );
+    const unique = resolvedEmojis.filter(
+      (e, i) => resolvedEmojis.indexOf(e) === i
+    );
+    const partitioned = partition(unique, 20);
 
-  await message.react(reaction.emoji);
-  await reaction.users.remove(user.id);
-};
+    for (let i = 0; i < partitioned.length; i++) {
+      const reactMessage =
+        i === 0 ? message : await message.channel.send("More options");
 
-export default polls;
+      const partition = partitioned[i];
+      for (const emoji of partition) {
+        await reactMessage.react(emoji);
+      }
+    }
+  }
+}
+
+@Command({
+  event: DiscordEvent.REACTION_ADD,
+  channelNames: ["polls"],
+  requiredRoles: ["Support"],
+  emoji: "",
+  description:
+    "This handler mirrors a Support member's new reaction on a poll.",
+})
+class ModeratorPollMirror implements CommandHandler<DiscordEvent.REACTION_ADD> {
+  async handle(reaction: MessageReaction, user: User | PartialUser) {
+    const { message } = reaction;
+
+    const fetched = await reaction.users.fetch();
+    if (fetched.size > 1) return;
+
+    await message.react(reaction.emoji);
+    await reaction.users.remove(user.id);
+  }
+}
