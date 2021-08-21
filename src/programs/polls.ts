@@ -119,7 +119,7 @@ class Polls implements CommandHandler<DiscordEvent.MESSAGE> {
 @Command({
   event: DiscordEvent.REACTION_ADD,
   channelNames: ["polls"],
-  requiredRoles: ["Support"],
+  allowedRoles: ["Support"],
   emoji: "",
   description:
     "This handler mirrors a Support member's new reaction on a poll.",

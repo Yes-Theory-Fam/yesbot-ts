@@ -39,7 +39,7 @@ export class DecoratorTest extends CommandHandler<DiscordEvent.MESSAGE> {
   stateful: true,
   channelNames: ["bot-output"],
   location: EventLocation.ANYWHERE,
-  requiredRoles: ["Support"],
+  allowedRoles: ["Support"],
 })
 export class DecoratorTest2 extends CommandHandler<DiscordEvent.MESSAGE> {
   called: number = 0;
