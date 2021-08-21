@@ -7,16 +7,7 @@ import {
 } from "discord.js";
 import state from "../common/state";
 import { proposeNameChange } from "../common/custom-methods";
-<<<<<<< HEAD
-import {
-  Command,
-  CommandHandler,
-  DiscordEvent,
-  EventLocation,
-} from "../event-distribution";
-=======
 import { Command, CommandHandler, DiscordEvent, EventLocation } from "../event-distribution";
->>>>>>> 938ba49 (rewritten dm-menu.ts)
 import { getMember } from "../common/moderator";
 
 const removeIgnore = (channel: DMChannel) => {
