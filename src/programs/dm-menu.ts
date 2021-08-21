@@ -14,6 +14,7 @@ import {
   EventLocation,
 } from "../event-distribution";
 import { getMember } from "../common/moderator";
+import { Game } from ".";
 
 const removeIgnore = (channel: DMChannel) => {
   const index = state.ignoredGroupDMs.indexOf(channel.id);
@@ -21,6 +22,19 @@ const removeIgnore = (channel: DMChannel) => {
     state.ignoredGroupDMs.splice(index, 1);
   }
 };
+
+@Command({
+  event: DiscordEvent.MESSAGE,
+  location: EventLocation.DIRECT_MESSAGE,
+  description: "This handler is temporarily until we refactor games.ts"
+})
+class HandleGameInput implements CommandHandler<DiscordEvent.MESSAGE> {
+  async handle(message: Message) {
+    //Since game.ts isn't refactored this is a temporarily solution for it not to be "nuked"
+    Game.handleGameInput(message)
+  }
+}
+
 
 @Command({
   event: DiscordEvent.MESSAGE,
