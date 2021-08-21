@@ -39,14 +39,14 @@ Object {
       Object {
         "ioc": Object {},
         "options": Object {
+          "allowedRoles": Array [
+            "Support",
+          ],
           "channelNames": Array [
             "bot-output",
           ],
           "description": "test",
           "event": "MESSAGE",
-          "requiredRoles": Array [
-            "Support",
-          ],
           "trigger": "!test",
         },
       },
@@ -63,15 +63,15 @@ Object {
       Object {
         "ioc": Object {},
         "options": Object {
+          "allowedRoles": Array [
+            "Developer",
+          ],
           "channelNames": Array [
             "bot-development",
             "bot-test-channel",
           ],
           "description": "test",
           "event": "MESSAGE",
-          "requiredRoles": Array [
-            "Developer",
-          ],
           "trigger": "!otherTrigger",
         },
       },
@@ -93,14 +93,14 @@ Object {
       Object {
         "ioc": Object {},
         "options": Object {
+          "allowedRoles": Array [
+            "Support",
+          ],
           "channelNames": Array [
             "bot-output",
           ],
           "description": "test",
           "event": "MESSAGE",
-          "requiredRoles": Array [
-            "Support",
-          ],
           "trigger": "!test",
         },
       },
@@ -111,15 +111,15 @@ Object {
       Object {
         "ioc": Object {},
         "options": Object {
+          "allowedRoles": Array [
+            "Developer",
+          ],
           "channelNames": Array [
             "bot-development",
             "bot-test-channel",
           ],
           "description": "test",
           "event": "MESSAGE",
-          "requiredRoles": Array [
-            "Developer",
-          ],
           "trigger": "!otherTrigger",
         },
       },

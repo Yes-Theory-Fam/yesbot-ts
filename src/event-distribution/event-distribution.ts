@@ -143,8 +143,8 @@ export class EventDistribution {
       )
         return true;
 
-      const { requiredRoles } = eh.options;
-      return requiredRoles.some((role) => roleNames.includes(role));
+      const { allowedRoles } = eh.options;
+      return allowedRoles.some((role) => roleNames.includes(role));
     });
   }
 
