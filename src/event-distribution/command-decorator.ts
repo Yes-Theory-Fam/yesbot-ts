@@ -49,7 +49,7 @@ export const Command = <T extends EventHandlerOptions>(options: T) => {
 
 const baseOptionsRequireServer = (options: BaseOptions) => {
   const channels = options.channelNames ?? [];
-  const roles = options.requiredRoles ?? [];
+  const roles = options.allowedRoles ?? [];
   return channels.length > 0 || roles.length > 0;
 };
 
@@ -58,7 +58,7 @@ const setDefaultOnBaseOptions = (options: BaseOptions) => {
     ? EventLocation.SERVER
     : EventLocation.ANYWHERE;
 
-  options.requiredRoles ??= [];
+  options.allowedRoles ??= [];
 };
 
 const checkBaseOptions = (options: BaseOptions, commandClassName: string) => {
