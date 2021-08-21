@@ -44,14 +44,14 @@ describe("Messages", () => {
     addMessageHandler(options, ioc, tree);
     expect(tree).toMatchSnapshot();
 
-    const secondOptions = { ...options, requiredRoles: ["Support"] };
+    const secondOptions = { ...options, allowedRoles: ["Support"] };
     addMessageHandler(secondOptions, ioc, tree);
     expect(tree).toMatchSnapshot();
 
     const thirdOptions = {
       ...options,
       trigger: "!otherTrigger",
-      requiredRoles: ["Developer"],
+      allowedRoles: ["Developer"],
       channelNames: ["bot-development", "bot-test-channel"],
     };
     addMessageHandler(thirdOptions, ioc, tree);
