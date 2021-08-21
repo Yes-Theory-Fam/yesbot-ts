@@ -26,15 +26,14 @@ const removeIgnore = (channel: DMChannel) => {
 @Command({
   event: DiscordEvent.MESSAGE,
   location: EventLocation.DIRECT_MESSAGE,
-  description: "This handler is temporarily until we refactor games.ts"
+  description: "This handler is temporarily until we refactor games.ts",
 })
 class HandleGameInput implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message) {
     //Since game.ts isn't refactored this is a temporarily solution for it not to be "nuked"
-    Game.handleGameInput(message)
+    Game.handleGameInput(message);
   }
 }
-
 
 @Command({
   event: DiscordEvent.MESSAGE,
