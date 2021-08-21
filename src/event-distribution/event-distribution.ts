@@ -144,7 +144,7 @@ export class EventDistribution {
         return true;
 
       const { requiredRoles } = eh.options;
-      return requiredRoles.every((role) => roleNames.includes(role));
+      return requiredRoles.some((role) => roleNames.includes(role));
     });
   }
 

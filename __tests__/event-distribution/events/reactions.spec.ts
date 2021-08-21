@@ -51,7 +51,7 @@ describe("Reactions", () => {
     const secondOptions: ReactionEventHandlerOptions = {
       ...options,
       event: DiscordEvent.REACTION_REMOVE,
-      requiredRoles: ["Support"],
+      allowedRoles: ["Support"],
     };
     addReactionHandler(secondOptions, ioc, tree);
     expect(tree).toMatchSnapshot();
@@ -59,7 +59,7 @@ describe("Reactions", () => {
     const thirdOptions: ReactionEventHandlerOptions = {
       ...options,
       emoji: "😘️",
-      requiredRoles: ["Developer"],
+      allowedRoles: ["Developer"],
       channelNames: ["bot-development", "bot-test-channel"],
     };
     addReactionHandler(thirdOptions, ioc, tree);

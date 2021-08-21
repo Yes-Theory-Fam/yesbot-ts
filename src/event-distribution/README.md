@@ -30,9 +30,9 @@ interface BaseOptions {
   event: DiscordEvent; // Indicates the relevant event
   stateful?: boolean; // If false (default), a new instance of the handler class is created for each event, otherwise an instance is available as singleton for the lifetime of the bot 
   description: string; // A descriptive string of the event handler
-  requiredRoles?: string[]; // An array of role names. All roles listed are required to run the handler.
+  allowedRoles?: string[]; // An array of role names. At least one role listed is required to run the handler.
   channelNames?: string[]; // An array of channel names. The handler will only be called when the event occured in one of the channels listed.
-  location?: EventLocation; // A location enum setting where events are accepted. The default is EventLocation.SERVER if channelNames or requiredRoles is non-empty, EventLocation.ANYWHERE otherwise.
+  location?: EventLocation; // A location enum setting where events are accepted. The default is EventLocation.SERVER if channelNames or allowedRoles is non-empty, EventLocation.ANYWHERE otherwise.
 }
 ```
 

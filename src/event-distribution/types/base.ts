@@ -25,7 +25,7 @@ export interface BaseOptions {
   event: DiscordEvent;
   stateful?: boolean;
   description: string;
-  requiredRoles?: string[];
+  allowedRoles?: string[];
   channelNames?: string[];
   location?: EventLocation;
 }
