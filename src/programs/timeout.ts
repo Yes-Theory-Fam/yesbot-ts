@@ -5,7 +5,7 @@ import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 
 @Command({
   event: DiscordEvent.MESSAGE,
-  requiredRoles: ["Support", "Companion"],
+  allowedRoles: ["Support", "Companion"],
   trigger: "!timeout",
   description: "This handler is to timeout users when the command is called",
 })
