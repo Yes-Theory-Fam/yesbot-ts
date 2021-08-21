@@ -23,7 +23,6 @@ export {
   GroupManager,
   GroupManagerTools,
   MapTools,
-  NitroColors,
   Profile,
   ReactRole,
   DailyChallenge,

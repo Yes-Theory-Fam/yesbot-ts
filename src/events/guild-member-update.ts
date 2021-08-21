@@ -9,7 +9,11 @@ import {
 } from "discord.js";
 import Tools from "../common/tools";
 import { hasRole } from "../common/moderator";
+<<<<<<< HEAD
 import { NitroColors } from "../programs";
+=======
+import { Separators } from "../programs";
+>>>>>>> b7221f5 (refactored nitro-colors.ts)
 import prisma from "../prisma";
 
 const guildMemberUpdate = async (

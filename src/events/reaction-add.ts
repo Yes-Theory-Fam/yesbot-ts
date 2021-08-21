@@ -1,6 +1,6 @@
 import { Message, MessageReaction, PartialUser, User } from "discord.js";
 import Tools from "../common/tools";
-import { GroupManagerTools, NitroColors } from "../programs";
+import { GroupManagerTools } from "../programs";
 import { hasRole } from "../common/moderator";
 import prisma from "../prisma";
 
@@ -37,23 +37,7 @@ const addRolesFromReaction = async (
     const guildMember =
       guild.member(user.id) ?? (await guild.members.fetch(user.id));
     const roleToAdd = guild.roles.resolve(reactionRole.roleId);
-
-    if (
-      NitroColors.isColorSelectionMessage(messageId) &&
-      NitroColors.memberHasNitroColor(guildMember)
-    ) {
-      guildMember
-        .createDM()
-        .then((dm) =>
-          dm.send(
-            "You can't assign yourself a new colour yet, please wait until the end of the month!"
-          )
-        );
-
-      await messageReaction.users.remove(guildMember);
-    } else {
-      await guildMember.roles.add(roleToAdd);
-    }
+    await guildMember.roles.add(roleToAdd);
   }
 };
 
