@@ -30,7 +30,6 @@ import {
   saveToDb,
 } from "../programs/daily-challenge";
 import { ChatNames } from "../collections/chat-names";
-import YesTheoryUploadedPing from "../programs/yestheory-content";
 import timeoutUser from "../programs/timeout";
 
 const message = async (msg: Message) => {
@@ -202,8 +201,6 @@ const routeMessage = async (message: Message) => {
     await GroupManager(message, true);
 
   if (words.includes("@group")) await GroupManager(message, false);
-  if (channel.name === ChatNames.YESTHEORY_POSTED)
-    await YesTheoryUploadedPing(message);
 };
 
 const routeDm = async (message: Message) => {
