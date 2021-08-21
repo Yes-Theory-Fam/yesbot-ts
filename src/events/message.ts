@@ -102,9 +102,6 @@ const routeMessage = async (message: Message) => {
       if (firstWord === "!trendSet") await TopicManager.setTopic(message);
       break;
 
-    case "daily-challenge":
-      if (firstWord === "!challenge") await dailyChallenge(message);
-      break;
     case "permanent-testing":
       if (firstWord === "!export") await ExportManager(message);
       if (
@@ -113,11 +110,6 @@ const routeMessage = async (message: Message) => {
       )
         await GroupManager(message, true);
       if (firstWord === "!profile") await Profile(message);
-      if (firstWord === "!addChallenge")
-        await saveToDb("daily-challenge", restOfMessage, message);
-      if (firstWord === "!todayChallenge")
-        await postDailyMessage(message.client, message);
-      break;
     case "bot-commands":
       if (
         firstWord === "!group" &&

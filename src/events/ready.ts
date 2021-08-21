@@ -23,7 +23,6 @@ const ready = async (bot: Client) => {
   if (process.env.OUTPUT_CHANNEL_ID) {
     await NitroColors.cacheNitroColors(guildId);
     await VoiceOnDemandTools.voiceOnDemandReady(bot);
-    await DailyChallenge.initialize(bot);
     Game.initGameHub(guild);
 
     const messages = await sendOnlineMessage(guild);
