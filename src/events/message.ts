@@ -21,11 +21,6 @@ import {
   sendLove,
 } from "../common/custom-methods";
 import Tools from "../common/tools";
-import {
-  dailyChallenge,
-  postDailyMessage,
-  saveToDb,
-} from "../programs/daily-challenge";
 
 const message = async (msg: Message) => {
   if (msg.channel.type === "dm" && !msg.author.bot) {
