@@ -144,7 +144,10 @@ export class EventDistribution {
         return true;
 
       const { allowedRoles } = eh.options;
-      return allowedRoles.some((role) => roleNames.includes(role));
+      return (
+        allowedRoles.length === 0 ||
+        allowedRoles.some((role) => roleNames.includes(role))
+      );
     });
   }
 
