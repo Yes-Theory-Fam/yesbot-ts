@@ -66,7 +66,8 @@ class DailyChallengeTimerKickStart
         ) as TextChannel;
 
       const executeTime = new Date();
-      executeTime.setMinutes(executeTime.getMinutes() + 3);
+      executeTime.setUTCHours(8, 0, 0);
+      executeTime.setDate(executeTime.getDate() + 2);
       await TimerService.createTimer(dailyChallengeIdentifier, executeTime, {
         channelId: DailyChallengeChannel.id,
       });
@@ -115,7 +116,8 @@ class PostDailyChallenge implements CommandHandler<DiscordEvent.TIMER> {
       await DailyChallengeChannel.send(embed);
 
       const executeTime = new Date();
-      executeTime.setMinutes(executeTime.getMinutes() + 3);
+      executeTime.setUTCHours(8, 0, 0);
+      executeTime.setDate(executeTime.getDate() + 2);
       await TimerService.createTimer(dailyChallengeIdentifier, executeTime, {
         channelId: DailyChallengeChannel.id,
       });
@@ -174,7 +176,8 @@ class ResetDailyChallenge implements CommandHandler<DiscordEvent.MESSAGE> {
         });
 
         const executeTime = new Date();
-        executeTime.setMinutes(executeTime.getMinutes() + 3);
+        executeTime.setUTCHours(8, 0, 0);
+        executeTime.setDate(executeTime.getDate() + 2);
         await TimerService.createTimer(dailyChallengeIdentifier, executeTime, {
           channelId: DailyChallengeChannel.id,
         });
@@ -207,7 +210,8 @@ class ResetDailyChallenge implements CommandHandler<DiscordEvent.MESSAGE> {
         await DailyChallengeChannel.send(embed);
 
         const executeTime = new Date();
-        executeTime.setMinutes(executeTime.getMinutes() + 3);
+        executeTime.setUTCHours(8, 0, 0);
+        executeTime.setDate(executeTime.getDate() + 2);
         await TimerService.createTimer(dailyChallengeIdentifier, executeTime, {
           channelId: DailyChallengeChannel.id,
         });
