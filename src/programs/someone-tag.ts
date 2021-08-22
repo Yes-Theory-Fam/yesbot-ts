@@ -1,11 +1,11 @@
 import { GuildMember, Message, TextChannel, User } from "discord.js";
 import Tools from "../common/tools";
-import axios from "axios";
 import { addHours, isAfter } from "date-fns";
 import prisma from "../prisma";
+import { getFirstColumnFromGoogleSheet } from "../common/custom-methods";
 
-const QUESTION_LINK: string =
-  "https://spreadsheets.google.com/feeds/cells/1eve4McRxECmH4dLWLJvHLr9fErBWcCGiH94ihBNzK_s/1/public/full?alt=json";
+const QUESTION_SHEET_ID: string =
+  "1eve4McRxECmH4dLWLJvHLr9fErBWcCGiH94ihBNzK_s";
 
 const someoneTag = async (message: Message) => {
   const allow = await isAllowed(message.author);
@@ -18,12 +18,12 @@ const someoneTag = async (message: Message) => {
     return;
   }
 
-  const seekDiscormfortRole = Tools.getRoleByName(
+  const seekDiscomfortRole = Tools.getRoleByName(
     "Seek Discomfort",
     message.guild
   );
   const hasSeekDiscomfort = message.member.roles.cache.has(
-    seekDiscormfortRole.id
+    seekDiscomfortRole.id
   );
 
   if (!hasSeekDiscomfort) {
@@ -144,12 +144,9 @@ async function getTarget(arg: string, message: Message): Promise<User> {
 }
 
 async function getQuestion() {
-  let entries: string[] = [];
-  const response = await axios.get(QUESTION_LINK);
-  response.data.feed.entry.forEach((element: any) => {
-    entries.push(element.content.$t);
-  });
-  return entries[Math.floor(Math.random() * entries.length)];
+  const questions = await getFirstColumnFromGoogleSheet(QUESTION_SHEET_ID);
+  const randomIndex = Math.floor(Math.random() * questions.length);
+  return questions[randomIndex];
 }
 
 export default someoneTag;

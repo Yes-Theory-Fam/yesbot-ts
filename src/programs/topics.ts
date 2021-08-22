@@ -1,13 +1,13 @@
 import { Message, MessageAttachment, TextChannel } from "discord.js";
-import axios from "axios";
 import { isAuthorModerator } from "../common/moderator";
 import { createYesBotLogger } from "../log";
 import prisma from "../prisma";
+import { getFirstColumnFromGoogleSheet } from "../common/custom-methods";
 
 const logger = createYesBotLogger("programs", "topics");
 
-const QUESTION_LINK: string =
-  "https://spreadsheets.google.com/feeds/cells/1xUIqCaSrjyQzJeJfnXR0Hix6mDkaFhVauFmJb8Pzkj0/1/public/full?alt=json";
+const QUESTION_SHEET_ID: string =
+  "1xUIqCaSrjyQzJeJfnXR0Hix6mDkaFhVauFmJb8Pzkj0";
 const MAKEUP_CHALLENGE_PICTURE_URL =
   "https://media.discordapp.net/attachments/747182765468024862/781575356083208242/2b41f33966eb91a117e8897d1bab2daf.jpg";
 const MOVIE_CHALLENGE_PICTURE_URL =
@@ -20,15 +20,9 @@ export const topics = async (message: Message) => {
 
   switch (channel.name) {
     case "philosophy":
-      const response = await axios.get(QUESTION_LINK);
-      let questions: string[] = [];
-      let date = new Date().getDate();
+      const questions = await getFirstColumnFromGoogleSheet(QUESTION_SHEET_ID);
 
-      response.data.feed.entry.forEach((element: any) => {
-        questions.push(element.content.$t);
-      });
-
-      date--;
+      const date = new Date().getDate() - 1;
       const question = questions[date];
       await message.channel.send(question);
       break;
