@@ -26,7 +26,6 @@ import {
   postDailyMessage,
   saveToDb,
 } from "../programs/daily-challenge";
-import timeoutUser from "../programs/timeout";
 
 const message = async (msg: Message) => {
   if (msg.channel.type === "dm" && !msg.author.bot) {
@@ -165,10 +164,6 @@ const routeMessage = async (message: Message) => {
   if (firstWord === "!addvote") await addVote(message);
   if (firstWord === "!delete")
     hasRole(message.member, "Support") ? await deleteMessages(message) : null;
-  if (firstWord === "!timeout")
-    hasRole(message.member, "Support") || hasRole(message.member, "Companion")
-      ? await timeoutUser(message)
-      : null;
   if (firstWord === "!role") await ReactRole(message);
   if (firstWord === "F") await message.react("🇫");
   if (
