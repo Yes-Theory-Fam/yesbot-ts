@@ -11,7 +11,8 @@ declare namespace NodeJS {
     MODERATOR_ROLE_NAME?: string;
     ENGINEER_ROLE_NAME?: string;
     MEMBER_ROLE_ID?: string;
-    GITHUB_TOKEN?:string;
-    GITHUB_GRAPHQL_ENDPOINT?:string;
+    GITHUB_TOKEN?: string;
+    GITHUB_GRAPHQL_ENDPOINT?: string;
+    GOOGLE_API_KEY?: string;
   }
 }
