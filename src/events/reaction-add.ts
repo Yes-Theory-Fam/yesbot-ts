@@ -3,6 +3,10 @@ import Tools from "../common/tools";
 import { GroupManagerTools } from "../programs";
 import { hasRole } from "../common/moderator";
 import prisma from "../prisma";
+import {
+  isColorSelectionMessage,
+  memberHasNitroColor,
+} from "../programs/nitro-colors";
 
 const reactionAdd = async (
   messageReaction: MessageReaction,
@@ -33,9 +37,13 @@ const addRolesFromReaction = async (
     },
   });
 
+  const guildMember =
+    guild.member(user.id) ?? (await guild.members.fetch(user.id));
+  //Since most of the bot isn't refactored yet, this must stay for the old and new event do not collide together. Color Roles are handled in Nitro-colors.ts
+  if (isColorSelectionMessage(messageId) && memberHasNitroColor(guildMember))
+    return;
+
   for (const reactionRole of reactRoleObjects) {
-    const guildMember =
-      guild.member(user.id) ?? (await guild.members.fetch(user.id));
     const roleToAdd = guild.roles.resolve(reactionRole.roleId);
     await guildMember.roles.add(roleToAdd);
   }

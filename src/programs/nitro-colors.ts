@@ -55,19 +55,22 @@ class CacheNitroColors implements CommandHandler<DiscordEvent.READY> {
 
 @Command({
   event: DiscordEvent.GUILD_MEMBER_UPDATE,
-  roleNamesRemoved: ["Support", "Nitro Booster"],
+  roleNamesRemoved: ["Support"],
   description:
     "This handler is to remove Nitro color role if the user has lost one of the two roles.",
 })
 class RemoveNitroColorIfNotAllowed
   implements CommandHandler<DiscordEvent.GUILD_MEMBER_UPDATE>
 {
-  async handle(member: GuildMember | PartialGuildMember) {
+  async handle(member: GuildMember) {
     const nitroColor: Role = member.roles.cache.find((r) =>
       nitroRolesCache.some((role) => role.id === r.id)
     );
 
     if (nitroColor) {
+      colorSelectionMessage.reactions.cache.find(
+        (reactions) => !!reactions.users.remove(member)
+      );
       await member.roles.remove(nitroColor);
     }
   }
@@ -122,11 +125,11 @@ class NitroColorSelector implements CommandHandler<DiscordEvent.REACTION_ADD> {
     }
   }
 }
-
-const memberHasNitroColor = (member: GuildMember) =>
+//These will stay exported until the old event handler for reaction-add.ts is no longer used.
+export const memberHasNitroColor = (member: GuildMember) =>
   member.roles.cache.some((role) =>
     nitroRolesCache.some((r) => r.id === role.id)
   );
 
-const isColorSelectionMessage = (messageId: Snowflake) =>
+export const isColorSelectionMessage = (messageId: Snowflake) =>
   colorSelectionMessage.id === messageId;
