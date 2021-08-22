@@ -1,7 +1,6 @@
 import { DMChannel, GuildChannel, Message, TextChannel } from "discord.js";
 import {
   BirthdayManager,
-  DMMenu,
   ExportManager,
   Game,
   GroupManager,
@@ -13,8 +12,7 @@ import {
   TopicManager,
   VoiceOnDemand,
 } from "../programs";
-import state from "../common/state";
-import { getMember, hasRole, textLog } from "../common/moderator";
+import { hasRole, textLog } from "../common/moderator";
 import {
   abuseMe,
   addVote,
@@ -28,12 +26,11 @@ import {
   postDailyMessage,
   saveToDb,
 } from "../programs/daily-challenge";
-import { ChatNames } from "../collections/chat-names";
 import timeoutUser from "../programs/timeout";
 
 const message = async (msg: Message) => {
   if (msg.channel.type === "dm" && !msg.author.bot) {
-    await routeDm(msg);
+    return;
   } else {
     await routeMessage(msg);
   }
@@ -196,31 +193,6 @@ const routeMessage = async (message: Message) => {
     await GroupManager(message, true);
 
   if (words.includes("@group")) await GroupManager(message, false);
-};
-
-const routeDm = async (message: Message) => {
-  const member = getMember(message.author.id);
-  const dmChannel = message.channel;
-
-  if (!member) {
-    await dmChannel.send(
-      "Hey, I am the bot of the Yes Theory Fam Discord Server :) Looks like you are not on it currently, so I cannot really do a lot for you. If you'd like to join, click here: https://discord.gg/yestheory"
-    );
-    return;
-  }
-
-  if (state.ignoredGroupDMs.includes(dmChannel.id)) return;
-
-  const command = message.content.split(" ")[0];
-  switch (command) {
-    case "!menu":
-      await DMMenu.showMenu(message);
-      break;
-    // When nothing else makes sense we just guess that they are playing a game.
-    // handleGameInput will drop the message if it doesn't understand either.
-    default:
-      Game.handleGameInput(message);
-  }
 };
 
 export default message;
