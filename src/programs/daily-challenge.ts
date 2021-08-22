@@ -4,7 +4,7 @@ import { createYesBotLogger } from "../log";
 import { ChatNames } from "../collections/chat-names";
 import prisma from "../prisma";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
-import { Timer } from "@yes-theory-fam/database/client";
+import { DailyChallenge, Timer } from "@yes-theory-fam/database/client";
 import bot from "..";
 import { TimerService } from "./timer/timer.service";
 
@@ -25,7 +25,7 @@ const UTC_HOUR_POSTED = 8;
   description:
     "This handler is for when a user wants to know the current Daily Challenge.",
 })
-class DailyChallenge implements CommandHandler<DiscordEvent.MESSAGE> {
+class DailyChallengeCommand implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
     const compare = new Date();
     compare.setUTCHours(compare.getUTCHours() - 48 - UTC_HOUR_POSTED);
@@ -102,10 +102,7 @@ class PostDailyChallenge implements CommandHandler<DiscordEvent.TIMER> {
       res.lastUsed = used;
 
       try {
-        await prisma.dailyChallenge.update({
-          where: { id: res.id },
-          data: res,
-        });
+        await updateDailyChallengeData(res);
       } catch (err) {
         logger.error(
           "(postDailyMessage) There was an error posting Daily Challenge: ",
@@ -150,21 +147,18 @@ class ResetDailyChallenge implements CommandHandler<DiscordEvent.MESSAGE> {
       },
     });
 
+    const embed = new Discord.MessageEmbed()
+      .setColor("BLUE")
+      .setTitle("YesFam Daily Challenge!")
+      .setDescription(res.result);
+
+    const used = new Date();
+    used.setUTCHours(0, 0, 0, 0);
+    res.lastUsed = used;
+
     if (dailyChallengeStarted && res) {
-      const embed = new Discord.MessageEmbed()
-        .setColor("BLUE")
-        .setTitle("YesFam Daily Challenge!")
-        .setDescription(res.result);
-
-      const used = new Date();
-      used.setUTCHours(0, 0, 0, 0);
-      res.lastUsed = used;
-
       try {
-        await prisma.dailyChallenge.update({
-          where: { id: res.id },
-          data: res,
-        });
+        await updateDailyChallengeData(res);
 
         await DailyChallengeChannel.send("@group dailychallenge");
         await DailyChallengeChannel.send(embed);
@@ -191,20 +185,8 @@ class ResetDailyChallenge implements CommandHandler<DiscordEvent.MESSAGE> {
     }
 
     if (!dailyChallengeStarted && res) {
-      const embed = new Discord.MessageEmbed()
-        .setColor("BLUE")
-        .setTitle("YesFam Daily Challenge!")
-        .setDescription(res.result);
-
-      const used = new Date();
-      used.setUTCHours(0, 0, 0, 0);
-      res.lastUsed = used;
-
       try {
-        await prisma.dailyChallenge.update({
-          where: { id: res.id },
-          data: res,
-        });
+        await updateDailyChallengeData(res);
 
         await DailyChallengeChannel.send("@group dailychallenge");
         await DailyChallengeChannel.send(embed);
@@ -283,4 +265,11 @@ const save = async (
     logger.error("There was an error saving to the DB: ", err);
     await message.react("👎");
   }
+};
+
+const updateDailyChallengeData = async (res: DailyChallenge) => {
+  await prisma.dailyChallenge.update({
+    where: { id: res.id },
+    data: res,
+  });
 };
