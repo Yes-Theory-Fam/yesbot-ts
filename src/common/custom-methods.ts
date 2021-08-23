@@ -9,6 +9,18 @@ const logger = createYesBotLogger("common", "CustomMethods");
 
 @Command({
   event: DiscordEvent.MESSAGE,
+  trigger: "!video",
+  channelNames: ["welcome-chat"],
+  description: "This handler is to send the Youtube video in the Welcome Chat to new users."
+})
+class sendVideo implements CommandHandler<DiscordEvent.MESSAGE> {
+  async handle(message: Message) {
+    await message.channel.send("https://youtu.be/v-JOe-xqPN0")
+  }
+}
+
+@Command({
+  event: DiscordEvent.MESSAGE,
   description: "This handler is to filter certain messages on the server.",
 })
 class Filter implements CommandHandler<DiscordEvent.MESSAGE> {

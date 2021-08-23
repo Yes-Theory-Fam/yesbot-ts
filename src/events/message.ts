@@ -31,11 +31,6 @@ const routeMessage = async (message: Message) => {
   const restOfMessage = words.slice(1).join(" ");
 
   switch (channel.name) {
-    case "welcome-chat":
-      if (firstWord === "!video") {
-        await message.reply("https://youtu.be/v-JOe-xqPN0");
-      }
-      break;
 
     case "trends":
       if (firstWord === "!trend") await TopicManager.topics(message);
