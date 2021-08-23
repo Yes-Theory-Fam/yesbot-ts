@@ -61,7 +61,8 @@ class Filter implements CommandHandler<DiscordEvent.MESSAGE> {
 
 @Command({
   event: DiscordEvent.MESSAGE,
-  description: "This handler is for custom messages that do not have a specific trigger.",
+  description:
+    "This handler is for custom messages that do not have a specific trigger.",
 })
 class CustomMessageMethods implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
@@ -73,9 +74,10 @@ class CustomMessageMethods implements CommandHandler<DiscordEvent.MESSAGE> {
       messageContent.match(
         /yesbot i love you|yesbot i love u|i love you yesbot/i
       )
-    ) sendLove(message);
+    )
+      sendLove(message);
 
-    if (messageContent.match(/^(F)$/i)) await message.react("🇫")
+    if (messageContent.match(/^(F)$/i)) await message.react("🇫");
 
     if (messageContent.match(/(abooz|mod abuse)/i)) await message.react("👀");
   }
@@ -130,7 +132,8 @@ class AbuseMeCommand implements CommandHandler<DiscordEvent.MESSAGE> {
   event: DiscordEvent.MESSAGE,
   trigger: "!delete",
   allowedRoles: ["Support"],
-  description: "This handler is to delete message(s) in the requested text channel.",
+  description:
+    "This handler is to delete message(s) in the requested text channel.",
 })
 class DeleteMessages implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(botMessage: Message): Promise<void> {
@@ -153,7 +156,8 @@ class DeleteMessages implements CommandHandler<DiscordEvent.MESSAGE> {
 @Command({
   event: DiscordEvent.MESSAGE,
   trigger: "!addvote",
-  description: "This handler is to add to any requested changes the two reactions thumbs reaction to convert to a poll",
+  description:
+    "This handler is to add to any requested changes the two reactions thumbs reaction to convert to a poll",
 })
 class AddVote implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(botMessage: Message): Promise<void> {
