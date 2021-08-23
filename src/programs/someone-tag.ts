@@ -12,7 +12,7 @@ const QUESTION_SHEET_ID: string =
   event: DiscordEvent.MESSAGE,
   trigger: "@someone",
   channelNames: ["chat", "chat-too", "4th-chat", "chat-v"],
-  description: "This"
+  description: "This",
 })
 class SomeoneTag implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
@@ -25,7 +25,7 @@ class SomeoneTag implements CommandHandler<DiscordEvent.MESSAGE> {
       );
       return;
     }
-  
+
     const seekDiscomfortRole = Tools.getRoleByName(
       "Seek Discomfort",
       message.guild
@@ -33,7 +33,7 @@ class SomeoneTag implements CommandHandler<DiscordEvent.MESSAGE> {
     const hasSeekDiscomfort = message.member.roles.cache.has(
       seekDiscomfortRole.id
     );
-  
+
     if (!hasSeekDiscomfort) {
       await Tools.handleUserError(
         message,
@@ -41,7 +41,7 @@ class SomeoneTag implements CommandHandler<DiscordEvent.MESSAGE> {
       );
       return;
     }
-  
+
     const words = Tools.stringToWords(message.cleanContent);
     const arg = words[1];
     if (arg && arg !== "online")
@@ -69,7 +69,7 @@ class SomeoneTag implements CommandHandler<DiscordEvent.MESSAGE> {
         );
       }
     }
-  
+
     await message.delete();
   }
 }
@@ -157,4 +157,3 @@ async function getQuestion() {
   const randomIndex = Math.floor(Math.random() * questions.length);
   return questions[randomIndex];
 }
-
