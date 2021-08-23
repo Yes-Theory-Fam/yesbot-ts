@@ -3,67 +3,76 @@ import Tools from "../common/tools";
 import { addHours, isAfter } from "date-fns";
 import prisma from "../prisma";
 import { getFirstColumnFromGoogleSheet } from "../common/custom-methods";
+import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 
 const QUESTION_SHEET_ID: string =
   "1eve4McRxECmH4dLWLJvHLr9fErBWcCGiH94ihBNzK_s";
 
-const someoneTag = async (message: Message) => {
-  const allow = await isAllowed(message.author);
+@Command({
+  event: DiscordEvent.MESSAGE,
+  trigger: "@someone",
+  channelNames: ["chat", "chat-too", "4th-chat", "chat-v"],
+  description: "This"
+})
+class SomeoneTag implements CommandHandler<DiscordEvent.MESSAGE> {
+  async handle(message: Message): Promise<void> {
+    const allow = await isAllowed(message.author);
 
-  if (!allow) {
-    await Tools.handleUserError(
-      message,
-      "You have already used this command today!"
+    if (!allow) {
+      await Tools.handleUserError(
+        message,
+        "You have already used this command today!"
+      );
+      return;
+    }
+  
+    const seekDiscomfortRole = Tools.getRoleByName(
+      "Seek Discomfort",
+      message.guild
     );
-    return;
-  }
-
-  const seekDiscomfortRole = Tools.getRoleByName(
-    "Seek Discomfort",
-    message.guild
-  );
-  const hasSeekDiscomfort = message.member.roles.cache.has(
-    seekDiscomfortRole.id
-  );
-
-  if (!hasSeekDiscomfort) {
-    await Tools.handleUserError(
-      message,
-      "You need the Seek Discomfort role for that! You can get one by writing a detailed bio of yourself in <#616616321089798145>."
+    const hasSeekDiscomfort = message.member.roles.cache.has(
+      seekDiscomfortRole.id
     );
-    return;
-  }
-
-  const words = Tools.stringToWords(message.cleanContent);
-  const arg = words[1];
-  if (arg && arg !== "online")
-    await message.channel.send(
-      `Unknown argument "${arg}". Did you mean "online"?`,
-      {
-        disableMentions: "all",
-      }
-    );
-  else {
-    const { member } = message;
-    const target = await getTarget(arg, message);
-    const question = await getQuestion();
-    if (!target)
-      await message.reply(
-        "There were no available users to ping! This is embarrassing. How could this have happened? There's so many people on here that statistically this message should never even show up. Oh well. Congratulations, I guess."
+  
+    if (!hasSeekDiscomfort) {
+      await Tools.handleUserError(
+        message,
+        "You need the Seek Discomfort role for that! You can get one by writing a detailed bio of yourself in <#616616321089798145>."
+      );
+      return;
+    }
+  
+    const words = Tools.stringToWords(message.cleanContent);
+    const arg = words[1];
+    if (arg && arg !== "online")
+      await message.channel.send(
+        `Unknown argument "${arg}". Did you mean "online"?`,
+        {
+          disableMentions: "all",
+        }
       );
     else {
-      await updateLastMessage(message);
-      await sendMessage(
-        member,
-        target,
-        question,
-        message.channel as TextChannel
-      );
+      const { member } = message;
+      const target = await getTarget(arg, message);
+      const question = await getQuestion();
+      if (!target)
+        await message.reply(
+          "There were no available users to ping! This is embarrassing. How could this have happened? There's so many people on here that statistically this message should never even show up. Oh well. Congratulations, I guess."
+        );
+      else {
+        await updateLastMessage(message);
+        await sendMessage(
+          member,
+          target,
+          question,
+          message.channel as TextChannel
+        );
+      }
     }
+  
+    await message.delete();
   }
-
-  await message.delete();
-};
+}
 
 const sendMessage = async (
   author: GuildMember,
@@ -149,4 +158,3 @@ async function getQuestion() {
   return questions[randomIndex];
 }
 
-export default someoneTag;

@@ -7,7 +7,6 @@ import {
   MapTools,
   Profile,
   ReactRole,
-  Someone,
   Ticket,
   TopicManager,
   VoiceOnDemand,
@@ -93,7 +92,6 @@ const routeMessage = async (message: Message) => {
     case "chat-too":
     case "4th-chat":
     case "chat-v":
-      if (firstWord === "@someone") await Someone(message);
       if (firstWord === "!translate") abuseMe(message);
       break;
 

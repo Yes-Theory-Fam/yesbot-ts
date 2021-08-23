@@ -12,7 +12,6 @@ import VoiceOnDemand from "./voice-on-demand";
 import ExportManager from "./export-manager";
 import Profile from "./profile";
 import ReactRole from "./react-role";
-import Someone from "./someone-tag";
 import Ticket from "./ticket";
 
 export {
@@ -27,7 +26,6 @@ export {
   Profile,
   ReactRole,
   DailyChallenge,
-  Someone,
   Ticket,
   TopicManager,
   VoiceOnDemand,
