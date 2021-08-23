@@ -31,7 +31,6 @@ const routeMessage = async (message: Message) => {
   const restOfMessage = words.slice(1).join(" ");
 
   switch (channel.name) {
-
     case "trends":
       if (firstWord === "!trend") await TopicManager.topics(message);
       if (firstWord === "!trendSet") await TopicManager.setTopic(message);
