@@ -1,8 +1,8 @@
 import { Message, MessageAttachment, TextChannel } from "discord.js";
 import { isAuthorModerator } from "../common/moderator";
+import Tools from "../common/tools";
 import { createYesBotLogger } from "../log";
 import prisma from "../prisma";
-import { getFirstColumnFromGoogleSheet } from "../common/custom-methods";
 
 const logger = createYesBotLogger("programs", "topics");
 
@@ -20,7 +20,9 @@ export const topics = async (message: Message) => {
 
   switch (channel.name) {
     case "philosophy":
-      const questions = await getFirstColumnFromGoogleSheet(QUESTION_SHEET_ID);
+      const questions = await Tools.getFirstColumnFromGoogleSheet(
+        QUESTION_SHEET_ID
+      );
 
       const date = new Date().getDate() - 1;
       const question = questions[date];

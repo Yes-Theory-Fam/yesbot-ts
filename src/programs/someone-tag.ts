@@ -2,7 +2,6 @@ import { GuildMember, Message, TextChannel, User } from "discord.js";
 import Tools from "../common/tools";
 import { addHours, isAfter } from "date-fns";
 import prisma from "../prisma";
-import { getFirstColumnFromGoogleSheet } from "../common/custom-methods";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 
 const QUESTION_SHEET_ID: string =
@@ -138,7 +137,9 @@ async function getTarget(arg: string, message: Message): Promise<User> {
 }
 
 async function getQuestion() {
-  const questions = await getFirstColumnFromGoogleSheet(QUESTION_SHEET_ID);
+  const questions = await Tools.getFirstColumnFromGoogleSheet(
+    QUESTION_SHEET_ID
+  );
   const randomIndex = Math.floor(Math.random() * questions.length);
   return questions[randomIndex];
 }
