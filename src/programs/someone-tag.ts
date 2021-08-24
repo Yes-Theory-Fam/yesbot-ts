@@ -3,7 +3,6 @@ import Tools from "../common/tools";
 import { addHours, isAfter } from "date-fns";
 import prisma from "../prisma";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
-import axios from "axios";
 
 const QUESTION_SHEET_ID: string =
   "1eve4McRxECmH4dLWLJvHLr9fErBWcCGiH94ihBNzK_s";
@@ -138,20 +137,9 @@ async function getTarget(arg: string, message: Message): Promise<User> {
 }
 
 async function getQuestion() {
-  const questions = await getFirstColumnFromGoogleSheet(QUESTION_SHEET_ID);
+  const questions = await Tools.getFirstColumnFromGoogleSheet(
+    QUESTION_SHEET_ID
+  );
   const randomIndex = Math.floor(Math.random() * questions.length);
   return questions[randomIndex];
 }
-
-const getFirstColumnFromGoogleSheet = async (
-  sheetId: string
-): Promise<string[]> => {
-  const apiKey = process.env.GOOGLE_API_KEY;
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Sheet1?key=${apiKey}`;
-
-  const response = await axios.get(url);
-  const data = await response.data;
-  const rows = data.values;
-
-  return rows.flatMap((row: string[]) => row);
-};

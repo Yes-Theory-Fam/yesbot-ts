@@ -1,6 +1,6 @@
-import axios from "axios";
 import { Message, MessageAttachment, TextChannel } from "discord.js";
 import { isAuthorModerator } from "../common/moderator";
+import Tools from "../common/tools";
 import { createYesBotLogger } from "../log";
 import prisma from "../prisma";
 
@@ -20,7 +20,9 @@ export const topics = async (message: Message) => {
 
   switch (channel.name) {
     case "philosophy":
-      const questions = await getFirstColumnFromGoogleSheet(QUESTION_SHEET_ID);
+      const questions = await Tools.getFirstColumnFromGoogleSheet(
+        QUESTION_SHEET_ID
+      );
 
       const date = new Date().getDate() - 1;
       const question = questions[date];
@@ -93,17 +95,4 @@ export const setTopic = async (message: Message) => {
   } catch (e) {
     logger.error("(setTopic) Error adding topic", e);
   }
-};
-
-const getFirstColumnFromGoogleSheet = async (
-  sheetId: string
-): Promise<string[]> => {
-  const apiKey = process.env.GOOGLE_API_KEY;
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Sheet1?key=${apiKey}`;
-
-  const response = await axios.get(url);
-  const data = await response.data;
-  const rows = data.values;
-
-  return rows.flatMap((row: string[]) => row);
 };
