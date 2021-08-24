@@ -1,16 +1,12 @@
 import Axios from "axios";
-import Discord, { Client, Message, Snowflake, TextChannel } from "discord.js";
+import Discord, { Client, Message, TextChannel } from "discord.js";
 import { createYesBotLogger } from "../log";
 import { ChatNames } from "../collections/chat-names";
 import prisma from "../prisma";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
-import { DailyChallenge, Timer } from "@yes-theory-fam/database/client";
+import { Timer } from "@yes-theory-fam/database/client";
 import bot from "..";
 import { TimerService } from "./timer/timer.service";
-
-interface DailyChallengeTimerData {
-  channelId: Snowflake;
-}
 
 const dailyChallengeIdentifier = "dailychallenge";
 
@@ -52,26 +48,17 @@ class DailyChallengeTimerKickStart
   implements CommandHandler<DiscordEvent.READY>
 {
   async handle(bot: Client): Promise<void> {
-    const dailyChallengeStarted = !!(await prisma.timer.findFirst({
+    const hasDailyChallengeStarted = await prisma.timer.findFirst({
       where: {
         handlerIdentifier: dailyChallengeIdentifier,
       },
-    }));
+    });
 
-    if (!dailyChallengeStarted) {
-      const DailyChallengeChannel = bot.guilds
-        .resolve(process.env.GUILD_ID)
-        .channels.cache.find(
-          (channel) => channel.name === ChatNames.DAILY_CHALLENGE
-        ) as TextChannel;
-
-      const executeTime = new Date();
-      executeTime.setUTCHours(8, 0, 0);
-      executeTime.setDate(executeTime.getDate() + 2);
-      await TimerService.createTimer(dailyChallengeIdentifier, executeTime, {
-        channelId: DailyChallengeChannel.id,
-      });
+    if (hasDailyChallengeStarted) {
+      return;
     }
+
+    await startDailyChallengeTimer(dailyChallengeIdentifier);
   }
 }
 
@@ -82,9 +69,9 @@ class DailyChallengeTimerKickStart
 })
 class PostDailyChallenge implements CommandHandler<DiscordEvent.TIMER> {
   async handle(timer: Timer) {
-    const data = timer.data as unknown as DailyChallengeTimerData;
-    const DailyChallengeChannel = bot.channels.resolve(
-      data.channelId
+    const guild = bot.guilds.resolve(process.env.GUILD_ID);
+    const DailyChallengeChannel = guild.channels.cache.find(
+      (channel) => channel.name === ChatNames.DAILY_CHALLENGE
     ) as TextChannel;
 
     const res = await prisma.dailyChallenge.findFirst({
@@ -102,113 +89,24 @@ class PostDailyChallenge implements CommandHandler<DiscordEvent.TIMER> {
       res.lastUsed = used;
 
       try {
-        await updateDailyChallengeData(res);
+        const used = new Date();
+        used.setUTCHours(0, 0, 0, 0);
+        res.lastUsed = used;
+        await prisma.dailyChallenge.update({
+          where: { id: res.id },
+          data: res,
+        });
       } catch (err) {
         logger.error(
           "(postDailyMessage) There was an error posting Daily Challenge: ",
           err
         );
       }
+
       await DailyChallengeChannel.send("@group dailychallenge");
       await DailyChallengeChannel.send(embed);
 
-      const executeTime = new Date();
-      executeTime.setUTCHours(8, 0, 0);
-      executeTime.setDate(executeTime.getDate() + 2);
-      await TimerService.createTimer(dailyChallengeIdentifier, executeTime, {
-        channelId: DailyChallengeChannel.id,
-      });
-    }
-  }
-}
-
-@Command({
-  event: DiscordEvent.MESSAGE,
-  allowedRoles: ["Support"],
-  trigger: "!resetDailyChallenge",
-  description:
-    "This handler is for in case the Daily Challenge fails it can be manually resetted",
-})
-class ResetDailyChallenge implements CommandHandler<DiscordEvent.MESSAGE> {
-  async handle(message: Message): Promise<void> {
-    const DailyChallengeChannel = bot.guilds
-      .resolve(process.env.GUILD_ID)
-      .channels.cache.find(
-        (channel) => channel.name === ChatNames.DAILY_CHALLENGE
-      ) as TextChannel;
-
-    const res = await prisma.dailyChallenge.findFirst({
-      orderBy: { lastUsed: "asc" },
-    });
-
-    const dailyChallengeStarted = await prisma.timer.findFirst({
-      where: {
-        handlerIdentifier: dailyChallengeIdentifier,
-      },
-    });
-
-    const embed = new Discord.MessageEmbed()
-      .setColor("BLUE")
-      .setTitle("YesFam Daily Challenge!")
-      .setDescription(res.result);
-
-    const used = new Date();
-    used.setUTCHours(0, 0, 0, 0);
-    res.lastUsed = used;
-
-    if (dailyChallengeStarted && res) {
-      try {
-        await updateDailyChallengeData(res);
-
-        await DailyChallengeChannel.send("@group dailychallenge");
-        await DailyChallengeChannel.send(embed);
-
-        await prisma.timer.delete({
-          where: {
-            id: dailyChallengeStarted.id,
-          },
-        });
-
-        const executeTime = new Date();
-        executeTime.setUTCHours(8, 0, 0);
-        executeTime.setDate(executeTime.getDate() + 2);
-        await TimerService.createTimer(dailyChallengeIdentifier, executeTime, {
-          channelId: DailyChallengeChannel.id,
-        });
-        await message.react("👍");
-        return;
-      } catch (err) {
-        logger.error("Failed to reset daily challenge: ", err);
-        await message.react("👎");
-        return;
-      }
-    }
-
-    if (!dailyChallengeStarted && res) {
-      try {
-        await updateDailyChallengeData(res);
-
-        await DailyChallengeChannel.send("@group dailychallenge");
-        await DailyChallengeChannel.send(embed);
-
-        const executeTime = new Date();
-        executeTime.setUTCHours(8, 0, 0);
-        executeTime.setDate(executeTime.getDate() + 2);
-        await TimerService.createTimer(dailyChallengeIdentifier, executeTime, {
-          channelId: DailyChallengeChannel.id,
-        });
-        await message.react("👍");
-        return;
-      } catch (err) {
-        logger.error("Failed to reset daily challenge: ", err);
-        await message.react("👎");
-        return;
-      }
-    } else {
-      await message.react("👎");
-      logger.error(
-        "Failed to reset dailly challenge due to res being null (theres no errors to log good luck!)"
-      );
+      await startDailyChallengeTimer(dailyChallengeIdentifier);
     }
   }
 }
@@ -267,9 +165,14 @@ const save = async (
   }
 };
 
-const updateDailyChallengeData = async (res: DailyChallenge) => {
-  await prisma.dailyChallenge.update({
-    where: { id: res.id },
-    data: res,
-  });
+const startDailyChallengeTimer = async (identifier: string) => {
+  const date = new Date();
+  const executeTime = new Date();
+  let executionDate = 2;
+  if (date.getDate() % 2 == 0) {
+    executionDate = 1;
+  }
+  executeTime.setUTCHours(UTC_HOUR_POSTED, 0, 0);
+  executeTime.setMinutes(executeTime.getDate() + executionDate);
+  await TimerService.createTimer(identifier, executeTime);
 };
