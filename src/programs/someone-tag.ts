@@ -11,8 +11,9 @@ const QUESTION_SHEET_ID: string =
 @Command({
   event: DiscordEvent.MESSAGE,
   trigger: "@someone",
+  allowedRoles: ["Seek Discomfort"],
   channelNames: ["chat", "chat-too", "4th-chat", "chat-v"],
-  description: "This",
+  description: "This handler is for the someone command.",
 })
 class SomeoneTag implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
@@ -22,22 +23,6 @@ class SomeoneTag implements CommandHandler<DiscordEvent.MESSAGE> {
       await Tools.handleUserError(
         message,
         "You have already used this command today!"
-      );
-      return;
-    }
-
-    const seekDiscomfortRole = Tools.getRoleByName(
-      "Seek Discomfort",
-      message.guild
-    );
-    const hasSeekDiscomfort = message.member.roles.cache.has(
-      seekDiscomfortRole.id
-    );
-
-    if (!hasSeekDiscomfort) {
-      await Tools.handleUserError(
-        message,
-        "You need the Seek Discomfort role for that! You can get one by writing a detailed bio of yourself in <#616616321089798145>."
       );
       return;
     }
