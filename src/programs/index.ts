@@ -10,7 +10,6 @@ import * as TopicManager from "./topics";
 import * as VoiceOnDemandTools from "./voice-on-demand";
 import VoiceOnDemand from "./voice-on-demand";
 import ExportManager from "./export-manager";
-import Profile from "./profile";
 import ReactRole from "./react-role";
 import Someone from "./someone-tag";
 import Ticket from "./ticket";
@@ -24,7 +23,6 @@ export {
   GroupManagerTools,
   MapTools,
   NitroColors,
-  Profile,
   ReactRole,
   DailyChallenge,
   Someone,
