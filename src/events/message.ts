@@ -60,9 +60,6 @@ const routeMessage = async (message: Message) => {
       if (firstWord === "!birthday") await BirthdayManager(message);
 
       if (firstWord === "!voice") await VoiceOnDemand(message);
-      if (firstWord === "!video") {
-        await message.reply("https://youtu.be/v-JOe-xqPN0");
-      }
       if (firstWord === "!map") await MapTools.map(message);
       if (firstWord === "!mapadd") await MapTools.mapAdd(message);
       break;
