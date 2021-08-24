@@ -9,7 +9,6 @@ import {
 } from "discord.js";
 import Tools from "../common/tools";
 import { hasRole } from "../common/moderator";
-import { NitroColors } from "../programs";
 import prisma from "../prisma";
 
 const guildMemberUpdate = async (
@@ -34,8 +33,6 @@ const guildMemberUpdate = async (
   if (lostRole(oldMember, newMember, "Break")) {
     unlockCountryChannels(newMember);
   }
-
-  await NitroColors.removeColorIfNotAllowed(newMember);
 };
 
 // A users per-user permissions shall be restored if they have lost one of the switch roles and every role they have is none of the switchRoles
