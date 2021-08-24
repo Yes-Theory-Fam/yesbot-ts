@@ -40,8 +40,7 @@ const addRolesFromReaction = async (
   const guildMember =
     guild.member(user.id) ?? (await guild.members.fetch(user.id));
   //Since most of the bot isn't refactored yet, this must stay for the old and new event do not collide together. Color Roles are handled in Nitro-colors.ts
-  if (isColorSelectionMessage(messageId) && memberHasNitroColor(guildMember))
-    return;
+  if (isColorSelectionMessage(messageId)) return;
 
   for (const reactionRole of reactRoleObjects) {
     const roleToAdd = guild.roles.resolve(reactionRole.roleId);
