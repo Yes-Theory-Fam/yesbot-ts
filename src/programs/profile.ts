@@ -3,16 +3,18 @@ import Tools from "../common/tools";
 import { formatBirthday, getUserBirthday } from "./birthday-manager";
 import prisma from "../prisma";
 import { CountryRoleFinder } from "../utils/country-role-finder";
+import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 
-const profile = async (message: Message) => {
-  const { content } = message;
-
-  if (content.startsWith("!profile")) {
-    const words = Tools.stringToWords(content);
-    words.shift();
-
-    const requestedUser = message.mentions.users.first() || message.member.user;
-    const requestedMember = message.guild.member(requestedUser);
+@Command({
+  event: DiscordEvent.MESSAGE,
+  trigger: "!profile",
+  channelNames: ["bot-commands", "permanent-testing"],
+  description:
+    "This handler is to show the user profile or the mentioned user.",
+})
+class Profile implements CommandHandler<DiscordEvent.MESSAGE> {
+  async handle(message: Message): Promise<void> {
+    const requestedMember = message.mentions.members.first() || message.member;
 
     if (!requestedMember) {
       await Tools.handleUserError(
@@ -21,10 +23,11 @@ const profile = async (message: Message) => {
       );
       return;
     }
+
     const profileEmbed = await getProfileEmbed(requestedMember);
     await message.channel.send(profileEmbed);
   }
-};
+}
 
 const getProfileEmbed = async (
   member: GuildMember
@@ -78,5 +81,3 @@ const getProfileEmbed = async (
   );
   return profileEmbed;
 };
-
-export default profile;
