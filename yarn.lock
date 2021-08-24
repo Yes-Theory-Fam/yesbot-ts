@@ -544,9 +544,9 @@
     fastq "^1.6.0"
 
 "@prisma/client@~2.29.0":
-  version "2.29.0"
-  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-2.29.0.tgz#e236577e2a2b6ed718ecc606bac05e3603bf054c"
-  integrity sha512-te4dNyWI2ypZ7XCBtv42YZvsHDuwXqikepBFUhXsaoB7WFSZEtKDQp+xsEuMyk5NG4PQWVQx73jkcONFSHorJg==
+  version "2.29.1"
+  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-2.29.1.tgz#a7b91c9644800de4e00b2f7c3789ff4bae42b3d6"
+  integrity sha512-GhieSvHGPIV5IwRYIkJ4FrGSNfX18lPhFtlyVWxhvX0ocdy8oTnjNZVTFgGxB6qVmJIUpH1HsckAzIoAX689IA==
   dependencies:
     "@prisma/engines-version" "2.29.0-34.1be4cd60b89afa04b192acb1ef47758a39810f3a"
 
@@ -890,10 +890,10 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-"@yes-theory-fam/database@0.13.0":
-  version "0.13.0"
-  resolved "https://npm.pkg.github.com/download/@yes-theory-fam/database/0.13.0/49216a93314ad39a0f70020f12353c5aebda9bd20d939fcb27c7e7aef41d7d97#883a0ffd29b9ff7afcc46c6b25b8269e3277fec3"
-  integrity sha512-jXTl6M5+kvShKYQykrz0XOha3xhnbawzPoBpT+NxwWRKl/PEoQzkJ6X0xVS53gzL3rWA8lN6PGjW5hLRFE03JQ==
+"@yes-theory-fam/database@0.14.0":
+  version "0.14.0"
+  resolved "https://npm.pkg.github.com/download/@yes-theory-fam/database/0.14.0/9b30ff7ce5bc111f3ae26254ffdcfe8cbc204f1b7ab079db06576bbeca997d06#8fda97dbdb3a177705d873f1e6f5b0ce6a9c8ee3"
+  integrity sha512-naINUBJofLRG/abqQjzXBMZ5C9wAEfOSqvDflmcT+gPWXQOqDz5aU7Z481QKiKOMPuNPvP1LgXywc1LbQMeuHQ==
   dependencies:
     "@prisma/client" "~2.29.0"
 
