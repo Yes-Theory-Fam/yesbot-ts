@@ -20,7 +20,7 @@ config();
 
 const [, , guildId, roleId, token, limit] = process.argv;
 const bot = new Client({
-  ws: { intents: ["GUILDS", "GUILD_MEMBERS"] },
+  intents: ["GUILDS", "GUILD_MEMBERS"],
   presence: { status: "invisible" },
 });
 
@@ -121,7 +121,7 @@ const getMembers = async (lastId: String) => {
 
 const getCountryRoles = async (guild: Guild): Promise<Snowflake[]> => {
   const updatedManager = await guild.roles.fetch();
-  const countryRoles = updatedManager.cache.filter((role) =>
+  const countryRoles = updatedManager.filter((role) =>
     CountryRoleFinder.isCountryRole(role.name)
   );
 

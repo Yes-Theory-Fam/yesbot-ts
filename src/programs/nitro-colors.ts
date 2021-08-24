@@ -5,7 +5,6 @@ import {
   GuildMember,
   Message,
   MessageReaction,
-  PartialGuildMember,
   PartialUser,
   Role,
   Snowflake,
@@ -36,7 +35,7 @@ class CacheNitroColors implements CommandHandler<DiscordEvent.READY> {
 
       colorSelectionMessage = await pickYourColorChannel.messages
         .fetch({ limit: 10 })
-        .then((messages) => messages.array().reverse()[0]);
+        .then((messages) => [...messages.values()].reverse()[0]);
 
       if (!colorSelectionMessage) {
         logger.warn(
@@ -93,7 +92,7 @@ class NitroColorSelector implements CommandHandler<DiscordEvent.REACTION_ADD> {
     const { message } = reaction;
     const guild = bot.guilds.resolve(process.env.GUILD_ID);
     const guildMember =
-      guild.member(user.id) ?? (await guild.members.fetch(user.id));
+      guild.members.resolve(user.id) ?? (await guild.members.fetch(user.id));
 
     if (
       isColorSelectionMessage(reaction.message.id) &&

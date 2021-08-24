@@ -37,7 +37,7 @@ class AddRolesFromReaction
     if (!reactRoleObjects) return;
 
     const guildMember =
-      guild.member(user.id) ?? (await guild.members.fetch(user.id));
+      guild.members.resolve(user.id) ?? (await guild.members.fetch(user.id));
 
     for (const reactionRole of reactRoleObjects) {
       const roleToAdd = guild.roles.resolve(reactionRole.roleId);
@@ -75,7 +75,7 @@ class RemoveRolesFromReaction
     if (!reactRoleObjects) return;
 
     reactRoleObjects.forEach((reactionRole) => {
-      const guildMember = guild.member(user.id);
+      const guildMember = guild.members.resolve(user.id);
       const roleToRemove = guild.roles.resolve(reactionRole.roleId);
       guildMember.roles.remove(roleToRemove);
     });

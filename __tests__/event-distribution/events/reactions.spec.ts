@@ -26,7 +26,7 @@ describe("Reactions", () => {
   it("should extract reaction from direct message", () => {
     const messageReaction = mockDiscord.getMessageReaction();
     const user = mockDiscord.getUser();
-    messageReaction.message.channel.type = "dm";
+    messageReaction.message.channel.type = "DM";
     const result = extractReactionInfo(messageReaction, user);
     expect(result).toMatchSnapshot();
   });

@@ -3,6 +3,7 @@ import {
   Channel,
   Collection,
   Guild,
+  GuildChannel,
   GuildMember,
   Message,
   MessageReaction,
@@ -47,12 +48,14 @@ class Tools {
   }
 
   static async getFirstReaction(message: Message) {
-    const collected = await message.awaitReactions(
-      (reaction: any, user: User) => {
+    const collected = await message.awaitReactions({
+      filter: (reaction: any, user: User) => {
         return !user.bot;
       },
-      { max: 1, time: 6000000, errors: ["time"] }
-    );
+      max: 1,
+      time: 6000000,
+      errors: ["time"],
+    });
     return collected.first().emoji.toString();
   }
 
@@ -86,7 +89,7 @@ class Tools {
   static async handleUserError(message: Message, reply: string) {
     message.reply(reply).then((msg) => {
       message.delete();
-      msg.delete({ timeout: 10000 });
+      setTimeout(() => msg.delete(), 10000);
     });
   }
 
@@ -112,7 +115,7 @@ class Tools {
           return;
         }
 
-        await channel.updateOverwrite(user.id, {
+        await (channel as GuildChannel).permissionOverwrites.edit(user.id, {
           VIEW_CHANNEL: true,
         });
       }
@@ -168,11 +171,11 @@ class Tools {
 
     addReactions();
 
-    const collector = toMessage.createReactionCollector(
-      (reaction, user) =>
+    const collector = toMessage.createReactionCollector({
+      filter: (reaction, user) =>
         Tools.signUpFilter(reaction, user, voters, votes, allowChangeVote),
-      { time: timeout }
-    );
+      time: timeout,
+    });
 
     collector.on("collect", (reaction, user) => {
       const emoji = reaction.emoji.name;
@@ -270,7 +273,8 @@ class Tools {
     addReactions(); // No await because we don't want to wait
 
     try {
-      const selection = await toMessage.awaitReactions(filter, {
+      const selection = await toMessage.awaitReactions({
+        filter,
         max: 1,
         time: timeout,
         errors: ["time"],

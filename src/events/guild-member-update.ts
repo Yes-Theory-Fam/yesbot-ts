@@ -79,7 +79,9 @@ const revokePerUserPermissions = async (
     .filter((x) => x); // This filter is mainly to help in development because bots might have channels of multiple servers in their db
 
   targetChannels.forEach((channel) =>
-    channel.permissionOverwrites.get(newMember.id)?.delete()
+    (channel as GuildChannel).permissionOverwrites
+      .resolve(newMember.id)
+      ?.delete()
   );
 };
 
@@ -127,7 +129,7 @@ const resolvePerUserPermissions = async (
 
     const relevantReactions = message.reactions.cache
       .filter((reaction) => toggles.includes(reaction.emoji.name))
-      .array();
+      .values();
 
     for (const reaction of relevantReactions) {
       const users = await reaction.users.fetch({
@@ -164,9 +166,8 @@ const getCountryChannels = (guild: Guild) => {
       )
   );
 
-  return countryCategoryChannels
-    .array()
-    .map((category) => (category as CategoryChannel).children.array())
+  return [...countryCategoryChannels.values()]
+    .map((category) => [...(category as CategoryChannel).children.values()])
     .flat();
 };
 
@@ -177,7 +178,7 @@ const lockCountryChannels = (member: GuildMember | PartialGuildMember) => {
   getCountryChannels(member.guild)
     .filter(hasReadPermissions)
     .forEach((channel) =>
-      channel.updateOverwrite(member.id, {
+      channel.permissionOverwrites.edit(member.id, {
         VIEW_CHANNEL: false,
       })
     );
@@ -185,7 +186,7 @@ const lockCountryChannels = (member: GuildMember | PartialGuildMember) => {
 
 const unlockCountryChannels = (member: GuildMember | PartialGuildMember) => {
   getCountryChannels(member.guild).forEach((channel) =>
-    channel.permissionOverwrites.get(member.id)?.delete()
+    channel.permissionOverwrites.resolve(member.id)?.delete()
   );
 };
 

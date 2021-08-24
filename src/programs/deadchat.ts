@@ -2,17 +2,17 @@ import Tools from "../common/tools";
 import prisma from "../prisma";
 
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
-import { Message, Snowflake } from "discord.js";
+import { Message } from "discord.js";
 
 const thirtyMinutes = 30 * 60 * 1000;
 
 const isDead = async (message: Message): Promise<boolean> => {
-  return (
-    Date.now() -
-      (await message.channel.messages.fetch({ limit: 2 })).array()[1]
-        .createdTimestamp >
-    thirtyMinutes
-  );
+  const lastMessages = (
+    await message.channel.messages.fetch({ limit: 2 })
+  ).values();
+  const lastMessage = [...lastMessages][1];
+
+  return Date.now() - lastMessage.createdTimestamp > thirtyMinutes;
 };
 
 @Command({

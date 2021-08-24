@@ -61,10 +61,11 @@ class ShowMenu implements CommandHandler<DiscordEvent.MESSAGE> {
       "Hey, I'm just a bot! Most of what I can do, I do on the YesFam discord, so talk to me there instead! I can help you change your name, though, if you're new around here. Click the :baby: if you want to change your name!"
     );
     await nameChangeMessage.react("👶");
-    const filter: CollectorFilter = (reaction: MessageReaction, user: User) =>
+    const filter: CollectorFilter<[MessageReaction, User]> = (reaction, user) =>
       reaction.emoji.name === "👶" && !user.bot;
     try {
-      const reactions = await nameChangeMessage.awaitReactions(filter, {
+      const reactions = await nameChangeMessage.awaitReactions({
+        filter,
         time: 60000,
         max: 1,
       });
@@ -74,10 +75,11 @@ class ShowMenu implements CommandHandler<DiscordEvent.MESSAGE> {
         "Okay, what's your name then? Please only respond with your name like Henry or Julie, that makes things easier for the Supports! :upside_down:"
       );
       state.ignoredGroupDMs.push(dmChannel.id);
-      const nameMessage = await dmChannel.awaitMessages(
-        (_, user: User) => !user.bot,
-        { time: 60000, max: 1 }
-      );
+      const nameMessage = await dmChannel.awaitMessages({
+        filter: (message) => !message.author.bot,
+        time: 60000,
+        max: 1,
+      });
       removeIgnore(dmChannel);
 
       if (nameMessage.size === 0) {
@@ -109,12 +111,14 @@ const proposeNameChange = async (name: string, botMessage: Message) => {
     const sentMessage = await textLog(message);
     sentMessage.react("✅").then(() => sentMessage.react("🚫"));
     sentMessage
-      .awaitReactions(
-        (reaction: any, user: User) => {
+      .awaitReactions({
+        filter: (_, user: User) => {
           return !user.bot;
         },
-        { max: 1, time: 6000000, errors: ["time"] }
-      )
+        max: 1,
+        time: 6000000,
+        errors: ["time"],
+      })
       .then((collected) => {
         const reaction = collected.first();
         switch (reaction.emoji.toString()) {

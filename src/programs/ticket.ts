@@ -1,4 +1,10 @@
-import { GuildMember, Message, TextChannel, User } from "discord.js";
+import {
+  GuildChannelCreateOptions,
+  Message,
+  TextChannel,
+  User,
+  Util,
+} from "discord.js";
 import { TextChannelOptions } from "../common/interfaces";
 import Tools from "../common/tools";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
@@ -106,8 +112,13 @@ const closeTicket = async (
       (c) => c.name.startsWith(logChannelName) && c.name.endsWith("logs")
     )
   );
-  await logChannel.send(text, { split: true });
-  await channel.delete("Closed Ticket");
+
+  const messages = Util.splitMessage(text);
+  for (const message of messages) {
+    await logChannel.send(message);
+  }
+
+  await channel.delete();
 };
 
 async function createOutput(
@@ -147,25 +158,30 @@ async function createCloseMessage(
   await message.react("✅");
 
   message
-    .awaitReactions(
-      (reaction: any, user: User) => {
+    .awaitReactions({
+      filter: (reaction, user) => {
         return (
           ["✅", "📑"].includes(reaction.emoji.name) &&
           user.id != message.author.id
         );
       },
-      { max: 1, time: 60000, errors: ["time"] }
-    )
+      max: 1,
+      time: 60000,
+      errors: ["time"],
+    })
 
     .then((collected) => {
       const reaction = collected.first();
       const user = reaction.users.cache.find((u) => !u.bot);
       if (reaction.emoji.toString() === "📑") {
-        user
-          .createDM()
-          .then(async (dm) =>
-            dm.send(await createOutput(channel, member), { split: true })
+        user.createDM().then(async (dm) => {
+          const messages = Util.splitMessage(
+            await createOutput(channel, member)
           );
+          for (const message of messages) {
+            await dm.send(message);
+          }
+        });
       }
       closeTicket(
         reaction.message.channel as TextChannel,
@@ -227,16 +243,16 @@ const createTicket = async (
 ): Promise<TextChannel> => {
   const categoryId = message.guild.channels.cache.find((c) =>
     c.name.toLowerCase().includes(ticketType)
-  );
+  ).id;
 
   const moderatorRole = Tools.getRoleByName(
     process.env.MODERATOR_ROLE_NAME,
     message.guild
   );
 
-  const channelOptions: TextChannelOptions = {
+  const channelOptions: GuildChannelCreateOptions = {
     topic: "Support ticket for " + message.member.user.username,
-    type: "text",
+    type: "GUILD_TEXT",
     permissionOverwrites: [
       {
         id: message.guild.id,
@@ -255,5 +271,8 @@ const createTicket = async (
     parent: categoryId,
   };
 
-  return await message.guild.channels.create(channelName, channelOptions);
+  return (await message.guild.channels.create(
+    channelName,
+    channelOptions
+  )) as TextChannel;
 };

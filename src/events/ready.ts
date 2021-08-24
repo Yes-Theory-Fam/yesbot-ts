@@ -34,13 +34,13 @@ const sendOnlineMessage = async (guild: Guild): Promise<Message[]> => {
 
   const channels = guild.channels.cache
     .filter(
-      (c) =>
+      (c): c is TextChannel =>
         c.id === process.env.OUTPUT_CHANNEL_ID ||
         c.name === developerChannelName
     )
-    .array() as TextChannel[];
+    .values();
 
-  const sendPromises = channels.map((c) =>
+  const sendPromises = [...channels].map((c) =>
     c.send(readyMessageString(bot, "Fetching members."))
   );
 

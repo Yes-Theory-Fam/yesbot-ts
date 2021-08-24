@@ -1,13 +1,14 @@
 import {
-  Channel,
   Guild,
   GuildMember,
   Message,
   MessageEmbed,
   MessageReaction,
   Snowflake,
+  TextBasedChannels,
   TextChannel,
   User,
+  Util,
 } from "discord.js";
 import Tools from "../common/tools";
 import { isAuthorModerator } from "../common/moderator";
@@ -237,7 +238,10 @@ const groupManager = async (message: Message, isConfig: boolean) => {
         .map((member) => `<@${member.groupMemberId}>`)
         .join(", ");
 
-    await message.channel.send(groupPingMessage, { split: { char: "," } });
+    const pingBatches = Util.splitMessage(groupPingMessage, { char: "," });
+    for (const batch of pingBatches) {
+      await message.channel.send({ content: batch });
+    }
 
     await prisma.userGroup.update({
       where: { id: group.id },
@@ -317,7 +321,7 @@ const searchGroup = async (
       embed.addField("Group Name:", group.name, true);
       embed.addField(
         "Number of Members:",
-        group.userGroupMembersGroupMembers.length,
+        group.userGroupMembersGroupMembers.length.toString(),
         true
       );
       embed.addField("Description", group.description || "-");
@@ -335,8 +339,9 @@ const searchGroup = async (
     if (page < 0) page = 0;
     if (page >= pages.length) page = pages.length - 1;
 
-    await shownPageMessage.edit(message.author.toString(), {
-      embed: pages[page],
+    await shownPageMessage.edit({
+      content: message.author.toString(),
+      embeds: [pages[page]],
     });
     await reaction.users.remove(message.author.id);
     await setupPaging(page, shownPageMessage);
@@ -351,7 +356,8 @@ const searchGroup = async (
     };
 
     try {
-      const reactions = await pagedMessage.awaitReactions(filter, {
+      const reactions = await pagedMessage.awaitReactions({
+        filter,
         max: 1,
         time: 60000,
         errors: ["time"],
@@ -366,7 +372,7 @@ const searchGroup = async (
     } catch (error) {}
   };
 
-  const sentMessagePromise = message.channel.send(pages[0]);
+  const sentMessagePromise = message.channel.send({ embeds: [pages[0]] });
   if (pages.length > 1) {
     sentMessagePromise
       .then(async (msg) => {
@@ -754,8 +760,8 @@ const groupInteractionAndReport = async (
   await message.reply("\n" + report.join("\n"));
 };
 
-const isChannelAllowed = (channel: Channel): boolean => {
-  const isTextChannel = (channel: Channel): channel is TextChannel =>
+const isChannelAllowed = (channel: TextBasedChannels): boolean => {
+  const isTextChannel = (channel: TextBasedChannels): channel is TextChannel =>
     (channel as TextChannel).name && !!(channel as TextChannel).parent;
   if (!isTextChannel(channel)) return;
 
@@ -784,9 +790,10 @@ const isChannelAllowed = (channel: Channel): boolean => {
 };
 
 const timeRemainingForDeadchat = async (message: Message, group: UserGroup) => {
-  const lastMessages = (
+  const lastTwoMessages = (
     await message.channel.messages.fetch({ limit: 2 })
-  ).array();
+  ).values();
+  const lastMessages = [...lastTwoMessages];
 
   if (lastMessages.length < 2) {
     return 0;

@@ -42,21 +42,21 @@ class Topics implements CommandHandler<DiscordEvent.MESSAGE> {
         break;
 
       case "beauty-and-fashion":
-        await message.channel.send(
-          new MessageAttachment(MAKEUP_CHALLENGE_PICTURE_URL)
-        );
+        await message.channel.send({
+          embeds: [new MessageAttachment(MAKEUP_CHALLENGE_PICTURE_URL)],
+        });
         break;
 
       case "visual-design":
-        await message.channel.send(
-          new MessageAttachment(DRAWING_CHALLENGE_PICTURE_URL)
-        );
+        await message.channel.send({
+          embeds: [new MessageAttachment(DRAWING_CHALLENGE_PICTURE_URL)],
+        });
         break;
 
       case "filmmaking":
-        await message.channel.send(
-          new MessageAttachment(MOVIE_CHALLENGE_PICTURE_URL)
-        );
+        await message.channel.send({
+          embeds: [new MessageAttachment(MOVIE_CHALLENGE_PICTURE_URL)],
+        });
         break;
     }
   }
@@ -103,7 +103,9 @@ class SetTopic implements CommandHandler<DiscordEvent.MESSAGE> {
 
     const cleanMessage = message.cleanContent.split(/\s+/);
     const attachment =
-      message.attachments.size > 0 ? message.attachments.array()[0].url : "";
+      message.attachments.size > 0
+        ? [...message.attachments.values()][0].url
+        : "";
     cleanMessage.shift();
     cleanMessage.push(attachment);
     const joinedMsg = cleanMessage.join(" ");

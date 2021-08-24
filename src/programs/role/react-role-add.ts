@@ -25,8 +25,8 @@ class AddReactRoleObject implements CommandHandler<DiscordEvent.MESSAGE> {
       message.content.split(" ");
 
     if (message.reference && reaction && roleId) {
-      const referencedMessageId = message.reference.messageID;
-      const channelId = message.reference.channelID;
+      const referencedMessageId = message.reference.messageId;
+      const channelId = message.reference.channelId;
       const channel = bot.channels.resolve(channelId) as TextChannel;
       const referencedMessage = await channel.messages.fetch(
         referencedMessageId
@@ -109,9 +109,9 @@ const addReactRoleObject = async (
     .setTitle("Reaction role successfully added.")
     .addField("\u200b", "\u200b")
     .addField("Target Message:", message.cleanContent, true)
-    .addField("Target Channel:", channel, true)
+    .addField("Target Channel:", channel.toString(), true)
     .addField("Necessary Reaction:", reaction, true)
-    .addField("Reward Role:", role, true);
+    .addField("Reward Role:", role.toString(), true);
   await textLog(successEmbed);
   await message.delete();
 };

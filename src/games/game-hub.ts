@@ -124,7 +124,7 @@ export default class GameHub {
       parent: this.channel.parent,
     });
 
-    await channel.overwritePermissions(permissions);
+    await channel.permissionOverwrites.set(permissions);
 
     return channel;
   }
@@ -133,10 +133,10 @@ export default class GameHub {
     const channelName = config.name;
     const channel = await this.guild.channels.create(channelName, {
       parent: this.channel.parent,
-      type: "voice",
+      type: "GUILD_VOICE",
     });
 
-    await channel.overwritePermissions(permissions);
+    await channel.permissionOverwrites.set(permissions);
     return channel;
   }
 
@@ -166,7 +166,8 @@ export default class GameHub {
       );
 
       const filter = (message: Message) => message.author.id === leaderId;
-      const messages = await this.channel.awaitMessages(filter, {
+      const messages = await this.channel.awaitMessages({
+        filter,
         time: 60000,
         max: 1,
       });
@@ -185,7 +186,7 @@ export default class GameHub {
         throw new Error("No mentions in message");
       }
 
-      return users.array();
+      return [...users.values()];
     } else if (emoji === everyone) {
       return await session.signUp();
     }
@@ -240,7 +241,7 @@ export default class GameHub {
     try {
       players = await this.getPlayers(leaderId, session);
       if (!players.map((p) => p.id).includes(leaderId)) {
-        players.push(this.guild.member(leaderId));
+        players.push(this.guild.members.resolve(leaderId));
       }
 
       const { minPlayers, maxPlayers } = clazz.config;
@@ -354,7 +355,7 @@ export default class GameHub {
   }
 
   public routeMessage(message: Message) {
-    if (message.channel.type === "dm") {
+    if (message.channel.type === "DM") {
       this.routeDMMessage(message);
       return;
     }

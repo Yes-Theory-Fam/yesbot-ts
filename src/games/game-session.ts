@@ -50,7 +50,7 @@ export abstract class GameSession<T extends SessionConfig> {
   }
 
   public get leader(): GuildMember {
-    return this.channel.guild.member(this.sessionConfig.leaderId);
+    return this.channel.guild.members.resolve(this.sessionConfig.leaderId);
   }
 
   public async signUp(): Promise<GuildMember[]> {
@@ -72,7 +72,10 @@ export abstract class GameSession<T extends SessionConfig> {
       options.max = maxPlayers;
     }
 
-    const signUps = await announcement.awaitReactions(reactionFilter, options);
+    const signUps = await announcement.awaitReactions({
+      filter: reactionFilter,
+      ...options,
+    });
 
     const reaction = signUps.find((reaction) => reaction.emoji.name === emoji);
     await announcement.delete();

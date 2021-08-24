@@ -8,7 +8,7 @@ import {
 } from "../programs";
 
 const message = async (msg: Message) => {
-  if (msg.channel.type === "dm" && !msg.author.bot) {
+  if (msg.channel.type === "DM" && !msg.author.bot) {
     return;
   } else {
     await routeMessage(msg);

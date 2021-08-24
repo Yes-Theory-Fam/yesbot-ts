@@ -11,6 +11,16 @@ import Discord, {
   User,
   VoiceState,
 } from "discord.js";
+import {
+  APIUser,
+  APIGuildMember,
+  ChannelType,
+  MessageType,
+} from "discord-api-types";
+import { MockMessage } from "./message";
+import { MockMessageReaction } from "./reaction";
+import { MockGuild } from "./guild";
+import { MockGuildMember } from "./guildmember";
 
 type Writeable<T> = { -readonly [P in keyof T]: T[P] };
 
@@ -18,7 +28,7 @@ export default class MockDiscord {
   public message!: Message;
   public messageReaction!: MessageReaction;
   private client!: Client;
-  private guild!: Guild;
+  private guild!: MockGuild;
   private channel!: Channel;
   private guildChannel!: GuildChannel;
   private textChannel!: TextChannel;
@@ -87,13 +97,11 @@ export default class MockDiscord {
   }
 
   private addMember = () => {
-    this.guild
-      .addMember(this.user, { accessToken: "mockAccessToken" })
-      .then((r) => r);
+    this.guild.addMember(this.guildMember);
   };
 
   private mockClient(): void {
-    this.client = new Discord.Client({ restSweepInterval: 0 });
+    this.client = new Discord.Client({ intents: [], restSweepInterval: 0 });
 
     this.client.users.fetch = jest.fn(() => Promise.resolve(this.getUser()));
     this.client.login = jest.fn(() => Promise.resolve("LOGIN_TOKEN"));
@@ -101,7 +109,7 @@ export default class MockDiscord {
   }
 
   private mockGuild(): void {
-    this.guild = new Guild(this.client, {
+    this.guild = new MockGuild(this.client, {
       unavailable: false,
       id: "guild-id",
       name: "mocked js guild",
@@ -112,14 +120,13 @@ export default class MockDiscord {
       large: false,
       features: [],
       application_id: "application-id",
-      afkTimeout: 1000,
+      afk_timeout: 1000,
       afk_channel_id: "afk-channel-id",
       system_channel_id: "system-channel-id",
-      embed_enabled: true,
       verification_level: 2,
       explicit_content_filter: 3,
       mfa_level: 8,
-      joined_at: new Date("2018-01-01").getTime(),
+      joined_at: new Date("2018-01-01").getTime().toString(),
       owner_id: "owner-id",
       channels: [],
       roles: [],
@@ -132,6 +139,8 @@ export default class MockDiscord {
   private mockChannel(): void {
     this.channel = new Channel(this.client, {
       id: "channel-id",
+      name: "Frank",
+      type: ChannelType.GuildText,
     });
   }
 
@@ -139,6 +148,7 @@ export default class MockDiscord {
     this.guildChannel = new GuildChannel(this.guild, {
       ...this.channel,
 
+      type: ChannelType.GuildText,
       name: "guild-channel",
       position: 1,
       parent_id: "123456789",
@@ -150,10 +160,11 @@ export default class MockDiscord {
     this.textChannel = new TextChannel(this.guild, {
       ...this.guildChannel,
 
+      type: ChannelType.GuildText,
       topic: "topic",
       nsfw: false,
       last_message_id: "123456789",
-      lastPinTimestamp: new Date("2019-01-01").getTime(),
+      last_pin_timestamp: new Date("2019-01-01").getTime().toString(),
       rate_limit_per_user: 0,
     });
   }
@@ -168,35 +179,45 @@ export default class MockDiscord {
     });
   }
 
+  private apiUser(): APIUser {
+    return {
+      ...this.user,
+      flags: undefined,
+    };
+  }
+
+  private apiMember(): APIGuildMember {
+    return {
+      deaf: false,
+      mute: false,
+      nick: "nick",
+      joined_at: new Date("2020-01-01").getTime().toString(),
+      user: this.apiUser(),
+      roles: [],
+    };
+  }
+
   private mockGuildMember(): void {
-    this.guildMember = new GuildMember(
+    this.guildMember = new MockGuildMember(
       this.client,
-      {
-        deaf: false,
-        mute: false,
-        self_mute: false,
-        self_deaf: false,
-        session_id: "session-id",
-        channel_id: "channel-id",
-        nick: "nick",
-        joined_at: new Date("2020-01-01").getTime(),
-        user: this.user,
-        roles: [],
-      },
+      this.apiMember(),
       this.guild
     );
   }
 
   private mockMessage(): void {
-    this.message = new Message(
+    this.message = new MockMessage(
+      this.textChannel,
+      this.guildMember,
       this.client,
       {
         id: "message-id",
-        type: "DEFAULT",
+        channel_id: this.channel.id,
+        type: MessageType.Default,
         content: "this is the message content",
-        author: this.user,
+        author: this.apiUser(),
         webhook_id: null,
-        member: this.guildMember,
+        member: this.apiMember(),
         pinned: false,
         tts: false,
         nonce: "nonce",
@@ -206,32 +227,59 @@ export default class MockDiscord {
         reactions: [],
         mentions: [],
         mention_roles: [],
-        mention_everyone: [],
-        hit: false,
-      },
-      this.textChannel
+        mention_everyone: false,
+        timestamp: "",
+      }
     );
   }
 
   private mockMessageReaction(): void {
-    this.messageReaction = new MessageReaction(
+    this.messageReaction = new MockMessageReaction(
+      this.guildMember,
       this.client,
       {
-        id: "messageReaction-id",
-        author: this.user,
         count: 1,
         me: true,
-        emoji: "🥰",
+        emoji: {
+          id: null,
+          animated: false,
+          name: undefined,
+        },
+        channel_id: this.channel.id,
       },
       this.message
     );
   }
 
   private mockRole() {
-    this.role = new Role(this.client, {}, this.guild);
+    this.role = new Role(
+      this.client,
+      {
+        id: "",
+        name: "Jeremy",
+        color: 0xffff00,
+        hoist: false,
+        position: 42,
+        mentionable: false,
+        managed: false,
+        permissions: "",
+      },
+      this.guild
+    );
   }
 
   private mockVoiceState() {
-    this.voiceState = new VoiceState(this.guild, {});
+    this.voiceState = new VoiceState(this.guild, {
+      deaf: false,
+      mute: false,
+      suppress: false,
+      channel_id: this.channel.id,
+      user_id: this.user.id,
+      session_id: "",
+      self_deaf: false,
+      self_mute: false,
+      self_video: true,
+      request_to_speak_timestamp: null,
+    });
   }
 }

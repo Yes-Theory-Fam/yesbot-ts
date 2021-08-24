@@ -50,7 +50,7 @@ export const extractVoiceStateUpdateInfo: ExtractInfoForEventFunction<DiscordEve
     if (
       oldState.channel &&
       newState.channel &&
-      oldState.channelID !== newState.channelID
+      oldState.channelId !== newState.channelId
     )
       changes.push(VoiceStateChange.SWITCHED_CHANNEL);
 

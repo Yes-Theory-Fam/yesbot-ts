@@ -27,7 +27,7 @@ class SeparatorOnRoleAdd
 
     const separators = guild.roles.cache
       .filter(({ name }) => name.startsWith(separatorStart))
-      .array();
+      .values();
 
     // We can find the matching separator by sorting the array of the separators and the added role.
     //   The separator above the added role is the correct one. If there is none, no separator is added.
@@ -56,9 +56,9 @@ class SeparatorOnRoleRemove
   ) {
     if (oldMember.roles.cache.size <= newMember.roles.cache.size) return;
 
-    const memberRolesSorted = newMember.roles.cache
-      .array()
-      .sort((a, b) => b.comparePositionTo(a));
+    const memberRolesSorted = [...newMember.roles.cache.values()].sort((a, b) =>
+      b.comparePositionTo(a)
+    );
 
     // A separator role can be removed if there is no role or another separator role below it.
     const separatorsToRemove = memberRolesSorted.filter(

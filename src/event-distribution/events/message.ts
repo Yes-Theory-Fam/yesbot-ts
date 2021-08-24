@@ -5,13 +5,7 @@ import {
   ExtractInfoForEventFunction,
   HandlerFunctionFor,
 } from "../types/base";
-import {
-  DMChannel,
-  GuildChannel,
-  Message,
-  NewsChannel,
-  TextChannel,
-} from "discord.js";
+import { GuildChannel, Message, TextBasedChannels } from "discord.js";
 import { addToTree, getIdFromCategoryName } from "../helper";
 
 export interface MessageEventHandlerOptions extends BaseOptions {
@@ -47,9 +41,8 @@ export const addMessageHandler: AddEventHandlerFunction<MessageEventHandlerOptio
 
 export const extractMessageInfo: ExtractInfoForEventFunction<DiscordEvent.MESSAGE> =
   (message) => {
-    const getChannelIdentifier = (
-      channel: TextChannel | DMChannel | NewsChannel
-    ) => (channel.type === "dm" ? channel.id : channel.name);
+    const getChannelIdentifier = (channel: TextBasedChannels) =>
+      channel.type === "DM" ? channel.id : channel.name;
 
     const channel = message.channel;
     const channelIdentifier = getChannelIdentifier(channel);
@@ -60,7 +53,7 @@ export const extractMessageInfo: ExtractInfoForEventFunction<DiscordEvent.MESSAG
 
     const baseInfo = {
       member: message.member,
-      isDirectMessage: message.channel.type === "dm",
+      isDirectMessage: message.channel.type === "DM",
     };
 
     const info = [
