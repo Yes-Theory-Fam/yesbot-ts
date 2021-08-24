@@ -6,15 +6,17 @@ import {
   User,
 } from "discord.js";
 import state from "../common/state";
-import { proposeNameChange } from "../common/custom-methods";
 import {
   Command,
   CommandHandler,
   DiscordEvent,
   EventLocation,
 } from "../event-distribution";
-import { getMember } from "../common/moderator";
+import { getMember, textLog } from "../common/moderator";
 import { Game } from ".";
+import { createYesBotLogger } from "../log";
+
+const logger = createYesBotLogger("programs", "DmMenu");
 
 const removeIgnore = (channel: DMChannel) => {
   const index = state.ignoredGroupDMs.indexOf(channel.id);
@@ -97,3 +99,43 @@ class ShowMenu implements CommandHandler<DiscordEvent.MESSAGE> {
     await nameChangeMessage.delete();
   }
 }
+
+const proposeNameChange = async (name: string, botMessage: Message) => {
+  await botMessage.reply(
+    "Perfect! I've sent your name request to the mods, hopefully they answer soon! In the meantime, you're free to roam around the server and explore. Maybe post an introduction to get started? :grin:"
+  );
+  const message = `Username: ${botMessage.author.toString()} would like to rename to "${name}". Allow?`;
+  try {
+    const sentMessage = await textLog(message);
+    sentMessage.react("✅").then(() => sentMessage.react("🚫"));
+    sentMessage
+      .awaitReactions(
+        (reaction: any, user: User) => {
+          return !user.bot;
+        },
+        { max: 1, time: 6000000, errors: ["time"] }
+      )
+      .then((collected) => {
+        const reaction = collected.first();
+        switch (reaction.emoji.toString()) {
+          case "✅":
+            const member = getMember(botMessage.author.id);
+            member.setNickname(name);
+            sentMessage.delete();
+            textLog(`${botMessage.author.toString()} was renamed to ${name}.`);
+            break;
+          case "🚫":
+            sentMessage.delete();
+            textLog(
+              `${botMessage.author.toString()} was *not* renamed to ${name}.`
+            );
+            break;
+
+          default:
+            break;
+        }
+      });
+  } catch (err) {
+    logger.error("(proposeNameChange) Error changing name: ", err);
+  }
+};
