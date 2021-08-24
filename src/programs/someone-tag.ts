@@ -2,8 +2,8 @@ import { GuildMember, Message, TextChannel, User } from "discord.js";
 import Tools from "../common/tools";
 import { addHours, isAfter } from "date-fns";
 import prisma from "../prisma";
-import { getFirstColumnFromGoogleSheet } from "../common/custom-methods";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
+import axios from "axios";
 
 const QUESTION_SHEET_ID: string =
   "1eve4McRxECmH4dLWLJvHLr9fErBWcCGiH94ihBNzK_s";
@@ -142,3 +142,16 @@ async function getQuestion() {
   const randomIndex = Math.floor(Math.random() * questions.length);
   return questions[randomIndex];
 }
+
+const getFirstColumnFromGoogleSheet = async (
+  sheetId: string
+): Promise<string[]> => {
+  const apiKey = process.env.GOOGLE_API_KEY;
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Sheet1?key=${apiKey}`;
+
+  const response = await axios.get(url);
+  const data = await response.data;
+  const rows = data.values;
+
+  return rows.flatMap((row: string[]) => row);
+};
