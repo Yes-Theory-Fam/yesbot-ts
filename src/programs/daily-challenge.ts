@@ -172,6 +172,7 @@ const startDailyChallengeTimer = async (identifier: string) => {
   if (date.getDate() % 2 == 0) {
     executionDate = 1;
   }
+
   executeTime.setUTCHours(UTC_HOUR_POSTED, 0, 0);
   executeTime.setMinutes(executeTime.getDate() + executionDate);
   await TimerService.createTimer(identifier, executeTime);
