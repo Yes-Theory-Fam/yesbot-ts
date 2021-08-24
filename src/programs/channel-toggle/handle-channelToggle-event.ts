@@ -1,4 +1,4 @@
-import { MessageReaction, User } from "discord.js";
+import { GuildChannel, MessageReaction, User } from "discord.js";
 import { hasRole, textLog } from "../../common/moderator";
 import Tools from "../../common/tools";
 import {
@@ -37,7 +37,7 @@ class HandleChannelToggleReactionAdd
       return;
     }
 
-    const member = guild.member(user.id);
+    const member = guild.members.resolve(user.id);
     // Catch users who are timeouted and deny their attempts at accessing other channels
     if (hasRole(member, "Time Out")) {
       const reaction = message.reactions.cache.find(
@@ -90,7 +90,9 @@ class HandleChannelToggleReactionRemove
       return;
     }
 
-    const channel = guild.channels.cache.find((c) => c.id === toggle.channel);
+    const channel = guild.channels.cache.find(
+      (c): c is GuildChannel => c.id === toggle.channel
+    );
 
     if (!channel) {
       await textLog(
@@ -99,6 +101,6 @@ class HandleChannelToggleReactionRemove
       return;
     }
 
-    await channel.permissionOverwrites.get(user.id)?.delete();
+    await channel.permissionOverwrites.resolve(user.id)?.delete();
   }
 }

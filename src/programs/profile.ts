@@ -25,7 +25,12 @@ class Profile implements CommandHandler<DiscordEvent.MESSAGE> {
     }
 
     const profileEmbed = await getProfileEmbed(requestedMember);
-    await message.channel.send(profileEmbed);
+    const messageContent =
+      profileEmbed instanceof MessageEmbed
+        ? { embeds: [profileEmbed] }
+        : { content: profileEmbed };
+
+    await message.channel.send(messageContent);
   }
 }
 

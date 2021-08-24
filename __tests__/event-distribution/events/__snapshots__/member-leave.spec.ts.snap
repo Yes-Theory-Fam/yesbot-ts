@@ -22,12 +22,12 @@ Object {
   "member": Object {
     "deleted": false,
     "displayName": "nick",
-    "guildID": "guild-id",
-    "joinedTimestamp": 1577836800000,
-    "lastMessageChannelID": null,
+    "guildId": "guild-id",
+    "joinedTimestamp": NaN,
     "nickname": "nick",
+    "pending": false,
     "premiumSinceTimestamp": null,
-    "userID": "222222222222222200",
+    "userId": "222222222222222200",
   },
 }
 `;

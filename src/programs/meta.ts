@@ -20,8 +20,8 @@ class MetaCommand implements CommandHandler<DiscordEvent.MESSAGE> {
       return;
     }
 
-    const referencedMessageId = message.reference.messageID;
-    const channelId = message.reference.channelID;
+    const referencedMessageId = message.reference.messageId;
+    const channelId = message.reference.channelId;
     const channel = bot.channels.resolve(channelId) as TextChannel;
     const referenceMessage = await channel.messages.fetch(referencedMessageId);
 
@@ -45,7 +45,7 @@ class MetaCommand implements CommandHandler<DiscordEvent.MESSAGE> {
       return;
     }
 
-    await referenceMessage.reply(``, {
+    await referenceMessage.reply({
       files: [
         "https://user-images.githubusercontent.com/17064122/122255708-ae6e9680-cece-11eb-8c01-6f29a3995680.png",
       ],

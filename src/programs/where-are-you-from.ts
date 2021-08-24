@@ -15,7 +15,7 @@ const regionCountries = ["USA"];
 
 const welcomeMember = async (user: User, guild: Guild) => {
   const memberRole = guild.roles.cache.find(({ name }) => name === "Member");
-  await guild.member(user).roles.add(memberRole);
+  await guild.members.resolve(user).roles.add(memberRole);
 
   const welcomeChat = <TextChannel>(
     guild.channels.cache.find((c) => c.name === "welcome-chat")

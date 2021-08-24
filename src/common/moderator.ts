@@ -35,7 +35,10 @@ export const textLog = (text: string | MessageEmbed): Promise<Message> => {
   const outputChannel = <TextChannel>(
     bot.channels.resolve(process.env.OUTPUT_CHANNEL_ID)
   );
-  return outputChannel.send(text);
+
+  return typeof text === "string"
+    ? outputChannel.send(text)
+    : outputChannel.send({ embeds: [text] });
 };
 
 export const getMember = (userId: string): GuildMember => {

@@ -1,4 +1,4 @@
-import { Guild, Message, TextChannel } from "discord.js";
+import { Guild, Message, MessageEmbed, TextChannel } from "discord.js";
 import { GameHub, Spyfall } from "../games";
 import Tools from "../common/tools";
 
@@ -17,7 +17,11 @@ export const initGameHub = (guild: Guild) => {
 };
 
 export const showGameEmbed = async (message: Message) => {
-  const embedMessage = await message.reply(hub.buildEmbed(message.author.id));
+  const embed = hub.buildEmbed(message.author.id);
+  const reply =
+    embed instanceof MessageEmbed ? { embeds: [embed] } : { content: embed };
+
+  const embedMessage = await message.reply(reply);
   const emojis = hub.getEmojis();
 
   const selection = await Tools.addVote(

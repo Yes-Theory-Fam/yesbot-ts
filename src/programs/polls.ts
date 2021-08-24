@@ -1,13 +1,11 @@
 import {
   Client,
-  DMChannel,
   EmojiResolvable,
   Message,
   MessageReaction,
   PartialUser,
   User,
 } from "discord.js";
-import { hasRole } from "../common/moderator";
 import { unicodeEmojiRegex } from "../common/tools";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 

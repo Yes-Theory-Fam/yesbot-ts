@@ -7,7 +7,7 @@ config();
 
 const exportFileName = "region-members-export.json";
 
-const client = new Client();
+const client = new Client({ intents: [] });
 client.login(process.env.BOT_TOKEN).then(() => console.log("Logged in"));
 
 const main = async () => {
@@ -18,7 +18,7 @@ const main = async () => {
 
   const regionRoles = guild.roles.cache
     .filter(({ name }) => CountryRoleFinder.isCountryRole(name))
-    .array();
+    .values();
 
   const regionToMemberMatch: Record<string, Snowflake[]> = {};
 

@@ -43,5 +43,5 @@ export const revokeToggleChannelPermissions = async (
   channelId: string
 ) => {
   const channel = bot.channels.resolve(channelId) as TextChannel;
-  await channel.permissionOverwrites.get(user.id)?.delete();
+  await channel.permissionOverwrites.resolve(user.id)?.delete();
 };

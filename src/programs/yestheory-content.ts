@@ -10,7 +10,7 @@ import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 })
 class YesTheoryUploadedPing implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message) {
-    if (!message.webhookID) return;
+    if (!message.webhookId) return;
 
     const channelDiscussion = message.guild.channels.cache.find(
       (channel) => channel.name === ChatNames.YESTHEORY_DISCUSSION.toString()
@@ -22,6 +22,6 @@ class YesTheoryUploadedPing implements CommandHandler<DiscordEvent.MESSAGE> {
         `Yes Theory posted a new video! Go check it out in ${message.channel.toString()} and talk about it here`
       );
     await channelDiscussion.send("@group YesTheoryUploads");
-    await channelDiscussion.send(embed);
+    await channelDiscussion.send({ embeds: [embed] });
   }
 }

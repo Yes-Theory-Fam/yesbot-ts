@@ -1,4 +1,6 @@
 import {
+  BaseGuildVoiceChannel,
+  CategoryChannel,
   Client,
   GuildMember,
   Message,
@@ -150,15 +152,15 @@ const createOnDemand = async (message: Message, userLimit: number) => {
   }
 
   const parent = guild.channels.cache.find(
-    (channel) =>
+    (channel): channel is CategoryChannel =>
       channel.name.toLowerCase().includes("conversation") &&
-      channel.type === "category"
+      channel.type === "GUILD_CATEGORY"
   );
 
   const channel = await guild.channels.create(
     getChannelName(message.member, reaction.emoji.name),
     {
-      type: "voice",
+      type: "GUILD_VOICE",
       parent,
       userLimit,
     }
@@ -178,8 +180,10 @@ const createOnDemand = async (message: Message, userLimit: number) => {
   const timeoutRole = Tools.getRoleByName("Time Out", guild);
   const breakRole = Tools.getRoleByName("Break", guild);
 
-  await channel.updateOverwrite(guild.roles.everyone, { STREAM: true });
-  await channel.overwritePermissions([
+  await channel.permissionOverwrites.edit(guild.roles.everyone, {
+    STREAM: true,
+  });
+  await channel.permissionOverwrites.set([
     {
       id: guild.roles.everyone,
       allow: [],
@@ -221,7 +225,7 @@ const knockOnDemand = async (message: Message) => {
     );
   }
 
-  const member = message.guild.member(owner);
+  const member = message.guild.members.resolve(owner);
   const channel = await getVoiceChannel(member);
 
   if (!channel) {
@@ -255,10 +259,7 @@ const knockOnDemand = async (message: Message) => {
   const filter = (reaction: MessageReaction, user: User) =>
     user.id === owner.id && reaction.emoji.name === "👍";
   const vote = (
-    await accessMessage.awaitReactions(filter, {
-      max: 1,
-      time: 60000,
-    })
+    await accessMessage.awaitReactions({ filter, max: 1, time: 60000 })
   ).first();
 
   await accessMessage.delete();
@@ -388,13 +389,13 @@ export const voiceOnDemandPermissions = async (
 
   const { guild } = channel;
 
-  await channel.updateOverwrite(guild.roles.everyone, {
+  await channel.permissionOverwrites.edit(guild.roles.everyone, {
     STREAM: true,
     CONNECT: null,
   });
 
   // We don't need this overwrite anymore
-  channel.permissionOverwrites.get(mapping.userId)?.delete();
+  channel.permissionOverwrites.resolve(mapping.userId)?.delete();
 };
 
 // I would like to keep the function here so everything belongs together as piece.
@@ -406,7 +407,7 @@ export const voiceOnDemandReset = async (
   // If there is no old channel, the user didn't leave anything
   // If old and new channel are the same, the channel still has
   //  the same amount of users in so it's not relevant for our purpose
-  if (!oldState.channel || oldState.channelID === newState.channelID) return;
+  if (!oldState.channel || oldState.channelId === newState.channelId) return;
 
   const channelId = oldState.channel.id;
   const mapping = await prisma.voiceOnDemandMapping.findUnique({
@@ -468,7 +469,7 @@ const removeMapping = async (channelId: string) => {
   await prisma.voiceOnDemandMapping.delete({ where: { channelId } });
 };
 
-const deleteIfEmpty = async (channel: VoiceChannel) => {
+const deleteIfEmpty = async (channel: BaseGuildVoiceChannel) => {
   // If the channel was already deleted before the 60 seconds are over, this condition is true
   // This mitigates an error trying to delete a channel that's already deleted
   if (!channel || !channel.guild.channels.resolve(channel.id)) return;
@@ -481,7 +482,7 @@ const deleteIfEmpty = async (channel: VoiceChannel) => {
 };
 
 const requestOwnershipTransfer = async (
-  channel: VoiceChannel,
+  channel: BaseGuildVoiceChannel,
   mapping: VoiceOnDemandMapping
 ) => {
   if (!channel.guild.channels.resolve(channel.id) || channel.members.size === 0)
@@ -518,10 +519,7 @@ const requestOwnershipTransfer = async (
   const filter = (reaction: MessageReaction, user: User) =>
     reaction.emoji.name === claimEmoji && getMemberIds().includes(user.id);
   const claim = (
-    await transferMessage.awaitReactions(filter, {
-      max: 1,
-      time: 60000,
-    })
+    await transferMessage.awaitReactions({ filter, max: 1, time: 60000 })
   ).first();
 
   await transferMessage.delete();
@@ -594,7 +592,7 @@ const requestOwnershipTransfer = async (
 const transferOwnership = async (
   mapping: VoiceOnDemandMapping,
   claimingUser: User,
-  channel: VoiceChannel
+  channel: BaseGuildVoiceChannel
 ) => {
   await prisma.voiceOnDemandMapping.update({
     where: { channelId: channel.id },
@@ -603,7 +601,7 @@ const transferOwnership = async (
 
   const { emoji } = mapping;
   const newChannelName = getChannelName(
-    channel.guild.member(claimingUser),
+    channel.guild.members.resolve(claimingUser),
     emoji
   );
 

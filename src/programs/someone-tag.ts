@@ -29,12 +29,10 @@ class SomeoneTag implements CommandHandler<DiscordEvent.MESSAGE> {
     const words = Tools.stringToWords(message.cleanContent);
     const arg = words[1];
     if (arg && arg !== "online")
-      await message.channel.send(
-        `Unknown argument "${arg}". Did you mean "online"?`,
-        {
-          disableMentions: "all",
-        }
-      );
+      await message.channel.send({
+        content: `Unknown argument "${arg}". Did you mean "online"?`,
+        allowedMentions: { parse: [] },
+      });
     else {
       const { member } = message;
       const target = await getTarget(arg, message);
@@ -116,9 +114,7 @@ async function getTarget(arg: string, message: Message): Promise<User> {
 
   const targetCollection =
     arg && arg === "online"
-      ? sdRole.members.filter(
-          (member) => member.user.presence.status === "online"
-        )
+      ? sdRole.members.filter((member) => member.presence.status === "online")
       : sdRole.members;
 
   if (

@@ -203,7 +203,8 @@ export class GameConfigurator<GameConfig extends SessionConfig> {
     message?: Message
   ): Promise<Message> {
     const result =
-      (await message?.edit(embed)) ?? (await this.channel.send(embed));
+      (await message?.edit({ embeds: [embed] })) ??
+      (await this.channel.send({ embeds: [embed] }));
     await result.reactions.removeAll();
     return result;
   }
@@ -344,7 +345,8 @@ export class GameConfigurator<GameConfig extends SessionConfig> {
     let maxTries = 10;
     while (maxTries--) {
       const channel = message.channel;
-      const input = await channel.awaitMessages(filter, {
+      const input = await channel.awaitMessages({
+        filter,
         max: 1,
         time: 60 * 1000,
       });
@@ -379,7 +381,8 @@ export class GameConfigurator<GameConfig extends SessionConfig> {
     let maxTries = 10;
     while (maxTries--) {
       const channel = message.channel;
-      const input = await channel.awaitMessages(filter, {
+      const input = await channel.awaitMessages({
+        filter,
         max: 1,
         time: 60 * 1000,
       });
@@ -414,7 +417,8 @@ export class GameConfigurator<GameConfig extends SessionConfig> {
 
     message = await this.prepEmbed(embed, message);
     const filter = (message: Message) => message.author.id === this.leaderId;
-    const input = await message.channel.awaitMessages(filter, {
+    const input = await message.channel.awaitMessages({
+      filter,
       max: 1,
       time: 60 * 1000,
     });
@@ -550,8 +554,7 @@ export class GameConfigurator<GameConfig extends SessionConfig> {
         const warning = await this.channel.send(
           `Remember to put in a value fast enough; ${note}`
         );
-        // Don't await because promise resolves *after* timeout
-        warning.delete({ timeout: 10000 });
+        setTimeout(() => warning.delete(), 10000);
       };
 
       const embedFields = configurationKeys.map((key) =>

@@ -24,7 +24,7 @@ describe("Messages", () => {
 
   it("should extract messages from direct message", () => {
     const message = mockDiscord.getMessage();
-    message.channel.type = "dm";
+    message.channel.type = "DM";
     const result = extractMessageInfo(message);
     expect(result).toMatchSnapshot();
   });

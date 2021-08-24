@@ -5,6 +5,7 @@ import {
   Message,
   MessageReaction,
   PartialGuildMember,
+  PartialMessageReaction,
   PartialUser,
   User,
   VoiceState,
@@ -22,7 +23,19 @@ import { LoadCron } from "./load-cron";
 const logger = createYesBotLogger("main", "index");
 logger.info("Starting YesBot");
 
-const bot = new Client({ partials: ["REACTION", "MESSAGE"] });
+const bot = new Client({
+  intents: [
+    "GUILDS",
+    "GUILD_MEMBERS",
+    "GUILD_BANS",
+    "GUILD_VOICE_STATES",
+    "GUILD_MESSAGES",
+    "GUILD_MESSAGE_REACTIONS",
+    "DIRECT_MESSAGES",
+    "DIRECT_MESSAGE_REACTIONS",
+  ],
+  partials: ["REACTION", "MESSAGE"],
+});
 logger.info("Initializing event-distribution");
 distribution.initialize().then(() => {
   logger.debug("Logging in to Discord Gateway");
@@ -60,13 +73,19 @@ bot.on("message", async (msg: Message) => {
 });
 bot.on(
   "messageReactionAdd",
-  async (messageReaction: MessageReaction, user: User | PartialUser) => {
+  async (
+    messageReaction: MessageReaction | PartialMessageReaction,
+    user: User | PartialUser
+  ) => {
     distribution.handleEvent(DiscordEvent.REACTION_ADD, messageReaction, user);
   }
 );
 bot.on(
   "messageReactionRemove",
-  async (messageReaction: MessageReaction, user: User | PartialUser) => {
+  async (
+    messageReaction: MessageReaction | PartialMessageReaction,
+    user: User | PartialUser
+  ) => {
     distribution.handleEvent(
       DiscordEvent.REACTION_REMOVE,
       messageReaction,

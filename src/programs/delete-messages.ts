@@ -1,4 +1,4 @@
-import { Message, DMChannel } from "discord.js";
+import { DMChannel, Message, TextChannel } from "discord.js";
 import Tools from "../common/tools";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 import { createYesBotLogger } from "../log";
@@ -22,7 +22,7 @@ class DeleteMessages implements CommandHandler<DiscordEvent.MESSAGE> {
         !isNaN(messagesToDelete) &&
         !(botMessage.channel instanceof DMChannel)
       ) {
-        await botMessage.channel.bulkDelete(messagesToDelete);
+        await (botMessage.channel as TextChannel).bulkDelete(messagesToDelete);
       }
     } catch (err) {
       logger.error("Error deleting messages: ", err);

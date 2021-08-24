@@ -89,7 +89,7 @@ class BirthdayManager implements CommandHandler<DiscordEvent.MESSAGE> {
     await birthdayMessage.react("👍");
     await birthdayMessage.react("👎");
 
-    const filter: CollectorFilter = (reaction: MessageReaction, user: User) => {
+    const filter: CollectorFilter<[MessageReaction, User]> = (reaction, user) => {
       return (
         (user.id === birthdayUser.id || user.id === message.author.id) &&
         ["👍", "👎"].includes(reaction.emoji.name)
@@ -98,7 +98,8 @@ class BirthdayManager implements CommandHandler<DiscordEvent.MESSAGE> {
 
     let birthdayAccepted;
     try {
-      birthdayAccepted = await birthdayMessage.awaitReactions(filter, {
+      birthdayAccepted = await birthdayMessage.awaitReactions({
+        filter,
         max: 1,
         time: 15000,
         errors: ["time"],
@@ -135,12 +136,13 @@ class BirthdayManager implements CommandHandler<DiscordEvent.MESSAGE> {
           roles: [engineerRole.id],
           users: [message.author.id],
         };
-        await message.reply(
+        await message.reply({
+          content:
           "Ouch, it seems like you have an extreme amounts of timezones available!" +
-            "\nPlease wait while I call for my masters. :grin:" +
-            `\nBeep boop ${engineerRole.toString()}? :telephone:`,
-          { allowedMentions }
-        );
+          "\nPlease wait while I call for my masters. :grin:" +
+          `\nBeep boop ${engineerRole.toString()}? :telephone:`,
+        allowedMentions,
+        });
       } else if (err instanceof Error && err.message === "time expired") {
         await message.react("⏰");
       } else {
@@ -285,7 +287,7 @@ async function getUserTimezone(message: Message): Promise<string> {
     return identifier;
   });
 
-  const sentMessage = await message.channel.send(response);
+  const sentMessage = await message.channel.send({ embeds: [response] });
   for (const reaction of reactions) {
     try {
       await sentMessage.react(reaction);
@@ -297,7 +299,7 @@ async function getUserTimezone(message: Message): Promise<string> {
     }
   }
 
-  const filter: CollectorFilter = (reaction: MessageReaction, user: User) => {
+  const filter: CollectorFilter<[MessageReaction, User]> = (reaction, user) => {
     return (
       user.id === message.author.id && reactions.includes(reaction.emoji.name)
     );
@@ -305,7 +307,8 @@ async function getUserTimezone(message: Message): Promise<string> {
 
   let received;
   try {
-    received = await sentMessage.awaitReactions(filter, {
+    received = await sentMessage.awaitReactions({
+      filter,
       max: 1,
       time: 60000,
       errors: ["time"],

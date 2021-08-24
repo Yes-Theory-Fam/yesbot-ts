@@ -231,7 +231,7 @@ export class Spyfall extends GameSession<SpyfallSessionConfig> {
       return;
     }
 
-    if (message.channel.type === "dm") {
+    if (message.channel.type === "DM") {
       Tools.handleUserError(
         message,
         "Voting must be done in the main channel: <#" + this.channel.id + ">"
@@ -353,7 +353,7 @@ export class Spyfall extends GameSession<SpyfallSessionConfig> {
   async reveal(message: Message) {
     const { id } = message.author;
     const authorIsSpy = this.sessionConfig.spyIds.includes(id);
-    if (message.channel.type !== "dm") {
+    if (message.channel.type !== "DM") {
       const cheeky = Math.random() < 0.05 ? " with me 😏" : "";
       Tools.handleUserError(
         message,
@@ -384,7 +384,7 @@ export class Spyfall extends GameSession<SpyfallSessionConfig> {
 
     let match;
     do {
-      const response = await this.channel.awaitMessages(filter, { max: 1 });
+      const response = await this.channel.awaitMessages({ filter, max: 1 });
       const responseLocation = response.first().content;
 
       match = locations
