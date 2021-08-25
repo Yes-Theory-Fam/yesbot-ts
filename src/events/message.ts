@@ -7,7 +7,6 @@ import {
   MapTools,
   ReactRole,
   Ticket,
-  TopicManager,
   VoiceOnDemand,
 } from "../programs";
 import {
@@ -31,11 +30,6 @@ const routeMessage = async (message: Message) => {
   const restOfMessage = words.slice(1).join(" ");
 
   switch (channel.name) {
-    case "trends":
-      if (firstWord === "!trend") await TopicManager.topics(message);
-      if (firstWord === "!trendSet") await TopicManager.setTopic(message);
-      break;
-
     case "daily-challenge":
       if (firstWord === "!challenge") await dailyChallenge(message);
       break;
@@ -87,7 +81,6 @@ const routeMessage = async (message: Message) => {
     );
     await message.member.roles.remove(guildRole);
   }
-  if (firstWord === "!topic") await TopicManager.topics(message);
   // if (firstWord === "!fiyesta") Ticket(message, "fiyesta");
   if (firstWord === "!shoutout") await Ticket(message, "shoutout");
   if (firstWord === "!role") await ReactRole(message);
