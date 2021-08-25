@@ -16,6 +16,7 @@ import { createYesBotLogger } from "../log";
 import prisma from "../prisma";
 import { Birthday } from "@yes-theory-fam/database/client";
 import { CountryRoleFinder } from "../utils/country-role-finder";
+import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 
 const logger = createYesBotLogger("programs", "BirthdayManager");
 
@@ -34,8 +35,15 @@ const months = [
   "dec",
 ];
 
-const birthdayManager = async (message: Message) => {
-  const words = Tools.stringToWords(message.content);
+@Command({
+  event: DiscordEvent.MESSAGE,
+  trigger: "!birthday",
+  channelNames: ["bot-commands"],
+  description: "This"
+})
+class BirthdayManager implements CommandHandler<DiscordEvent.MESSAGE> {
+  async handle(message: Message): Promise<void> {
+    const words = Tools.stringToWords(message.content);
 
   if (words.length < 2) {
     await Tools.handleUserError(
@@ -159,7 +167,9 @@ const birthdayManager = async (message: Message) => {
 
   const birthday = createBirthday(birthdayUser.id, birthdate, timezone);
   await prisma.birthday.create({ data: birthday });
-};
+  }
+}
+
 
 export function createBirthday(
   id: string,
@@ -480,4 +490,3 @@ export function formatBirthday(date: Date | null): string {
     : `${months[date.getMonth()]}-${date.getDate()}`;
 }
 
-export default birthdayManager;

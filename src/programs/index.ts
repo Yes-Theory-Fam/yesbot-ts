@@ -1,5 +1,3 @@
-import * as BirthdayManagerTools from "./birthday-manager";
-import BirthdayManager from "./birthday-manager";
 import * as DailyChallenge from "./daily-challenge";
 import * as Game from "./game";
 import * as GroupManagerTools from "./group-manager";
@@ -13,8 +11,6 @@ import ReactRole from "./react-role";
 import Ticket from "./ticket";
 
 export {
-  BirthdayManager,
-  BirthdayManagerTools,
   ExportManager,
   Game,
   GroupManager,

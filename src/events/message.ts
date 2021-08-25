@@ -1,6 +1,5 @@
 import { GuildChannel, Message, TextChannel } from "discord.js";
 import {
-  BirthdayManager,
   ExportManager,
   Game,
   GroupManager,
@@ -57,7 +56,6 @@ const routeMessage = async (message: Message) => {
         !message.content.toLowerCase().startsWith("!group toggle")
       )
         await GroupManager(message, true);
-      if (firstWord === "!birthday") await BirthdayManager(message);
 
       if (firstWord === "!voice") await VoiceOnDemand(message);
       if (firstWord === "!map") await MapTools.map(message);
