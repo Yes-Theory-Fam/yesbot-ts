@@ -39,137 +39,137 @@ const months = [
   event: DiscordEvent.MESSAGE,
   trigger: "!birthday",
   channelNames: ["bot-commands"],
-  description: "This"
+  description:
+    "This handler is to give the ability of a member server to save his birthday to the DB",
 })
 class BirthdayManager implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
     const words = Tools.stringToWords(message.content);
 
-  if (words.length < 2) {
-    await Tools.handleUserError(
-      message,
-      "Please type !birthday and your birthday. I prefer if you use a name for the month :robot:"
-    );
-    return;
-  }
-
-  const birthdayUser =
-    isAuthorModerator(message) && message.mentions.users.size === 1
-      ? message.mentions.users.first()
-      : message.author;
-
-  const userExistingBirthday = await getUserBirthday(birthdayUser.id);
-
-  if (userExistingBirthday !== null) {
-    await Tools.handleUserError(
-      message,
-      `I have already stored your birthday as ${formatBirthday(
-        userExistingBirthday
-      )} :tada:`
-    );
-    return;
-  }
-
-  const birthdate = getUserBirthdate(message.content);
-
-  if (birthdate === null) {
-    await Tools.handleUserError(
-      message,
-      "I'm unable to understand that date. Could you please specify it in month-date form? Like this: `!birthday december-24`. Thank you!"
-    );
-    return;
-  }
-
-  const birthdayMessage = await message.channel.send(
-    `Hi <@${birthdayUser.id}>, I think your birthday is ${formatBirthday(
-      birthdate
-    )}. If that is correct, please click :+1:.`
-  );
-  await birthdayMessage.react("👍");
-  await birthdayMessage.react("👎");
-
-  const filter: CollectorFilter = (reaction: MessageReaction, user: User) => {
-    return (
-      (user.id === birthdayUser.id || user.id === message.author.id) &&
-      ["👍", "👎"].includes(reaction.emoji.name)
-    );
-  };
-
-  let birthdayAccepted;
-  try {
-    birthdayAccepted = await birthdayMessage.awaitReactions(filter, {
-      max: 1,
-      time: 15000,
-      errors: ["time"],
-    });
-  } catch (err) {
-    // timeout probably
-    return;
-  }
-
-  if (birthdayAccepted.first().emoji.name === "👎") {
-    await message.channel.send(
-      "Okay, please be more specific and try again, or hang around for a Support to help you out! :grin:"
-    );
-    return;
-  }
-
-  // Clean up
-  await birthdayMessage.delete();
-
-  let timezone;
-  try {
-    timezone = await getUserTimezone(message);
-  } catch (err) {
-    if (err.message === "Too many available time zones") {
-      const engineerRole = Tools.getRoleByName(
-        process.env.ENGINEER_ROLE_NAME,
-        message.guild
+    if (words.length < 2) {
+      await Tools.handleUserError(
+        message,
+        "Please type !birthday and your birthday. I prefer if you use a name for the month :robot:"
       );
-      await message.delete();
-      const allowedMentions: MessageMentionOptions = {
-        roles: [engineerRole.id],
-        users: [message.author.id],
-      };
-      await message.reply(
-        "Ouch, it seems like you have an extreme amounts of timezones available!" +
-          "\nPlease wait while I call for my masters. :grin:" +
-          `\nBeep boop ${engineerRole.toString()}? :telephone:`,
-        { allowedMentions }
-      );
-    } else if (err.message === "time expired") {
-      await message.react("⏰");
-    } else {
-      logger.error(
-        "An unknown error has occurred awaiting the users timezone: ",
-        err
-      );
-      await message.channel.send(
-        "Hmm, something went wrong. Please contact my engineers if this seems unreasonable. :nerd:"
-      );
+      return;
     }
-    return;
-  }
 
-  await message.channel.send(
-    `Okay, I'll store your birthday as ${formatBirthday(
-      birthdate
-    )} in the timezone ${timezone}.`
-  );
-  await textLog(
-    "Hi there! Could someone help me by executing this command? Thank you!"
-  );
-  await textLog(
-    `\`bb.override <@${birthdayUser.id}> set ${formatBirthday(
-      birthdate
-    )} ${timezone}\``
-  );
+    const birthdayUser =
+      isAuthorModerator(message) && message.mentions.users.size === 1
+        ? message.mentions.users.first()
+        : message.author;
 
-  const birthday = createBirthday(birthdayUser.id, birthdate, timezone);
-  await prisma.birthday.create({ data: birthday });
+    const userExistingBirthday = await getUserBirthday(birthdayUser.id);
+
+    if (userExistingBirthday !== null) {
+      await Tools.handleUserError(
+        message,
+        `I have already stored your birthday as ${formatBirthday(
+          userExistingBirthday
+        )} :tada:`
+      );
+      return;
+    }
+
+    const birthdate = getUserBirthdate(message.content);
+
+    if (birthdate === null) {
+      await Tools.handleUserError(
+        message,
+        "I'm unable to understand that date. Could you please specify it in month-date form? Like this: `!birthday december-24`. Thank you!"
+      );
+      return;
+    }
+
+    const birthdayMessage = await message.channel.send(
+      `Hi <@${birthdayUser.id}>, I think your birthday is ${formatBirthday(
+        birthdate
+      )}. If that is correct, please click :+1:.`
+    );
+    await birthdayMessage.react("👍");
+    await birthdayMessage.react("👎");
+
+    const filter: CollectorFilter = (reaction: MessageReaction, user: User) => {
+      return (
+        (user.id === birthdayUser.id || user.id === message.author.id) &&
+        ["👍", "👎"].includes(reaction.emoji.name)
+      );
+    };
+
+    let birthdayAccepted;
+    try {
+      birthdayAccepted = await birthdayMessage.awaitReactions(filter, {
+        max: 1,
+        time: 15000,
+        errors: ["time"],
+      });
+    } catch (err) {
+      // timeout probably
+      return;
+    }
+
+    if (birthdayAccepted.first().emoji.name === "👎") {
+      await message.channel.send(
+        "Okay, please be more specific and try again, or hang around for a Support to help you out! :grin:"
+      );
+      return;
+    }
+
+    // Clean up
+    await birthdayMessage.delete();
+
+    let timezone;
+    try {
+      timezone = await getUserTimezone(message);
+    } catch (err) {
+      if (err.message === "Too many available time zones") {
+        const engineerRole = Tools.getRoleByName(
+          process.env.ENGINEER_ROLE_NAME,
+          message.guild
+        );
+        await message.delete();
+        const allowedMentions: MessageMentionOptions = {
+          roles: [engineerRole.id],
+          users: [message.author.id],
+        };
+        await message.reply(
+          "Ouch, it seems like you have an extreme amounts of timezones available!" +
+            "\nPlease wait while I call for my masters. :grin:" +
+            `\nBeep boop ${engineerRole.toString()}? :telephone:`,
+          { allowedMentions }
+        );
+      } else if (err.message === "time expired") {
+        await message.react("⏰");
+      } else {
+        logger.error(
+          "An unknown error has occurred awaiting the users timezone: ",
+          err
+        );
+        await message.channel.send(
+          "Hmm, something went wrong. Please contact my engineers if this seems unreasonable. :nerd:"
+        );
+      }
+      return;
+    }
+
+    await message.channel.send(
+      `Okay, I'll store your birthday as ${formatBirthday(
+        birthdate
+      )} in the timezone ${timezone}.`
+    );
+    await textLog(
+      "Hi there! Could someone help me by executing this command? Thank you!"
+    );
+    await textLog(
+      `\`bb.override <@${birthdayUser.id}> set ${formatBirthday(
+        birthdate
+      )} ${timezone}\``
+    );
+
+    const birthday = createBirthday(birthdayUser.id, birthdate, timezone);
+    await prisma.birthday.create({ data: birthday });
   }
 }
-
 
 export function createBirthday(
   id: string,
@@ -489,4 +489,3 @@ export function formatBirthday(date: Date | null): string {
     ? "Unknown"
     : `${months[date.getMonth()]}-${date.getDate()}`;
 }
-
