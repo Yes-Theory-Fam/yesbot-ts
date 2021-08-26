@@ -84,10 +84,6 @@ class PostDailyChallenge implements CommandHandler<DiscordEvent.TIMER> {
         .setTitle("YesFam Daily Challenge!")
         .setDescription(res.result);
 
-      const used = new Date();
-      used.setUTCHours(0, 0, 0, 0);
-      res.lastUsed = used;
-
       try {
         const used = new Date();
         used.setUTCHours(0, 0, 0, 0);
