@@ -162,10 +162,10 @@ const save = async (
 };
 
 const startDailyChallengeTimer = async (identifier: string) => {
-  const date = new Date();
+  const msDay = 24 * 60 * 60 * 1000;
   const executeTime = new Date();
   let executionDate = 2;
-  if (date.getDate() % 2 == 0) {
+  if (Math.floor(Date.now() / msDay) % 2) {
     executionDate = 1;
   }
 
