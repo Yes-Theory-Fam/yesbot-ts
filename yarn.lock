@@ -1464,10 +1464,10 @@ core-util-is@~1.0.0:
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
   integrity sha1-tf1UIgqivFq1eqtxQMlAdUUDwac=
 
-countries-and-timezones@3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/countries-and-timezones/-/countries-and-timezones-3.1.0.tgz#94865b19810e3bf720bf352fc9b192ffcdea34b6"
-  integrity sha512-Y7iF+Vz1rmTVRbbmvslYn7rnvu5pq8M/7+Z6tXuB4xQod4GA6k1qhbIPAIR/t4uZjgTpfOLX1/p/Q93nyi/mug==
+countries-and-timezones@3.2.2:
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/countries-and-timezones/-/countries-and-timezones-3.2.2.tgz#c328f0b5acd717326babcf9bd9313733acfd87e0"
+  integrity sha512-bhWSUQRxYeyjJn9C3eGzo7FZe1wOt/8Efcl8rxWaD9Rqrh4r+9ofJjfRYvU2IHQ0TyjtF2lSV+TfZTmfhdTHOw==
 
 country-code-emoji@2.3.0:
   version "2.3.0"
