@@ -2,6 +2,7 @@ import { GuildMember, PartialGuildMember } from "discord.js";
 import { textLog } from "../common/moderator";
 import prisma from "../prisma";
 import { createYesBotLogger } from "../log";
+import { PrismaClientKnownRequestError } from "prisma/prisma-client/runtime";
 
 const logger = createYesBotLogger("events", "memberLeave");
 
@@ -17,7 +18,10 @@ const removeFromBirthdays = async (userId: string) => {
   try {
     await prisma.birthday.delete({ where: { userId } });
   } catch (e) {
-    if (e.code !== recordNotFoundCode) {
+    if (
+      e instanceof PrismaClientKnownRequestError &&
+      e.code !== recordNotFoundCode
+    ) {
       logger.error("Removing from birthday DB failed: ", e);
       await textLog(
         `(MemberLeave) -> There was an error removing member from Birthday DB: ${userId}`
@@ -33,7 +37,10 @@ const removeFromGroups = async (memberId: string) => {
     });
     await prisma.groupMember.delete({ where: { id: memberId } });
   } catch (e) {
-    if (e.code !== recordNotFoundCode) {
+    if (
+      e instanceof PrismaClientKnownRequestError &&
+      e.code !== recordNotFoundCode
+    ) {
       logger.error("Removing from groups DB failed: ", e);
       await textLog(
         `(MemberLeave) There was an error removing member from the group DB: ${memberId}`

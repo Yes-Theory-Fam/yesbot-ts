@@ -1,5 +1,5 @@
 import Tools from "../common/tools";
-import { BirthdayManagerTools } from "../programs";
+import { getUserBirthdate } from "../programs/birthday-manager";
 import { setTimeout } from "timers";
 import prisma from "../prisma";
 
@@ -20,7 +20,7 @@ async function importBirthdaysToDatabase() {
     .filter(({ id }) => !existingBirthdayUsers.includes(id))
     .map(({ id, date }) => ({
       userId: id,
-      birthdate: BirthdayManagerTools.getUserBirthdate(date),
+      birthdate: getUserBirthdate(date),
     }));
 
   console.log(

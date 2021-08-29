@@ -8,7 +8,7 @@ import {
   User,
 } from "discord.js";
 import { utcToZonedTime, zonedTimeToUtc } from "date-fns-tz";
-import { Country, getAllCountries, getCountry } from "countries-and-timezones";
+import { getAllCountries, getCountry } from "countries-and-timezones";
 
 import Tools from "../common/tools";
 import { isAuthorModerator, textLog } from "../common/moderator";
@@ -122,7 +122,10 @@ class BirthdayManager implements CommandHandler<DiscordEvent.MESSAGE> {
     try {
       timezone = await getUserTimezone(message);
     } catch (err) {
-      if (err.message === "Too many available time zones") {
+      if (
+        err instanceof Error &&
+        err.message === "Too many available time zones"
+      ) {
         const engineerRole = Tools.getRoleByName(
           process.env.ENGINEER_ROLE_NAME,
           message.guild
@@ -138,12 +141,12 @@ class BirthdayManager implements CommandHandler<DiscordEvent.MESSAGE> {
             `\nBeep boop ${engineerRole.toString()}? :telephone:`,
           { allowedMentions }
         );
-      } else if (err.message === "time expired") {
+      } else if (err instanceof Error && err.message === "time expired") {
         await message.react("⏰");
       } else {
         logger.error(
           "An unknown error has occurred awaiting the users timezone: ",
-          err
+          { err }
         );
         await message.channel.send(
           "Hmm, something went wrong. Please contact my engineers if this seems unreasonable. :nerd:"
