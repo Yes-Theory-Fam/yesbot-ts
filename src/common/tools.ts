@@ -12,6 +12,7 @@ import {
   Snowflake,
   TextChannel,
   User,
+  VoiceChannel,
 } from "discord.js";
 import { textLog } from "./moderator";
 import { createYesBotLogger } from "../log";
@@ -340,6 +341,44 @@ class Tools {
       true,
       timeout
     );
+  }
+
+  static async handleLimitCommand(
+    message: Message,
+    requestedLimit: number,
+    maxLimit: number
+  ): Promise<number> {
+    if (!requestedLimit) {
+      const limit = 5;
+      return limit;
+    }
+
+    if (isNaN(Math.floor(requestedLimit))) {
+      await Tools.handleUserError(message, "The limit has to be a number");
+      return;
+    }
+
+    if (requestedLimit < 2) {
+      await Tools.handleUserError(message, "The limit has to be at least 2");
+      return;
+    }
+
+    const limit = Math.min(requestedLimit, maxLimit);
+    return limit;
+  }
+
+  static async getVoiceChannel(member: GuildMember): Promise<VoiceChannel> {
+    const guild = member.guild;
+    const mapping = await prisma.voiceOnDemandMapping.findUnique({
+      where: { userId: member.id },
+    });
+    return guild.channels.resolve(mapping?.channelId) as VoiceChannel;
+  }
+
+  static async updateLimit(memberVoiceChannel: VoiceChannel, limit: number) {
+    await memberVoiceChannel.edit({
+      userLimit: limit,
+    });
   }
 
   static shuffleArray<T>(items: T[]): T[] {

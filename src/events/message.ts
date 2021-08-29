@@ -3,7 +3,6 @@ import {
   ExportManager,
   GroupManager,
   MapTools,
-  VoiceOnDemand,
 } from "../programs";
 
 const message = async (msg: Message) => {
@@ -35,7 +34,6 @@ const routeMessage = async (message: Message) => {
       )
         await GroupManager(message, true);
 
-      if (firstWord === "!voice") await VoiceOnDemand(message);
       if (firstWord === "!map") await MapTools.map(message);
       if (firstWord === "!mapadd") await MapTools.mapAdd(message);
       break;

@@ -16,7 +16,6 @@ import {
   memberLeave,
   messageManager,
   ready,
-  voiceStateUpdate,
 } from "./events";
 import distribution, { DiscordEvent } from "./event-distribution";
 import { LoadCron } from "./load-cron";
@@ -123,9 +122,12 @@ bot.on(
       oldState,
       newState
     );
+<<<<<<< HEAD
     await voiceStateUpdate(oldState, newState).catch((error) =>
       logger.error("Error in legacy voiceStateUpdate handler: ", error)
     );
+=======
+>>>>>>> 4825c1f (WIP: Refactor voiceondemand.ts)
   }
 );
 //! ================= /EVENT HANDLERS ===================
