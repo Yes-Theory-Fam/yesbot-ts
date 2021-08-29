@@ -1,7 +1,4 @@
 import {
-  BaseGuildVoiceChannel,
-  CategoryChannel,
-  Client,
   GuildMember,
   Message,
   MessageReaction,
@@ -14,7 +11,6 @@ import {
 } from "discord.js";
 
 import { hasRole } from "../common/moderator";
-import state from "../common/state";
 import Tools from "../common/tools";
 import prisma from "../prisma";
 import { Timer, VoiceOnDemandMapping } from "@yes-theory-fam/database/client";
@@ -26,39 +22,15 @@ import { TimerService } from "./timer/timer.service";
 interface VoiceChannelsTimerData {
   channelId: Snowflake;
 }
-const defaultLimit = (5).toString();
+const defaultLimit = 5;
+const maxLimit = 10;
 
-const transferDelay = 60000;
 const emojiPool = ["📹", "💬", "📺", "🎲", "🎵", "🏋️"];
 const voiceOnDemandCreationIdentifier = "voiceondemandchannelcreation";
 const voiceOnDemandRequestHostIdentifier = "voiceondemandrequesthost";
 
 const getChannelName = (m: GuildMember, e: string) =>
   `• ${e} ${m.displayName}'s Room`;
-
-const maxLimit = 10;
-
-@Command({
-  event: DiscordEvent.MESSAGE,
-  trigger: "!voice",
-  subTrigger: "limit",
-  channelNames: ["bot-commands"],
-  description: "This",
-})
-class HandleLimitCommand implements CommandHandler<DiscordEvent.MESSAGE> {
-  async handle(message: Message): Promise<void> {
-    const requestedLimit = Number(message.content.split(" ")[2]);
-    console.log(message.content.split(" "));
-    const channel = await Tools.getVoiceChannel(message.member);
-    const limit = await Tools.handleLimitCommand(
-      message,
-      requestedLimit,
-      maxLimit
-    );
-    console.log(limit);
-    await Tools.updateLimit(channel, limit);
-  }
-}
 
 @Command({
   event: DiscordEvent.MESSAGE,
@@ -71,11 +43,15 @@ class HandleCreateCommand implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
     const requestedLimit = Number(message.content.split(" ")[2]);
     const { guild, member } = message;
-    const userLimit = await Tools.handleLimitCommand(
+    let userLimit = await Tools.handleLimitCommand(
       message,
       requestedLimit,
       maxLimit
     );
+
+    if (!userLimit) {
+      userLimit = defaultLimit;
+    }
 
     let reaction;
 
@@ -167,138 +143,78 @@ class HandleCreateCommand implements CommandHandler<DiscordEvent.MESSAGE> {
 }
 
 @Command({
-  event: DiscordEvent.TIMER,
-  handlerIdentifier: voiceOnDemandCreationIdentifier,
+  event: DiscordEvent.MESSAGE,
+  trigger: "!voice",
+  subTrigger: "host",
+  description: "This",
 })
-class DeleteIfEmpty implements CommandHandler<DiscordEvent.TIMER> {
-  async handle(timer: Timer): Promise<void> {
-    const data = timer.data as unknown as VoiceChannelsTimerData;
-    const channel = bot.channels.resolve(data.channelId) as VoiceChannel;
+class ChangeHostOnDemand implements CommandHandler<DiscordEvent.MESSAGE> {
+  async handle(message: Message): Promise<void> {
+    const { member } = message;
+    const memberVoiceChannel = await Tools.getVoiceChannel(member);
 
-    if (!channel || !channel.guild.channels.resolve(channel.id)) return;
-    if (channel.members.size === 0) {
-      await channel.delete();
-      await prisma.voiceOnDemandMapping.delete({
-        where: { channelId: channel.id },
-      });
+    if (!memberVoiceChannel) {
+      await Tools.handleUserError(
+        message,
+        "You don't have a voice channel. You can create one using `!voice create` and an optional limit"
+      );
+      return;
     }
-  }
-}
 
-@Command({
-  event: DiscordEvent.TIMER,
-  handlerIdentifier: voiceOnDemandRequestHostIdentifier,
-})
-class RequestNewHost implements CommandHandler<DiscordEvent.TIMER> {
-  async handle(timer: Timer): Promise<void> {
-    const data = timer.data as unknown as VoiceChannelsTimerData;
-    const channel = bot.channels.resolve(data.channelId) as VoiceChannel;
-    const mapping = await prisma.voiceOnDemandMapping.findUnique({
-      where: { channelId: channel.id },
-    });
+    const mentionedMember = message.mentions.members.first();
+    if (!mentionedMember) {
+      await Tools.handleUserError(
+        message,
+        "You have to mention the user you want to take on ownership of your room."
+      );
+      return;
+    }
 
-    await requestOwnershipTransfer(channel, mapping);
-  }
-}
+    if (mentionedMember.id === message.author.id) {
+      await Tools.handleUserError(message, "Errrrr... That's yourself 🤨");
+      return;
+    }
 
-@Command({
-  event: DiscordEvent.VOICE_STATE_UPDATE,
-  changes: [VoiceStateChange.JOINED],
-})
-class VoiceOnDemandPermissions
-  implements CommandHandler<DiscordEvent.VOICE_STATE_UPDATE>
-{
-  async handle(oldState: VoiceState, newState: VoiceState): Promise<void> {
-    if (newState.channel.members.size > 1) return;
-
-    const { channel } = newState;
-    const { id } = channel;
-    const mapping = await prisma.voiceOnDemandMapping.findUnique({
-      where: { channelId: id },
-    });
-
-    if (!mapping) return;
-
-    const { guild } = channel;
-
-    await channel.updateOverwrite(guild.roles.everyone, {
-      STREAM: true,
-      CONNECT: null,
-    });
-
-    // We no longer need the overwrite for mapping.userId so it is deleted
-    channel.permissionOverwrites.get(mapping.userId)?.delete();
-  }
-}
-
-@Command({
-  event: DiscordEvent.VOICE_STATE_UPDATE,
-  changes: [VoiceStateChange.LEFT, VoiceStateChange.SWITCHED_CHANNEL],
-  description: "This",
-})
-class RequestNewHostIfNeeded
-  implements CommandHandler<DiscordEvent.VOICE_STATE_UPDATE>
-{
-  async handle(oldState: VoiceState, newState: VoiceState): Promise<void> {
-    if (!oldState.channel || oldState.channelID === newState.channelID) return;
-
-    const channelId = oldState.channel.id;
-    const mapping = await prisma.voiceOnDemandMapping.findUnique({
-      where: { channelId },
-    });
-    if (!mapping) return;
-
-    const executeTime = new Date();
-    executeTime.setMinutes(executeTime.getMinutes() + 1);
-    await TimerService.createTimer(
-      voiceOnDemandRequestHostIdentifier,
-      executeTime,
-      {
-        channelId: channelId,
-      }
+    const mentionedMemberInVoiceChannel = memberVoiceChannel.members.has(
+      mentionedMember.id
     );
-  }
-}
+    const mentionedMemberHasVoiceChannel = await Tools.getVoiceChannel(
+      mentionedMember
+    );
 
-@Command({
-  event: DiscordEvent.MESSAGE,
-  trigger: "!voice",
-  subTrigger: "shrink",
-  description: "This",
-})
-class HandleShrinkLimitCommand implements CommandHandler<DiscordEvent.MESSAGE> {
-  async handle(message: Message): Promise<void> {
-    const channel = message.member.voice.channel;
-    const limit = Math.max(2, channel.members.size);
-    await Tools.updateLimit(channel, limit);
-  }
-}
+    if (mentionedMemberHasVoiceChannel) {
+      await Tools.handleUserError(
+        message,
+        "This user already has a voice channel"
+      );
+      return;
+    }
 
-@Command({
-  event: DiscordEvent.MESSAGE,
-  trigger: "!voice",
-  subTrigger: "up",
-  description: "This",
-})
-class HandleUpLimitCommand implements CommandHandler<DiscordEvent.MESSAGE> {
-  async handle(message: Message): Promise<void> {
-    const channel = message.member.voice.channel;
-    const limit = Math.max(maxLimit, channel.userLimit + 1);
-    await Tools.updateLimit(channel, limit);
-  }
-}
+    if (!mentionedMemberInVoiceChannel) {
+      await Tools.handleUserError(
+        message,
+        "That user is not in your voice channel"
+      );
+      return;
+    }
 
-@Command({
-  event: DiscordEvent.MESSAGE,
-  trigger: "!voice",
-  subTrigger: "down",
-  description: "This",
-})
-class HandleDownLimitCommand implements CommandHandler<DiscordEvent.MESSAGE> {
-  async handle(message: Message): Promise<void> {
-    const channel = message.member.voice.channel;
-    const limit = Math.max(2, channel.userLimit - 1);
-    await Tools.updateLimit(channel, limit);
+    if (!hasRole(mentionedMember, "Yes Theory")) {
+      await Tools.handleUserError(
+        message,
+        "That user doesn't have the Yes Theory role required to control the room. Pick someone else or get a Support to give them the Yes Theory role."
+      );
+      return;
+    }
+
+    const mapping = await prisma.voiceOnDemandMapping.findUnique({
+      where: { userId: message.author.id },
+    });
+
+    await transferOwnership(mapping, mentionedMember.user, memberVoiceChannel);
+
+    await message.reply(
+      `I transfered ownership of your room to <@${mentionedMember.id}>!`
+    );
   }
 }
 
@@ -379,15 +295,17 @@ class KnockOnDemand implements CommandHandler<DiscordEvent.MESSAGE> {
 @Command({
   event: DiscordEvent.MESSAGE,
   trigger: "!voice",
-  subTrigger: "host",
+  subTrigger: "limit",
+  channelNames: ["bot-commands"],
   description: "This",
 })
-class ChangeHostOnDemand implements CommandHandler<DiscordEvent.MESSAGE> {
+class HandleLimitCommand implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
-    const { member } = message;
-    const memberVoiceChannel = await Tools.getVoiceChannel(member);
+    const requestedLimit = Number(message.content.split(" ")[2]);
 
-    if (!memberVoiceChannel) {
+    const channel = await Tools.getVoiceChannel(message.member);
+
+    if (!channel) {
       await Tools.handleUserError(
         message,
         "You don't have a voice channel. You can create one using `!voice create` and an optional limit"
@@ -395,59 +313,187 @@ class ChangeHostOnDemand implements CommandHandler<DiscordEvent.MESSAGE> {
       return;
     }
 
-    const mentionedMember = message.mentions.members.first();
-    if (!mentionedMember) {
-      await Tools.handleUserError(
-        message,
-        "You have to mention the user you want to take on ownership of your room."
-      );
-      return;
-    }
-
-    if (mentionedMember.id === message.author.id) {
-      await Tools.handleUserError(message, "Errrrr... That's yourself 🤨");
-      return;
-    }
-
-    const mentionedMemberInVoiceChannel = memberVoiceChannel.members.has(
-      mentionedMember.id
-    );
-    const mentionedMemberHasVoiceChannel = await Tools.getVoiceChannel(
-      mentionedMember
+    const limit = await Tools.handleLimitCommand(
+      message,
+      requestedLimit,
+      maxLimit
     );
 
-    if (mentionedMemberHasVoiceChannel) {
+    await Tools.updateLimit(channel, limit);
+    await message.reply(
+      `Successfully changed the limit of your room to ${limit}`
+    );
+  }
+}
+
+@Command({
+  event: DiscordEvent.MESSAGE,
+  trigger: "!voice",
+  subTrigger: "shrink",
+  description: "This",
+})
+class HandleShrinkLimitCommand implements CommandHandler<DiscordEvent.MESSAGE> {
+  async handle(message: Message): Promise<void> {
+    const channel = await Tools.getVoiceChannel(message.member);
+
+    if (!channel) {
       await Tools.handleUserError(
         message,
-        "This user already has a voice channel"
+        "You don't have a voice channel. You can create one using `!voice create` and an optional limit"
       );
       return;
     }
 
-    if (!mentionedMemberInVoiceChannel) {
+    const limit = Math.max(2, channel.members.size);
+    await Tools.updateLimit(channel, limit);
+    await message.reply(
+      `Successfully changed the limit of your room to ${limit}`
+    );
+  }
+}
+
+@Command({
+  event: DiscordEvent.MESSAGE,
+  trigger: "!voice",
+  subTrigger: "up",
+  description: "This",
+})
+class HandleUpLimitCommand implements CommandHandler<DiscordEvent.MESSAGE> {
+  async handle(message: Message): Promise<void> {
+    const channel = await Tools.getVoiceChannel(message.member);
+
+    if (!channel) {
       await Tools.handleUserError(
         message,
-        "That user is not in your voice channel"
+        "You don't have a voice channel. You can create one using `!voice create` and an optional limit"
       );
       return;
     }
 
-    if (!hasRole(mentionedMember, "Yes Theory")) {
-      await Tools.handleUserError(
-        message,
-        "That user doesn't have the Yes Theory role required to control the room. Pick someone else or get a Support to give them the Yes Theory role."
-      );
+    const limit = Math.max(maxLimit, channel.userLimit + 1);
+    await Tools.updateLimit(channel, limit);
+    await message.reply(
+      `Successfully changed the limit of your room to ${limit}`
+    );
+  }
+}
+
+@Command({
+  event: DiscordEvent.MESSAGE,
+  trigger: "!voice",
+  subTrigger: "down",
+  description: "This",
+})
+class HandleDownLimitCommand implements CommandHandler<DiscordEvent.MESSAGE> {
+  async handle(message: Message): Promise<void> {
+    const channel = message.member.voice.channel;
+    const limit = Math.max(2, channel.userLimit - 1);
+    await Tools.updateLimit(channel, limit);
+  }
+}
+
+@Command({
+  event: DiscordEvent.TIMER,
+  handlerIdentifier: voiceOnDemandCreationIdentifier,
+})
+class DeleteIfEmpty implements CommandHandler<DiscordEvent.TIMER> {
+  async handle(timer: Timer): Promise<void> {
+    const data = timer.data as unknown as VoiceChannelsTimerData;
+    const channel = bot.channels.resolve(data.channelId) as VoiceChannel;
+
+    if (!channel || !channel.guild.channels.resolve(channel.id)) return;
+    if (channel.members.size === 0) {
+      await channel.delete();
+      await prisma.voiceOnDemandMapping.delete({
+        where: { channelId: channel.id },
+      });
       return;
     }
+    //This is necessary to loop the timer until the channel is deleted
+    const executeTime = new Date();
+    executeTime.setMinutes(executeTime.getMinutes() + 1);
+    await TimerService.createTimer(
+      voiceOnDemandCreationIdentifier,
+      executeTime,
+      {
+        channel: channel.id,
+      }
+    );
+  }
+}
 
+@Command({
+  event: DiscordEvent.TIMER,
+  handlerIdentifier: voiceOnDemandRequestHostIdentifier,
+})
+class RequestNewHost implements CommandHandler<DiscordEvent.TIMER> {
+  async handle(timer: Timer): Promise<void> {
+    const data = timer.data as unknown as VoiceChannelsTimerData;
+    const channel = bot.channels.resolve(data.channelId) as VoiceChannel;
     const mapping = await prisma.voiceOnDemandMapping.findUnique({
-      where: { userId: message.author.id },
+      where: { channelId: channel.id },
     });
 
-    await transferOwnership(mapping, mentionedMember.user, memberVoiceChannel);
+    await requestOwnershipTransfer(channel, mapping);
+  }
+}
 
-    await message.reply(
-      `I transfered ownership of your room to <@${mentionedMember.id}>!`
+@Command({
+  event: DiscordEvent.VOICE_STATE_UPDATE,
+  changes: [VoiceStateChange.JOINED, VoiceStateChange.SWITCHED_CHANNEL],
+})
+class VoiceOnDemandPermissions
+  implements CommandHandler<DiscordEvent.VOICE_STATE_UPDATE>
+{
+  async handle(oldState: VoiceState, newState: VoiceState): Promise<void> {
+    if (newState.channel.members.size > 1) return;
+
+    const { channel } = newState;
+    const { id } = channel;
+    const mapping = await prisma.voiceOnDemandMapping.findUnique({
+      where: { channelId: id },
+    });
+
+    if (!mapping) return;
+
+    const { guild } = channel;
+
+    await channel.updateOverwrite(guild.roles.everyone, {
+      STREAM: true,
+      CONNECT: null,
+    });
+
+    // We no longer need the overwrite for mapping.userId so it is deleted
+    channel.permissionOverwrites.get(mapping.userId)?.delete();
+  }
+}
+
+@Command({
+  event: DiscordEvent.VOICE_STATE_UPDATE,
+  changes: [VoiceStateChange.LEFT, VoiceStateChange.SWITCHED_CHANNEL],
+  description: "This",
+})
+class RequestNewHostIfNeeded
+  implements CommandHandler<DiscordEvent.VOICE_STATE_UPDATE>
+{
+  async handle(oldState: VoiceState, newState: VoiceState): Promise<void> {
+    if (!oldState.channel || oldState.channelID === newState.channelID) return;
+
+    const channelId = oldState.channel.id;
+    const mapping = await prisma.voiceOnDemandMapping.findUnique({
+      where: { channelId },
+    });
+
+    if (!mapping) return;
+
+    const executeTime = new Date();
+    executeTime.setMinutes(executeTime.getMinutes() + 1);
+    await TimerService.createTimer(
+      voiceOnDemandRequestHostIdentifier,
+      executeTime,
+      {
+        channelId: channelId,
+      }
     );
   }
 }

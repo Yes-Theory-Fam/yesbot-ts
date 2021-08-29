@@ -348,10 +348,7 @@ class Tools {
     requestedLimit: number,
     maxLimit: number
   ): Promise<number> {
-    if (!requestedLimit) {
-      const limit = 5;
-      return limit;
-    }
+    if (!requestedLimit) return;
 
     if (isNaN(Math.floor(requestedLimit))) {
       await Tools.handleUserError(message, "The limit has to be a number");
