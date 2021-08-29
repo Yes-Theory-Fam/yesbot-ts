@@ -130,13 +130,14 @@ class HandleCreateCommand implements CommandHandler<DiscordEvent.MESSAGE> {
         type: "member",
       },
     ]);
+
     const executeTime = new Date();
     executeTime.setMinutes(executeTime.getMinutes() + 1);
     await TimerService.createTimer(
       voiceOnDemandCreationIdentifier,
       executeTime,
       {
-        channel: channel.id,
+        channelId: channel.id,
       }
     );
   }
@@ -416,7 +417,7 @@ class DeleteIfEmpty implements CommandHandler<DiscordEvent.TIMER> {
       voiceOnDemandCreationIdentifier,
       executeTime,
       {
-        channel: channel.id,
+        channelId: channel.id,
       }
     );
   }
@@ -429,6 +430,11 @@ class DeleteIfEmpty implements CommandHandler<DiscordEvent.TIMER> {
 class RequestNewHost implements CommandHandler<DiscordEvent.TIMER> {
   async handle(timer: Timer): Promise<void> {
     const data = timer.data as unknown as VoiceChannelsTimerData;
+    //We can assume here the channel was deleted because it was empty.
+    if (!data) {
+      return;
+    }
+
     const channel = bot.channels.resolve(data.channelId) as VoiceChannel;
     const mapping = await prisma.voiceOnDemandMapping.findUnique({
       where: { channelId: channel.id },
