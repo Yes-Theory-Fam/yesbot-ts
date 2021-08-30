@@ -18,6 +18,7 @@ import { textLog } from "./moderator";
 import { createYesBotLogger } from "../log";
 import prisma from "../prisma";
 import axios from "axios";
+import { VoiceOnDemandMapping } from "@yes-theory-fam/database/client";
 
 export const unicodeEmojiRegex =
   /^(\p{RI}\p{RI}|\p{Emoji}(\p{Emoji_Modifier_Base}|\uFE0F\u20E3?|[\u{E0020}-\u{E007E}]+\u{E007F})?(\u{200D}\p{Emoji}(\p{Emoji_Modifier_Base}|\uFE0F\u20E3?|[\u{E0020}-\u{E007E}]+\u{E007F})?)*)/gu;
@@ -348,6 +349,7 @@ class Tools {
     requestedLimit: number,
     maxLimit: number
   ): Promise<number> {
+    //In case the user did not input a requested number on voice creation this will force it to default to 5.
     if (!requestedLimit) return;
 
     if (isNaN(Math.floor(requestedLimit))) {
@@ -376,6 +378,29 @@ class Tools {
     await memberVoiceChannel.edit({
       userLimit: limit,
     });
+  }
+
+  static async transferOwnership(
+    mapping: VoiceOnDemandMapping,
+    claimingUser: User,
+    channel: VoiceChannel
+  ) {
+    await prisma.voiceOnDemandMapping.update({
+      where: { channelId: channel.id },
+      data: { userId: claimingUser.id },
+    });
+
+    const { emoji } = mapping;
+    const newChannelName = await Tools.getChannelName(
+      channel.guild.member(claimingUser),
+      emoji
+    );
+
+    await channel.setName(newChannelName);
+  }
+
+  static async getChannelName(m: GuildMember, e: string) {
+    return `• ${e} ${m.displayName}'s Room`;
   }
 
   static shuffleArray<T>(items: T[]): T[] {
