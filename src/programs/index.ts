@@ -6,7 +6,6 @@ import * as MapTools from "./map";
 import * as VoiceOnDemandTools from "./voice-on-demand";
 import VoiceOnDemand from "./voice-on-demand";
 import ExportManager from "./export-manager";
-import ReactRole from "./react-role";
 import Ticket from "./ticket";
 
 export {
@@ -15,7 +14,6 @@ export {
   GroupManager,
   GroupManagerTools,
   MapTools,
-  ReactRole,
   DailyChallenge,
   Ticket,
   VoiceOnDemand,

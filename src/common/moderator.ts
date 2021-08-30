@@ -2,6 +2,7 @@ import {
   Client,
   GuildMember,
   Message,
+  MessageEmbed,
   PartialGuildMember,
   TextChannel,
 } from "discord.js";
@@ -29,7 +30,7 @@ export const isRegistered = (
   );
 };
 
-export const textLog = (text: string): Promise<Message> => {
+export const textLog = (text: string | MessageEmbed): Promise<Message> => {
   const bot = require("..") as Client;
   const outputChannel = <TextChannel>(
     bot.channels.resolve(process.env.OUTPUT_CHANNEL_ID)
