@@ -63,9 +63,9 @@ class ListReactRoleObjects implements CommandHandler<DiscordEvent.MESSAGE> {
             reactionRoleObject.channelId
           );
           returnString += `__**${reactionRoleObject.id}:**__\n**Message**: ${message?.cleanContent}\n`;
-          returnString += `**Channel**: <#${channel}>\n`;
+          returnString += `**Channel**: ${channel}\n`;
           returnString += `**Reaction**: ${reactionRoleObject.reaction}\n`;
-          returnString += `**Reward Role**: <@&${role}>\n`;
+          returnString += `**Reward Role**: ${role}\n`;
           returnString += `\n`;
         })
       );
