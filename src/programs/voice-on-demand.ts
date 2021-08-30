@@ -36,8 +36,10 @@ const getChannelName = (m: GuildMember, e: string) =>
   event: DiscordEvent.MESSAGE,
   trigger: "!voice",
   subTrigger: "create",
+  allowedRoles: ["Yes Theory"],
   channelNames: ["bot-commands"],
-  description: "This",
+  description:
+    "This handler is to create a voice channel of a maximum of 10 users.",
 })
 class HandleCreateCommand implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
@@ -147,7 +149,10 @@ class HandleCreateCommand implements CommandHandler<DiscordEvent.MESSAGE> {
   event: DiscordEvent.MESSAGE,
   trigger: "!voice",
   subTrigger: "host",
-  description: "This",
+  allowedRoles: ["Yes Theory"],
+  channelNames: ["bot-commands"],
+  description:
+    "This handler is to assign another user in your voice channel the host of the room!",
 })
 class ChangeHostOnDemand implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
@@ -223,7 +228,10 @@ class ChangeHostOnDemand implements CommandHandler<DiscordEvent.MESSAGE> {
   event: DiscordEvent.MESSAGE,
   trigger: "!voice",
   subTrigger: "knock",
-  description: "This",
+  allowedRoles: ["Yes Theory"],
+  channelNames: ["bot-commands"],
+  description:
+    "This handler is for you to be able to knock on a voice channel to gain access to it, if it there is no room!",
 })
 class KnockOnDemand implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
@@ -297,12 +305,18 @@ class KnockOnDemand implements CommandHandler<DiscordEvent.MESSAGE> {
   event: DiscordEvent.MESSAGE,
   trigger: "!voice",
   subTrigger: "limit",
+  allowedRoles: ["Yes Theory"],
   channelNames: ["bot-commands"],
-  description: "This",
+  description:
+    "This handler is for you to be able to control the user limit of your voice channel!",
 })
 class HandleLimitCommand implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
     const requestedLimit = Number(message.content.split(" ")[2]);
+    if (!requestedLimit) {
+      await Tools.handleUserError(message, "The limit has to be a number");
+      return;
+    }
 
     const channel = await Tools.getVoiceChannel(message.member);
 
@@ -320,6 +334,10 @@ class HandleLimitCommand implements CommandHandler<DiscordEvent.MESSAGE> {
       maxLimit
     );
 
+    if (!limit) {
+      return;
+    }
+
     await Tools.updateLimit(channel, limit);
     await message.reply(
       `Successfully changed the limit of your room to ${limit}`
@@ -331,7 +349,10 @@ class HandleLimitCommand implements CommandHandler<DiscordEvent.MESSAGE> {
   event: DiscordEvent.MESSAGE,
   trigger: "!voice",
   subTrigger: "shrink",
-  description: "This",
+  allowedRoles: ["Yes Theory"],
+  channelNames: ["bot-commands"],
+  description:
+    "This handler is for you to change the user limit of the voice channel to the current amount of users in the voice channel",
 })
 class HandleShrinkLimitCommand implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
@@ -357,7 +378,9 @@ class HandleShrinkLimitCommand implements CommandHandler<DiscordEvent.MESSAGE> {
   event: DiscordEvent.MESSAGE,
   trigger: "!voice",
   subTrigger: "up",
-  description: "This",
+  allowedRoles: ["Yes Theory"],
+  channelNames: ["bot-commands"],
+  description: "This handler is for you to add +1 to the current user limit",
 })
 class HandleUpLimitCommand implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
@@ -371,7 +394,7 @@ class HandleUpLimitCommand implements CommandHandler<DiscordEvent.MESSAGE> {
       return;
     }
 
-    const limit = Math.max(maxLimit, channel.userLimit + 1);
+    const limit = Math.min(maxLimit, channel.userLimit + 1);
     await Tools.updateLimit(channel, limit);
     await message.reply(
       `Successfully changed the limit of your room to ${limit}`
@@ -383,13 +406,18 @@ class HandleUpLimitCommand implements CommandHandler<DiscordEvent.MESSAGE> {
   event: DiscordEvent.MESSAGE,
   trigger: "!voice",
   subTrigger: "down",
-  description: "This",
+  allowedRoles: ["Yes Theory"],
+  channelNames: ["bot-commands"],
+  description: "This handler is for you to lower the user limit by 1",
 })
 class HandleDownLimitCommand implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
     const channel = message.member.voice.channel;
     const limit = Math.max(2, channel.userLimit - 1);
     await Tools.updateLimit(channel, limit);
+    await message.reply(
+      `Successfully changed the limit of your room to ${limit}`
+    );
   }
 }
 
@@ -401,7 +429,16 @@ class DeleteIfEmpty implements CommandHandler<DiscordEvent.TIMER> {
   async handle(timer: Timer): Promise<void> {
     const data = timer.data as unknown as VoiceChannelsTimerData;
     const channel = bot.channels.resolve(data.channelId) as VoiceChannel;
-
+    const mapping = await prisma.voiceOnDemandMapping.findUnique({
+      where: {
+        channelId: data.channelId,
+      },
+    });
+    //In case the voice channel was deleted manually this will clean up the DB, no longer needing to run a check on bot startup
+    if (mapping && !channel) {
+      await removeMapping(data.channelId);
+      return;
+    }
     if (!channel || !channel.guild.channels.resolve(channel.id)) return;
     if (channel.members.size === 0) {
       await channel.delete();
@@ -430,12 +467,11 @@ class DeleteIfEmpty implements CommandHandler<DiscordEvent.TIMER> {
 class RequestNewHost implements CommandHandler<DiscordEvent.TIMER> {
   async handle(timer: Timer): Promise<void> {
     const data = timer.data as unknown as VoiceChannelsTimerData;
-    //We can assume here the channel was deleted because it was empty.
-    if (!data) {
-      return;
-    }
-
     const channel = bot.channels.resolve(data.channelId) as VoiceChannel;
+
+    //We can assume here the channel was deleted because it was empty.
+    if (!channel) return;
+
     const mapping = await prisma.voiceOnDemandMapping.findUnique({
       where: { channelId: channel.id },
     });
@@ -477,7 +513,6 @@ class VoiceOnDemandPermissions
 @Command({
   event: DiscordEvent.VOICE_STATE_UPDATE,
   changes: [VoiceStateChange.LEFT, VoiceStateChange.SWITCHED_CHANNEL],
-  description: "This",
 })
 class RequestNewHostIfNeeded
   implements CommandHandler<DiscordEvent.VOICE_STATE_UPDATE>
