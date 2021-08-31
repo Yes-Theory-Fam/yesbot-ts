@@ -125,6 +125,8 @@ class RequestNewHostIfNeeded
     });
 
     if (!mapping) return;
+    //We don't care about any other user else than the host leaving, this should avoid spamming the DB
+    if (oldState.member.id !== mapping.userId) return;
 
     const executeTime = new Date();
     executeTime.setMinutes(executeTime.getMinutes() + 1);
