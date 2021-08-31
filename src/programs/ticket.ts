@@ -1,52 +1,38 @@
-import { GuildMember, Message, Role, TextChannel, User } from "discord.js";
-import { isAuthorModerator } from "../common/moderator";
+import { GuildMember, Message, TextChannel, User } from "discord.js";
 import { TextChannelOptions } from "../common/interfaces";
 import Tools from "../common/tools";
+import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 
-const ticket = async (message: Message, type: string) => {
-  const ticketLogChannel = `${type}-logs`;
-
-  const { moderatorRole, ticketMessage, categoryId } = getDetailsForType(
-    type,
-    message.member
-  );
-
-  //! This comes to us in the format of "![fiyesta|shoutout] [close|logs]?"
-  const args = message.cleanContent.split(" ");
-  if (
-    args[1] &&
-    !(args[1] == "close" || args[1] == "logs" || args[1] == "forceclose")
-  ) {
-    return;
-  }
-  let channelName = `${type}-${(
-    message.author.username + message.author.discriminator
-  ).toLowerCase()}`;
-  const isForceClose = message.cleanContent.split(" ")[1] == "forceclose";
-
-  const isClose = message.cleanContent.split(" ")[1] == "close";
-
-  if (isClose) {
-    const ticketChannel = <TextChannel>message.channel;
-    if (ticketChannel.name.startsWith(type)) {
-      if (isAuthorModerator(message))
-        await createCloseMessage(
-          ticketChannel,
-          message.author,
-          ticketLogChannel
-        );
-    }
-    return;
-  }
-
-  if (isForceClose) {
-    const ticketChannel = <TextChannel>message.channel;
-    if (ticketChannel.name.startsWith(type)) {
-      if (isAuthorModerator(message))
-        await closeTicket(ticketChannel, message.author, ticketLogChannel);
-    }
-  } else {
+@Command({
+  event: DiscordEvent.MESSAGE,
+  trigger: "!shoutout",
+  description: "This handler is to create a shoutout ticket.",
+})
+class OpenShoutoutTicket implements CommandHandler<DiscordEvent.MESSAGE> {
+  async handle(message: Message): Promise<void> {
     await message.delete();
+
+    let channelName = `shoutout-${(
+      message.author.username + message.author.discriminator
+    ).toLowerCase()}`;
+    channelName = channelName.replace(/\s+/g, "-").toLowerCase();
+
+    if (message.guild.channels.cache.find((c) => c.name === channelName)) {
+      message.author.createDM().then((channel) => {
+        channel.send(
+          "You already have a ticket open, please close that one first before opening another."
+        );
+      });
+      return;
+    }
+
+    const categoryId = findCategoryIdByName(message.member, "validation");
+
+    const moderatorRole = Tools.getRoleByName(
+      process.env.MODERATOR_ROLE_NAME,
+      message.guild
+    );
+
     const channelOptions: TextChannelOptions = {
       topic: "Support ticket for " + message.member.user.username,
       type: "text",
@@ -67,7 +53,32 @@ const ticket = async (message: Message, type: string) => {
       ],
       parent: categoryId,
     };
+
+    const ticketChannel = await message.guild.channels.create(
+      channelName,
+      channelOptions
+    );
+
+    await ticketChannel.send(
+      `Hi ${message.member.toString()}, please list the details of your shoutout below. A ${moderatorRole.toString()} will be with you as soon as possible.`
+    );
+  }
+}
+//Commented out code yes i know but fiyesta's are discontinued due to the pandemic.
+/*@Command({
+  event: DiscordEvent.MESSAGE,
+  trigger: "!fiyesta",
+  description: "This handler is to open a fiyesta ticket.",
+})
+class OpenFiyestaTicket implements CommandHandler<DiscordEvent.MESSAGE> {
+  async handle(message: Message): Promise<void> {
+    await message.delete();
+
+    let channelName = `fiyesta-${(
+      message.author.username + message.author.discriminator
+    ).toLowerCase()}`;
     channelName = channelName.replace(/\s+/g, "-").toLowerCase();
+
     if (message.guild.channels.cache.find((c) => c.name === channelName)) {
       message.author.createDM().then((channel) => {
         channel.send(
@@ -75,50 +86,77 @@ const ticket = async (message: Message, type: string) => {
         );
       });
       return;
-    } else {
-      const ticketChannel = await message.guild.channels.create(
-        channelName,
-        channelOptions
-      );
-
-      await ticketChannel.send(
-        `${ticketMessage} A ${moderatorRole.toString()} will be with you as soon as possible.`
-      );
     }
-  }
-};
 
-const getDetailsForType = (
-  type: string,
-  member: GuildMember
-): { moderatorRole: Role; ticketMessage: string; categoryId: string } => {
-  const findCategoryByName = (name: string) => {
-    return member.guild.channels.cache.find((c) =>
-      c.name.toLowerCase().includes(name)
-    ).id;
-  };
+    const categoryId = findCategoryIdByName(message.member, "applications");
 
-  switch (type) {
-    case "shoutout":
-      return {
-        moderatorRole: Tools.getRoleByName(
-          process.env.MODERATOR_ROLE_NAME,
-          member.guild
-        ),
-        ticketMessage: `Hi ${member.toString()}, please list the details of your shoutout below.`,
-        categoryId: findCategoryByName("validation"),
-      };
-    case "fiyesta":
-      return {
-        moderatorRole: Tools.getRoleByName(
-          process.env.ENGINEER_ROLE_NAME,
-          member.guild
-        ),
-        ticketMessage: `Hi ${member.toString()}, please list the details of your proposed FiYESta below and read the <#502198786441871381> while you wait.`,
-        categoryId: findCategoryByName("applications"),
-      };
+    const engineerRole = Tools.getRoleByName(
+      process.env.ENGINEER_ROLE_NAME,
+      message.guild
+    );
+
+    const channelOptions: TextChannelOptions = {
+      topic: "Support ticket for " + message.member.user.username,
+      type: "text",
+      permissionOverwrites: [
+        {
+          id: message.guild.id,
+          deny: ["VIEW_CHANNEL"],
+        },
+        {
+          id: message.author.id,
+          allow: ["VIEW_CHANNEL", "READ_MESSAGE_HISTORY", "SEND_MESSAGES"],
+          deny: ["ADD_REACTIONS"],
+        },
+        {
+          id: engineerRole.id,
+          allow: ["VIEW_CHANNEL", "READ_MESSAGE_HISTORY", "SEND_MESSAGES"],
+        },
+      ],
+      parent: categoryId,
+    };
+
+    const ticketChannel = await message.guild.channels.create(
+      channelName,
+      channelOptions
+    );
+
+    await ticketChannel.send(
+      `Hi ${message.member.toString()}, please list the details of your proposed FiYESta below and read the <#502198786441871381> while you wait. A ${engineerRole.toString()} will be with you as soon as possible.`
+    );
   }
-};
+}
+*/
+
+@Command({
+  event: DiscordEvent.MESSAGE,
+  trigger: "!ticket",
+  subTrigger: "forceclose",
+  allowedRoles: ["Support"],
+  description: "This handler is to forceclose a ticket.",
+})
+class ForceCloseTicket implements CommandHandler<DiscordEvent.MESSAGE> {
+  async handle(message: Message): Promise<void> {
+    const channel = message.channel as TextChannel;
+    const type = channel.name.split("-")[0];
+    await closeTicket(channel, message.author, type);
+  }
+}
+
+@Command({
+  event: DiscordEvent.MESSAGE,
+  trigger: "!ticket",
+  subTrigger: "close",
+  allowedRoles: ["Support"],
+  description: "This handler is to close a ticket.",
+})
+class CloseTicket implements CommandHandler<DiscordEvent.MESSAGE> {
+  async handle(message: Message): Promise<void> {
+    const channel = message.channel as TextChannel;
+    const type = channel.name.split("-")[0];
+    await createCloseMessage(channel, message.author, type);
+  }
+}
 
 const closeTicket = async (
   channel: TextChannel,
@@ -223,4 +261,8 @@ function timeConverter(UNIX_timestamp: number) {
   return [year, month, date, hour, min, sec];
 }
 
-export default ticket;
+const findCategoryIdByName = (member: GuildMember, name: string) => {
+  return member.guild.channels.cache.find((c) =>
+    c.name.toLowerCase().includes(name)
+  ).id;
+};
