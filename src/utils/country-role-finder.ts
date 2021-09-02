@@ -14,6 +14,8 @@ export class CountryRoleFinder {
     "🇲🇫": "🇫🇷",
     "🇪🇦": "🇪🇸",
     "🇮🇴": "🇬🇧",
+    "🇭🇲": "🇦🇺",
+    "🇮🇲": "🇬🇧",
   };
 
   private static emojiToCountryOverrides: Record<string, Country> =

@@ -113,6 +113,20 @@ export const countries: Country[] = [
     title: "flag for Åland Islands",
   },
   {
+    code: "HM",
+    emoji: "🇭🇲",
+    unicode: "U+1F1ED U+1F1F2",
+    name: "Heard Island and McDonald Islands",
+    title: "flag for Heard Island and McDonald Islands",
+  },
+  {
+    code: "IM",
+    emoji: "🇮🇲",
+    unicode: "U+1F1EE U+1F1F2",
+    name: "Isle of Mans",
+    title: "flag for Isle of Mans",
+  },
+  {
     code: "AZ",
     emoji: "🇦🇿",
     unicode: "U+1F1E6 U+1F1FF",
