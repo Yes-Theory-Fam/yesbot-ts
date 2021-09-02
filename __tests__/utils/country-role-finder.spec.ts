@@ -19,6 +19,11 @@ describe("CountryRoleFinder", () => {
       CountryRoleFinder.isCountryRole("I'm from the USA! (West)", true)
     ).toBeTruthy();
     expect(CountryRoleFinder.isCountryRole("USA (West) 🇺🇸", true)).toBeTruthy();
+    expect(
+      CountryRoleFinder.isCountryRole(
+        "I'm from Heard Island and McDonald Islands 🇭🇲"
+      )
+    ).toBeTruthy();
   });
 
   it("should not find as country-role", () => {
@@ -43,6 +48,7 @@ describe("CountryRoleFinder", () => {
     expect(CountryRoleFinder.getCountryByRole("Åland Islands 🇦🇽")).toMatch(
       "Finland"
     );
+    expect(CountryRoleFinder.getCountryByRole("🇮🇲")).toMatch("UK");
   });
 
   it("should match the role for UK based country", () => {
@@ -114,6 +120,7 @@ describe("CountryRoleFinder", () => {
       ["🏴󠁧󠁢󠁷󠁬󠁳󠁿🇮🇳", ["India", "Wales"]],
       ["🇮🇳🇳🇮", ["India", "Nicaragua"]],
       ["🏴󠁧󠁢󠁷󠁬󠁳󠁿🇮🇳🇳🇮 Finland", ["Finland", "India", "Nicaragua", "Wales"]],
+      ["🇮🇲 🇭🇲", ["Australia", "UK"]],
     ];
 
     for (const [input, expected] of cases) {
