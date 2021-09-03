@@ -7,7 +7,6 @@ import {
   VoiceState,
 } from "discord.js";
 
-import Tools from "../../common/tools";
 import prisma from "../../prisma";
 import { Timer, VoiceOnDemandMapping } from "@yes-theory-fam/database/client";
 import {
@@ -18,6 +17,7 @@ import {
 import bot from "../..";
 import { TimerService } from "../timer/timer.service";
 import { VoiceStateChange } from "../../event-distribution/events/voice-state-update";
+import VoiceOnDemandTools from "./common";
 
 interface VoiceChannelsTimerData {
   channelId: Snowflake;
@@ -240,7 +240,11 @@ const requestOwnershipTransfer = async (
       `<@${newClaimingUser.id}>, is now the new owner of the room! You can now change the limit of it using \`!voice limit\`.`
     );
 
-    await Tools.transferOwnership(currentMapping, newClaimingUser, channel);
+    await VoiceOnDemandTools.transferOwnership(
+      currentMapping,
+      newClaimingUser,
+      channel
+    );
     return;
   }
 
@@ -248,7 +252,11 @@ const requestOwnershipTransfer = async (
     `<@${claimingUser.id}>, is now the new owner of the room! You can now change the limit of it using \`!voice limit\`.`
   );
 
-  await Tools.transferOwnership(currentMapping, claimingUser, channel);
+  await VoiceOnDemandTools.transferOwnership(
+    currentMapping,
+    claimingUser,
+    channel
+  );
 };
 
 const removeMapping = async (channelId: string) => {

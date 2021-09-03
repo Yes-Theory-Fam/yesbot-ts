@@ -344,65 +344,6 @@ class Tools {
     );
   }
 
-  static async handleLimitCommand(
-    message: Message,
-    requestedLimit: number,
-    maxLimit: number
-  ): Promise<number> {
-    //In case the user did not input a requested number on voice creation this will force it to default to 5.
-    if (!requestedLimit) return;
-
-    if (isNaN(Math.floor(requestedLimit))) {
-      await Tools.handleUserError(message, "The limit has to be a number");
-      return;
-    }
-
-    if (requestedLimit < 2) {
-      await Tools.handleUserError(message, "The limit has to be at least 2");
-      return;
-    }
-
-    const limit = Math.min(requestedLimit, maxLimit);
-    return limit;
-  }
-
-  static async getVoiceChannel(member: GuildMember): Promise<VoiceChannel> {
-    const guild = member.guild;
-    const mapping = await prisma.voiceOnDemandMapping.findUnique({
-      where: { userId: member.id },
-    });
-    return guild.channels.resolve(mapping?.channelId) as VoiceChannel;
-  }
-
-  static async updateLimit(memberVoiceChannel: VoiceChannel, limit: number) {
-    await memberVoiceChannel.edit({
-      userLimit: limit,
-    });
-  }
-
-  static async transferOwnership(
-    mapping: VoiceOnDemandMapping,
-    claimingUser: User,
-    channel: VoiceChannel
-  ) {
-    await prisma.voiceOnDemandMapping.update({
-      where: { channelId: channel.id },
-      data: { userId: claimingUser.id },
-    });
-
-    const { emoji } = mapping;
-    const newChannelName = await Tools.getChannelName(
-      channel.guild.member(claimingUser),
-      emoji
-    );
-
-    await channel.setName(newChannelName);
-  }
-
-  static async getChannelName(m: GuildMember, e: string) {
-    return `• ${e} ${m.displayName}'s Room`;
-  }
-
   static shuffleArray<T>(items: T[]): T[] {
     const shallowCopy = [...items];
 
