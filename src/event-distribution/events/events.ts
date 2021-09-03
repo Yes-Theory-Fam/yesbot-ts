@@ -49,7 +49,6 @@ import {
   TimerEventHandlerOptions,
   TimerHandlerFunction,
 } from "./timer";
-import { Prisma, Timer } from "@yes-theory-fam/database/client";
 import {
   addMemberJoinHandler,
   extractMemberJoinInfo,
@@ -57,6 +56,7 @@ import {
   MemberJoinEventHandlerOptions,
   MemberJoinHandlerFunction,
 } from "./member-join";
+import { Timer } from "@yes-theory-fam/database/client";
 
 export type EventHandlerOptions =
   | MemberLeaveEventHandlerOptions

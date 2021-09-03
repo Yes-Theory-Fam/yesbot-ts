@@ -5,7 +5,7 @@ import {
   HandlerFunctionFor,
 } from "../types/base";
 import { GuildMember, PartialGuildMember } from "discord.js";
-import { HIOC } from "../types/hioc";
+import { addToTree } from "../helper";
 
 export interface MemberLeaveEventHandlerOptions {
   event: DiscordEvent.MEMBER_LEAVE;
@@ -19,11 +19,7 @@ export type MemberLeaveHandlerFunction<T extends DiscordEvent> =
 const baseKey = "";
 
 export const addMemberLeaveHandler: AddEventHandlerFunction<MemberLeaveEventHandlerOptions> =
-  (options, ioc, tree) => {
-    tree[baseKey] ??= [];
-    const handlers = tree[baseKey] as HIOC<DiscordEvent.MEMBER_LEAVE>[];
-    handlers.push({ ioc, options });
-  };
+  (options, ioc, tree) => addToTree([""], { options, ioc }, tree);
 
 export const extractMemberLeaveInfo: ExtractInfoForEventFunction<DiscordEvent.MEMBER_LEAVE> =
   (member: MemberLeaveArgument) => {

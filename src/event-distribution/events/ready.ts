@@ -5,7 +5,7 @@ import {
   HandlerFunctionFor,
 } from "../types/base";
 import { Client } from "discord.js";
-import { HIOC } from "../types/hioc";
+import { addToTree } from "../helper";
 
 export interface ReadyEventHandlerOptions {
   event: DiscordEvent.READY;
@@ -19,13 +19,7 @@ export type ReadyHandlerFunction<T extends DiscordEvent> = HandlerFunctionFor<
 >;
 
 export const addReadyHandler: AddEventHandlerFunction<ReadyEventHandlerOptions> =
-  (options, ioc, tree) => {
-    const baseKey = "";
-    tree[baseKey] ??= [];
-
-    const handlers = tree[baseKey] as HIOC<DiscordEvent.READY>[];
-    handlers.push({ ioc, options });
-  };
+  (options, ioc, tree) => addToTree([""], { options, ioc }, tree);
 
 export const extractReadyInfo: ExtractInfoForEventFunction<DiscordEvent.READY> =
   () => ({ handlerKeys: [""], isDirectMessage: false });

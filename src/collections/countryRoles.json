@@ -938,5 +938,13 @@
   {
     "code": "AX",
     "name": "Åland Islands"
+  },
+  {
+    "code": "🇭🇲",
+    "name": "Heard Island and McDonald Islands"
+  },
+  {
+    "code": "🇮🇲",
+    "name": "Isle of Mans"
   }
 ]

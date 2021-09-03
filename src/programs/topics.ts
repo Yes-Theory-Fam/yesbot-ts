@@ -1,8 +1,8 @@
 import { Message, MessageAttachment, TextChannel } from "discord.js";
-import { isAuthorModerator } from "../common/moderator";
+import Tools from "../common/tools";
+import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 import { createYesBotLogger } from "../log";
 import prisma from "../prisma";
-import { getFirstColumnFromGoogleSheet } from "../common/custom-methods";
 
 const logger = createYesBotLogger("programs", "topics");
 
@@ -15,82 +15,110 @@ const MOVIE_CHALLENGE_PICTURE_URL =
 const DRAWING_CHALLENGE_PICTURE_URL =
   "https://cdn.discordapp.com/attachments/747182765468024862/781574814594760714/30-day-drawing-challenge.png";
 
-export const topics = async (message: Message) => {
-  const channel: TextChannel = <TextChannel>message.channel;
+@Command({
+  event: DiscordEvent.MESSAGE,
+  trigger: "!topic",
+  channelNames: [
+    "philosophy",
+    "beauty-and-fashion",
+    "visual-design",
+    "filmmaking",
+  ],
+  description: "This handler shows the current topic of the channel.",
+})
+class Topics implements CommandHandler<DiscordEvent.MESSAGE> {
+  async handle(message: Message): Promise<void> {
+    const channel = message.channel as TextChannel;
 
-  switch (channel.name) {
-    case "philosophy":
-      const questions = await getFirstColumnFromGoogleSheet(QUESTION_SHEET_ID);
+    switch (channel.name) {
+      case "philosophy":
+        const questions = await Tools.getFirstColumnFromGoogleSheet(
+          QUESTION_SHEET_ID
+        );
 
-      const date = new Date().getDate() - 1;
-      const question = questions[date];
-      await message.channel.send(question);
-      break;
+        const date = new Date().getDate() - 1;
+        const question = questions[date];
+        await message.channel.send(question);
+        break;
 
-    case "beauty-and-fashion":
-      await message.channel.send(
-        new MessageAttachment(MAKEUP_CHALLENGE_PICTURE_URL)
-      );
-      break;
+      case "beauty-and-fashion":
+        await message.channel.send(
+          new MessageAttachment(MAKEUP_CHALLENGE_PICTURE_URL)
+        );
+        break;
 
-    case "visual-design":
-      await message.channel.send(
-        new MessageAttachment(DRAWING_CHALLENGE_PICTURE_URL)
-      );
-      break;
+      case "visual-design":
+        await message.channel.send(
+          new MessageAttachment(DRAWING_CHALLENGE_PICTURE_URL)
+        );
+        break;
 
-    case "filmmaking":
-      await message.channel.send(
-        new MessageAttachment(MOVIE_CHALLENGE_PICTURE_URL)
-      );
-      break;
-
-    case "trends":
-      const currentTrend = await prisma.topic.findFirst({
-        where: {
-          channel: "trends",
-        },
-        orderBy: {
-          id: "desc",
-        },
-      });
-
-      if (currentTrend) {
-        await message.reply(`Current Trend is ${currentTrend.topic}`);
-      } else {
-        await message.reply("There are no current trends, create one! :eyes: ");
-      }
-      break;
-
-    default:
-      break;
+      case "filmmaking":
+        await message.channel.send(
+          new MessageAttachment(MOVIE_CHALLENGE_PICTURE_URL)
+        );
+        break;
+    }
   }
-};
+}
 
-export const setTopic = async (message: Message) => {
-  const channel: TextChannel = <TextChannel>message.channel;
-
-  if (!isAuthorModerator(message)) {
-    await message.react("👎");
-    return;
-  }
-  const cleanMessage = message.cleanContent.split(/\s+/);
-  const attachment =
-    message.attachments.size > 0 ? message.attachments.array()[0].url : "";
-  cleanMessage.shift();
-  cleanMessage.push(attachment);
-  const joinedMsg = cleanMessage.join(" ");
-  const data = {
-    topic: joinedMsg,
-    channel: channel.name,
-    created: new Date(),
-  };
-
-  try {
-    await prisma.topic.create({ data }).then(() => {
-      message.react("👍");
+@Command({
+  event: DiscordEvent.MESSAGE,
+  trigger: "!trend",
+  channelNames: ["trends"],
+  description: "This handler sends the ongoing trend on the server.",
+})
+class Trend implements CommandHandler<DiscordEvent.MESSAGE> {
+  async handle(message: Message): Promise<void> {
+    const currentTrend = await prisma.topic.findFirst({
+      where: {
+        channel: "trends",
+      },
+      orderBy: {
+        id: "desc",
+      },
     });
-  } catch (e) {
-    logger.error("(setTopic) Error adding topic", e);
+
+    if (!currentTrend) {
+      await Tools.handleUserError(
+        message,
+        "There are no current trends, create one! :eyes:"
+      );
+      return;
+    }
+
+    await message.reply(`Current Trend is ${currentTrend.topic}`);
   }
-};
+}
+
+@Command({
+  event: DiscordEvent.MESSAGE,
+  trigger: "!trendSet",
+  allowedRoles: ["Support"],
+  description: "This",
+})
+class SetTopic implements CommandHandler<DiscordEvent.MESSAGE> {
+  async handle(message: Message): Promise<void> {
+    const channel = message.channel as TextChannel;
+
+    const cleanMessage = message.cleanContent.split(/\s+/);
+    const attachment =
+      message.attachments.size > 0 ? message.attachments.array()[0].url : "";
+    cleanMessage.shift();
+    cleanMessage.push(attachment);
+    const joinedMsg = cleanMessage.join(" ");
+    const data = {
+      topic: joinedMsg,
+      channel: channel.name,
+      created: new Date(),
+    };
+
+    try {
+      await prisma.topic.create({ data }).then(() => {
+        message.react("👍");
+      });
+    } catch (e) {
+      logger.error("(setTopic) Error adding topic", e);
+    }
+  }
+}

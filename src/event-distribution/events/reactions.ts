@@ -13,7 +13,7 @@ import {
   TextChannel,
   User,
 } from "discord.js";
-import { HIOC, StringIndexedHIOCTree } from "../types/hioc";
+import { addToTree } from "../helper";
 
 export interface ReactionEventHandlerOptions extends BaseOptions {
   emoji: string;
@@ -35,17 +35,7 @@ export const addReactionHandler: AddEventHandlerFunction<ReactionEventHandlerOpt
     const emoji = options.emoji ?? "";
 
     for (const channel of channels) {
-      tree[channel] ??= {};
-      const channelTree = tree[channel] as StringIndexedHIOCTree<
-        DiscordEvent.REACTION_ADD | DiscordEvent.REACTION_REMOVE
-      >;
-
-      channelTree[emoji] ??= [];
-      const emojiHiocs = channelTree[emoji] as HIOC<
-        DiscordEvent.REACTION_ADD | DiscordEvent.REACTION_REMOVE
-      >[];
-
-      emojiHiocs.push({ ioc, options });
+      addToTree([channel, emoji], { options, ioc }, tree);
     }
   };
 

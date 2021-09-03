@@ -51,7 +51,8 @@ Additionally, to the [BaseOptions](#base-options), the following options are ava
 
 ```ts
 interface MessageOptions {
-  trigger: string; // Defines the trigger for the handler. This MUST NOT contain spaces, since the distribution instance looks up the handler by first word (split by space).
+  trigger?: string; // Defines the trigger for the handler. This MUST NOT contain spaces, since the distribution instance looks up the handler by first word (split by space).
+  subTrigger?: string; // Defines a sub trigger. This is useful for commands like !voice which take different subcommands like create, limit, etc. This MUST NOT contain spaces.
 }
 ```
 

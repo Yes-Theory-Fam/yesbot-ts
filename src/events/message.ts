@@ -1,13 +1,11 @@
 import { GuildChannel, Message, TextChannel } from "discord.js";
 import {
-  BirthdayManager,
   ExportManager,
   Game,
   GroupManager,
   MapTools,
   ReactRole,
   Ticket,
-  TopicManager,
   VoiceOnDemand,
 } from "../programs";
 
@@ -26,11 +24,6 @@ const routeMessage = async (message: Message) => {
   const restOfMessage = words.slice(1).join(" ");
 
   switch (channel.name) {
-    case "trends":
-      if (firstWord === "!trend") await TopicManager.topics(message);
-      if (firstWord === "!trendSet") await TopicManager.setTopic(message);
-      break;
-
     case "permanent-testing":
       if (firstWord === "!export") await ExportManager(message);
       if (
@@ -44,7 +37,6 @@ const routeMessage = async (message: Message) => {
         !message.content.toLowerCase().startsWith("!group toggle")
       )
         await GroupManager(message, true);
-      if (firstWord === "!birthday") await BirthdayManager(message);
 
       if (firstWord === "!voice") await VoiceOnDemand(message);
       if (firstWord === "!map") await MapTools.map(message);
@@ -74,7 +66,6 @@ const routeMessage = async (message: Message) => {
     );
     await message.member.roles.remove(guildRole);
   }
-  if (firstWord === "!topic") await TopicManager.topics(message);
   // if (firstWord === "!fiyesta") Ticket(message, "fiyesta");
   if (firstWord === "!shoutout") await Ticket(message, "shoutout");
   if (firstWord === "!role") await ReactRole(message);

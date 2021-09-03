@@ -12,6 +12,7 @@ import {
   Snowflake,
 } from "discord.js";
 import { HIOC, StringIndexedHIOCTree } from "../types/hioc";
+import { addToTree } from "../helper";
 
 export interface GuildMemberUpdateEventHandlerOptions {
   event: DiscordEvent.GUILD_MEMBER_UPDATE;
@@ -65,17 +66,8 @@ const addRoleHandlersToTree = (
   secondKeys: string[],
   hioc: HIOC<DiscordEvent.GUILD_MEMBER_UPDATE>
 ) => {
-  tree[firstKey] ??= {};
-  const subTree = tree[
-    firstKey
-  ] as StringIndexedHIOCTree<DiscordEvent.GUILD_MEMBER_UPDATE>;
-
   for (const secondKey of secondKeys) {
-    subTree[secondKey] ??= [];
-    const handlers = subTree[
-      secondKey
-    ] as HIOC<DiscordEvent.GUILD_MEMBER_UPDATE>[];
-    handlers.push(hioc);
+    addToTree([firstKey, secondKey], hioc, tree);
   }
 };
 

@@ -5,7 +5,7 @@ import {
   HandlerFunctionFor,
 } from "../types/base";
 import { VoiceState } from "discord.js";
-import { HIOC } from "../types/hioc";
+import { addToTree } from "../helper";
 
 export enum VoiceStateChange {
   JOINED = "JOINED",
@@ -31,9 +31,7 @@ export type VoiceStateHandlerFunction<T extends DiscordEvent> =
 export const addVoiceStateUpdateHandler: AddEventHandlerFunction<VoiceStateUpdateEventHandlerOptions> =
   (options, ioc, tree) => {
     for (const baseKey of options.changes) {
-      tree[baseKey] ??= [];
-      const handlers = tree[baseKey] as HIOC<DiscordEvent.VOICE_STATE_UPDATE>[];
-      handlers.push({ ioc, options });
+      addToTree([baseKey], { options, ioc }, tree);
     }
   };
 
