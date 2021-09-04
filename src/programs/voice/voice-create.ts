@@ -1,4 +1,4 @@
-import { Message, Permissions } from "discord.js";
+import { Message, Permissions, VoiceState } from "discord.js";
 import Tools from "../../common/tools";
 import prisma from "../../prisma";
 import {
@@ -7,10 +7,10 @@ import {
   DiscordEvent,
 } from "../../event-distribution";
 import { TimerService } from "../timer/timer.service";
-import VoiceOnDemandTools from "./common";
+import VoiceOnDemandTools, { voiceOnDemandDeleteIdentifier } from "./common";
+import { VoiceStateChange } from "../../event-distribution/events/voice-state-update";
 
 const emojiPool = ["📹", "💬", "📺", "🎲", "🎵", "🏋️"];
-const voiceOnDemandDeleteIdentifier = "voiceondemandchanneldelete";
 
 @Command({
   event: DiscordEvent.MESSAGE,
@@ -112,11 +112,35 @@ class CreateOnDemand implements CommandHandler<DiscordEvent.MESSAGE> {
         type: "member",
       },
     ]);
+  }
+}
 
-    const executeTime = new Date();
-    executeTime.setMinutes(executeTime.getMinutes() + 1);
-    await TimerService.createTimer(voiceOnDemandDeleteIdentifier, executeTime, {
-      channelId: channel.id,
+@Command({
+  event: DiscordEvent.VOICE_STATE_UPDATE,
+  changes: [VoiceStateChange.JOINED, VoiceStateChange.SWITCHED_CHANNEL],
+})
+class VoiceOnDemandPermissions
+  implements CommandHandler<DiscordEvent.VOICE_STATE_UPDATE>
+{
+  async handle(oldState: VoiceState, newState: VoiceState): Promise<void> {
+    if (newState.channel.members.size > 1) return;
+
+    const { channel } = newState;
+    const { id } = channel;
+    const mapping = await prisma.voiceOnDemandMapping.findUnique({
+      where: { channelId: id },
     });
+
+    if (!mapping) return;
+
+    const { guild } = channel;
+
+    await channel.updateOverwrite(guild.roles.everyone, {
+      STREAM: true,
+      CONNECT: null,
+    });
+
+    // We no longer need the overwrite for mapping.userId so it is deleted
+    channel.permissionOverwrites.get(mapping.userId)?.delete();
   }
 }

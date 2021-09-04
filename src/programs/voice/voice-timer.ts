@@ -6,7 +6,6 @@ import {
   VoiceChannel,
   VoiceState,
 } from "discord.js";
-
 import prisma from "../../prisma";
 import { Timer, VoiceOnDemandMapping } from "@yes-theory-fam/database/client";
 import {
@@ -17,14 +16,15 @@ import {
 import bot from "../..";
 import { TimerService } from "../timer/timer.service";
 import { VoiceStateChange } from "../../event-distribution/events/voice-state-update";
-import VoiceOnDemandTools from "./common";
+import VoiceOnDemandTools, {
+  voiceOnDemandRequestHostIdentifier,
+} from "./common";
 
 interface VoiceChannelsTimerData {
   channelId: Snowflake;
 }
 
 const voiceOnDemandDeleteIdentifier = "voiceondemandchanneldelete";
-const voiceOnDemandRequestHostIdentifier = "voiceondemandrequesthost";
 
 @Command({
   event: DiscordEvent.TIMER,
@@ -39,23 +39,56 @@ class DeleteIfEmpty implements CommandHandler<DiscordEvent.TIMER> {
         channelId: data.channelId,
       },
     });
-    //In case the voice channel was deleted manually this will clean up the DB, no longer needing to run a check on bot startup
+
     if (mapping && !channel) {
-      await removeMapping(data.channelId);
+      await VoiceOnDemandTools.removeMapping(data.channelId);
       return;
     }
+
     if (!channel || !channel.guild.channels.resolve(channel.id)) return;
+
     if (channel.members.size === 0) {
       await channel.delete();
-      await removeMapping(channel.id);
+      await VoiceOnDemandTools.removeMapping(channel.id);
       return;
     }
-    //This is necessary to loop the timer until the channel is deleted
-    const executeTime = new Date();
-    executeTime.setMinutes(executeTime.getMinutes() + 1);
-    await TimerService.createTimer(voiceOnDemandDeleteIdentifier, executeTime, {
-      channelId: channel.id,
+    //In case a user joins after the timer for deleting a channel was started this will transfer the host to them (this is unique only while the bot is down)
+    if (
+      channel.members.size > 1 &&
+      channel.members.every((member) => member.id !== mapping.userId)
+    ) {
+      await requestOwnershipTransfer(channel, mapping);
+      return;
+    }
+  }
+}
+
+@Command({
+  event: DiscordEvent.VOICE_STATE_UPDATE,
+  changes: [VoiceStateChange.LEFT, VoiceStateChange.SWITCHED_CHANNEL],
+})
+class StartDeleteIfEmptyTimer
+  implements CommandHandler<DiscordEvent.VOICE_STATE_UPDATE>
+{
+  async handle(oldState: VoiceState, newState: VoiceState): Promise<void> {
+    const mapping = await prisma.voiceOnDemandMapping.findUnique({
+      where: {
+        channelId: oldState.channel.id,
+      },
     });
+    if (oldState.channel.members.size === 0 && mapping) {
+      const channel = oldState.channel;
+      const executeTime = new Date();
+      executeTime.setMinutes(executeTime.getMinutes() + 1);
+      await TimerService.createTimer(
+        voiceOnDemandDeleteIdentifier,
+        executeTime,
+        {
+          channelId: channel.id,
+        }
+      );
+      return;
+    }
   }
 }
 
@@ -81,43 +114,13 @@ class RequestNewHost implements CommandHandler<DiscordEvent.TIMER> {
 
 @Command({
   event: DiscordEvent.VOICE_STATE_UPDATE,
-  changes: [VoiceStateChange.JOINED, VoiceStateChange.SWITCHED_CHANNEL],
-})
-class VoiceOnDemandPermissions
-  implements CommandHandler<DiscordEvent.VOICE_STATE_UPDATE>
-{
-  async handle(oldState: VoiceState, newState: VoiceState): Promise<void> {
-    if (newState.channel.members.size > 1) return;
-
-    const { channel } = newState;
-    const { id } = channel;
-    const mapping = await prisma.voiceOnDemandMapping.findUnique({
-      where: { channelId: id },
-    });
-
-    if (!mapping) return;
-
-    const { guild } = channel;
-
-    await channel.updateOverwrite(guild.roles.everyone, {
-      STREAM: true,
-      CONNECT: null,
-    });
-
-    // We no longer need the overwrite for mapping.userId so it is deleted
-    channel.permissionOverwrites.get(mapping.userId)?.delete();
-  }
-}
-
-@Command({
-  event: DiscordEvent.VOICE_STATE_UPDATE,
   changes: [VoiceStateChange.LEFT, VoiceStateChange.SWITCHED_CHANNEL],
 })
 class RequestNewHostIfNeeded
   implements CommandHandler<DiscordEvent.VOICE_STATE_UPDATE>
 {
   async handle(oldState: VoiceState, newState: VoiceState): Promise<void> {
-    if (!oldState.channel || oldState.channelID === newState.channelID) return;
+    if (oldState.channelID === newState.channelID) return;
 
     const channelId = oldState.channel.id;
     const mapping = await prisma.voiceOnDemandMapping.findUnique({
@@ -257,8 +260,4 @@ const requestOwnershipTransfer = async (
     claimingUser,
     channel
   );
-};
-
-const removeMapping = async (channelId: string) => {
-  await prisma.voiceOnDemandMapping.delete({ where: { channelId } });
 };

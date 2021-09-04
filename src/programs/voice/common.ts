@@ -5,12 +5,10 @@ import prisma from "../../prisma";
 
 export const maxLimit = 10;
 export const defaultLimit = 5;
+export const voiceOnDemandDeleteIdentifier = "voiceondemandchanneldelete";
+export const voiceOnDemandRequestHostIdentifier = "voiceondemandrequesthost";
 
 class VoiceOnDemandTools {
-  static stringToWords(inputStr: string): Array<string> {
-    return <string[]>inputStr.split(" ");
-  }
-
   static async handleLimitCommand(
     message: Message,
     requestedLimit: any,
@@ -18,12 +16,14 @@ class VoiceOnDemandTools {
   ): Promise<number> {
     if (!requestedLimit && createCommand) return defaultLimit;
 
-    if (isNaN(Number(Math.floor(requestedLimit)))) {
+    requestedLimit = Number(requestedLimit);
+
+    if (isNaN(Math.floor(requestedLimit))) {
       await Tools.handleUserError(message, "The limit has to be a number");
       return;
     }
 
-    if (Number(requestedLimit) < 2) {
+    if (requestedLimit < 2) {
       await Tools.handleUserError(message, "The limit has to be at least 2");
       return;
     }
@@ -66,6 +66,10 @@ class VoiceOnDemandTools {
 
   static async getChannelName(m: GuildMember, e: string) {
     return `• ${e} ${m.displayName}'s Room`;
+  }
+
+  static async removeMapping(channelId: string) {
+    await prisma.voiceOnDemandMapping.delete({ where: { channelId } });
   }
 }
 

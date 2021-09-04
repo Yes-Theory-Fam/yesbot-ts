@@ -5,8 +5,7 @@ import {
   CommandHandler,
   DiscordEvent,
 } from "../../event-distribution";
-import VoiceOnDemandTools from "./common";
-import { maxLimit } from "./common";
+import VoiceOnDemandTools, { maxLimit } from "./common";
 
 @Command({
   event: DiscordEvent.MESSAGE,
