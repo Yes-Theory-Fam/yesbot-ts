@@ -133,6 +133,7 @@ class RequestNewHostIfNeeded
 
     const executeTime = new Date();
     executeTime.setMinutes(executeTime.getMinutes() + 1);
+    executeTime.setSeconds(executeTime.getSeconds() + 1);
     await TimerService.createTimer(
       voiceOnDemandRequestHostIdentifier,
       executeTime,

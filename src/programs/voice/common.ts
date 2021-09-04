@@ -11,12 +11,11 @@ export const voiceOnDemandRequestHostIdentifier = "voiceondemandrequesthost";
 class VoiceOnDemandTools {
   static async handleLimitCommand(
     message: Message,
-    requestedLimit: any,
+    requestedLimitString: string,
     createCommand?: boolean
   ): Promise<number> {
+    const requestedLimit = Number(requestedLimitString);
     if (!requestedLimit && createCommand) return defaultLimit;
-
-    requestedLimit = Number(requestedLimit);
 
     if (isNaN(Math.floor(requestedLimit))) {
       await Tools.handleUserError(message, "The limit has to be a number");

@@ -112,6 +112,12 @@ class CreateOnDemand implements CommandHandler<DiscordEvent.MESSAGE> {
         type: "member",
       },
     ]);
+
+    const executeTime = new Date();
+    executeTime.setMinutes(executeTime.getMinutes() + 1);
+    await TimerService.createTimer(voiceOnDemandDeleteIdentifier, executeTime, {
+      channelId: channel.id,
+    });
   }
 }
 
