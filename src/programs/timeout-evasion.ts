@@ -110,10 +110,10 @@ class ReportUserOnJoin implements CommandHandler<DiscordEvent.MEMBER_JOIN> {
 })
 class ClearDBOnStart implements CommandHandler<DiscordEvent.READY> {
   async handle(bot: Client): Promise<void> {
-    const TimedOutUsersId = await prisma.timedOutUsers.findMany();
+    const timedOutUsersId = await prisma.timedOutUsers.findMany();
     const guild = bot.guilds.resolve(process.env.GUILD_ID);
-    for (let i = 0; i < TimedOutUsersId.length; i++) {
-      const { userId } = TimedOutUsersId[i];
+    for (let i = 0; i < timedOutUsersId.length; i++) {
+      const { userId } = timedOutUsersId[i];
       const user = guild.members.resolve(userId);
 
       if (!hasRole(user, "Time Out")) {
