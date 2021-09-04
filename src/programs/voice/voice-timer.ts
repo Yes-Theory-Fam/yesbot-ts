@@ -112,38 +112,6 @@ class RequestNewHost implements CommandHandler<DiscordEvent.TIMER> {
   }
 }
 
-@Command({
-  event: DiscordEvent.VOICE_STATE_UPDATE,
-  changes: [VoiceStateChange.LEFT, VoiceStateChange.SWITCHED_CHANNEL],
-})
-class RequestNewHostIfNeeded
-  implements CommandHandler<DiscordEvent.VOICE_STATE_UPDATE>
-{
-  async handle(oldState: VoiceState, newState: VoiceState): Promise<void> {
-    if (oldState.channelID === newState.channelID) return;
-
-    const channelId = oldState.channel.id;
-    const mapping = await prisma.voiceOnDemandMapping.findUnique({
-      where: { channelId },
-    });
-
-    if (!mapping) return;
-    //We don't care about any other user else than the host leaving, this should avoid spamming the DB
-    if (oldState.member.id !== mapping.userId) return;
-
-    const executeTime = new Date();
-    executeTime.setMinutes(executeTime.getMinutes() + 1);
-    executeTime.setSeconds(executeTime.getSeconds() + 1);
-    await TimerService.createTimer(
-      voiceOnDemandRequestHostIdentifier,
-      executeTime,
-      {
-        channelId: channelId,
-      }
-    );
-  }
-}
-
 const requestOwnershipTransfer = async (
   channel: VoiceChannel,
   mapping: VoiceOnDemandMapping
