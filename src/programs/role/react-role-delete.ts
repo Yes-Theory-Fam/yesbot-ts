@@ -19,7 +19,6 @@ const logger = createYesBotLogger("programs", "role-delete");
 })
 class DeleteReactRoleObjects implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
-    console.log(message.content.split(" "));
     const index = Number(message.content.split(" ")[2]);
 
     if (isNaN(index) || !index) {
