@@ -52,9 +52,9 @@ class DeleteIfEmpty implements CommandHandler<DiscordEvent.TIMER> {
       await VoiceOnDemandTools.removeMapping(channel.id);
       return;
     }
-    //In case a user joins after the timer for deleting a channel was started this will transfer the host to them (this is unique only while the bot is down)
+    //In case a user joins an empty channel he will be assigned the new host
     if (
-      channel.members.size > 1 &&
+      channel.members.size >= 1 &&
       channel.members.every((member) => member.id !== mapping.userId)
     ) {
       await requestOwnershipTransfer(channel, mapping);

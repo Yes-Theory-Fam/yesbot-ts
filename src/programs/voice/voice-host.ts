@@ -114,9 +114,10 @@ class RequestNewHostIfNeeded
     //We don't care about any other user else than the host leaving, this should avoid spamming the DB
     if (oldState.member.id !== mapping.userId) return;
 
+    if (oldState.channel.members.size === 0) return;
+
     const executeTime = new Date();
     executeTime.setMinutes(executeTime.getMinutes() + 1);
-    executeTime.setSeconds(executeTime.getSeconds() + 1);
     await TimerService.createTimer(
       voiceOnDemandRequestHostIdentifier,
       executeTime,
