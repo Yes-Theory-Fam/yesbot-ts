@@ -1,6 +1,6 @@
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
-import { GuildMember, PartialGuildMember } from "discord.js";
-import { textLog } from "../common/moderator";
+import { Client, GuildMember, PartialGuildMember } from "discord.js";
+import { hasRole, textLog } from "../common/moderator";
 import Tools from "../common/tools";
 import prisma from "../prisma";
 import { createYesBotLogger } from "../log";
@@ -33,6 +33,10 @@ class TimeOutAdded implements CommandHandler<DiscordEvent.GUILD_MEMBER_UPDATE> {
           userId: member.id,
         },
       });
+
+      if (member.voice.channel) {
+        member.voice.setChannel(null);
+      }
     } catch (e) {
       const engineerRole = Tools.getRoleByName(
         process.env.ENGINEER_ROLE_NAME,
@@ -98,5 +102,23 @@ class ReportUserOnJoin implements CommandHandler<DiscordEvent.MEMBER_JOIN> {
     await textLog(
       `<@${member.id}>, has rejoined and was assigned the timeout role for evading timeout`
     );
+  }
+}
+
+@Command({
+  event: DiscordEvent.READY,
+})
+class ClearDBOnStart implements CommandHandler<DiscordEvent.READY> {
+  async handle(bot: Client): Promise<void> {
+    const TimedOutUsersId = await prisma.timedOutUsers.findMany();
+    const guild = bot.guilds.resolve(process.env.GUILD_ID)
+    for (let i = 0; i < TimedOutUsersId.length; i++) {
+      const { userId } = TimedOutUsersId[i]
+      const user = guild.members.resolve(userId)
+
+      if (!hasRole(user, "Time Out")) {
+        await prisma.timedOutUsers.delete({where: {userId: user.id}})
+      }
+    }
   }
 }
