@@ -61,18 +61,12 @@ class ChannelSwitchCheck
   async handle(oldState: VoiceState, newState: VoiceState): Promise<void> {
     const oldChannel = oldState.channel;
     const newChannel = newState.channel;
-    if (isProdVoiceChannel(oldChannel) && isProdVoiceChannel(newChannel))
-      return;
 
-    if (!isProdVoiceChannel(oldChannel) && isProdVoiceChannel(newChannel))
-      return;
+    if (isProdVoiceChannel(oldChannel) && !isProdVoiceChannel(newChannel)) {
+      const guildMember = newState.member;
 
-    if (!isProdVoiceChannel(oldChannel) && !isProdVoiceChannel(newChannel))
-      return;
-
-    const guildMember = newState.member;
-
-    await revertProductivityPermissions(guildMember, oldChannel);
+      await revertProductivityPermissions(guildMember, oldChannel);
+    }
   }
 }
 
@@ -115,7 +109,7 @@ const isProdVoiceChannel = (channel: VoiceChannel) => {
     ChatNames.WATCH_ME_WORK,
     ChatNames.WATCH_ME_WORK_TOO,
   ];
-  if (channel === null) return;
+  if (channel === null) return false;
   return prodVCNames.includes(channel.name as ChatNames);
 };
 
@@ -130,10 +124,10 @@ const revertProductivityPermissions = async (
     ChatNames.VOICE_CHAT_WIP,
   ];
   for (const chatName of prodVoiceChats) {
-    const ProductivityChannels = channel.guild.channels.cache.find(
+    const productivityChannel = channel.guild.channels.cache.find(
       (c) => c.name === chatName
     );
-    await ProductivityChannels.permissionOverwrites.get(member.id).delete();
+    await productivityChannel.permissionOverwrites.get(member.id).delete();
   }
 };
 
@@ -147,31 +141,27 @@ const createProductivityPermissions = async (
     ChatNames.PRODUCTIVITY,
     ChatNames.VOICE_CHAT_WIP,
   ];
+
+  const commonPermissions = {
+    VIEW_CHANNEL: true,
+    CONNECT: true,
+    STREAM: true,
+    USE_VAD: true,
+
+    SEND_MESSAGES: true,
+    READ_MESSAGE_HISTORY: true,
+  };
+
   for (const chatName of prodVoiceChats) {
-    const ProductivityChannel = channel.guild.channels.cache.find(
+    const productivityChannel = channel.guild.channels.cache.find(
       (c) => c.name === chatName
     );
-    await ProductivityChannel.updateOverwrite(member.id, {
-      VIEW_CHANNEL: true,
-      CONNECT: true,
-      STREAM: true,
-      USE_VAD: true,
+
+    await productivityChannel.updateOverwrite(member.id, {
+      ...commonPermissions,
+      SPEAK: chatName !== ChatNames.PRODUCTIVITY,
+      STREAM: chatName !== ChatNames.PRODUCTIVITY,
+      USE_VAD: chatName !== ChatNames.PRODUCTIVITY,
     });
-
-    if (ProductivityChannel.name === ChatNames.PRODUCTIVITY) {
-      await ProductivityChannel.updateOverwrite(member.id, {
-        CONNECT: true,
-        VIEW_CHANNEL: true,
-        SPEAK: false,
-      });
-    }
-
-    if (ProductivityChannel.name === ChatNames.VOICE_CHAT_WIP) {
-      await ProductivityChannel.updateOverwrite(member.id, {
-        VIEW_CHANNEL: true,
-        SEND_MESSAGES: true,
-        READ_MESSAGE_HISTORY: true,
-      });
-    }
   }
 };
