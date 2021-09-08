@@ -23,7 +23,7 @@ export class TimerService {
   public static async createTimer(
     handlerIdentifier: string,
     executeTime: Date,
-    data: Prisma.JsonValue
+    data?: Prisma.JsonValue
   ): Promise<void> {
     const timer = await prisma.timer.create({
       data: { handlerIdentifier, executeTime, data },
