@@ -77,6 +77,15 @@ const addReactRoleObject = async (
 
   let role = await Tools.getRoleById(roleId, message.guild);
 
+  if (!role) {
+    await Tools.handleUserError(
+      message,
+      `I could not find the requested role please verify all information you put are correct! You can find your message in <#${process.env.OUTPUT_CHANNEL_ID}>.`
+    );
+    await textLog(`<@${message.author.id}>: ${message.toString()}`);
+    return;
+  }
+
   const referencedMessageId = referencedMessage.id;
   const channelId = channel.id;
 
