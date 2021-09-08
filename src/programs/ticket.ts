@@ -217,7 +217,7 @@ const getChannelName = (message: Message, ticketType: string) => {
     message.author.username + message.author.discriminator
   ).toLowerCase()}`;
   channelName = channelName.replace(/\s+/g, "-").toLowerCase();
-  return (channelName = channelName.replace(/[^0-9A-Z\s+-]/gi, ""));
+  return channelName.replace(/[^0-9A-Z\s+-]/gi, "");
 };
 
 const createTicket = async (
