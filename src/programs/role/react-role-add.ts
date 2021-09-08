@@ -21,18 +21,10 @@ const logger = createYesBotLogger("programs", "role-add");
 })
 class AddReactRoleObject implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
-    let hasChannelId = true;
-    let hasMessageId = true;
-
-    let [, , reaction, roleId, messageId, channelId] =
+    const [, , reaction, roleId, messageId, channelId] =
       message.content.split(" ");
 
-    if (!channelId || !messageId) {
-      hasChannelId = false;
-      hasMessageId = false;
-    }
-
-    if (message.reference && !hasChannelId && !hasMessageId) {
+    if (message.reference && reaction && roleId) {
       const referencedMessageId = message.reference.messageID;
       const channelId = message.reference.channelID;
       const channel = bot.channels.resolve(channelId) as TextChannel;
@@ -50,29 +42,27 @@ class AddReactRoleObject implements CommandHandler<DiscordEvent.MESSAGE> {
       return;
     }
 
-    if (!message.reference && hasChannelId && hasMessageId) {
-      const [requestedMessage, requestedChannel] = await Tools.getMessageById(
-        messageId,
-        message.guild,
-        channelId
-      );
-
-      await addReactRoleObject(
-        message,
-        requestedChannel,
-        reaction,
-        roleId,
-        requestedMessage
-      );
-      return;
-    }
-
     if (!reaction || !roleId || !messageId || !channelId) {
       await Tools.handleUserError(
         message,
         `Incorrect syntax, if using option of replying, please reply to the requested message with only the roleId and reaction, if not replying the messageId and channelId is needed. \`!role add reaction roleId messageId channelId\``
       );
+      return;
     }
+
+    const [requestedMessage, requestedChannel] = await Tools.getMessageById(
+      messageId,
+      message.guild,
+      channelId
+    );
+
+    await addReactRoleObject(
+      message,
+      requestedChannel,
+      reaction,
+      roleId,
+      requestedMessage
+    );
   }
 }
 
