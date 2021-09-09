@@ -1,4 +1,4 @@
-import { Message, MessageEmbed, TextChannel } from "discord.js";
+import { Channel, Message, MessageEmbed, TextChannel } from "discord.js";
 import Tools from "../../common/tools";
 import { textLog } from "../../common/moderator";
 import prisma from "../../prisma";
@@ -17,62 +17,101 @@ const logger = createYesBotLogger("programs", "role-add");
   trigger: "!role",
   subTrigger: "add",
   allowedRoles: ["Support"],
-  description: "This",
+  description: "This handler is to add a reaction that can give a role",
 })
 class AddReactRoleObject implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
-    if (!message.reference) {
-      await Tools.handleUserError(
-        message,
-        "You must reply to the message you want to use this command on!"
+    const [, , reaction, roleId, messageId, channelId] =
+      message.content.split(" ");
+
+    if (message.reference && reaction && roleId) {
+      const referencedMessageId = message.reference.messageID;
+      const channelId = message.reference.channelID;
+      const channel = bot.channels.resolve(channelId) as TextChannel;
+      const referencedMessage = await channel.messages.fetch(
+        referencedMessageId
       );
-      return;
-    }
 
-    const referencedMessageId = message.reference.messageID;
-    const channelId = message.reference.channelID;
-    const channel = bot.channels.resolve(channelId) as TextChannel;
-    const referencedMessage = await channel.messages.fetch(referencedMessageId);
-    let [, , reaction, roleId] = message.content.split(" ");
-
-    if (!reaction || !roleId) {
-      await Tools.handleUserError(
+      await addReactRoleObject(
         message,
-        `Incorrect syntax, please use the following: \`!role add reaction roleId\``
-      );
-      return;
-    }
-
-    if (roleId.startsWith("<")) roleId = roleId.substring(3, 21);
-
-    let role = await Tools.getRoleById(roleId, message.guild);
-
-    if (referencedMessage && channel) {
-      const reactRoleObject = {
-        messageId: referencedMessageId,
-        channelId: channelId,
-        roleId: roleId,
+        channel,
         reaction,
-      };
-      try {
-        await prisma.reactionRole.create({ data: reactRoleObject });
-      } catch (err) {
-        await Tools.handleUserError(message, "Failed to create react object");
-        logger.error("Failed to create role object: ", err);
-        return;
-      }
-
-      await referencedMessage.react(reaction);
-      const successEmbed = new MessageEmbed()
-        .setColor("#ff6063")
-        .setTitle("Reaction role successfully added.")
-        .addField("\u200b", "\u200b")
-        .addField("Target Message:", message.cleanContent, true)
-        .addField("Target Channel:", channel, true)
-        .addField("Necessary Reaction:", reaction, true)
-        .addField("Reward Role:", role, true);
-      await textLog(successEmbed);
-      await message.delete();
+        roleId,
+        referencedMessage
+      );
+      return;
     }
+
+    if (!reaction || !roleId || !messageId || !channelId) {
+      await Tools.handleUserError(
+        message,
+        `Incorrect syntax, if using option of replying, please reply to the requested message with only the roleId and reaction, if not replying the messageId and channelId is needed. \`!role add reaction roleId messageId channelId\``
+      );
+      return;
+    }
+
+    const [requestedMessage, requestedChannel] = await Tools.getMessageById(
+      messageId,
+      message.guild,
+      channelId
+    );
+
+    await addReactRoleObject(
+      message,
+      requestedChannel,
+      reaction,
+      roleId,
+      requestedMessage
+    );
   }
 }
+
+const addReactRoleObject = async (
+  message: Message,
+  channel: Channel,
+  reaction: string,
+  roleId: string,
+  referencedMessage: Message
+) => {
+  if (roleId.startsWith("<")) roleId = roleId.substring(3, 21);
+
+  let role = await Tools.getRoleById(roleId, message.guild);
+
+  if (!role) {
+    await Tools.handleUserError(
+      message,
+      `I could not find the requested role please verify all information you put are correct! You can find your message in <#${process.env.OUTPUT_CHANNEL_ID}>.`
+    );
+    await textLog(`<@${message.author.id}>: ${message.toString()}`);
+    return;
+  }
+
+  const referencedMessageId = referencedMessage.id;
+  const channelId = channel.id;
+
+  const reactRoleObject = {
+    messageId: referencedMessageId,
+    channelId: channelId,
+    roleId: roleId,
+    reaction,
+  };
+  try {
+    await prisma.reactionRole.create({ data: reactRoleObject });
+  } catch (err) {
+    await Tools.handleUserError(message, "Failed to create react object");
+    logger.error("Failed to create role object: ", err);
+    return;
+  }
+
+  await referencedMessage.react(reaction);
+  const successEmbed = new MessageEmbed()
+    .setColor("#ff6063")
+    .setTitle("Reaction role successfully added.")
+    .addField("\u200b", "\u200b")
+    .addField("Target Message:", message.cleanContent, true)
+    .addField("Target Channel:", channel, true)
+    .addField("Necessary Reaction:", reaction, true)
+    .addField("Reward Role:", role, true);
+  await textLog(successEmbed);
+  await message.delete();
+};
