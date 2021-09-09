@@ -6,7 +6,6 @@ import * as MapTools from "./map";
 import * as VoiceOnDemandTools from "./voice-on-demand";
 import VoiceOnDemand from "./voice-on-demand";
 import ExportManager from "./export-manager";
-import Ticket from "./ticket";
 
 export {
   ExportManager,
@@ -15,7 +14,6 @@ export {
   GroupManagerTools,
   MapTools,
   DailyChallenge,
-  Ticket,
   VoiceOnDemand,
   VoiceOnDemandTools,
 };

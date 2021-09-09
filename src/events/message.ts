@@ -4,7 +4,6 @@ import {
   Game,
   GroupManager,
   MapTools,
-  Ticket,
   VoiceOnDemand,
 } from "../programs";
 
@@ -65,8 +64,6 @@ const routeMessage = async (message: Message) => {
     );
     await message.member.roles.remove(guildRole);
   }
-  // if (firstWord === "!fiyesta") Ticket(message, "fiyesta");
-  if (firstWord === "!shoutout") await Ticket(message, "shoutout");
 
   if (message.content.toLowerCase().startsWith("!group toggle"))
     await GroupManager(message, true);
