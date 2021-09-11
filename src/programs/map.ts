@@ -7,29 +7,31 @@ import { CountryRoleFinder } from "../utils/country-role-finder";
   event: DiscordEvent.MESSAGE,
   trigger: "!map",
   channelNames: ["bot-commands"],
-  description: "map to new event system",
+  description: "command to view the yf map",
+})
+@Command({
+  event: DiscordEvent.MESSAGE,
+  trigger: "!mapadd",
+  channelNames: ["bot-commands"],
+  description: "adds location of user to yf map",
 })
 class ShowMap implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
-    const map = async (message: Message) => {
-      await message.reply(
-        "you can find the map here: " +
-          process.env.MAP_LINK +
-          "\nIf you want to be added to it, type !mapadd [city, country]"
-      );
-    };
+    await message.reply(
+      "you can find the map here: " +
+        process.env.MAP_LINK +
+        "\nIf you want to be added to it, type !mapadd [city, country]"
+    );
 
-    const mapAdd = async (message: Message) => {
-      const split = message.content.split(" ");
-      split.shift();
-      const city = split.join(" ");
-      if (!city) {
-        await Tools.handleUserError(
-          message,
-          "You need to add the city you are from!"
-        );
-        return;
-      }
+    const split = message.content.split(" ");
+    split.shift();
+    const city = split.join(" ");
+    if (!city) {
+      await Tools.handleUserError(
+        message,
+        "You need to add the city you are from!"
+      );
+      return;
 
       const countries = message.member.roles.cache
         .filter((role) => CountryRoleFinder.isCountryRole(role.name))
@@ -50,6 +52,6 @@ class ShowMap implements CommandHandler<DiscordEvent.MESSAGE> {
       await message.reply(
         "I messaged the maintainer of the map, they will add you to it soon!"
       );
-    };
+    }
   }
 }
