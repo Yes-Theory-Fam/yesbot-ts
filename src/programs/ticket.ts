@@ -1,4 +1,4 @@
-import { GuildMember, Message, TextChannel, User } from "discord.js";
+import { Message, TextChannel, User } from "discord.js";
 import { TextChannelOptions } from "../common/interfaces";
 import Tools from "../common/tools";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
@@ -33,6 +33,40 @@ class OpenShoutoutTicket implements CommandHandler<DiscordEvent.MESSAGE> {
     );
   }
 }
+
+@Command({
+  event: DiscordEvent.MESSAGE,
+  trigger: "!travel",
+  description: "",
+})
+class OpenTravelTicket implements CommandHandler<DiscordEvent.MESSAGE> {
+  async handle(message: Message): Promise<void> {
+    await message.delete();
+
+    const channelName = getChannelName(message, "travel");
+
+    if (await hasTicket(message, channelName)) {
+      return;
+    }
+
+    const moderatorRole = Tools.getRoleByName(
+      process.env.MODERATOR_ROLE_NAME,
+      message.guild
+    );
+
+    const ticketChannel = await createTicket(message, channelName, "tickets");
+    await ticketChannel.send(
+      `Hi ${message.member.toString()}, please list all the relative information about your trip:
+      **#1** Country you are traveling to.
+      **#2** Which place/city.
+      **#3** What time.
+      **#4** If you need a host.
+      **#5** Activities you might be interested in or want to do.
+      A ${moderatorRole.toString()} will be with you as soon as possible.`
+    );
+  }
+}
+
 //Commented out code yes i know but fiyesta's are discontinued due to the pandemic.
 /*@Command({
   event: DiscordEvent.MESSAGE,
@@ -225,7 +259,7 @@ const createTicket = async (
   channelName: string,
   ticketType: string
 ): Promise<TextChannel> => {
-  const categoryId = message.guild.channels.cache.find((c) =>
+  const category = message.guild.channels.cache.find((c) =>
     c.name.toLowerCase().includes(ticketType)
   );
 
@@ -252,7 +286,7 @@ const createTicket = async (
         allow: ["VIEW_CHANNEL", "READ_MESSAGE_HISTORY", "SEND_MESSAGES"],
       },
     ],
-    parent: categoryId,
+    parent: category,
   };
 
   return await message.guild.channels.create(channelName, channelOptions);
