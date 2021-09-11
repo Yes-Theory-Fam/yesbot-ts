@@ -37,7 +37,7 @@ class OpenShoutoutTicket implements CommandHandler<DiscordEvent.MESSAGE> {
 @Command({
   event: DiscordEvent.MESSAGE,
   trigger: "!travel",
-  description: "",
+  description: "This handler is to create a travel-together ticket",
 })
 class OpenTravelTicket implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
