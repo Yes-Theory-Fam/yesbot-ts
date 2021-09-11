@@ -51,7 +51,7 @@
     "env-cmd": "10.1.0",
     "jest": "27.1.1",
     "prettier": "2.4.0",
-    "prisma": "2.30.3",
+    "prisma": "3.0.2",
     "ts-jest": "27.0.5",
     "ts-node-dev": "1.1.8",
     "typegraphql-prisma": "0.15.0",
