@@ -9,7 +9,7 @@ import {
 import { CountryRoleFinder } from "../../../utils/country-role-finder";
 import { ChatNames } from "../../../collections/chat-names";
 
-const oneMinute = 60 * 1000;
+const fiveMinutes = 5 * 60 * 1000;
 
 export const promptAndSendForApproval = async (
   channel: TextChannel,
@@ -125,7 +125,7 @@ Here is a map of the regions: https://cdn.discordapp.com/attachments/60339977517
   const filter = (reaction: MessageReaction, user: User) =>
     user.id === userId && reaction.emoji.name === confirm;
 
-  await promptMessage.awaitReactions(filter, { max: 1, time: 5 * oneMinute });
+  await promptMessage.awaitReactions(filter, { max: 1, time: fiveMinutes });
   await promptMessage.reactions.removeAll();
 
   const activeRegionReactions = promptMessage.reactions.cache.filter(
@@ -161,7 +161,7 @@ async function _getString(
   const filter = (message: Message) => message.author.id === userId;
   const response = await channel.awaitMessages(filter, {
     max: 1,
-    time: oneMinute,
+    time: fiveMinutes,
   });
 
   await promptMessage.delete();
@@ -203,7 +203,7 @@ async function _getBool(
     choices.includes(reaction.emoji.name) && user.id === userId;
   const choice = await promptMessage.awaitReactions(filter, {
     max: 1,
-    time: oneMinute,
+    time: fiveMinutes,
   });
 
   await promptMessage.delete();
