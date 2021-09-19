@@ -17,6 +17,14 @@ import { getChannelName, TicketType } from "../common";
 class DeclineTravelTicket extends CommandHandler<DiscordEvent.REACTION_ADD> {
   async handle(reaction: MessageReaction, user: User): Promise<void> {
     const message = reaction.message;
+
+    // Guard against two mods voting at the same time.
+    const content = message.content;
+    const lines = content.split("\n");
+    if (!lines[lines.length - 1].startsWith("Click on the thread")) {
+      return;
+    }
+
     const ticketAuthor = message.mentions.users.first();
     const channelName = getChannelName(ticketAuthor, TicketType.TRAVEL);
     const channel = message.guild!.channels.cache.find(
@@ -28,10 +36,9 @@ class DeclineTravelTicket extends CommandHandler<DiscordEvent.REACTION_ADD> {
     );
 
     const reactingMember = channel.guild.members.resolve(user);
-    await message.edit(
-      message.content + `\n\nApproved by ${reactingMember.displayName}`
-    );
-
     await message.reactions.removeAll();
+    await message.edit(
+      message.content + `\n\nDeclined by ${reactingMember.displayName}`
+    );
   }
 }

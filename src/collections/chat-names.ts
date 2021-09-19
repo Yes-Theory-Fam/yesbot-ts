@@ -6,6 +6,7 @@ export enum ChatNames {
   CODING = "coding",
   DAILY_CHALLENGE = "daily-challenge",
   FOURTH_CHAT = "4th-chat",
+  INTRODUCTIONS = "introductions",
   LEARNING_SPANISH = "learning-spanish",
   SELF_DEVELOPMENT = "self-development",
   TRAVEL_APPROVALS = "travel-approvals",
