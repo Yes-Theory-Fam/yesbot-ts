@@ -27,6 +27,10 @@ class RetryTravelTicket extends CommandHandler<DiscordEvent.MESSAGE> {
       (c) => c.name === acceptedChannelName
     ) as TextChannel;
 
+    if (!targetChannel) {
+      return;
+    }
+
     if (originChannel.name !== acceptedChannelName) {
       await Tools.handleUserError(
         message,

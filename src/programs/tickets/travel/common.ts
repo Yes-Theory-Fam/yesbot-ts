@@ -10,28 +10,42 @@ import { CountryRoleFinder } from "../../../utils/country-role-finder";
 import { ChatNames } from "../../../collections/chat-names";
 
 const fiveMinutes = 5 * 60 * 1000;
+type CancellationToken = { cancelled: boolean };
 
 export const promptAndSendForApproval = async (
   channel: TextChannel,
   userId: Snowflake
 ) => {
-  const countries = await getCountries(channel, userId);
+  const ct = { cancelled: false };
+  const retryCollector = channel.createMessageCollector(
+    (msg) => msg.content.split(" ")[0] === "!retry"
+  );
+  retryCollector.on("collect", () => {
+    retryCollector.stop("Got one!");
+    ct.cancelled = true;
+  });
+
+  const countries = await getCountries(channel, userId, ct);
   const places = await getString(
     channel,
     userId,
-    "Next, which are the places you are traveling to there?"
+    "Next, which are the places you are traveling to there?",
+    ct
   );
   const dates = await getString(
     channel,
     userId,
-    "Sweet! When will you be there?"
+    "Sweet! When will you be there?",
+    ct
   );
-  const needsHost = await getBool(channel, userId, "Do you need a host?");
+  const needsHost = await getBool(channel, userId, "Do you need a host?", ct);
   const activities = await getString(
     channel,
     userId,
-    "Lastly, what are you planning to do there?"
+    "Lastly, what are you planning to do there?",
+    ct
   );
+  retryCollector.stop("All information collected!");
 
   const travelRequest = formatMessage(
     userId,
@@ -56,11 +70,13 @@ export const promptAndSendForApproval = async (
 
 const getCountries = async (
   channel: TextChannel,
-  userId: Snowflake
+  userId: Snowflake,
+  ct: CancellationToken
 ): Promise<Role[]> =>
   await retryUntilSatisfied(
     () => _getCountries(channel, userId),
     (countries) => Boolean(countries?.length),
+    ct,
     async () =>
       channel
         .send(
@@ -144,11 +160,13 @@ Here is a map of the regions: https://cdn.discordapp.com/attachments/60339977517
 async function getString(
   channel: TextChannel,
   userId: Snowflake,
-  prompt: string
+  prompt: string,
+  ct: CancellationToken
 ): Promise<string> {
   return await retryUntilSatisfied(
     () => _getString(channel, userId, prompt),
-    (s) => Boolean(s?.length)
+    (s) => Boolean(s?.length),
+    ct
   );
 }
 
@@ -157,17 +175,15 @@ async function _getString(
   userId: Snowflake,
   prompt: string
 ): Promise<string | undefined> {
-  const promptMessage = await channel.send(prompt);
+  await channel.send(prompt);
   const filter = (message: Message) => message.author.id === userId;
   const response = await channel.awaitMessages(filter, {
     max: 1,
     time: fiveMinutes,
   });
 
-  await promptMessage.delete();
-
   const message = response.first();
-  if (!response) {
+  if (!message) {
     return undefined;
   }
 
@@ -177,11 +193,13 @@ async function _getString(
 async function getBool(
   channel: TextChannel,
   user: Snowflake,
-  prompt: string
+  prompt: string,
+  ct: CancellationToken
 ): Promise<boolean> {
   return await retryUntilSatisfied(
     () => _getBool(channel, user, prompt),
-    (result) => result !== undefined
+    (result) => result !== undefined,
+    ct
   );
 }
 
@@ -205,8 +223,6 @@ async function _getBool(
     max: 1,
     time: fiveMinutes,
   });
-
-  await promptMessage.delete();
 
   const pick = choice.first();
   if (!pick) {
@@ -237,20 +253,27 @@ Click on the thread right below this line if you're interested to join the chat 
 }
 
 /**
- * Calls the producer until the predicate returns true when called with the produced result. Allows for responding to failures with an optional third argument.
+ * Calls the producer until the predicate returns true when called with the produced result. Allows for responding to failures with an optional argument.
  *
  * @param producer Function that produces some result.
  * @param satisfiedPredicate Function that checks whether a produced result satisfied some criteria.
+ * @param ct If ct.cancelled = true, this function throws.
  * @param onFailure Function called in case a produced result did not satisfy the predicates' criteria.
  */
 const retryUntilSatisfied = async <T>(
   producer: () => T | Promise<T>,
   satisfiedPredicate: (t: T) => boolean,
+  ct: CancellationToken,
   onFailure?: () => unknown | Promise<unknown>
 ): Promise<T> => {
   let result: T;
   do {
     result = await producer();
+
+    if (ct.cancelled) {
+      throw new Error("Cancelled");
+    }
+
     if (satisfiedPredicate(result)) {
       break;
     }
