@@ -13,4 +13,6 @@ export enum ChatNames {
   YESTHEORY_DISCUSSION = "yestheory-discussions",
   YESTHEORY_POSTED = "yestheoryposted",
   CODING = "coding",
+  TRAVEL_APPROVALS = "travel-approvals",
+  TRAVELING_TOGETHER = "traveling-together",
 }
