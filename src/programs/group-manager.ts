@@ -83,10 +83,6 @@ const groupManager = async (message: Message, isConfig: boolean) => {
         await joinGroup(message, [requestName, ...rest], user);
         break;
 
-      case "toggle":
-        await toggleGroup(words, message);
-        break;
-
       case "create":
         if (moderator)
           await createGroup(message, requestName, user, description);
@@ -249,109 +245,6 @@ const groupManager = async (message: Message, isConfig: boolean) => {
     });
   }
 };
-
-const getOrCreateMessage = async (
-  messageId: Snowflake
-): Promise<MessageEntity> => {
-  const existingMessage = await prisma.message.findUnique({
-    where: { id: messageId },
-  });
-  if (existingMessage) return existingMessage;
-  return await prisma.message.create({ data: { id: messageId } });
-};
-
-const toggleGroup = async (words: string[], message: Message) => {
-  if (!isAuthorModerator(message)) {
-    await message.react("👎");
-    return;
-  }
-
-  words.shift();
-  const [messageId, emoji, channelName] = words;
-  if (!(messageId && emoji && channelName)) {
-    await message.react("👎");
-    await message.reply(
-      "Invalid syntax, please double check for messageId, emoji, channelName and try again."
-    );
-    return;
-  }
-  const existingChannel = message.guild.channels.cache.find(
-    (c) => c.name === channelName.toLowerCase()
-  );
-  if (!existingChannel) {
-    await message.react("👎");
-    await message.reply("That channel doesn't exist here.");
-    return;
-  }
-
-  const reactionMessage = await getOrCreateMessage(messageId);
-
-  if (reactionMessage.channel === null) {
-    await message.reply(
-      "Since this is the first time I've heard of this message I need your help. " +
-        `Can you put one ${emoji} emoji on the message for me please?\n` +
-        "After you've done that, I'll make sure to put up all the emojis on it. :grin:\n" +
-        "You can keep adding emojis here and add one on the original message when you're done, and I'll add them all!"
-    );
-  }
-
-  try {
-    await prisma.channelToggle.create({
-      data: {
-        emoji,
-        message: {
-          connectOrCreate: {
-            where: { id: reactionMessage.id },
-            create: reactionMessage,
-          },
-        },
-        channel: existingChannel.id,
-      },
-    });
-    await message.react("👍");
-  } catch (err) {
-    logger.error("Failed to create toggle", err);
-    await message.react("👎");
-    return;
-  }
-
-  if (reactionMessage.channel !== null) {
-    await backfillReactions(
-      reactionMessage.id,
-      reactionMessage.channel,
-      message.guild
-    );
-  }
-};
-
-export async function backfillReactions(
-  messageId: string,
-  channelId: string,
-  guild: Guild
-) {
-  logger.debug(
-    `backfilling reactions for message ${messageId} in ${channelId}`
-  );
-
-  const channel = guild.channels.cache.find(
-    (c) => c.id === channelId
-  ) as TextChannel;
-
-  if (!channel) {
-    throw new Error("I can't find that channel. Maybe it has been deleted?");
-  }
-
-  const reactionDiscordMessage = await channel.messages.fetch(messageId);
-  const toggles = await prisma.channelToggle.findMany({
-    where: { messageId },
-    orderBy: { id: "asc" },
-  });
-
-  // Only add missing reactions
-  for (let i = 0; i < toggles.length; i++) {
-    await reactionDiscordMessage.react(toggles[i].emoji);
-  }
-}
 
 const deleteGroup = async (
   message: Message,
