@@ -23,7 +23,7 @@ class ChannelReactionRemove implements CommandHandler<DiscordEvent.MESSAGE> {
     const messageContent = message.content.split(" ");
     const [, , messageId, emoji] = messageContent;
 
-    if (!messageId && !emoji) {
+    if (!messageId || !emoji) {
       await Tools.handleUserError(
         message,
         "Invalid syntax, please double check for messageId and emoji and try again."
@@ -46,7 +46,7 @@ class ChannelReactionRemove implements CommandHandler<DiscordEvent.MESSAGE> {
     if (!reactionMessageObject || !channelToggleObject) {
       await Tools.handleUserError(
         message,
-        "I could not find the requested message, please double check the messageId try again."
+        "I could not find the requested message, please double check the messageId and try again."
       );
       return;
     }
