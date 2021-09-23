@@ -21,9 +21,7 @@ const logger = createYesBotLogger("program,", "ChannelReactionAdd");
 class ChannelReactionAdd implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
     const messageContent = message.content.split(" ");
-    messageContent.shift();
-    messageContent.shift();
-    const [messageId, emoji, channelName] = messageContent;
+    const [, , messageId, emoji, channelName] = messageContent;
 
     if (!messageId && emoji && channelName) {
       await Tools.handleUserError(
