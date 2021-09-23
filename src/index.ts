@@ -13,8 +13,6 @@ import {
   guildMemberUpdate,
   memberLeave,
   messageManager,
-  reactionAdd,
-  reactionRemove,
   ready,
   voiceStateUpdate,
 } from "./events";

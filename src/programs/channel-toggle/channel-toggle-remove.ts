@@ -16,19 +16,17 @@ const logger = createYesBotLogger("program", "channelToggleRemove");
   trigger: "!channelToggle",
   subTrigger: "remove",
   allowedRoles: ["Support"],
-  description: "This",
+  description: "This handler is to remove a channel toggle reaction",
 })
 class ChannelReactionRemove implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
     const messageContent = message.content.split(" ");
-    messageContent.shift();
-    messageContent.shift();
-    const [messageId, emoji, channelName] = messageContent;
+    const [, , messageId, emoji] = messageContent;
 
-    if (!messageId && !channelName) {
+    if (!messageId && !emoji) {
       await Tools.handleUserError(
         message,
-        "Invalid syntax, please double check for messageId, emoji, channelName and try again."
+        "Invalid syntax, please double check for messageId and emoji and try again."
       );
       return;
     }
@@ -48,23 +46,16 @@ class ChannelReactionRemove implements CommandHandler<DiscordEvent.MESSAGE> {
     if (!reactionMessageObject || !channelToggleObject) {
       await Tools.handleUserError(
         message,
-        "I could not find the requested message, please double check for messageId try again."
+        "I could not find the requested message, please double check the messageId try again."
       );
       return;
     }
 
     const guild = message.guild;
-    const channel = guild.channels.cache.find(
-      (channel) => channel.name === channelName.toLowerCase()
+    const toggledMessageChannelId = reactionMessageObject.channel;
+    const channel = guild.channels.resolve(
+      toggledMessageChannelId
     ) as TextChannel;
-    if (!channel) {
-      await Tools.handleUserError(
-        message,
-        "I could not find the requested channel, please double check for channelName try again."
-      );
-      return;
-    }
-
     const reactionMessage = await channel.messages.fetch(messageId);
     const toggledChannelId = channelToggleObject.channel;
 
@@ -72,6 +63,19 @@ class ChannelReactionRemove implements CommandHandler<DiscordEvent.MESSAGE> {
       const reaction = reactionMessage.reactions.cache.find(
         (r) => r.emoji.toString() === emoji
       );
+
+      await prisma.channelToggle.delete({
+        where: {
+          id: channelToggleObject.id,
+        },
+      });
+
+      await prisma.message.delete({
+        where: {
+          id: reactionMessageObject.id,
+        },
+      });
+
       const reactedUsers = reaction.users.cache;
       reactedUsers
         .filter((user) => !user.bot)
@@ -79,23 +83,16 @@ class ChannelReactionRemove implements CommandHandler<DiscordEvent.MESSAGE> {
           async (user) =>
             await revokeToggleChannelPermissions(user, toggledChannelId)
         );
+
       await reaction.remove();
-      await prisma.channelToggle.delete({
-        where: {
-          id: channelToggleObject.id,
-        },
-      });
-      await prisma.message.delete({
-        where: {
-          id: reactionMessageObject.id,
-        },
-      });
     } catch (err) {
       logger.error(
         "Error while removing all reactions from channelToggle message",
         err
       );
+      await message.react("👎");
+      return;
     }
-    await message.reply("Succesfully removed channel toggle");
+    await message.reply("Succesfully removed channel toggle and reactions.");
   }
 }

@@ -5,14 +5,18 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
+  EventLocation,
 } from "../../event-distribution";
 import prisma from "../../prisma";
+import { isColorSelectionMessage } from "../nitro-colors";
 import { backfillReactions } from "./common";
 
 @Command({
   event: DiscordEvent.REACTION_ADD,
+  location: EventLocation.SERVER,
   emoji: "",
-  description: "This",
+  description:
+    "This handler is to remove user permissions from the channel toggle",
 })
 class HandleChannelToggleReactionAdd
   implements CommandHandler<DiscordEvent.REACTION_ADD>
@@ -60,8 +64,10 @@ class HandleChannelToggleReactionAdd
 
 @Command({
   event: DiscordEvent.REACTION_REMOVE,
+  location: EventLocation.SERVER,
   emoji: "",
-  description: "This",
+  description:
+    "This handler is to remove user permissions from the channel toggle",
 })
 class HandleChannelToggleReactionRemove
   implements CommandHandler<DiscordEvent.REACTION_REMOVE>

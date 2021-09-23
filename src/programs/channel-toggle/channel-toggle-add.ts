@@ -16,7 +16,7 @@ const logger = createYesBotLogger("program,", "ChannelReactionAdd");
   trigger: "!channelToggle",
   subTrigger: "add",
   allowedRoles: ["Support"],
-  description: "This",
+  description: "This handler is to add a channel toggle reaction",
 })
 class ChannelReactionAdd implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {

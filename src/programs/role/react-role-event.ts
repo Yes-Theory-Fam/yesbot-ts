@@ -3,19 +3,24 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
+  EventLocation,
 } from "../../event-distribution";
 import prisma from "../../prisma";
 import { isColorSelectionMessage } from "../nitro-colors";
 
 @Command({
   event: DiscordEvent.REACTION_ADD,
+  location: EventLocation.SERVER,
   emoji: "",
-  description: "This",
+  description:
+    "This handler is to give the specified role of the roleReaction to the user",
 })
 class AddRolesFromReaction
   implements CommandHandler<DiscordEvent.REACTION_ADD>
 {
   async handle(reaction: MessageReaction, user: User): Promise<void> {
+    if (isColorSelectionMessage(reaction.message.id)) return;
+
     const {
       message: { id: messageId, channel, guild },
       emoji: { name: emoji },
@@ -29,10 +34,11 @@ class AddRolesFromReaction
       },
     });
 
+    if (!reactRoleObjects) return;
+
     const guildMember =
       guild.member(user.id) ?? (await guild.members.fetch(user.id));
 
-    if (isColorSelectionMessage(reaction.message.id)) return;
     for (const reactionRole of reactRoleObjects) {
       const roleToAdd = guild.roles.resolve(reactionRole.roleId);
       await guildMember.roles.add(roleToAdd);
@@ -42,25 +48,21 @@ class AddRolesFromReaction
 
 @Command({
   event: DiscordEvent.REACTION_REMOVE,
+  location: EventLocation.SERVER,
   emoji: "",
-  description: "This",
+  description:
+    "This handler is to remove the specified role of the roleReaction to the user",
 })
 class RemoveRolesFromReaction
   implements CommandHandler<DiscordEvent.REACTION_REMOVE>
 {
   async handle(reaction: MessageReaction, user: User): Promise<void> {
+    if (isColorSelectionMessage(reaction.message.id) || user.bot) return;
+
     const {
       message: { id: messageId, channel, guild },
       emoji: { name: emoji },
     } = reaction;
-
-    if (
-      channel.type === "dm" ||
-      channel.name === "pick-your-color" ||
-      user.bot
-    ) {
-      return;
-    }
 
     const reactRoleObjects = await prisma.reactionRole.findMany({
       where: {
@@ -70,10 +72,12 @@ class RemoveRolesFromReaction
       },
     });
 
+    if (!reactRoleObjects) return;
+
     reactRoleObjects.forEach((reactionRole) => {
       const guildMember = guild.member(user.id);
-      const roleToAdd = guild.roles.resolve(reactionRole.roleId);
-      guildMember.roles.remove(roleToAdd);
+      const roleToRemove = guild.roles.resolve(reactionRole.roleId);
+      guildMember.roles.remove(roleToRemove);
     });
   }
 }
