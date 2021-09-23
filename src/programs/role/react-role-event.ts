@@ -19,7 +19,7 @@ class AddRolesFromReaction
   implements CommandHandler<DiscordEvent.REACTION_ADD>
 {
   async handle(reaction: MessageReaction, user: User): Promise<void> {
-    if (isColorSelectionMessage(reaction.message.id)) return;
+    if (isColorSelectionMessage(reaction.message.id) || user.bot) return;
 
     const {
       message: { id: messageId, channel, guild },

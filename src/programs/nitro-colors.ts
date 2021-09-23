@@ -88,6 +88,8 @@ class NitroColorSelector implements CommandHandler<DiscordEvent.REACTION_ADD> {
     reaction: MessageReaction,
     user: User | PartialUser
   ): Promise<void> {
+    if (user.bot) return;
+
     const { message } = reaction;
     const guild = bot.guilds.resolve(process.env.GUILD_ID);
     const guildMember =

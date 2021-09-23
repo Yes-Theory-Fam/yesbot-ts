@@ -22,6 +22,8 @@ class HandleChannelToggleReactionAdd
   implements CommandHandler<DiscordEvent.REACTION_ADD>
 {
   async handle(reaction: MessageReaction, user: User): Promise<void> {
+    if (user.bot) return;
+
     const message = reaction.message;
     const emoji = reaction.emoji.toString();
 
@@ -73,6 +75,8 @@ class HandleChannelToggleReactionRemove
   implements CommandHandler<DiscordEvent.REACTION_REMOVE>
 {
   async handle(reaction: MessageReaction, user: User): Promise<void> {
+    if (user.bot) return;
+
     const { id: messageId, guild } = reaction.message;
     const emoji = reaction.emoji.toString();
 
