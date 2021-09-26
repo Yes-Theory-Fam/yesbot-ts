@@ -140,43 +140,47 @@ Object {
 `;
 
 exports[`Messages should extract messages from direct message 1`] = `
-Object {
-  "handlerKeys": Array [
-    "channel-id",
-    "this",
-    "is",
-  ],
-  "isDirectMessage": true,
-  "member": Object {
-    "deleted": false,
-    "displayName": "user username",
-    "guildID": "guild-id",
-    "joinedTimestamp": null,
-    "lastMessageChannelID": null,
-    "nickname": null,
-    "premiumSinceTimestamp": null,
-    "userID": "222222222222222200",
+Array [
+  Object {
+    "handlerKeys": Array [
+      "channel-id",
+      "this",
+      "is",
+    ],
+    "isDirectMessage": true,
+    "member": Object {
+      "deleted": false,
+      "displayName": "user username",
+      "guildID": "guild-id",
+      "joinedTimestamp": null,
+      "lastMessageChannelID": null,
+      "nickname": null,
+      "premiumSinceTimestamp": null,
+      "userID": "222222222222222200",
+    },
   },
-}
+]
 `;
 
 exports[`Messages should extract messages from public channel 1`] = `
-Object {
-  "handlerKeys": Array [
-    "guild-channel",
-    "this",
-    "is",
-  ],
-  "isDirectMessage": false,
-  "member": Object {
-    "deleted": false,
-    "displayName": "user username",
-    "guildID": "guild-id",
-    "joinedTimestamp": null,
-    "lastMessageChannelID": null,
-    "nickname": null,
-    "premiumSinceTimestamp": null,
-    "userID": "222222222222222200",
+Array [
+  Object {
+    "handlerKeys": Array [
+      "guild-channel",
+      "this",
+      "is",
+    ],
+    "isDirectMessage": false,
+    "member": Object {
+      "deleted": false,
+      "displayName": "user username",
+      "guildID": "guild-id",
+      "joinedTimestamp": null,
+      "lastMessageChannelID": null,
+      "nickname": null,
+      "premiumSinceTimestamp": null,
+      "userID": "222222222222222200",
+    },
   },
-}
+]
 `;
