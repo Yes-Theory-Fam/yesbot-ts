@@ -32,6 +32,7 @@ interface BaseOptions {
   description: string; // A descriptive string of the event handler
   allowedRoles?: string[]; // An array of role names. At least one role listed is required to run the handler.
   channelNames?: string[]; // An array of channel names. The handler will only be called when the event occured in one of the channels listed.
+  categoryNames?: string[]; // An array of category names. The handler will only be called when the event occured in one of the categories listed (the handler won't be called twice if one of the channelNames listed is in one of the categories listed). 
   location?: EventLocation; // A location enum setting where events are accepted. The default is EventLocation.SERVER if channelNames or allowedRoles is non-empty, EventLocation.ANYWHERE otherwise.
 }
 ```
