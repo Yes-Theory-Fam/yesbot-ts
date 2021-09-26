@@ -89,7 +89,10 @@ class BirthdayManager implements CommandHandler<DiscordEvent.MESSAGE> {
     await birthdayMessage.react("👍");
     await birthdayMessage.react("👎");
 
-    const filter: CollectorFilter<[MessageReaction, User]> = (reaction, user) => {
+    const filter: CollectorFilter<[MessageReaction, User]> = (
+      reaction,
+      user
+    ) => {
       return (
         (user.id === birthdayUser.id || user.id === message.author.id) &&
         ["👍", "👎"].includes(reaction.emoji.name)
@@ -138,10 +141,10 @@ class BirthdayManager implements CommandHandler<DiscordEvent.MESSAGE> {
         };
         await message.reply({
           content:
-          "Ouch, it seems like you have an extreme amounts of timezones available!" +
-          "\nPlease wait while I call for my masters. :grin:" +
-          `\nBeep boop ${engineerRole.toString()}? :telephone:`,
-        allowedMentions,
+            "Ouch, it seems like you have an extreme amounts of timezones available!" +
+            "\nPlease wait while I call for my masters. :grin:" +
+            `\nBeep boop ${engineerRole.toString()}? :telephone:`,
+          allowedMentions,
         });
       } else if (err instanceof Error && err.message === "time expired") {
         await message.react("⏰");
