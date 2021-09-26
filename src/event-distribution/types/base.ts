@@ -27,6 +27,7 @@ export interface BaseOptions {
   description: string;
   allowedRoles?: string[];
   channelNames?: string[];
+  categoryNames?: string[];
   location?: EventLocation;
 }
 
