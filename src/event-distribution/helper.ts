@@ -1,6 +1,9 @@
 import { DiscordEvent } from ".";
 import { HIOC, StringIndexedHIOCTree } from "./types/hioc";
 
+export const getIdFromCategoryName = (name: string) =>
+  `c_${name.toLowerCase()}`;
+
 export const addToTree = <T extends DiscordEvent>(
   keys: string[],
   hioc: HIOC<T>,

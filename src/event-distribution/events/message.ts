@@ -12,7 +12,7 @@ import {
   NewsChannel,
   TextChannel,
 } from "discord.js";
-import { addToTree } from "../helper";
+import { addToTree, getIdFromCategoryName } from "../helper";
 
 export interface MessageEventHandlerOptions extends BaseOptions {
   event: DiscordEvent.MESSAGE;
@@ -25,8 +25,6 @@ export type MessageHandlerFunction<T extends DiscordEvent> = HandlerFunctionFor<
   DiscordEvent.MESSAGE,
   Message
 >;
-
-const getIdFromCategoryName = (name: string) => `c_${name.toLowerCase()}`;
 
 export const addMessageHandler: AddEventHandlerFunction<MessageEventHandlerOptions> =
   (options, ioc, tree) => {
