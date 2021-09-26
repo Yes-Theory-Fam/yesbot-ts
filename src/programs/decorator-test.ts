@@ -155,3 +155,19 @@ export class DecoratorTest9 extends CommandHandler<DiscordEvent.MESSAGE> {
     console.log("Called handler 9");
   }
 }
+
+/**
+ * Example of a Message handler with a subtrigger
+ */
+@Command({
+  event: DiscordEvent.MESSAGE,
+  trigger: "!test",
+  channelNames: ["minecraft"],
+  categoryNames: ["Gaming"],
+  description: "",
+})
+export class DecoratorTest10 extends CommandHandler<DiscordEvent.MESSAGE> {
+  handle(message: Message): void {
+    console.log("Called handler 10");
+  }
+}

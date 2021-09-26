@@ -5,7 +5,13 @@ import {
   ExtractInfoForEventFunction,
   HandlerFunctionFor,
 } from "../types/base";
-import { DMChannel, Message, NewsChannel, TextChannel } from "discord.js";
+import {
+  DMChannel,
+  GuildChannel,
+  Message,
+  NewsChannel,
+  TextChannel,
+} from "discord.js";
 import { addToTree } from "../helper";
 
 export interface MessageEventHandlerOptions extends BaseOptions {
@@ -20,15 +26,23 @@ export type MessageHandlerFunction<T extends DiscordEvent> = HandlerFunctionFor<
   Message
 >;
 
+const getIdFromCategoryName = (name: string) => `c_${name.toLowerCase()}`;
+
 export const addMessageHandler: AddEventHandlerFunction<MessageEventHandlerOptions> =
   (options, ioc, tree) => {
     const channels = options.channelNames ?? [];
-    if (channels.length === 0) channels.push("");
+    const categories = options.categoryNames ?? [];
+    if (channels.length === 0 && categories.length === 0) channels.push("");
 
     const trigger = options.trigger ?? "";
     const subTrigger = options.subTrigger ?? "";
 
-    for (const channel of channels) {
+    const combinedChannels = [
+      ...channels,
+      ...categories.map((c) => getIdFromCategoryName(c)),
+    ];
+
+    for (const channel of combinedChannels) {
       addToTree([channel, trigger, subTrigger], { options, ioc }, tree);
     }
   };
@@ -46,9 +60,30 @@ export const extractMessageInfo: ExtractInfoForEventFunction<DiscordEvent.MESSAG
     const trigger = split[0];
     const subTrigger = split[1];
 
-    return {
-      handlerKeys: [channelIdentifier, trigger, subTrigger],
+    const baseInfo = {
       member: message.member,
       isDirectMessage: message.channel.type === "dm",
     };
+
+    const info = [
+      {
+        ...baseInfo,
+        handlerKeys: [channelIdentifier, trigger, subTrigger],
+      },
+    ];
+
+    const maybeCategory = (channel as GuildChannel).parent;
+    if (maybeCategory) {
+      const normalizedCategoryName = maybeCategory.name
+        .match(/[a-z\d\s.]+/gi)[0]
+        .trim();
+      const categoryIdentifier = getIdFromCategoryName(normalizedCategoryName);
+
+      info.push({
+        ...baseInfo,
+        handlerKeys: [categoryIdentifier, trigger, subTrigger],
+      });
+    }
+
+    return info;
   };

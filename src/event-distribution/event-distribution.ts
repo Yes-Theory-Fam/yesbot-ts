@@ -14,7 +14,7 @@ import {
   StringIndexedHIOCTreeNode,
 } from "./types/hioc";
 import { HandlerClass } from "./types/handler";
-import { DiscordEvent, EventLocation } from "./types/base";
+import { DiscordEvent, EventLocation, HandlerInfo } from "./types/base";
 
 const logger = createYesBotLogger("event-distribution", "event-distribution");
 
@@ -35,29 +35,32 @@ export class EventDistribution {
     [DiscordEvent.MEMBER_JOIN]: {},
   };
 
+  infoToIocs<T extends DiscordEvent>(info: HandlerInfo, event: T): HIOC<T>[] {
+    const { handlerKeys, isDirectMessage, member } = info;
+
+    const roleNames = member?.roles.cache.map((r) => r.name) ?? [];
+    const eventHandlers = this.getHandlers<T>(
+      this.handlers[event] as StringIndexedHIOCTreeNode<T>,
+      handlerKeys
+    );
+    return this.filterHandlers<T>(eventHandlers, isDirectMessage, roleNames);
+  }
+
   handleEvent<T extends DiscordEvent>(
     event: T,
     ...args: Parameters<HandlerFunction<T>>
   ) {
     const infos = extractEventInfo(event, ...args);
+    const iocs = infos
+      .flatMap((i) => this.infoToIocs(i, event))
+      .map(({ ioc }) => ioc)
+      .filter((h, i, a) => a.indexOf(h) === i);
 
-    for (const info of infos) {
-      const { handlerKeys, isDirectMessage, member } = info;
+    for (const ioc of iocs) {
+      let instance = ioc;
+      if (typeof instance === "function") instance = new instance();
 
-      const roleNames = member?.roles.cache.map((r) => r.name) ?? [];
-      const eventHandlers = this.getHandlers(this.handlers[event], handlerKeys);
-      const filteredHandlers = this.filterHandlers(
-        eventHandlers,
-        isDirectMessage,
-        roleNames
-      );
-
-      for (const { ioc } of filteredHandlers) {
-        let instance = ioc;
-        if (typeof instance === "function") instance = new instance();
-
-        instance.handle(...args);
-      }
+      instance.handle(...args);
     }
   }
 
