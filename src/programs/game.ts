@@ -33,7 +33,7 @@ class InitGameHub implements CommandHandler<DiscordEvent.READY> {
   event: DiscordEvent.MESSAGE,
   trigger: "!game",
   channelNames: ["bot-games"],
-  description: "This",
+  description: "This handler shows all the available games on YesBot",
 })
 class ShowGameEmbed implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
@@ -64,7 +64,8 @@ class ShowGameEmbed implements CommandHandler<DiscordEvent.MESSAGE> {
 @Command({
   event: DiscordEvent.MESSAGE,
   location: EventLocation.ANYWHERE,
-  description: "This",
+  description:
+    "This handler is for any commands related to the available games to be routed to the Game Hub message handler.",
 })
 class HandleGameInput implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
