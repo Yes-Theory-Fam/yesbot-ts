@@ -9,7 +9,7 @@ import { createYesBotLogger } from "../../log";
 import prisma from "../../prisma";
 import { backfillReactions, getOrCreateMessage } from "./common";
 
-const logger = createYesBotLogger("program,", "channelToggleRemove");
+const logger = createYesBotLogger("program", "channelToggleRemove");
 
 @Command({
   event: DiscordEvent.MESSAGE,
