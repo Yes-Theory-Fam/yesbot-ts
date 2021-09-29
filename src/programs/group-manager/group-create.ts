@@ -11,7 +11,8 @@ import prisma from "../../prisma";
   trigger: "!group",
   subTrigger: "create",
   allowedRoles: ["Support"],
-  description: "This handler is to create a group and add description if included",
+  description:
+    "This handler is to create a group and add description if included",
 })
 class CreateGroup implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
