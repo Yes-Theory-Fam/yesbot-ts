@@ -13,8 +13,6 @@ import {
   guildMemberUpdate,
   memberLeave,
   messageManager,
-  reactionAdd,
-  reactionRemove,
   ready,
   voiceStateUpdate,
 } from "./events";
@@ -62,14 +60,12 @@ bot.on("message", async (msg: Message) => {
 bot.on(
   "messageReactionAdd",
   async (messageReaction: MessageReaction, user: User | PartialUser) => {
-    await reactionAdd(messageReaction, user);
     distribution.handleEvent(DiscordEvent.REACTION_ADD, messageReaction, user);
   }
 );
 bot.on(
   "messageReactionRemove",
   async (messageReaction: MessageReaction, user: User | PartialUser) => {
-    await reactionRemove(messageReaction, user);
     distribution.handleEvent(
       DiscordEvent.REACTION_REMOVE,
       messageReaction,
