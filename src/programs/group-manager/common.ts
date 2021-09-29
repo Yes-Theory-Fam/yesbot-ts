@@ -195,3 +195,21 @@ export const tryLeaveGroups = async (
 
   return results;
 };
+
+export const timeRemainingForDeadchat = async (
+  message: Message,
+  group: UserGroup
+) => {
+  const lastMessages = (
+    await message.channel.messages.fetch({ limit: 2 })
+  ).array();
+
+  if (lastMessages.length < 2) {
+    return 0;
+  }
+
+  const timeDifference =
+    (Date.now() - lastMessages[1].createdTimestamp) / 1000 / 60;
+
+  return group.deadtime - Math.round(timeDifference);
+};

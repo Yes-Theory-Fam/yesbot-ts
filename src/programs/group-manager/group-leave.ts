@@ -11,7 +11,7 @@ import { groupInteractionAndReport, tryLeaveGroups } from "./common";
   trigger: "!group",
   subTrigger: "leave",
   channelNames: ["bot-commands"],
-  description: "This",
+  description: "This handler is to leave the group",
 })
 class LeaveGroup implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {

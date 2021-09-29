@@ -1,4 +1,5 @@
 import { Message } from "discord.js";
+import Tools from "../../common/tools";
 import {
   Command,
   DiscordEvent,
@@ -9,18 +10,22 @@ import prisma from "../../prisma";
 @Command({
   event: DiscordEvent.MESSAGE,
   trigger: "!group",
-  subTrigger: "update",
+  subTrigger: "changeCooldown",
   allowedRoles: ["Support"],
-  description: "This handler is to update a group description",
+  description: "This handler is to change the group cooldown",
 })
-class UpdateGroup implements CommandHandler<DiscordEvent.MESSAGE> {
+class ChangeCooldown implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
     const words = message.content.split(" ").slice(2);
-    const [requestedGroupName, ...rest] = words;
-    const description = rest.join(" ");
+    const requestedGroupName = words[0];
+    const newCooldown = words[1];
 
-    if (!requestedGroupName) {
-      await message.react("👎");
+    const cooldownNumber = Number(newCooldown);
+    if (isNaN(cooldownNumber)) {
+      await Tools.handleUserError(
+        message,
+        "Please write a number for the new cooldown! It will be interpreted as minutes before the group can be pinged again."
+      );
       return;
     }
 
@@ -33,20 +38,11 @@ class UpdateGroup implements CommandHandler<DiscordEvent.MESSAGE> {
       },
     });
 
-    if (!group) {
-      await message.reply("That group doesn't exist!");
-      return;
-    }
-
-    const previousDescription = group.description;
-
     await prisma.userGroup.update({
       where: { id: group.id },
-      data: { description },
+      data: { cooldown: cooldownNumber },
     });
 
-    await message.reply(
-      `Group description updated from \n> ${previousDescription} \nto \n> ${description}`
-    );
+    await message.react("👍");
   }
 }

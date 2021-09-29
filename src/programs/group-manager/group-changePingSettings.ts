@@ -1,3 +1,4 @@
+import { GroupPingSetting } from "@yes-theory-fam/database/client";
 import { Message } from "discord.js";
 import Tools from "../../common/tools";
 import {
@@ -11,25 +12,30 @@ import { logger } from "./common";
 @Command({
   event: DiscordEvent.MESSAGE,
   trigger: "!group",
-  subTrigger: "changeDeadtime",
+  subTrigger: "changeGroupPingSettings",
   allowedRoles: ["Support"],
-  description: "This handler is to change the group DeadTime",
+  description: "This handler is to change the group ping setting",
 })
-class ChangeDeadTime implements CommandHandler<DiscordEvent.MESSAGE> {
+class ChangeGroupPingSettings implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
     const words = message.content.split(" ").slice(2);
     const requestedGroupName = words[0];
-    const newDeadtime = words[1];
+    const option = words[1];
 
-    const deadtimeNumber = Number(newDeadtime);
-    if (isNaN(deadtimeNumber) || deadtimeNumber < 0) {
+    const setting = option.toUpperCase();
+
+    if (
+      setting !== GroupPingSetting.MODERATOR &&
+      setting !== GroupPingSetting.MEMBER &&
+      setting !== GroupPingSetting.BOT &&
+      setting !== GroupPingSetting.OFF
+    ) {
       await Tools.handleUserError(
         message,
-        "Please write a postive number for the new deadtime! It will be interpreted as minutes for how long the chat needs to be dead for the group to be pinged"
+        "Please write a valid setting for the group ping! The options are `moderator`, `member`, `bot` or `off`."
       );
       return;
     }
-
     const group = await prisma.userGroup.findFirst({
       where: {
         name: {
@@ -47,10 +53,10 @@ class ChangeDeadTime implements CommandHandler<DiscordEvent.MESSAGE> {
     try {
       await prisma.userGroup.update({
         where: { id: group.id },
-        data: { deadtime: deadtimeNumber },
+        data: { groupPingSetting: GroupPingSetting[setting] },
       });
     } catch (error) {
-      logger.error("Failed to update database group deadTime," + error);
+      logger.error("Failed to update database group ping settings," + error);
       await message.react("👎");
       return;
     }

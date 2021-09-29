@@ -11,7 +11,7 @@ import { groupInteractionAndReport, tryJoinGroups } from "./common";
   trigger: "!group",
   subTrigger: "join",
   channelNames: ["bot-commands"],
-  description: "This",
+  description: "This handler is to join a group",
 })
 class JoinGroup implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
