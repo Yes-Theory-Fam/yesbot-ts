@@ -10,8 +10,8 @@ import {
   User,
   Util,
 } from "discord.js";
-import Tools from "../common/tools";
-import { isAuthorModerator } from "../common/moderator";
+import Tools from "../../common/tools";
+import { isAuthorModerator } from "../../common/moderator";
 import {
   GroupMember,
   Message as MessageEntity,
@@ -22,10 +22,11 @@ import {
 import {
   GroupInteractionError,
   GroupInteractionSuccess,
-} from "../common/interfaces";
-import { createYesBotLogger } from "../log";
-import { ChatNames } from "../collections/chat-names";
-import prisma from "../prisma";
+} from "../../common/interfaces";
+import { createYesBotLogger } from "../../log";
+import { ChatNames } from "../../collections/chat-names";
+import prisma from "../../prisma";
+import { Command, CommandHandler, DiscordEvent } from "../../event-distribution";
 
 const logger = createYesBotLogger("program", "GroupManager");
 
@@ -569,6 +570,44 @@ const changeCooldown = async (
 
   await message.react("👍");
 };
+
+@Command({
+  event: DiscordEvent.MESSAGE,
+  trigger: "!group",
+  subTrigger: "join",
+  channelNames: ["bot-commands"],
+description: "This"
+})
+class JoinGroup implements CommandHandler<DiscordEvent.MESSAGE> {
+  async handle(message: Message): Promise<void> {
+    const words = message.content.split(" ")
+    words.shift()
+    words.shift()
+    const [requestedGroupNames, ...rest] = words
+    const member = message.member
+    
+    await groupInteractionAndReport(message, [requestedGroupNames, ...rest], member, tryJoinGroups)
+  }
+}
+
+@Command({
+  event: DiscordEvent.MESSAGE,
+  trigger: "!group",
+  subTrigger: "leave",
+  channelNames: ["bot-commands"],
+  description: "This"
+})
+class LeaveGroup implements CommandHandler<DiscordEvent.MESSAGE> {
+  async handle(message: Message): Promise<void> {
+    const words = message.content.split(" ")
+    words.shift()
+    words.shift()
+    const [requestedGroupNames, ...rest] = words
+    const member = message.member
+
+    await groupInteractionAndReport(message, [requestedGroupNames, ...rest], member, tryLeaveGroups)
+  }
+}
 
 const joinGroup = async (
   message: Message,
