@@ -9,11 +9,13 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
+  EventLocation,
 } from "../../event-distribution";
 
 @Command({
   event: DiscordEvent.MESSAGE,
   trigger: "@group",
+  location: EventLocation.SERVER,
   description: "This handler is to ping all users in the group",
 })
 class PingGroup implements CommandHandler<DiscordEvent.MESSAGE> {
