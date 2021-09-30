@@ -58,3 +58,15 @@ const sendLove = (message: Message) => {
   message.reply(randomLoveReply);
   message.react("😍");
 };
+
+@Command({
+  event: DiscordEvent.MESSAGE,
+  channelNames: ["feature-requests"],
+  description:
+    "This handler is to add the thumbs up and down to a message in feature requests",
+})
+class FeatureRequestTally implements CommandHandler<DiscordEvent.MESSAGE> {
+  async handle(message: Message): Promise<void> {
+    message.react("👍").then(() => message.react("👎"));
+  }
+}
