@@ -41,10 +41,6 @@ const routeMessage = async (message: Message) => {
       if (firstWord === "!mapadd") await MapTools.mapAdd(message);
       break;
 
-    case "feature-requests":
-      message.react("👍").then(() => message.react("👎"));
-      break;
-
     case "bot-games":
       if (firstWord === "!game") await Game.showGameEmbed(message);
       break;
