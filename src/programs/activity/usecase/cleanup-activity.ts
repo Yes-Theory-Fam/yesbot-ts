@@ -2,7 +2,6 @@ import prisma from "../../../prisma";
 import { Activity, Currency } from "@yes-theory-fam/database/client";
 import { createYesBotLogger } from "../../../log";
 
-
 export class CleanupActivity {
   private static cleanupActivityInstance: CleanupActivity;
   private static MS_PER_MINUTE = 60000;
