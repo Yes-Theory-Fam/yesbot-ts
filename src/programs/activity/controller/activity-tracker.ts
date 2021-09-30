@@ -12,6 +12,10 @@ import { ChatNames } from "../../../collections/chat-names";
   event: DiscordEvent.MESSAGE,
   channelNames: [
     ChatNames.BOT_DEVELOPMENT, // we will start in this channel while this feature is under development
+    ChatNames.CHAT,
+    ChatNames.CHAT_FIVE,
+    ChatNames.CHAT_TOO,
+    ChatNames.FOURTH_CHAT,
   ],
   description: "This handler tracks the activity of users on this server.",
 })

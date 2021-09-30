@@ -17,6 +17,7 @@ import {
   voiceStateUpdate,
 } from "./events";
 import distribution, { DiscordEvent } from "./event-distribution";
+import { LoadCron } from "./load-cron";
 
 const logger = createYesBotLogger("main", "index");
 logger.info("Starting YesBot");
@@ -75,6 +76,7 @@ bot.on(
 );
 bot.on("ready", async () => {
   distribution.handleEvent(DiscordEvent.READY, bot);
+  LoadCron.init();
   await ready(bot);
 });
 bot.on(
