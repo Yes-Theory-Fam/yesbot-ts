@@ -5,9 +5,13 @@ import { Activity } from "@yes-theory-fam/database/client";
 
 export class UpdateActivity {
   private static updateActivityInstance: UpdateActivity;
-  private delay = new Date().setMinutes(
-    Number.parseInt(process.env.ACTIVITY_TIME_DELAY) | 5
-  );
+  private static MS_PER_MINUTE = 60000;
+  private delay =
+    (!!process.env.ACTIVITY_TIME_DELAY
+      ? Number.parseInt(process.env.ACTIVITY_TIME_DELAY)
+      : 5) * UpdateActivity.MS_PER_MINUTE;
+
+  private constructor() {}
 
   async handle(data: UpdateActivityType) {
     const date = new Date(Date.now() - this.delay);
