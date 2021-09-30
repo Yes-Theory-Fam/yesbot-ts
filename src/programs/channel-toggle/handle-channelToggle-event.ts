@@ -8,7 +8,6 @@ import {
   EventLocation,
 } from "../../event-distribution";
 import prisma from "../../prisma";
-import { isColorSelectionMessage } from "../nitro-colors";
 import { backfillReactions } from "./common";
 
 @Command({

@@ -14,5 +14,6 @@ declare namespace NodeJS {
     GITHUB_TOKEN?: string;
     GITHUB_GRAPHQL_ENDPOINT?: string;
     GOOGLE_API_KEY?: string;
+    ACTIVITY_TIME?: string;
   }
 }
