@@ -1,7 +1,9 @@
 import { Message } from "discord.js";
 import Tools from "../../../common/tools";
 import {
-  Command, CommandHandler, DiscordEvent
+  Command,
+  CommandHandler,
+  DiscordEvent,
 } from "../../../event-distribution";
 import prisma from "../../../prisma";
 import { logger } from "../common";
@@ -38,7 +40,7 @@ class ChangeCooldown implements CommandHandler<DiscordEvent.MESSAGE> {
     });
 
     if (!group) {
-      Tools.handleUserError(message, "That group doesn't exist!")
+      Tools.handleUserError(message, "That group doesn't exist!");
       return;
     }
 

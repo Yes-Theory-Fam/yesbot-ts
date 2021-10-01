@@ -6,7 +6,7 @@ import Tools from "../../../common/tools";
 import {
   Command,
   CommandHandler,
-  DiscordEvent
+  DiscordEvent,
 } from "../../../event-distribution";
 import prisma from "../../../prisma";
 import { timeRemainingForDeadchat } from "../common";
@@ -126,4 +126,3 @@ class PingGroup implements CommandHandler<DiscordEvent.MESSAGE> {
     });
   }
 }
-

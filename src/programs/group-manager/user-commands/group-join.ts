@@ -1,6 +1,8 @@
 import { Message } from "discord.js";
 import {
-  Command, CommandHandler, DiscordEvent
+  Command,
+  CommandHandler,
+  DiscordEvent,
 } from "../../../event-distribution";
 import { groupInteractionAndReport, tryJoinGroups } from "../common";
 
