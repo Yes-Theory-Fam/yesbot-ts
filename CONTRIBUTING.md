@@ -65,10 +65,7 @@ The bot's main code is contained in the `src` directory which contains several s
 
 - collections - Files containing static data that the bot uses for certain tasks
 - common - Shared code for various things
-- entities - TypeORM database entities
 - events - Event handlers for the different events discord.js exposes
-- lib - (will be removed once [#193](https://github.com/Yes-Theory-Fam/yesbot-ts/issues/193) is resolved) - Contains
-  custom functionality to extend libraries used
 - programs - Code containing logic for all the commands and features of the bot. This directory contains an `index.ts`
   which reexports all exports from all files in this folder, please do so to, when adding your own feature.
 - scripts - Standalone scripts that are designed to be manually run for one-off tasks (like importing birthdays for
@@ -84,7 +81,7 @@ It also contains two single files:
 
 To work on the bot you need the following:
 
-- The current [Node](https://nodejs.org/) LTS Version
+- [Node](https://nodejs.org/) 16.6.0 or newer
 - A PostgreSQL server with a database called `yesbot`, username `yesbot` and password (you guessed it) `yesbot`
     - (recommended) You can use [Docker](https://www.docker.com/get-started)
       with [Docker Compose](https://docs.docker.com/compose/install/) and the `docker-compose.yml` in this repository to
