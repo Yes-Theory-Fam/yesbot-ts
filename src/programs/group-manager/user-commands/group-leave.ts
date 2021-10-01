@@ -1,16 +1,14 @@
 import { Message } from "discord.js";
 import {
-  Command,
-  DiscordEvent,
-  CommandHandler,
-} from "../../event-distribution";
-import { groupInteractionAndReport, tryLeaveGroups } from "./common";
+  Command, CommandHandler, DiscordEvent
+} from "../../../event-distribution";
+import { groupInteractionAndReport, tryLeaveGroups } from "../common";
 
 @Command({
   event: DiscordEvent.MESSAGE,
   trigger: "!group",
   subTrigger: "leave",
-  channelNames: ["bot-commands"],
+  channelNames: ["bot-commands", "permanent-testing"],
   description: "This handler is to leave the group",
 })
 class LeaveGroup implements CommandHandler<DiscordEvent.MESSAGE> {

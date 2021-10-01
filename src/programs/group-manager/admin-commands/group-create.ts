@@ -1,10 +1,7 @@
 import { Message } from "discord.js";
-import {
-  Command,
-  DiscordEvent,
-  CommandHandler,
-} from "../../event-distribution";
-import prisma from "../../prisma";
+import { Command, CommandHandler, DiscordEvent } from "../../../event-distribution";
+import prisma from "../../../prisma";
+import { logger } from "../common";
 
 @Command({
   event: DiscordEvent.MESSAGE,
@@ -35,12 +32,19 @@ class CreateGroup implements CommandHandler<DiscordEvent.MESSAGE> {
       await message.reply("That group already exists!");
       return;
     }
-    await prisma.userGroup.create({
-      data: {
-        name: requestedGroupName,
-        description,
-      },
-    });
+    try {
+      await prisma.userGroup.create({
+        data: {
+          name: requestedGroupName,
+          description,
+        },
+      });
+    } catch (error) {
+      logger.error("Failed to create group," + error);
+      await message.react("👎");
+      return;
+    }
+
     await message.react("👍");
   }
 }

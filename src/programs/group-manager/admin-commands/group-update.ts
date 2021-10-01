@@ -1,10 +1,8 @@
 import { Message } from "discord.js";
-import {
-  Command,
-  DiscordEvent,
-  CommandHandler,
-} from "../../event-distribution";
-import prisma from "../../prisma";
+import { Command, CommandHandler, DiscordEvent } from "../../../event-distribution";
+import prisma from "../../../prisma";
+import { logger } from "../common";
+
 
 @Command({
   event: DiscordEvent.MESSAGE,
@@ -40,10 +38,16 @@ class UpdateGroup implements CommandHandler<DiscordEvent.MESSAGE> {
 
     const previousDescription = group.description;
 
-    await prisma.userGroup.update({
-      where: { id: group.id },
-      data: { description },
-    });
+    try {
+      await prisma.userGroup.update({
+        where: { id: group.id },
+        data: { description },
+      });
+    } catch (error) {
+      logger.error("Failed to update group description," + error);
+      await message.react("👎");
+      return;
+    }
 
     await message.reply(
       `Group description updated from \n> ${previousDescription} \nto \n> ${description}`

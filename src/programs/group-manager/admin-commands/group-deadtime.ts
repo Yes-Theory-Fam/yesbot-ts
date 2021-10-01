@@ -1,12 +1,8 @@
 import { Message } from "discord.js";
-import Tools from "../../common/tools";
-import {
-  Command,
-  DiscordEvent,
-  CommandHandler,
-} from "../../event-distribution";
-import prisma from "../../prisma";
-import { logger } from "./common";
+import Tools from "../../../common/tools";
+import { Command, CommandHandler, DiscordEvent } from "../../../event-distribution";
+import prisma from "../../../prisma";
+import { logger } from "../common";
 
 @Command({
   event: DiscordEvent.MESSAGE,

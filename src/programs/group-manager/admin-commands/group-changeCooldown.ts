@@ -1,11 +1,10 @@
 import { Message } from "discord.js";
-import Tools from "../../common/tools";
+import Tools from "../../../common/tools";
 import {
-  Command,
-  DiscordEvent,
-  CommandHandler,
-} from "../../event-distribution";
-import prisma from "../../prisma";
+  Command, CommandHandler, DiscordEvent
+} from "../../../event-distribution";
+import prisma from "../../../prisma";
+import { logger } from "../common";
 
 @Command({
   event: DiscordEvent.MESSAGE,
@@ -38,10 +37,21 @@ class ChangeCooldown implements CommandHandler<DiscordEvent.MESSAGE> {
       },
     });
 
-    await prisma.userGroup.update({
-      where: { id: group.id },
-      data: { cooldown: cooldownNumber },
-    });
+    if (!group) {
+      Tools.handleUserError(message, "That group doesn't exist!")
+      return;
+    }
+
+    try {
+      await prisma.userGroup.update({
+        where: { id: group.id },
+        data: { cooldown: cooldownNumber },
+      });
+    } catch (error) {
+      logger.error("Failed to update database cooldown," + error);
+      await message.react("👎");
+      return;
+    }
 
     await message.react("👍");
   }

@@ -1,30 +1,39 @@
-import { Channel, Message, TextChannel } from "discord.js";
-import Tools from "../../common/tools";
-import { isAuthorModerator } from "../../common/moderator";
 import { GroupPingSetting, UserGroup } from "@yes-theory-fam/database/client";
-import { ChatNames } from "../../collections/chat-names";
-import prisma from "../../prisma";
-import { timeRemainingForDeadchat } from "./common";
+import { Message } from "discord.js";
+import { ChatNames } from "../../../collections/chat-names";
+import { isAuthorModerator } from "../../../common/moderator";
+import Tools from "../../../common/tools";
 import {
   Command,
   CommandHandler,
-  DiscordEvent,
-  EventLocation,
-} from "../../event-distribution";
+  DiscordEvent
+} from "../../../event-distribution";
+import prisma from "../../../prisma";
+import { timeRemainingForDeadchat } from "../common";
 
 @Command({
   event: DiscordEvent.MESSAGE,
   trigger: "@group",
-  location: EventLocation.SERVER,
+  categoryNames: ["hobbies", "gaming"],
+  channelNames: [
+    ChatNames.CHAT.toString(),
+    ChatNames.CHAT_TOO.toString(),
+    ChatNames.FOURTH_CHAT.toString(),
+    ChatNames.CHAT_FIVE.toString(),
+    ChatNames.VOICE_CHAT.toString(),
+    ChatNames.VOICE_CHAT_TWO.toString(),
+    ChatNames.SELF_DEVELOPMENT.toString(),
+    ChatNames.LEARNING_SPANISH.toString(),
+    ChatNames.DAILY_CHALLENGE.toString(),
+    ChatNames.YESTHEORY_DISCUSSION.toString(),
+    "permanent-testing",
+  ],
   description: "This handler is to ping all users in the group",
 })
 class PingGroup implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
     const content = message.content;
 
-    if (!isChannelAllowed(message.channel)) {
-      return;
-    }
     const lines = content.split("\n");
     const unquoted = lines.filter((line) => !line.startsWith(">")).join("\n");
     const hasUnquotedGroupPing = unquoted.includes("@group");
@@ -118,31 +127,3 @@ class PingGroup implements CommandHandler<DiscordEvent.MESSAGE> {
   }
 }
 
-const isChannelAllowed = (channel: Channel): boolean => {
-  const isTextChannel = (channel: Channel): channel is TextChannel =>
-    (channel as TextChannel).name && !!(channel as TextChannel).parent;
-  if (!isTextChannel(channel)) return;
-
-  const allowedCategories = ["hobbies", "gaming"];
-  const allowedChannels = [
-    ChatNames.CHAT.toString(),
-    ChatNames.CHAT_TOO.toString(),
-    ChatNames.FOURTH_CHAT.toString(),
-    ChatNames.CHAT_FIVE.toString(),
-    ChatNames.VOICE_CHAT.toString(),
-    ChatNames.VOICE_CHAT_TWO.toString(),
-    ChatNames.SELF_DEVELOPMENT.toString(),
-    ChatNames.LEARNING_SPANISH.toString(),
-    ChatNames.DAILY_CHALLENGE.toString(),
-    ChatNames.YESTHEORY_DISCUSSION.toString(),
-  ];
-
-  if (
-    allowedCategories.some((category) =>
-      channel.parent?.name?.toLowerCase()?.includes(category)
-    )
-  )
-    return true;
-
-  return allowedChannels.includes(channel.name);
-};

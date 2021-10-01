@@ -1,17 +1,15 @@
 import { Message, MessageEmbed, MessageReaction, User } from "discord.js";
 import {
-  Command,
-  DiscordEvent,
-  CommandHandler,
-} from "../../event-distribution";
-import prisma from "../../prisma";
-import { GroupWithMemberRelationList } from "./common";
+  Command, CommandHandler, DiscordEvent
+} from "../../../event-distribution";
+import prisma from "../../../prisma";
+import { GroupWithMemberRelationList } from "../common";
 
 @Command({
   event: DiscordEvent.MESSAGE,
   trigger: "!group",
   subTrigger: "search",
-  channelNames: ["bot-commands"],
+  channelNames: ["bot-commands", "permanent-testing"],
   description: "This handler is to search all groups or the specified group",
 })
 class SearchGroup implements CommandHandler<DiscordEvent.MESSAGE> {

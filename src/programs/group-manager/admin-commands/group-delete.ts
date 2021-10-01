@@ -1,10 +1,7 @@
 import { Message } from "discord.js";
-import {
-  Command,
-  DiscordEvent,
-  CommandHandler,
-} from "../../event-distribution";
-import prisma from "../../prisma";
+import { Command, CommandHandler, DiscordEvent } from "../../../event-distribution";
+import prisma from "../../../prisma";
+import { logger } from "../common";
 
 @Command({
   event: DiscordEvent.MESSAGE,
@@ -31,8 +28,14 @@ class DeleteGroup implements CommandHandler<DiscordEvent.MESSAGE> {
       await message.reply("That group does not exist!");
       return;
     }
-
-    await prisma.userGroup.delete({ where: { id: group.id } });
+    try { 
+      await prisma.userGroup.delete({ where: { id: group.id } });
+    } catch (error) {
+      logger.error("Failed to delete group," + error);
+      await message.react("👎");
+      return;
+    }
+    
     await message.react("👍");
   }
 }

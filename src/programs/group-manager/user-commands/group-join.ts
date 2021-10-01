@@ -1,16 +1,14 @@
 import { Message } from "discord.js";
 import {
-  Command,
-  DiscordEvent,
-  CommandHandler,
-} from "../../event-distribution";
-import { groupInteractionAndReport, tryJoinGroups } from "./common";
+  Command, CommandHandler, DiscordEvent
+} from "../../../event-distribution";
+import { groupInteractionAndReport, tryJoinGroups } from "../common";
 
 @Command({
   event: DiscordEvent.MESSAGE,
   trigger: "!group",
   subTrigger: "join",
-  channelNames: ["bot-commands"],
+  channelNames: ["bot-commands", "permanent-testing"],
   description: "This handler is to join a group",
 })
 class JoinGroup implements CommandHandler<DiscordEvent.MESSAGE> {
