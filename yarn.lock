@@ -785,10 +785,12 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
-"@types/countries-and-timezones@2.0.3":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@types/countries-and-timezones/-/countries-and-timezones-2.0.3.tgz#0b889d6105ad33c4995b5fc3b84636156aa3acfd"
-  integrity sha512-P1LCigalHJA3fOsMNqXAzjkiaK5VCFaXUpHqIwUoc19clJoD/2VlC9JuRWizP3YCPeNekJBANEY9IFSIp0prBw==
+"@types/countries-and-timezones@3.2.2":
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/@types/countries-and-timezones/-/countries-and-timezones-3.2.2.tgz#cdb7de4874c67a5696ef35f90b34570a6eab3d01"
+  integrity sha512-D5279Q80+41KzOqfUX+sLorACjPE7PeNcJs/E5mnKfARCxKuSnXIeIkr2GcqmgJdZqGrtXBS19dIi9WMan9ZfQ==
+  dependencies:
+    countries-and-timezones "*"
 
 "@types/cross-spawn@6.0.2":
   version "6.0.2"
@@ -1489,10 +1491,10 @@ core-util-is@~1.0.0:
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
   integrity sha1-tf1UIgqivFq1eqtxQMlAdUUDwac=
 
-countries-and-timezones@3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/countries-and-timezones/-/countries-and-timezones-3.1.0.tgz#94865b19810e3bf720bf352fc9b192ffcdea34b6"
-  integrity sha512-Y7iF+Vz1rmTVRbbmvslYn7rnvu5pq8M/7+Z6tXuB4xQod4GA6k1qhbIPAIR/t4uZjgTpfOLX1/p/Q93nyi/mug==
+countries-and-timezones@*, countries-and-timezones@3.2.3:
+  version "3.2.3"
+  resolved "https://registry.yarnpkg.com/countries-and-timezones/-/countries-and-timezones-3.2.3.tgz#3b158405a0e7c576e2b801a70ca09b39dc890ecf"
+  integrity sha512-0thBj2T0cFndkCSRAmcMdUXISgX4lZIwqyPg3XfstNy5zT2EGgy5Hx+J4k5GU6X5ZLlveRW8KF7WhLH3/qMp4g==
 
 country-code-emoji@2.3.0:
   version "2.3.0"
