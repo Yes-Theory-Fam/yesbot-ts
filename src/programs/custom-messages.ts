@@ -48,7 +48,7 @@ const randomReply = (message: Message) => {
     "never in a million years",
     "claro que si", // yes of course
     "just do it (not sponsored by nike)",
-    "hahahahahhaha... no."
+    "hahahahahhaha... no.",
   ];
   message.reply(`${replies[Math.floor(Math.random() * replies.length)]}`);
 };
