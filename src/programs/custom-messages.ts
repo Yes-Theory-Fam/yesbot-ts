@@ -49,6 +49,14 @@ const randomReply = (message: Message) => {
     "claro que si", // yes of course
     "just do it (not sponsored by nike)",
     "hahahahahhaha... no.",
+    "yes, I totally agree",
+    "as long as I’m alive.",
+    "have you forgotten? I’m a yes-man!",
+    "yes, yes, and yes!",
+    "definitely not NO.",
+    "i do not disagree.",
+    "i haven’t said no yet, right?",
+    "my enthusiastic nodding says it all.",
   ];
   message.reply(`${replies[Math.floor(Math.random() * replies.length)]}`);
 };
