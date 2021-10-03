@@ -28,13 +28,27 @@ class CustomMessageMethods implements CommandHandler<DiscordEvent.MESSAGE> {
 const randomReply = (message: Message) => {
   let replies = [
     "yes.",
+    "no",
     "probably.",
     "doubtful.",
     "i'm afraid I don't know that one",
     "absolutely not.",
+    "absolutely",
     "not a chance.",
     "definitely.",
     "very very very unlikely",
+    "i forgor 💀",
+    "i think you already know the answer",
+    "you wish",
+    "sure why not?",
+    "bet!",
+    "surely not!",
+    "never",
+    "flip a coin: Head is yes, Tails is no",
+    "never in a million years",
+    "claro que si", // yes of course
+    "just do it (not sponsored by nike)",
+    "hahahahahhaha... no."
   ];
   message.reply(`${replies[Math.floor(Math.random() * replies.length)]}`);
 };
