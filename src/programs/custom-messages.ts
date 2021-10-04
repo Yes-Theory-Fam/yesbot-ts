@@ -37,8 +37,7 @@ const randomReply = (message: Message) => {
     "not a chance.",
     "definitely.",
     "very very very unlikely",
-    "i forgor 💀",
-    "i think you already know the answer",
+    "I think you already know the answer",
     "you wish",
     "sure why not?",
     "bet!",
@@ -54,8 +53,8 @@ const randomReply = (message: Message) => {
     "have you forgotten? I’m a yes-man!",
     "yes, yes, and yes!",
     "definitely not NO.",
-    "i do not disagree.",
-    "i haven’t said no yet, right?",
+    "I do not disagree.",
+    "I haven’t said no yet, right?",
     "my enthusiastic nodding says it all.",
   ];
   message.reply(`${replies[Math.floor(Math.random() * replies.length)]}`);
