@@ -75,10 +75,7 @@ export class CleanupActivity {
   private static calculateValue(value: number, activeMinutes: number) {
     const counter = value === 0 ? 1 : value;
     const preFactor = counter / activeMinutes;
-    let factor = 1;
-    if (preFactor < 1) {
-      factor = preFactor;
-    }
+    const factor = Math.min(preFactor, 1);
     return activeMinutes * factor;
   }
 
