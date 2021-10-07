@@ -5,7 +5,7 @@ import {
   DiscordEvent,
 } from "../../../event-distribution";
 import prisma from "../../../prisma";
-import { logger } from "../common";
+import { getRequestedGroup, logger } from "../common";
 
 @Command({
   event: DiscordEvent.MESSAGE,
@@ -26,28 +26,25 @@ class CreateGroup implements CommandHandler<DiscordEvent.MESSAGE> {
       return;
     }
 
-    const group = await prisma.userGroup.findFirst({
-      where: {
-        name: requestedGroupName,
-      },
-    });
+    const group = await getRequestedGroup(requestedGroupName);
 
     if (group) {
       await message.reply("That group already exists!");
       return;
     }
-    try {
-      await prisma.userGroup.create({
+
+    await prisma.userGroup
+      .create({
         data: {
           name: requestedGroupName,
           description,
         },
+      })
+      .catch(async (error) => {
+        logger.error("Failed to create group, ", error);
+        await message.react("👎");
+        return;
       });
-    } catch (error) {
-      logger.error("Failed to create group," + error);
-      await message.react("👎");
-      return;
-    }
 
     await message.react("👍");
   }

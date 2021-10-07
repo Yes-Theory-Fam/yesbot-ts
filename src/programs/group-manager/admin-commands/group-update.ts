@@ -5,7 +5,7 @@ import {
   DiscordEvent,
 } from "../../../event-distribution";
 import prisma from "../../../prisma";
-import { logger } from "../common";
+import { getRequestedGroup, logger } from "../common";
 
 @Command({
   event: DiscordEvent.MESSAGE,
@@ -25,14 +25,7 @@ class UpdateGroup implements CommandHandler<DiscordEvent.MESSAGE> {
       return;
     }
 
-    const group = await prisma.userGroup.findFirst({
-      where: {
-        name: {
-          equals: requestedGroupName,
-          mode: "insensitive",
-        },
-      },
-    });
+    const group = await getRequestedGroup(requestedGroupName);
 
     if (!group) {
       await message.reply("That group doesn't exist!");
@@ -41,16 +34,16 @@ class UpdateGroup implements CommandHandler<DiscordEvent.MESSAGE> {
 
     const previousDescription = group.description;
 
-    try {
-      await prisma.userGroup.update({
+    await prisma.userGroup
+      .update({
         where: { id: group.id },
         data: { description },
+      })
+      .catch(async (error) => {
+        logger.error("Failed to update group description, ", error);
+        await message.react("👎");
+        return;
       });
-    } catch (error) {
-      logger.error("Failed to update group description," + error);
-      await message.react("👎");
-      return;
-    }
 
     await message.reply(
       `Group description updated from \n> ${previousDescription} \nto \n> ${description}`

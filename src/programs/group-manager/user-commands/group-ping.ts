@@ -9,7 +9,11 @@ import {
   DiscordEvent,
 } from "../../../event-distribution";
 import prisma from "../../../prisma";
-import { timeRemainingForDeadchat } from "../common";
+import {
+  findManyRequestedGroups,
+  logger,
+  timeRemainingForDeadchat,
+} from "../common";
 
 @Command({
   event: DiscordEvent.MESSAGE,
@@ -46,11 +50,7 @@ class PingGroup implements CommandHandler<DiscordEvent.MESSAGE> {
     args.shift();
     const [requestName] = args;
 
-    const groups = await prisma.userGroup.findMany({
-      include: {
-        userGroupMembersGroupMembers: { include: { groupMember: true } },
-      },
-    });
+    const groups = await findManyRequestedGroups(requestName);
     const matchingGroups = groups.filter(
       (group: UserGroup) =>
         group.name.toLowerCase() == requestName.toLowerCase()

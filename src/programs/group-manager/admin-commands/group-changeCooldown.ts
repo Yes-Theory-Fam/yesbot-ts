@@ -6,7 +6,7 @@ import {
   DiscordEvent,
 } from "../../../event-distribution";
 import prisma from "../../../prisma";
-import { logger } from "../common";
+import { getRequestedGroup, logger } from "../common";
 
 @Command({
   event: DiscordEvent.MESSAGE,
@@ -30,30 +30,23 @@ class ChangeCooldown implements CommandHandler<DiscordEvent.MESSAGE> {
       return;
     }
 
-    const group = await prisma.userGroup.findFirst({
-      where: {
-        name: {
-          equals: requestedGroupName,
-          mode: "insensitive",
-        },
-      },
-    });
+    const group = await getRequestedGroup(requestedGroupName);
 
     if (!group) {
       Tools.handleUserError(message, "That group doesn't exist!");
       return;
     }
 
-    try {
-      await prisma.userGroup.update({
+    await prisma.userGroup
+      .update({
         where: { id: group.id },
         data: { cooldown: cooldownNumber },
+      })
+      .catch(async (error) => {
+        logger.error("Failed to update database cooldown, ", error);
+        await message.react("👎");
+        return;
       });
-    } catch (error) {
-      logger.error("Failed to update database cooldown," + error);
-      await message.react("👎");
-      return;
-    }
 
     await message.react("👍");
   }

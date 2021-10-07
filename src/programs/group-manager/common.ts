@@ -213,3 +213,26 @@ export const timeRemainingForDeadchat = async (
 
   return group.deadtime - Math.round(timeDifference);
 };
+
+export const getRequestedGroup = async (requestedGroupName: string) => {
+  return await prisma.userGroup.findFirst({
+    where: {
+      name: {
+        equals: requestedGroupName,
+        mode: "insensitive",
+      },
+    },
+  });
+};
+
+export const findManyRequestedGroups = async (requestedGroupName: string) => {
+  return prisma.userGroup.findMany({
+    where: {
+      name: {
+        contains: requestedGroupName,
+        mode: "insensitive",
+      },
+    },
+    include: { userGroupMembersGroupMembers: true },
+  });
+};

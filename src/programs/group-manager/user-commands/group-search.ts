@@ -5,7 +5,10 @@ import {
   DiscordEvent,
 } from "../../../event-distribution";
 import prisma from "../../../prisma";
-import { GroupWithMemberRelationList } from "../common";
+import {
+  findManyRequestedGroups,
+  GroupWithMemberRelationList,
+} from "../common";
 
 @Command({
   event: DiscordEvent.MESSAGE,
@@ -28,17 +31,9 @@ class SearchGroup implements CommandHandler<DiscordEvent.MESSAGE> {
       b.userGroupMembersGroupMembers.length -
       a.userGroupMembersGroupMembers.length;
 
-    const copy = (
-      await prisma.userGroup.findMany({
-        where: {
-          name: {
-            contains: requestedGroupName,
-            mode: "insensitive",
-          },
-        },
-        include: { userGroupMembersGroupMembers: true },
-      })
-    ).sort(byMemberCount);
+    const copy = (await findManyRequestedGroups(requestedGroupName)).sort(
+      byMemberCount
+    );
 
     if (copy.length === 0) {
       await message.reply("No matching groups were found.");
