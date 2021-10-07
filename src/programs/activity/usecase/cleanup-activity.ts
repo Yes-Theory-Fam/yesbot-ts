@@ -42,7 +42,11 @@ export class CleanupActivity {
       const activeMinutes: number = CleanupActivity.millisToMinutesAndSeconds(
         activeTimeInMilliseconds
       );
-      return { userId: value.userId, activeMinutes };
+      const result = CleanupActivity.calculateValue(
+        value.counter,
+        activeMinutes
+      );
+      return { userId: value.userId, activeMinutes: result };
     });
 
     const movedActivities = data.map((value) => {
@@ -66,6 +70,16 @@ export class CleanupActivity {
         });
       })
       .then(() => logger.info(`deleted activities: ${activities.length}`));
+  }
+
+  private static calculateValue(value: number, activeMinutes: number) {
+    const counter = value === 0 ? 1 : value;
+    const preFactor = counter / activeMinutes;
+    let factor = 1;
+    if (preFactor < 1) {
+      factor = preFactor;
+    }
+    return activeMinutes * factor;
   }
 
   private static createCurrencyForUser(value: {

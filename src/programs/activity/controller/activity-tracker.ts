@@ -3,20 +3,24 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-  EventLocation,
 } from "../../../event-distribution";
 import { UpdateActivity } from "../usecase/update-activity";
 import { ChatNames } from "../../../collections/chat-names";
 
 @Command({
   event: DiscordEvent.MESSAGE,
-  channelNames: [
-    ChatNames.BOT_DEVELOPMENT, // we will start in this channel while this feature is under development
-    ChatNames.CHAT,
-    ChatNames.CHAT_FIVE,
-    ChatNames.CHAT_TOO,
-    ChatNames.FOURTH_CHAT,
+  categoryNames: [
+    "Africa",
+    "Asia",
+    "Chatting",
+    "Europe",
+    "Gaming",
+    "Hobbies",
+    "North America",
+    "Oceania",
+    "South America",
   ],
+  channelNames: [ChatNames.BOT_DEVELOPMENT],
   description: "This handler tracks the activity of users on this server.",
 })
 export class ActivityTracker implements CommandHandler<DiscordEvent.MESSAGE> {
