@@ -1,4 +1,4 @@
-name: Linting
+name: Build
 
 on:
   push:
@@ -36,7 +36,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: install and lint
+      - name: install and compile
         run: |
           yarn install --frozen-lockfile
-          yarn tsc
+          yarn tsc --noEmit
