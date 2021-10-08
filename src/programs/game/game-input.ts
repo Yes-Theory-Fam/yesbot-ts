@@ -15,7 +15,7 @@ import { hub } from "./initiate-gamehub";
 })
 class HandleGameInput implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
-    if (message.channel.type == "dm") {
+    if (message.channel.type == "DM") {
       hub.routeMessage(message);
       return;
     }

@@ -1,4 +1,4 @@
-import {
+import Discord, {
   GuildMember,
   Message,
   MessageEmbed,
@@ -90,13 +90,18 @@ export default class GameHub {
     };
   }
 
-  buildEmbed(authorId: Snowflake): string | MessageEmbed {
+  buildEmbed(authorId: Snowflake): MessageEmbed {
     const activeSession = this.findPlayerSession(authorId);
+    const embed = new Discord.MessageEmbed();
+
     if (activeSession) {
-      return "You are already in a game and can't start a new one!";
+      embed.setTitle("Ongoing session");
+      embed.setDescription(
+        "You are already in a game and can't start a new one!"
+      );
+      return embed;
     }
 
-    const embed = new MessageEmbed();
     embed.setTitle("Available games");
     for (const emoji in this.games) {
       if (!this.games.hasOwnProperty(emoji)) {

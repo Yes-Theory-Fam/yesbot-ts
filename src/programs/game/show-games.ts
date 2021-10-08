@@ -15,7 +15,11 @@ import { hub } from "./initiate-gamehub";
 })
 class ShowGameEmbed implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
-    const embedMessage = await message.reply(hub.buildEmbed(message.author.id));
+    const embed = hub.buildEmbed(message.author.id);
+    const embedMessage = await message.reply({ embeds: [embed] });
+
+    if (embed.title === "Ongoing session") return;
+
     const emojis = hub.getEmojis();
 
     const selection = await Tools.addVote(
