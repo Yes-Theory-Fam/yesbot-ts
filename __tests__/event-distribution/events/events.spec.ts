@@ -73,7 +73,6 @@ describe("EventDistribution events", () => {
   it("should call addReactionHandler on DiscordEvent.REACTION_REMOVE", () => {
     addEventHandler(
       {
-        description: "",
         event: DiscordEvent.REACTION_REMOVE,
         emoji: "♥️",
       },
@@ -88,7 +87,6 @@ describe("EventDistribution events", () => {
   it("should call addReactionHandler on DiscordEvent.REACTION_ADD", () => {
     addEventHandler(
       {
-        description: "",
         event: DiscordEvent.REACTION_ADD,
         emoji: "♥️",
       },
