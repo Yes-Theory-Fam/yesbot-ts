@@ -103,7 +103,6 @@ export class EventDistribution {
         logger.error(`Error running handler ${getIocName(ioc)}: `, {
           error: e,
         });
-        new Error();
         const reason = e instanceof Error ? e.message : e.toString();
         if (errors && errors[reason]) {
           const text = errors[reason];
