@@ -46,12 +46,12 @@ distribution.initialize().then(() => {
 bot.on(
   "guildMemberRemove",
   async (member: GuildMember | PartialGuildMember) => {
-    distribution.handleEvent(DiscordEvent.MEMBER_LEAVE, member);
+    await distribution.handleEvent(DiscordEvent.MEMBER_LEAVE, member);
     await memberLeave(member);
   }
 );
 bot.on("guildMemberAdd", async (member: GuildMember | PartialGuildMember) => {
-  distribution.handleEvent(DiscordEvent.MEMBER_JOIN, member);
+  await distribution.handleEvent(DiscordEvent.MEMBER_JOIN, member);
 });
 bot.on(
   "guildMemberUpdate",
@@ -60,16 +60,16 @@ bot.on(
     newMember: GuildMember | PartialGuildMember
   ) => {
     await guildMemberUpdate(oldMember, newMember);
-    distribution.handleEvent(
+    await distribution.handleEvent(
       DiscordEvent.GUILD_MEMBER_UPDATE,
       oldMember,
       newMember
     );
   }
 );
-bot.on("message", async (msg: Message) => {
+bot.on("messageCreate", async (msg: Message) => {
   await messageManager(msg);
-  distribution.handleEvent(DiscordEvent.MESSAGE, msg);
+  await distribution.handleEvent(DiscordEvent.MESSAGE, msg);
 });
 bot.on(
   "messageReactionAdd",
@@ -77,7 +77,11 @@ bot.on(
     messageReaction: MessageReaction | PartialMessageReaction,
     user: User | PartialUser
   ) => {
-    distribution.handleEvent(DiscordEvent.REACTION_ADD, messageReaction, user);
+    await distribution.handleEvent(
+      DiscordEvent.REACTION_ADD,
+      messageReaction,
+      user
+    );
   }
 );
 bot.on(
@@ -86,7 +90,7 @@ bot.on(
     messageReaction: MessageReaction | PartialMessageReaction,
     user: User | PartialUser
   ) => {
-    distribution.handleEvent(
+    await distribution.handleEvent(
       DiscordEvent.REACTION_REMOVE,
       messageReaction,
       user
@@ -94,14 +98,14 @@ bot.on(
   }
 );
 bot.on("ready", async () => {
-  distribution.handleEvent(DiscordEvent.READY, bot);
+  await distribution.handleEvent(DiscordEvent.READY, bot);
   LoadCron.init();
   await ready(bot);
 });
 bot.on(
   "voiceStateUpdate",
   async (oldState: VoiceState, newState: VoiceState) => {
-    distribution.handleEvent(
+    await distribution.handleEvent(
       DiscordEvent.VOICE_STATE_UPDATE,
       oldState,
       newState
