@@ -83,8 +83,7 @@ export class EventDistribution {
 
     const acceptedHiocs = filterResults
       .filter(({ accepted }) => accepted)
-      .map(({ handler }: FilterResult<T>) => handler)
-      .filter((h, i, a) => a.indexOf(h) === i);
+      .map(({ handler }: FilterResult<T>) => handler);
 
     const completedIocs: InstanceOrConstructor<CommandHandler<T>>[] = [];
 
