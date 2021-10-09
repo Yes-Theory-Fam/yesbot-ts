@@ -19,30 +19,29 @@ export class ReleaseNotesController extends CommandHandler<DiscordEvent.READY> {
     this.githubReleaseNotesUseCase = new GithubReleaseNotesUsecase();
   }
 
-  handle(client: Client): void {
-    this.githubReleaseNotesUseCase.handle().then(async (message) => {
-      if (!!message.tagMessage) {
-        const updateChannel = client.guilds
-          .resolve(process.env.GUILD_ID)
-          .channels.cache.find(
-            (channel) => channel.name === ChatNames.UPDATES
-          ) as TextChannel;
-        await updateChannel.send(message.tagMessage);
-      } else {
-        logger.info("There was no new tagMessage");
-      }
+  async handle(client: Client): Promise<void> {
+    const message = await this.githubReleaseNotesUseCase.handle();
+    if (!!message.tagMessage) {
+      const updateChannel = client.guilds
+        .resolve(process.env.GUILD_ID)
+        .channels.cache.find(
+          (channel) => channel.name === ChatNames.UPDATES
+        ) as TextChannel;
+      await updateChannel.send(message.tagMessage);
+    } else {
+      logger.info("There was no new tagMessage");
+    }
 
-      if (!!message.releaseNotes) {
-        const botDevChannel = client.guilds
-          .resolve(process.env.GUILD_ID)
-          .channels.cache.find(
-            (channel) => channel.name === ChatNames.BOT_DEVELOPMENT
-          ) as TextChannel;
-        await botDevChannel.send(message.releaseNotes);
-      } else {
-        logger.info("There was no new releaseNotes");
-      }
-    });
+    if (!!message.releaseNotes) {
+      const botDevChannel = client.guilds
+        .resolve(process.env.GUILD_ID)
+        .channels.cache.find(
+          (channel) => channel.name === ChatNames.BOT_DEVELOPMENT
+        ) as TextChannel;
+      await botDevChannel.send(message.releaseNotes);
+    } else {
+      logger.info("There was no new releaseNotes");
+    }
   }
 }
 
