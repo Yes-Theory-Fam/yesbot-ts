@@ -1,8 +1,18 @@
-import { DiscordEvent } from ".";
-import { HIOC, StringIndexedHIOCTree } from "./types/hioc";
+import { CommandHandler, DiscordEvent } from ".";
+import {
+  HIOC,
+  InstanceOrConstructor,
+  StringIndexedHIOCTree,
+} from "./types/hioc";
 
 export const getIdFromCategoryName = (name: string) =>
   `c_${name.toLowerCase()}`;
+
+export const getIocName = <T extends DiscordEvent>(
+  ioc: InstanceOrConstructor<CommandHandler<T>>
+) => {
+  return typeof ioc === "function" ? ioc.name : ioc.constructor.name;
+};
 
 export const addToTree = <T extends DiscordEvent>(
   keys: string[],

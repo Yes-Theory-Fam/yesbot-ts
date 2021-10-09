@@ -21,9 +21,15 @@ export const enum EventLocation {
   ANYWHERE = "ANYWHERE",
 }
 
+export const enum HandlerRejectedReason {
+  MISSING_ROLE = "MISSING_ROLE",
+  WRONG_LOCATION = "WRONG_LOCATION",
+}
+
 export interface BaseOptions {
   event: DiscordEvent;
   stateful?: boolean;
+  errors?: Record<string, string>;
 }
 
 export interface MessageRelatedOptions extends BaseOptions {
