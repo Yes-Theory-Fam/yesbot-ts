@@ -1,18 +1,17 @@
 import {
   AddEventHandlerFunction,
+  BaseOptions,
   DiscordEvent,
   ExtractInfoForEventFunction,
   HandlerFunctionFor,
 } from "..";
 import { createYesBotLogger } from "../../log";
-import { HIOC } from "../types/hioc";
 import { Timer } from "@yes-theory-fam/database/client";
 import { addToTree } from "../helper";
 
-export interface TimerEventHandlerOptions {
+export interface TimerEventHandlerOptions extends BaseOptions {
   event: DiscordEvent.TIMER;
   handlerIdentifier: string;
-  stateful?: false;
 }
 
 export type TimerHandlerFunction<T extends DiscordEvent> = HandlerFunctionFor<

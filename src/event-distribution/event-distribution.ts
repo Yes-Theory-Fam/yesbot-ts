@@ -3,6 +3,7 @@ import {
   EventHandlerOptions,
   extractEventInfo,
   HandlerFunction,
+  isMessageRelated,
 } from "./events/events";
 import glob from "glob";
 import path from "path";
@@ -114,15 +115,7 @@ export class EventDistribution {
     roleNames: string[]
   ): HIOC<T>[] {
     const locationFilteredHandlers = handlers.filter((eh) => {
-      if (
-        eh.options.event === DiscordEvent.GUILD_MEMBER_UPDATE ||
-        eh.options.event === DiscordEvent.MEMBER_LEAVE ||
-        eh.options.event === DiscordEvent.VOICE_STATE_UPDATE ||
-        eh.options.event === DiscordEvent.TIMER ||
-        eh.options.event === DiscordEvent.READY ||
-        eh.options.event === DiscordEvent.MEMBER_JOIN
-      )
-        return true;
+      if (!isMessageRelated(eh.options)) return true;
 
       const { location } = eh.options;
       switch (location) {
@@ -136,15 +129,7 @@ export class EventDistribution {
     });
 
     return locationFilteredHandlers.filter((eh) => {
-      if (
-        eh.options.event === DiscordEvent.GUILD_MEMBER_UPDATE ||
-        eh.options.event === DiscordEvent.MEMBER_LEAVE ||
-        eh.options.event === DiscordEvent.VOICE_STATE_UPDATE ||
-        eh.options.event === DiscordEvent.TIMER ||
-        eh.options.event === DiscordEvent.READY ||
-        eh.options.event === DiscordEvent.MEMBER_JOIN
-      )
-        return true;
+      if (!isMessageRelated(eh.options)) return true;
 
       const { allowedRoles } = eh.options;
       return (

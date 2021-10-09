@@ -1,15 +1,16 @@
 import {
   AddEventHandlerFunction,
-  BaseOptions,
   DiscordEvent,
   ExtractInfoForEventFunction,
   HandlerFunctionFor,
+  MessageRelatedOptions,
 } from "../types/base";
 import { GuildChannel, Message, TextBasedChannels } from "discord.js";
 import { addToTree, getIdFromCategoryName } from "../helper";
 
-export interface MessageEventHandlerOptions extends BaseOptions {
+export interface MessageEventHandlerOptions extends MessageRelatedOptions {
   event: DiscordEvent.MESSAGE;
+  description: string;
   trigger?: string;
   subTrigger?: string;
 }

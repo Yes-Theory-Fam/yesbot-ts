@@ -24,7 +24,9 @@ export const enum EventLocation {
 export interface BaseOptions {
   event: DiscordEvent;
   stateful?: boolean;
-  description: string;
+}
+
+export interface MessageRelatedOptions extends BaseOptions {
   allowedRoles?: string[];
   channelNames?: string[];
   categoryNames?: string[];

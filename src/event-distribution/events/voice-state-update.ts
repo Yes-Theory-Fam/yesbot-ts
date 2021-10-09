@@ -1,5 +1,6 @@
 import {
   AddEventHandlerFunction,
+  BaseOptions,
   DiscordEvent,
   ExtractInfoForEventFunction,
   HandlerFunctionFor,
@@ -15,10 +16,9 @@ export enum VoiceStateChange {
   UNMUTED = "UNMUTED",
 }
 
-export interface VoiceStateUpdateEventHandlerOptions {
+export interface VoiceStateUpdateEventHandlerOptions extends BaseOptions {
   event: DiscordEvent.VOICE_STATE_UPDATE;
   changes: [VoiceStateChange, ...VoiceStateChange[]];
-  stateful?: false;
 }
 
 export type VoiceStateHandlerFunction<T extends DiscordEvent> =

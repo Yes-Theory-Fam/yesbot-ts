@@ -1,5 +1,6 @@
 import {
   AddEventHandlerFunction,
+  BaseOptions,
   DiscordEvent,
   ExtractInfoForEventFunction,
   HandlerFunctionFor,
@@ -14,9 +15,8 @@ import {
 import { HIOC, StringIndexedHIOCTree } from "../types/hioc";
 import { addToTree } from "../helper";
 
-export interface GuildMemberUpdateEventHandlerOptions {
+export interface GuildMemberUpdateEventHandlerOptions extends BaseOptions {
   event: DiscordEvent.GUILD_MEMBER_UPDATE;
-  stateful?: false;
   roleNamesAdded?: string[];
   roleNamesRemoved?: string[];
 }
