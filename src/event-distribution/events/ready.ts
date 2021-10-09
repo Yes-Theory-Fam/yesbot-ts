@@ -1,5 +1,6 @@
 import {
   AddEventHandlerFunction,
+  BaseOptions,
   DiscordEvent,
   ExtractInfoForEventFunction,
   HandlerFunctionFor,
@@ -7,9 +8,8 @@ import {
 import { Client } from "discord.js";
 import { addToTree } from "../helper";
 
-export interface ReadyEventHandlerOptions {
+export interface ReadyEventHandlerOptions extends BaseOptions {
   event: DiscordEvent.READY;
-  stateful?: false;
 }
 
 export type ReadyHandlerFunction<T extends DiscordEvent> = HandlerFunctionFor<

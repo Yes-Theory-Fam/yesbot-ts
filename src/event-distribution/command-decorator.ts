@@ -1,5 +1,5 @@
-import { EventHandlerOptions } from "./events/events";
-import { BaseOptions, DiscordEvent, EventLocation } from "./types/base";
+import { EventHandlerOptions, isMessageRelated } from "./events/events";
+import { EventLocation, MessageRelatedOptions } from "./types/base";
 import { HandlerClass } from "./types/handler";
 import distribution from "./index";
 import { createYesBotLogger } from "../log";
@@ -9,30 +9,16 @@ const explanation =
   "Commands that require roles or channel names won't work in DMs since the roles cannot be read from DM events.";
 
 export const Command = <T extends EventHandlerOptions>(options: T) => {
-  if (
-    options.event !== DiscordEvent.GUILD_MEMBER_UPDATE &&
-    options.event !== DiscordEvent.MEMBER_LEAVE &&
-    options.event !== DiscordEvent.VOICE_STATE_UPDATE &&
-    options.event !== DiscordEvent.TIMER &&
-    options.event !== DiscordEvent.READY &&
-    options.event !== DiscordEvent.MEMBER_JOIN
-  ) {
-    setDefaultOnBaseOptions(options);
+  if (isMessageRelated(options)) {
+    setDefaultOnMessageRelatedOptions(options);
   }
 
   return <U extends HandlerClass<T["event"]>>(target: U) => {
     const commandClassName = target.name;
     logger.debug(`Loading new command: ${target.name}`);
 
-    if (
-      options.event !== DiscordEvent.GUILD_MEMBER_UPDATE &&
-      options.event !== DiscordEvent.MEMBER_LEAVE &&
-      options.event !== DiscordEvent.VOICE_STATE_UPDATE &&
-      options.event !== DiscordEvent.TIMER &&
-      options.event !== DiscordEvent.READY &&
-      options.event !== DiscordEvent.MEMBER_JOIN
-    ) {
-      checkBaseOptions(options, commandClassName);
+    if (isMessageRelated(options)) {
+      checkMessageRelatedOptions(options, commandClassName);
     }
 
     try {
@@ -47,13 +33,13 @@ export const Command = <T extends EventHandlerOptions>(options: T) => {
   };
 };
 
-const baseOptionsRequireServer = (options: BaseOptions) => {
+const baseOptionsRequireServer = (options: MessageRelatedOptions) => {
   const channels = options.channelNames ?? [];
   const roles = options.allowedRoles ?? [];
   return channels.length > 0 || roles.length > 0;
 };
 
-const setDefaultOnBaseOptions = (options: BaseOptions) => {
+const setDefaultOnMessageRelatedOptions = (options: MessageRelatedOptions) => {
   options.location ??= baseOptionsRequireServer(options)
     ? EventLocation.SERVER
     : EventLocation.ANYWHERE;
@@ -61,7 +47,10 @@ const setDefaultOnBaseOptions = (options: BaseOptions) => {
   options.allowedRoles ??= [];
 };
 
-const checkBaseOptions = (options: BaseOptions, commandClassName: string) => {
+const checkMessageRelatedOptions = (
+  options: MessageRelatedOptions,
+  commandClassName: string
+) => {
   const requiresServer = baseOptionsRequireServer(options);
   if (requiresServer && options.location === EventLocation.DIRECT_MESSAGE) {
     logger.error(

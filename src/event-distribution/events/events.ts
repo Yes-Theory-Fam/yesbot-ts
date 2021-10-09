@@ -6,8 +6,10 @@ import {
 } from "./message";
 import {
   AddEventHandlerFunction,
+  BaseOptions,
   DiscordEvent,
   ExtractInfoFunction,
+  MessageRelatedOptions,
 } from "../types/base";
 import {
   addReactionHandler,
@@ -77,6 +79,13 @@ export type HandlerFunction<T extends DiscordEvent> =
   | TimerHandlerFunction<T>
   | VoiceStateHandlerFunction<T>
   | MemberJoinHandlerFunction<T>;
+
+export const isMessageRelated = (
+  options: BaseOptions
+): options is MessageRelatedOptions =>
+  options.event === DiscordEvent.MESSAGE ||
+  options.event === DiscordEvent.REACTION_ADD ||
+  options.event === DiscordEvent.REACTION_REMOVE;
 
 export const addEventHandler: AddEventHandlerFunction<EventHandlerOptions> = (
   options,

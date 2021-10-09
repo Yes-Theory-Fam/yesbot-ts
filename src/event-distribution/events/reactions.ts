@@ -1,9 +1,9 @@
 import {
   AddEventHandlerFunction,
-  BaseOptions,
   DiscordEvent,
   ExtractInfoForEventFunction,
   HandlerFunctionFor,
+  MessageRelatedOptions,
 } from "../types/base";
 import {
   GuildChannel,
@@ -15,7 +15,7 @@ import {
 } from "discord.js";
 import { addToTree, getIdFromCategoryName } from "../helper";
 
-export interface ReactionEventHandlerOptions extends BaseOptions {
+export interface ReactionEventHandlerOptions extends MessageRelatedOptions {
   emoji: string;
   event: DiscordEvent.REACTION_ADD | DiscordEvent.REACTION_REMOVE;
 }
