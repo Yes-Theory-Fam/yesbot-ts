@@ -117,11 +117,15 @@ export class EventDistribution {
     for (const { handler, reason } of rejections) {
       const {
         options: { errors },
+        ioc,
       } = handler;
+      if (completedIocs.includes(ioc)) continue;
       if (!errors || !errors[reason]) continue;
 
       const text = errors[reason];
       await rejectWithMessage(text, event, ...args);
+
+      completedIocs.push(ioc);
     }
   }
 
