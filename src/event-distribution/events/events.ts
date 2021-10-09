@@ -59,6 +59,7 @@ import {
   MemberJoinHandlerFunction,
 } from "./member-join";
 import { Timer } from "@yes-theory-fam/database/client";
+import { createYesBotLogger } from "../../log";
 
 export type EventHandlerOptions =
   | MemberLeaveEventHandlerOptions
@@ -79,6 +80,8 @@ export type HandlerFunction<T extends DiscordEvent> =
   | TimerHandlerFunction<T>
   | VoiceStateHandlerFunction<T>
   | MemberJoinHandlerFunction<T>;
+
+const logger = createYesBotLogger("event-distribution", "events");
 
 export const isMessageRelated = (
   options: BaseOptions
@@ -183,4 +186,19 @@ export const extractEventInfo: ExtractInfoFunction<DiscordEvent> = (
   const infos = getInfos();
 
   return Array.isArray(infos) ? infos : [infos];
+};
+
+export const rejectWithMessage = (
+  message: string,
+  event: DiscordEvent,
+  ...args: Parameters<HandlerFunction<DiscordEvent>>
+): Promise<unknown> => {
+  switch (event) {
+    case DiscordEvent.MESSAGE:
+      return (args[0] as Message).reply(message);
+    default:
+      logger.error(
+        `Tried to reject event ${event} with message: ${message} but rejection isn't implemented for this event.`
+      );
+  }
 };

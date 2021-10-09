@@ -4,24 +4,46 @@ import {
   extractEventInfo,
   HandlerFunction,
   isMessageRelated,
+  rejectWithMessage,
 } from "./events/events";
 import glob from "glob";
 import path from "path";
 import { createYesBotLogger } from "../log";
 import {
   HIOC,
+  InstanceOrConstructor,
   isHIOCArray,
   StringIndexedHIOCTree,
   StringIndexedHIOCTreeNode,
 } from "./types/hioc";
-import { HandlerClass } from "./types/handler";
-import { DiscordEvent, EventLocation, HandlerInfo } from "./types/base";
+import { CommandHandler, HandlerClass } from "./types/handler";
+import {
+  DiscordEvent,
+  EventLocation,
+  HandlerInfo,
+  HandlerRejectedReason,
+} from "./types/base";
+import { getIocName } from "./helper";
 
 const logger = createYesBotLogger("event-distribution", "event-distribution");
 
 type EventDistributionHandlers = {
   [key in DiscordEvent]: StringIndexedHIOCTree<key>;
 };
+
+type FilterRejection<T extends DiscordEvent> = {
+  handler: HIOC<T>;
+  accepted: false;
+  reason: HandlerRejectedReason;
+};
+
+type FilterResult<T extends DiscordEvent> =
+  | { handler: HIOC<T>; accepted: true }
+  | FilterRejection<T>;
+
+const isRejection = <T extends DiscordEvent>(
+  result: FilterResult<T>
+): result is FilterRejection<T> => !result.accepted;
 
 export class EventDistribution {
   handlers: EventDistributionHandlers = {
@@ -36,7 +58,10 @@ export class EventDistribution {
     [DiscordEvent.MEMBER_JOIN]: {},
   };
 
-  infoToIocs<T extends DiscordEvent>(info: HandlerInfo, event: T): HIOC<T>[] {
+  private infoToFilterResults<T extends DiscordEvent>(
+    info: HandlerInfo,
+    event: T
+  ): FilterResult<T>[] {
     const { handlerKeys, isDirectMessage, member } = info;
 
     const roleNames = member?.roles.cache.map((r) => r.name) ?? [];
@@ -47,21 +72,57 @@ export class EventDistribution {
     return this.filterHandlers<T>(eventHandlers, isDirectMessage, roleNames);
   }
 
-  handleEvent<T extends DiscordEvent>(
+  async handleEvent<T extends DiscordEvent>(
     event: T,
     ...args: Parameters<HandlerFunction<T>>
   ) {
     const infos = extractEventInfo(event, ...args);
-    const iocs = infos
-      .flatMap((i) => this.infoToIocs(i, event))
-      .map(({ ioc }) => ioc)
+    const filterResults = infos.flatMap((i) =>
+      this.infoToFilterResults(i, event)
+    );
+
+    const acceptedHiocs = filterResults
+      .filter(({ accepted }) => accepted)
+      .map(({ handler }: FilterResult<T>) => handler)
       .filter((h, i, a) => a.indexOf(h) === i);
 
-    for (const ioc of iocs) {
+    const completedIocs: InstanceOrConstructor<CommandHandler<T>>[] = [];
+
+    for (const {
+      ioc,
+      options: { errors },
+    } of acceptedHiocs) {
+      if (completedIocs.includes(ioc)) continue;
+
       let instance = ioc;
       if (typeof instance === "function") instance = new instance();
 
-      instance.handle(...args);
+      try {
+        await instance.handle(...args);
+      } catch (e) {
+        logger.error(`Error running handler ${getIocName(ioc)}: `, {
+          error: e,
+        });
+        new Error();
+        const reason = e instanceof Error ? e.message : e.toString();
+        if (errors && errors[reason]) {
+          const text = errors[reason];
+          await rejectWithMessage(text, event, ...args);
+        }
+      }
+
+      completedIocs.push(ioc);
+    }
+
+    const rejections = filterResults.filter(isRejection);
+    for (const { handler, reason } of rejections) {
+      const {
+        options: { errors },
+      } = handler;
+      if (!errors || !errors[reason]) continue;
+
+      const text = errors[reason];
+      await rejectWithMessage(text, event, ...args);
     }
   }
 
@@ -76,12 +137,13 @@ export class EventDistribution {
 
   async initialize(): Promise<void> {
     return new Promise((res, rej) => {
-      const extension = process.env.NODE_ENV === "production" ? ".js" : ".ts";
-      const directory = process.env.NODE_ENV === "production" ? "build" : "src";
+      const isProduction = process.env.NODE_ENV === "production";
+      const extension = isProduction ? ".js" : ".ts";
+      const directory = isProduction ? "build" : "src";
 
       glob(`${directory}/programs/**/*${extension}`, async (e, matches) => {
         if (e) {
-          logger.error("Error loading commands: ", e);
+          logger.error("Error loading commands: ", { error: e });
           rej(e);
           return;
         }
@@ -109,34 +171,70 @@ export class EventDistribution {
     });
   }
 
+  private static isHandlerForLocation<T extends DiscordEvent>(
+    handler: HIOC<T>,
+    isDirectMessage: boolean
+  ): boolean {
+    if (!isMessageRelated(handler.options)) return true;
+
+    const { location } = handler.options;
+    switch (location) {
+      case EventLocation.ANYWHERE:
+        return true;
+      case EventLocation.DIRECT_MESSAGE:
+        return isDirectMessage;
+      case EventLocation.SERVER:
+        return !isDirectMessage;
+    }
+  }
+
+  private static isHandlerForRole<T extends DiscordEvent>(
+    handler: HIOC<T>,
+    roleNames: string[]
+  ): boolean {
+    if (!isMessageRelated(handler.options)) return true;
+
+    const { allowedRoles } = handler.options;
+    return (
+      allowedRoles.length === 0 ||
+      allowedRoles.some((role) => roleNames.includes(role))
+    );
+  }
+
   private filterHandlers<T extends DiscordEvent>(
     handlers: HIOC<T>[],
     isDirectMessage: boolean,
     roleNames: string[]
-  ): HIOC<T>[] {
-    const locationFilteredHandlers = handlers.filter((eh) => {
-      if (!isMessageRelated(eh.options)) return true;
+  ): FilterResult<T>[] {
+    return handlers
+      .map<FilterResult<T>>((eh) => {
+        const isForLocation = EventDistribution.isHandlerForLocation(
+          eh,
+          isDirectMessage
+        );
+        return isForLocation
+          ? { handler: eh, accepted: true }
+          : {
+              handler: eh,
+              accepted: false,
+              reason: HandlerRejectedReason.WRONG_LOCATION,
+            };
+      })
+      .map<FilterResult<T>>((r) => {
+        if (!r.accepted) return r;
 
-      const { location } = eh.options;
-      switch (location) {
-        case EventLocation.ANYWHERE:
-          return true;
-        case EventLocation.DIRECT_MESSAGE:
-          return isDirectMessage;
-        case EventLocation.SERVER:
-          return !isDirectMessage;
-      }
-    });
-
-    return locationFilteredHandlers.filter((eh) => {
-      if (!isMessageRelated(eh.options)) return true;
-
-      const { allowedRoles } = eh.options;
-      return (
-        allowedRoles.length === 0 ||
-        allowedRoles.some((role) => roleNames.includes(role))
-      );
-    });
+        const isForRole = EventDistribution.isHandlerForRole(
+          r.handler,
+          roleNames
+        );
+        return isForRole
+          ? r
+          : {
+              ...r,
+              accepted: false,
+              reason: HandlerRejectedReason.MISSING_ROLE,
+            };
+      });
   }
 
   private getHandlers<T extends DiscordEvent>(

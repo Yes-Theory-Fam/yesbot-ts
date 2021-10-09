@@ -4,6 +4,7 @@ import {
   CommandHandler,
   DiscordEvent,
   EventLocation,
+  HandlerRejectedReason,
 } from "../event-distribution";
 import { GuildMemberUpdateArgument } from "../event-distribution/events/guild-member-update";
 import { MemberLeaveArgument } from "../event-distribution/events/member-leave";
@@ -109,6 +110,7 @@ export class DecoratorTest5 extends CommandHandler<DiscordEvent.GUILD_MEMBER_UPD
  */
 @Command({
   event: DiscordEvent.READY,
+  description: "Called when the bot is ready to receive events.",
 })
 export class DecoratorTest6 extends CommandHandler<DiscordEvent.READY> {
   handle(client: Client): void {
@@ -122,6 +124,7 @@ export class DecoratorTest6 extends CommandHandler<DiscordEvent.READY> {
 @Command({
   event: DiscordEvent.VOICE_STATE_UPDATE,
   changes: [VoiceStateChange.JOINED, VoiceStateChange.SWITCHED_CHANNEL],
+  description: "Called when anyone joins or switches channels",
 })
 export class DecoratorTest7 extends CommandHandler<DiscordEvent.VOICE_STATE_UPDATE> {
   handle(oldState: VoiceState, newState: VoiceState): void {
@@ -134,6 +137,7 @@ export class DecoratorTest7 extends CommandHandler<DiscordEvent.VOICE_STATE_UPDA
  */
 @Command({
   event: DiscordEvent.MEMBER_LEAVE,
+  description: "Called when a member leaves the server.",
 })
 export class DecoratorTest8 extends CommandHandler<DiscordEvent.MEMBER_LEAVE> {
   handle(member: MemberLeaveArgument): void {
@@ -157,7 +161,7 @@ export class DecoratorTest9 extends CommandHandler<DiscordEvent.MESSAGE> {
 }
 
 /**
- * Example of a Message handler with a subtrigger
+ * Example of a Message handler with whitelisted category names
  */
 @Command({
   event: DiscordEvent.MESSAGE,
@@ -169,5 +173,42 @@ export class DecoratorTest9 extends CommandHandler<DiscordEvent.MESSAGE> {
 export class DecoratorTest10 extends CommandHandler<DiscordEvent.MESSAGE> {
   handle(message: Message): void {
     console.log("Called handler 10");
+  }
+}
+
+/**
+ * Example of a Message handler that responds with a role missing error
+ */
+@Command({
+  event: DiscordEvent.MESSAGE,
+  trigger: "!test",
+  allowedRoles: ["Break"],
+  description: "Won't be called if the user doesn't have the break role",
+  errors: {
+    [HandlerRejectedReason.MISSING_ROLE]:
+      "It looks like you don't have the Break role! There can be some extra text here.",
+  },
+})
+export class DecoratorTest11 extends CommandHandler<DiscordEvent.MESSAGE> {
+  handle(message: Message): void {
+    console.log("Called handler 11");
+  }
+}
+
+/**
+ * Example of a Message handler that responds with an error generated during handling
+ */
+@Command({
+  event: DiscordEvent.MESSAGE,
+  trigger: "!poof",
+  description:
+    "Will be called but fails; the error will be communicated to the user.",
+  errors: {
+    "Custom Error": "Some custom error occured during execution :c",
+  },
+})
+export class DecoratorTest12 extends CommandHandler<DiscordEvent.MESSAGE> {
+  handle(message: Message): void {
+    throw new Error("Custom Error");
   }
 }
