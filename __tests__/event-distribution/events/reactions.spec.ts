@@ -37,7 +37,6 @@ describe("Reactions", () => {
     > = { channel: {} };
     const options: ReactionEventHandlerOptions = {
       emoji: "♥️",
-      description: "test",
       event: DiscordEvent.REACTION_ADD,
       channelNames: ["bot-output"],
     };

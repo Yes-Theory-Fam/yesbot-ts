@@ -10,7 +10,6 @@ Object {
           "channelNames": Array [
             "bot-output",
           ],
-          "description": "test",
           "emoji": "♥️",
           "event": "REACTION_ADD",
         },
@@ -31,7 +30,6 @@ Object {
           "channelNames": Array [
             "bot-output",
           ],
-          "description": "test",
           "emoji": "♥️",
           "event": "REACTION_ADD",
         },
@@ -45,7 +43,6 @@ Object {
           "channelNames": Array [
             "bot-output",
           ],
-          "description": "test",
           "emoji": "♥️",
           "event": "REACTION_REMOVE",
         },
@@ -70,7 +67,6 @@ Object {
             "bot-development",
             "bot-test-channel",
           ],
-          "description": "test",
           "emoji": "😘️",
           "event": "REACTION_ADD",
         },
@@ -85,7 +81,6 @@ Object {
           "channelNames": Array [
             "bot-output",
           ],
-          "description": "test",
           "emoji": "♥️",
           "event": "REACTION_ADD",
         },
@@ -99,7 +94,6 @@ Object {
           "channelNames": Array [
             "bot-output",
           ],
-          "description": "test",
           "emoji": "♥️",
           "event": "REACTION_REMOVE",
         },
@@ -118,7 +112,6 @@ Object {
             "bot-development",
             "bot-test-channel",
           ],
-          "description": "test",
           "emoji": "😘️",
           "event": "REACTION_ADD",
         },
