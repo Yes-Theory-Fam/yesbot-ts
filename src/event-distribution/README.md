@@ -23,13 +23,22 @@ export class SomeEventHandler extends CommandHandler</* DiscordEvent.EVENT_NAME 
 
 ### Base Options
 
-These options are available for most event handler configurations:
+These options are available for all event handler configurations:
 
 ```ts
 interface BaseOptions {
   event: DiscordEvent; // Indicates the relevant event
-  stateful?: boolean; // If false (default), a new instance of the handler class is created for each event, otherwise an instance is available as singleton for the lifetime of the bot 
-  description: string; // A descriptive string of the event handler
+  stateful?: boolean; // If false (default), a new instance of the handler class is created for each event, otherwise an instance is available as singleton for the lifetime of the bot
+  errors?: Record<string, string>; // Allows specifying responses to events in case an error comes up. Special cases that occur 
+}
+```
+
+### Message Related Options
+
+These options are available for message and reaction events:
+
+```ts
+interface MessageRelatedOptions extends BaseOptions {
   allowedRoles?: string[]; // An array of role names. At least one role listed is required to run the handler.
   channelNames?: string[]; // An array of channel names. The handler will only be called when the event occured in one of the channels listed.
   categoryNames?: string[]; // An array of category names. The handler will only be called when the event occured in one of the categories listed (the handler won't be called twice if one of the channelNames listed is in one of the categories listed). 
@@ -48,12 +57,13 @@ The bot receives a message event when anyone sends a message in any channel the 
 
 ##### Options
 
-Additionally, to the [BaseOptions](#base-options), the following options are available:
+Additionally, to the [MessageRelatedOptions](#message-related-options), the following options are available:
 
 ```ts
 interface MessageOptions {
   trigger?: string; // Defines the trigger for the handler. This MUST NOT contain spaces, since the distribution instance looks up the handler by first word (split by space).
   subTrigger?: string; // Defines a sub trigger. This is useful for commands like !voice which take different subcommands like create, limit, etc. This MUST NOT contain spaces.
+  description: string; // A descriptive string of the event handler
 }
 ```
 
@@ -71,7 +81,7 @@ The bot receives an event when a reaction is added or removed in any channel vis
 
 ##### Options
 
-Additionally, to the [BaseOptions](#base-options), the following options are available:
+Additionally, to the [MessageRelatedOptions](#message-related-options), the following options are available:
 
 ```ts
 interface ReactionEventHandlerOptions {
@@ -94,7 +104,7 @@ The bot receives an event when a guild member is updated. That includes role cha
 
 ##### Options
 
-The following options are available:
+Additionally, to the [BaseOptions](#base-options), the following options are available:
 
 ```ts
 interface GuildMemberUpdateEventHandlerOptions {
@@ -148,7 +158,7 @@ The bot receives an event when a member's voice state changes. This includes mut
 
 ##### Options
 
-The following options are available:
+Additionally, to the [BaseOptions](#base-options), the following options are available:
 
 ```ts
 export interface VoiceStateUpdateEventHandlerOptions {
