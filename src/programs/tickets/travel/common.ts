@@ -8,7 +8,6 @@ import {
 } from "discord.js";
 import { CountryRoleFinder } from "../../../utils/country-role-finder";
 import { ChatNames } from "../../../collections/chat-names";
-import Tools from "../../../common/tools";
 
 const fiveMinutes = 5 * 60 * 1000;
 type CancellationToken = { cancelled: boolean };
@@ -33,6 +32,16 @@ export const promptAndSendForApproval = async (
     "Next, which are the places you are traveling to there?",
     ct
   );
+  const alone = await getBool(channel, userId, "Are you traveling alone?", ct);
+  const travelPartners = alone
+    ? ""
+    : await getString(
+        channel,
+        userId,
+        "Nice! Who are you traveling with? *If you want to ping members, that can be a little tricky down here thanks to how Discord allows mentions. You can start writing a message in another channel and then copy that over here.*",
+        ct,
+        fiveMinutes * 2
+      );
   const dates = await getString(
     channel,
     userId,
@@ -52,12 +61,18 @@ export const promptAndSendForApproval = async (
     userId,
     countries,
     places,
+    travelPartners,
     dates,
     needsHost,
     activities
   );
 
-  const userConfirmed = await letUserConfirm(travelRequest, channel, userId);
+  const userConfirmed = await getBool(
+    channel,
+    userId,
+    `Alright! This is what I would send to the mods for review:\n\n${travelRequest}\n\nDoes that all look good to you?`,
+    ct
+  );
 
   if (!userConfirmed) {
     await channel.send(
@@ -68,30 +83,6 @@ export const promptAndSendForApproval = async (
   }
 
   await sendForSupportConfirmation(travelRequest, channel);
-};
-
-const letUserConfirm = async (
-  formattedRequest: string,
-  originChannel: TextChannel,
-  userId: Snowflake
-): Promise<boolean> => {
-  await originChannel.send(
-    "Alright! This is what I would send to the mods for review:"
-  );
-  await originChannel.send(formattedRequest);
-  const voteMessage = await originChannel.send(
-    "Does that all look good for you?"
-  );
-  const positive = "✅";
-  const negative = "🚫";
-  const pick = await Tools.addVote(
-    voteMessage,
-    [positive, negative],
-    [userId],
-    true
-  );
-
-  return pick.emoji.name === positive;
 };
 
 const sendForSupportConfirmation = async (
@@ -204,10 +195,11 @@ async function getString(
   channel: TextChannel,
   userId: Snowflake,
   prompt: string,
-  ct: CancellationToken
+  ct: CancellationToken,
+  timeout?: number
 ): Promise<string> {
   return await retryUntilSatisfied(
-    () => _getString(channel, userId, prompt),
+    () => _getString(channel, userId, prompt, timeout),
     (s) => Boolean(s?.length),
     ct
   );
@@ -216,14 +208,15 @@ async function getString(
 async function _getString(
   channel: TextChannel,
   userId: Snowflake,
-  prompt: string
+  prompt: string,
+  timeout?: number
 ): Promise<string | undefined> {
   await channel.send(prompt);
   const filter = (message: Message) => message.author.id === userId;
   const response = await channel.awaitMessages({
     filter,
     max: 1,
-    time: fiveMinutes,
+    time: timeout ?? fiveMinutes,
   });
 
   const message = response.first();
@@ -281,6 +274,7 @@ function formatMessage(
   userId: Snowflake,
   countries: Role[],
   places: string,
+  travelPartners: string,
   time: string,
   host: boolean,
   activities: string
@@ -288,7 +282,7 @@ function formatMessage(
   const rolePings = countries.map((r) => `<@&${r.id}>`).join(", ");
   return `Hey ${rolePings}!
   
-**Who's traveling**: <@${userId}>
+**Who's traveling**: <@${userId}>${travelPartners !== "" ? `and ${travelPartners}` : ""}
 **Where**: ${places}
 **When**: ${time}
 **Looking for a host**: ${host ? "Yes" : "No"}
