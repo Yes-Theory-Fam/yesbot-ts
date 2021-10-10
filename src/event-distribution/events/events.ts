@@ -60,6 +60,7 @@ import {
 } from "./member-join";
 import { Timer } from "@yes-theory-fam/database/client";
 import { createYesBotLogger } from "../../log";
+import Tools from "../../common/tools";
 
 export type EventHandlerOptions =
   | MemberLeaveEventHandlerOptions
@@ -195,7 +196,12 @@ export const rejectWithMessage = (
 ): Promise<unknown> => {
   switch (event) {
     case DiscordEvent.MESSAGE:
-      return (args[0] as Message).reply(message);
+      const messageArg = args[0] as Message;
+      const channelResolvedMessage = Tools.resolveChannelNamesInString(
+        message,
+        messageArg.guild
+      );
+      return messageArg.reply(channelResolvedMessage);
     default:
       logger.error(
         `Tried to reject event ${event} with message: ${message} but rejection isn't implemented for this event.`

@@ -6,6 +6,7 @@ import {
   GuildChannel,
   GuildMember,
   Message,
+  MessageMentions,
   MessageReaction,
   PartialGuildMember,
   Snowflake,
@@ -47,16 +48,14 @@ class Tools {
     });
   }
 
-  static async getFirstReaction(message: Message) {
-    const collected = await message.awaitReactions({
-      filter: (reaction: any, user: User) => {
-        return !user.bot;
-      },
-      max: 1,
-      time: 6000000,
-      errors: ["time"],
+  static resolveChannelNamesInString(s: string, guild?: Guild): string {
+    if (!guild) return s;
+
+    return s.replace(/#[a-zA-Z0-9-]+/g, (match) => {
+      const name = match.substring(1);
+      const channelId = guild.channels.cache.find((c) => c.name === name)?.id;
+      return channelId ? `<#${channelId}>` : match;
     });
-    return collected.first().emoji.toString();
   }
 
   static async getMessageById(
