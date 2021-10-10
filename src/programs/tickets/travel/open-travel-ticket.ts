@@ -4,7 +4,7 @@ import {
   DiscordEvent,
   HandlerRejectedReason,
 } from "../../../event-distribution";
-import { Message, TextChannel } from "discord.js";
+import { Message } from "discord.js";
 import { maybeCreateTicket, TicketType } from "../common";
 import { promptAndSendForApproval } from "./common";
 

@@ -3,7 +3,15 @@ import {
   CommandHandler,
   DiscordEvent,
 } from "../../../event-distribution";
-import { MessageReaction, TextChannel, User } from "discord.js";
+import {
+  Collection,
+  GuildMember,
+  MessageReaction,
+  Snowflake,
+  TextChannel,
+  ThreadChannel,
+  User,
+} from "discord.js";
 import { ChatNames } from "../../../collections/chat-names";
 import { closeTicket, getChannelName, TicketType } from "../common";
 
@@ -25,7 +33,8 @@ class ApproveTravelTicket extends CommandHandler<DiscordEvent.REACTION_ADD> {
       return;
     }
 
-    const ticketAuthor = message.mentions.members.first().user;
+    const ticketMember = message.mentions.members.first();
+    const ticketAuthor = ticketMember.user;
 
     const channelName = getChannelName(ticketAuthor, TicketType.TRAVEL);
     const channel = message.guild!.channels.cache.find(
@@ -35,7 +44,20 @@ class ApproveTravelTicket extends CommandHandler<DiscordEvent.REACTION_ADD> {
     const travelingTogether = message.guild!.channels.cache.find(
       (c) => c.name === ChatNames.TRAVELING_TOGETHER
     ) as TextChannel;
-    await travelingTogether.send(content);
+    const travelMessage = await travelingTogether.send(content);
+    const threadName = `${
+      ticketMember.displayName
+    } in ${ApproveTravelTicket.resolveTraveledPlace(message.cleanContent)}`;
+
+    const thread = await travelMessage.startThread({
+      autoArchiveDuration: "MAX",
+      name: threadName,
+    });
+
+    await ApproveTravelTicket.includeTravelingMembers(
+      message.mentions.members,
+      thread
+    );
 
     const reactingMember = channel.guild.members.resolve(user.id);
     await message.reactions.removeAll();
@@ -43,5 +65,19 @@ class ApproveTravelTicket extends CommandHandler<DiscordEvent.REACTION_ADD> {
       content + `\n\nApproved by ${reactingMember.displayName}`
     );
     await closeTicket(channel, ticketAuthor, TicketType.TRAVEL.toLowerCase());
+  }
+
+  private static resolveTraveledPlace(message: string) {
+    const regex = /^\*\*Where\*\*: (.*)$/gm;
+    const match = regex.exec(message);
+    return match[1];
+  }
+
+  private static async includeTravelingMembers(
+    members: Collection<Snowflake, GuildMember>,
+    thread: ThreadChannel
+  ) {
+    const promises = members.map((m) => thread.members.add(m));
+    return Promise.all(promises);
   }
 }
