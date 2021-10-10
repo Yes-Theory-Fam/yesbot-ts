@@ -46,7 +46,7 @@
     "@types/countries-and-timezones": "3.2.2",
     "@types/glob": "7.1.4",
     "@types/jest": "27.0.2",
-    "@types/node": "14.17.20",
+    "@types/node": "14.17.21",
     "@types/ws": "8.2.0",
     "@yestheoryfam/prettier-config": "1.0.0",
     "env-cmd": "10.1.0",
