@@ -564,12 +564,12 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@prisma/client@3.1.1":
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-3.1.1.tgz#f4012631528049c22d12b212846dcf503db33cfe"
-  integrity sha512-8ud8vVFMIg37yrkZ4wPpjKoMxFbCL0Pesq5eyLnag/s0LTKsVEN7ZBIQq9JzWW+AUqOzGKXr2Jt4Sl8xdGI99w==
+"@prisma/client@3.2.1":
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-3.2.1.tgz#b0c60b4c42ec5b701a271380780c70de55bc3311"
+  integrity sha512-nakt9YoDFD4cgTkRTSVbzG40AKmmbVEtXE3csVqBdDXsm0/L4PQdtbtzILNzq28xv8HH8oHgFKWnsItM23mSDw==
   dependencies:
-    "@prisma/engines-version" "3.1.0-24.c22652b7e418506fab23052d569b85d3aec4883f"
+    "@prisma/engines-version" "3.2.1-1.b71d8cb16c4ddc7e3e9821f42fd09b0f82d7934c"
 
 "@prisma/debug@3.2.0":
   version "3.2.0"
@@ -607,10 +607,10 @@
     terminal-link "2.1.1"
     undici "3.3.6"
 
-"@prisma/engines-version@3.1.0-24.c22652b7e418506fab23052d569b85d3aec4883f":
-  version "3.1.0-24.c22652b7e418506fab23052d569b85d3aec4883f"
-  resolved "https://registry.yarnpkg.com/@prisma/engines-version/-/engines-version-3.1.0-24.c22652b7e418506fab23052d569b85d3aec4883f.tgz#f9908eb7808f2a546634398063942eaecb2474ef"
-  integrity sha512-EuEMKLuwIcBO7uInZQHeG1yaywcfl32Tq8TDf5tgLvblk+ka70sej7S67lh3BV5gXMLTc3GdthSHPfDqZEK5uA==
+"@prisma/engines-version@3.2.1-1.b71d8cb16c4ddc7e3e9821f42fd09b0f82d7934c":
+  version "3.2.1-1.b71d8cb16c4ddc7e3e9821f42fd09b0f82d7934c"
+  resolved "https://registry.yarnpkg.com/@prisma/engines-version/-/engines-version-3.2.1-1.b71d8cb16c4ddc7e3e9821f42fd09b0f82d7934c.tgz#63032b40ee09f56ec423eb47617c26de125ffb1e"
+  integrity sha512-O4dHSbqfX7yAjFMawIEzv6wefv3LRMDK4J20Y70NvE3otbE3CnChlmghkCvMsQ1CGF1QuGlrqfw20aI2JfZcaw==
 
 "@prisma/engines@3.2.1-1.b71d8cb16c4ddc7e3e9821f42fd09b0f82d7934c":
   version "3.2.1-1.b71d8cb16c4ddc7e3e9821f42fd09b0f82d7934c"
@@ -949,12 +949,12 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-"@yes-theory-fam/database@0.18.1":
-  version "0.18.1"
-  resolved "https://npm.pkg.github.com/download/@yes-theory-fam/database/0.18.1/2f62d54927db632dd7f7ce93e8fee9b6d917b865be2427206431e520bad01492#ff86c6b0d921fdaedd27ba544e9e3e0cbf26da0c"
-  integrity sha512-TC/WatoWFDKJOBg+C4M+cKhoAh/SL2VUf2cx5R2QyUqkF68cpMb5N9Q28k0897WH+RD0EZjQ0XQ1M/teYhtQOw==
+"@yes-theory-fam/database@0.18.2":
+  version "0.18.2"
+  resolved "https://npm.pkg.github.com/download/@yes-theory-fam/database/0.18.2/f6e82e27ee4918fa19b590dea0f69d69898812f3fe78b3de17813b7c2868a1e9#80a49051358d42c5661cc62bfabf339e4a5d20a4"
+  integrity sha512-bRX+t67Qw2D+zBfwzeI4LA52Wg0KS4NMd0xIIfDURCR3ef/KCwz7XoLxtqq9BmfMgoP0XkVpegQcjbQCjEDVIw==
   dependencies:
-    "@prisma/client" "3.1.1"
+    "@prisma/client" "3.2.1"
 
 "@yestheoryfam/prettier-config@1.0.0":
   version "1.0.0"
