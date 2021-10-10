@@ -282,7 +282,9 @@ function formatMessage(
   const rolePings = countries.map((r) => `<@&${r.id}>`).join(", ");
   return `Hey ${rolePings}!
   
-**Who's traveling**: <@${userId}>${travelPartners !== "" ? `and ${travelPartners}` : ""}
+**Who's traveling**: <@${userId}>${
+    travelPartners !== "" ? `and ${travelPartners}` : ""
+  }
 **Where**: ${places}
 **When**: ${time}
 **Looking for a host**: ${host ? "Yes" : "No"}
