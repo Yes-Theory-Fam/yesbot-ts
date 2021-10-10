@@ -8,6 +8,7 @@ import {
 } from "discord.js";
 import { CountryRoleFinder } from "../../../utils/country-role-finder";
 import { ChatNames } from "../../../collections/chat-names";
+import Tools from "../../../common/tools";
 
 const fiveMinutes = 5 * 60 * 1000;
 type CancellationToken = { cancelled: boolean };
@@ -56,14 +57,55 @@ export const promptAndSendForApproval = async (
     activities
   );
 
-  const approvalChannel = channel.guild.channels.cache.find(
+  const userConfirmed = await letUserConfirm(travelRequest, channel, userId);
+
+  if (!userConfirmed) {
+    await channel.send(
+      "No worries, we can go through everything one more time :)"
+    );
+    await promptAndSendForApproval(channel, userId);
+    return;
+  }
+
+  await sendForSupportConfirmation(travelRequest, channel);
+};
+
+const letUserConfirm = async (
+  formattedRequest: string,
+  originChannel: TextChannel,
+  userId: Snowflake
+): Promise<boolean> => {
+  await originChannel.send(
+    "Alright! This is what I would send to the mods for review:"
+  );
+  await originChannel.send(formattedRequest);
+  const voteMessage = await originChannel.send(
+    "Does that all look good for you?"
+  );
+  const positive = "✅";
+  const negative = "🚫";
+  const pick = await Tools.addVote(
+    voteMessage,
+    [positive, negative],
+    [userId],
+    true
+  );
+
+  return pick.emoji.name === positive;
+};
+
+const sendForSupportConfirmation = async (
+  formattedRequest: string,
+  originChannel: TextChannel
+) => {
+  const approvalChannel = originChannel.guild.channels.cache.find(
     (c) => c.name === ChatNames.TRAVEL_APPROVALS
   ) as TextChannel;
-  const approvalMessage = await approvalChannel.send(travelRequest);
+  const approvalMessage = await approvalChannel.send(formattedRequest);
   await approvalMessage.react("✅");
   await approvalMessage.react("🚫");
 
-  await channel.send(
+  await originChannel.send(
     "I sent all the information to the Supports, please have some patience while they are taking a look at it."
   );
 };
