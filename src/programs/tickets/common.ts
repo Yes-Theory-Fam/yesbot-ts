@@ -1,6 +1,11 @@
-import { Message, TextChannel, User } from "discord.js";
+import {
+  GuildChannelCreateOptions,
+  Message,
+  TextChannel,
+  User,
+  Util,
+} from "discord.js";
 import Tools from "../../common/tools";
-import { TextChannelOptions } from "../../common/interfaces";
 
 export const closeTicket = async (
   channel: TextChannel,
@@ -13,8 +18,11 @@ export const closeTicket = async (
       (c) => c.name.startsWith(logChannelName) && c.name.endsWith("logs")
     )
   );
-  await logChannel.send(text, { split: true });
-  await channel.delete("Closed Ticket");
+  const messages = Util.splitMessage(text);
+  for (const message of messages) {
+    await logChannel.send(message);
+  }
+  await channel.delete();
 };
 
 export async function createOutput(
@@ -93,16 +101,16 @@ const createTicket = async (
 ): Promise<TextChannel> => {
   const category = message.guild.channels.cache.find((c) =>
     c.name.toLowerCase().includes(ticketType)
-  );
+  ).id;
 
   const moderatorRole = Tools.getRoleByName(
     process.env.MODERATOR_ROLE_NAME,
     message.guild
   );
 
-  const channelOptions: TextChannelOptions = {
+  const channelOptions: GuildChannelCreateOptions & { type: "GUILD_TEXT" } = {
     topic: "Support ticket for " + message.member.user.username,
-    type: "text",
+    type: "GUILD_TEXT",
     permissionOverwrites: [
       {
         id: message.guild.id,

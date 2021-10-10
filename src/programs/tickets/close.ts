@@ -3,7 +3,7 @@ import {
   CommandHandler,
   DiscordEvent,
 } from "../../event-distribution";
-import { Message, TextChannel, User } from "discord.js";
+import { Message, TextChannel, User, Util } from "discord.js";
 import { createOutput, closeTicket } from "./common";
 
 @Command({
@@ -33,25 +33,29 @@ class CloseTicket implements CommandHandler<DiscordEvent.MESSAGE> {
     await message.react("✅");
 
     message
-      .awaitReactions(
-        (reaction: any, user: User) => {
+      .awaitReactions({
+        filter: (reaction: any, user: User) => {
           return (
             ["✅", "📑"].includes(reaction.emoji.name) &&
             user.id != message.author.id
           );
         },
-        { max: 1, time: 60000, errors: ["time"] }
-      )
-
+        max: 1,
+        time: 60000,
+        errors: ["time"],
+      })
       .then((collected) => {
         const reaction = collected.first();
         const user = reaction.users.cache.find((u) => !u.bot);
         if (reaction.emoji.toString() === "📑") {
-          user
-            .createDM()
-            .then(async (dm) =>
-              dm.send(await createOutput(channel, member), { split: true })
+          user.createDM().then(async (dm) => {
+            const messages = Util.splitMessage(
+              await createOutput(channel, member)
             );
+            for (const message of messages) {
+              await dm.send(message);
+            }
+          });
         }
 
         closeTicket(

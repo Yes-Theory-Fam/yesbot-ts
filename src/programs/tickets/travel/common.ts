@@ -17,9 +17,9 @@ export const promptAndSendForApproval = async (
   userId: Snowflake
 ) => {
   const ct = { cancelled: false };
-  const retryCollector = channel.createMessageCollector(
-    (msg) => msg.content.split(" ")[0] === "!retry"
-  );
+  const retryCollector = channel.createMessageCollector({
+    filter: (msg) => msg.content.split(" ")[0] === "!retry",
+  });
   retryCollector.on("collect", () => {
     retryCollector.stop("Got one!");
     ct.cancelled = true;
@@ -141,20 +141,21 @@ Here is a map of the regions: https://cdn.discordapp.com/attachments/60339977517
   const filter = (reaction: MessageReaction, user: User) =>
     user.id === userId && reaction.emoji.name === confirm;
 
-  await promptMessage.awaitReactions(filter, { max: 1, time: fiveMinutes });
+  await promptMessage.awaitReactions({ filter, max: 1, time: fiveMinutes });
   await promptMessage.reactions.removeAll();
 
   const activeRegionReactions = promptMessage.reactions.cache.filter(
     (r) => regions.includes(r.emoji.name) && !!r.users.resolve(userId)
   );
 
-  const activeRegions = activeRegionReactions
-    .array()
-    .map((e) => emojisToRegionNames[e.emoji.name]);
+  const activeRegions = [...activeRegionReactions.values()].map(
+    (e) => emojisToRegionNames[e.emoji.name]
+  );
 
-  return channel.guild.roles.cache
+  const pickedRoles = channel.guild.roles.cache
     .filter((r) => activeRegions.some((region) => r.name.includes(region)))
-    .array();
+    .values();
+  return [...pickedRoles];
 }
 
 async function getString(
@@ -177,7 +178,8 @@ async function _getString(
 ): Promise<string | undefined> {
   await channel.send(prompt);
   const filter = (message: Message) => message.author.id === userId;
-  const response = await channel.awaitMessages(filter, {
+  const response = await channel.awaitMessages({
+    filter,
     max: 1,
     time: fiveMinutes,
   });
@@ -219,7 +221,8 @@ async function _getBool(
 
   const filter = (reaction: MessageReaction, user: User) =>
     choices.includes(reaction.emoji.name) && user.id === userId;
-  const choice = await promptMessage.awaitReactions(filter, {
+  const choice = await promptMessage.awaitReactions({
+    filter,
     max: 1,
     time: fiveMinutes,
   });
