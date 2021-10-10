@@ -29,7 +29,7 @@ These options are available for all event handler configurations:
 interface BaseOptions {
   event: DiscordEvent; // Indicates the relevant event
   stateful?: boolean; // If false (default), a new instance of the handler class is created for each event, otherwise an instance is available as singleton for the lifetime of the bot
-  errors?: Record<string, string>; // Allows specifying responses to events in case an error comes up. Special cases that occur 
+  errors?: Record<string, string>; // Allows specifying responses to events in case an error comes up. Special cases that occur before the handler is executed may be addressed using the HandlerRejectionReason enum. Channel references in the form of #channel-name are resolved at runtime.
 }
 ```
 
