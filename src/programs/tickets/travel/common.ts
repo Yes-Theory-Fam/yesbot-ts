@@ -175,13 +175,20 @@ Here is a map of the regions: https://cdn.discordapp.com/attachments/60339977517
     user.id === userId && reaction.emoji.name === confirm;
 
   await promptMessage.awaitReactions({ filter, max: 1, time: fiveMinutes });
+
+  const reactionUserPromises = promptMessage.reactions.cache
+    .filter((r) => regions.includes(r.emoji.name))
+    .map(async (r) => {
+      return { reaction: r, fetchedUsers: await r.users.fetch() };
+    });
+  const reactionUserTuples = await Promise.all(reactionUserPromises);
+  const activeRegionReactions = reactionUserTuples
+    .filter(({ fetchedUsers }) => !!fetchedUsers.get(userId))
+    .map(({ reaction }) => reaction);
+
   await promptMessage.reactions.removeAll();
 
-  const activeRegionReactions = promptMessage.reactions.cache.filter(
-    (r) => regions.includes(r.emoji.name) && !!r.users.resolve(userId)
-  );
-
-  const activeRegions = [...activeRegionReactions.values()].map(
+  const activeRegions = activeRegionReactions.map(
     (e) => emojisToRegionNames[e.emoji.name]
   );
 
