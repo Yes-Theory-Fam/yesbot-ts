@@ -25,6 +25,5 @@ export class BalanceCheck implements CommandHandler<DiscordEvent.MESSAGE> {
           )}`
         );
       });
-    return;
   }
 }

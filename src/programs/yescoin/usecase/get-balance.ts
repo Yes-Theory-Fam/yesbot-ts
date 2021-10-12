@@ -27,5 +27,3 @@ export class GetBalance {
     return GetBalance.getBalanceInstance;
   }
 }
-
-const logger = createYesBotLogger("programs", GetBalance.name);

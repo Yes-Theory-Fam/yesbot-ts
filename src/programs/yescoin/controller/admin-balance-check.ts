@@ -16,10 +16,8 @@ import { GetBalance } from "../usecase/get-balance";
 })
 export class AdminBalanceCheck implements CommandHandler<DiscordEvent.MESSAGE> {
   public async handle(arg: Message): Promise<void> {
-    let member = arg.mentions.users.first();
-    if (!member) {
-      member = arg.author;
-    }
+    const member = arg.mentions.users.first() ?? arg.author;
+
     await GetBalance.instance()
       .handle(member.id)
       .then((value) => {
@@ -29,6 +27,5 @@ export class AdminBalanceCheck implements CommandHandler<DiscordEvent.MESSAGE> {
           )}`
         );
       });
-    return;
   }
 }
