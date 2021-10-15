@@ -44,7 +44,12 @@ class ApproveTravelTicket extends CommandHandler<DiscordEvent.REACTION_ADD> {
     const travelingTogether = message.guild!.channels.cache.find(
       (c) => c.name === ChatNames.TRAVELING_TOGETHER
     ) as TextChannel;
-    const travelMessage = await travelingTogether.send(content);
+    const travelMessage = await travelingTogether.send({
+      content,
+      allowedMentions: {
+        parse: ["roles", "users"],
+      },
+    });
     const threadName = `${
       ticketMember.displayName
     } in ${ApproveTravelTicket.resolveTraveledPlace(message.cleanContent)}`;
