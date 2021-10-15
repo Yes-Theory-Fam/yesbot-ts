@@ -49,8 +49,8 @@ export async function createOutput(
   return text;
 }
 
-function timeConverter(UNIX_timestamp: number) {
-  const a = new Date(UNIX_timestamp);
+function timeConverter(unixTimestamp: number) {
+  const date = new Date(unixTimestamp);
   const months = [
     "Jan",
     "Feb",
@@ -65,13 +65,13 @@ function timeConverter(UNIX_timestamp: number) {
     "Nov",
     "Dec",
   ];
-  const year = a.getFullYear();
-  const month = months[a.getMonth()];
-  const date = a.getDate();
-  const hour = a.getHours();
-  const min = a.getMinutes();
-  const sec = a.getSeconds();
-  return [year, month, date, hour, min, sec];
+  const year = date.getFullYear();
+  const month = months[date.getMonth()];
+  const day = date.getDate();
+  const hour = date.getHours();
+  const min = date.getMinutes();
+  const sec = date.getSeconds();
+  return [year, month, day, hour, min, sec];
 }
 
 const hasTicket = async (message: Message, channelName: string) => {

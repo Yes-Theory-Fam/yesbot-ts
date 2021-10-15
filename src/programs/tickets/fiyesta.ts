@@ -6,12 +6,11 @@ import {
 import { Message } from "discord.js";
 import { maybeCreateTicket, TicketType } from "./common";
 
-// TODO re-enable when fiyestas are back
-// @Command({
-//   event: DiscordEvent.MESSAGE,
-//   trigger: "!fiyesta",
-//   description: "This handler is to create a fiyesta ticket.",
-// })
+@Command({
+  event: DiscordEvent.MESSAGE,
+  trigger: "!fiyesta",
+  description: "This handler is to create a fiyesta ticket.",
+})
 class OpenFiyestaTicket implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
     await maybeCreateTicket(
