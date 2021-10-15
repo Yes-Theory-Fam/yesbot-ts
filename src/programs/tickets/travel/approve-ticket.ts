@@ -5,7 +5,9 @@ import {
 } from "../../../event-distribution";
 import {
   Collection,
+  Guild,
   GuildMember,
+  Message,
   MessageReaction,
   Snowflake,
   TextChannel,
@@ -34,13 +36,26 @@ class ApproveTravelTicket extends CommandHandler<DiscordEvent.REACTION_ADD> {
     }
 
     const ticketMember = message.mentions.members.first();
-    const ticketAuthor = ticketMember.user;
+    const thread = await ApproveTravelTicket.startThread(
+      message,
+      content,
+      ticketMember
+    );
 
-    const channelName = getChannelName(ticketAuthor, TicketType.TRAVEL);
-    const channel = message.guild!.channels.cache.find(
-      (c) => c.name === channelName
-    ) as TextChannel;
+    await ApproveTravelTicket.includeTravelingMembers(
+      message.mentions.members,
+      thread
+    );
 
+    await ApproveTravelTicket.recordApproval(message.guild, user, message);
+    await ApproveTravelTicket.closeTicket(ticketMember.user, message.guild);
+  }
+
+  private static async startThread(
+    message: Message,
+    content: string,
+    ticketMember: GuildMember
+  ) {
     const travelingTogether = message.guild!.channels.cache.find(
       (c) => c.name === ChatNames.TRAVELING_TOGETHER
     ) as TextChannel;
@@ -54,21 +69,30 @@ class ApproveTravelTicket extends CommandHandler<DiscordEvent.REACTION_ADD> {
       ticketMember.displayName
     } in ${ApproveTravelTicket.resolveTraveledPlace(message.cleanContent)}`;
 
-    const thread = await travelMessage.startThread({
+    return await travelMessage.startThread({
       autoArchiveDuration: "MAX",
       name: threadName,
     });
+  }
 
-    await ApproveTravelTicket.includeTravelingMembers(
-      message.mentions.members,
-      thread
-    );
-
-    const reactingMember = channel.guild.members.resolve(user.id);
+  private static async recordApproval(
+    guild: Guild,
+    user: User,
+    message: Message
+  ) {
+    const reactingMember = guild.members.resolve(user.id);
     await message.reactions.removeAll();
+    const { content } = message;
     await message.edit(
       content + `\n\nApproved by ${reactingMember.displayName}`
     );
+  }
+
+  private static async closeTicket(ticketAuthor: User, guild: Guild) {
+    const channelName = getChannelName(ticketAuthor, TicketType.TRAVEL);
+    const channel = guild!.channels.cache.find(
+      (c) => c.name === channelName
+    ) as TextChannel;
     await closeTicket(channel, ticketAuthor, TicketType.TRAVEL.toLowerCase());
   }
 
