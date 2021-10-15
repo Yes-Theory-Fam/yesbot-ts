@@ -24,8 +24,8 @@ export const revertProductivityPermissions = async (
   for (const chatName of prodVoiceChats) {
     const productivityChannel = channel.guild.channels.cache.find(
       (c) => c.name === chatName
-    );
-    await productivityChannel.permissionOverwrites.get(member.id).delete();
+    ) as VoiceChannel;
+    await productivityChannel.permissionOverwrites.cache.get(member.id).delete();
   }
 };
 
@@ -53,9 +53,9 @@ export const createProductivityPermissions = async (
   for (const chatName of prodVoiceChats) {
     const productivityChannel = channel.guild.channels.cache.find(
       (c) => c.name === chatName
-    );
+    ) as VoiceChannel;
 
-    await productivityChannel.updateOverwrite(member.id, {
+    await productivityChannel.permissionOverwrites.edit(member.id, {
       ...commonPermissions,
       SPEAK: chatName !== ChatNames.PRODUCTIVITY,
       STREAM: chatName !== ChatNames.PRODUCTIVITY,

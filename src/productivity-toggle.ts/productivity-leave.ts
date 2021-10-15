@@ -1,4 +1,4 @@
-import { VoiceState } from "discord.js";
+import { VoiceChannel, VoiceState } from "discord.js";
 import Tools from "../common/tools";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 import { VoiceStateChange } from "../event-distribution/events/voice-state-update";
@@ -14,7 +14,7 @@ class RemoveBreakRoleOnLeave
   implements CommandHandler<DiscordEvent.VOICE_STATE_UPDATE>
 {
   async handle(oldState: VoiceState, newState: VoiceState): Promise<void> {
-    const channel = oldState.channel;
+    const channel = oldState.channel as VoiceChannel;
 
     if (!isProdVoiceChannel(channel)) return;
 

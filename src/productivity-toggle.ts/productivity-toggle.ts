@@ -1,4 +1,4 @@
-import { Message } from "discord.js";
+import { Message, VoiceChannel } from "discord.js";
 import { ChatNames } from "../collections/chat-names";
 import { hasRole } from "../common/moderator";
 import Tools from "../common/tools";
@@ -16,7 +16,7 @@ class ToggleChannelsInProdVC implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
     const guildMember = message.member;
 
-    if (!isProdVoiceChannel(guildMember.voice.channel)) {
+    if (!isProdVoiceChannel((guildMember.voice.channel) as VoiceChannel)) {
       await Tools.handleUserError(
         message,
         "You're not in a productivity voice channel!"

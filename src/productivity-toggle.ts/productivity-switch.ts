@@ -1,4 +1,4 @@
-import { VoiceState } from "discord.js";
+import { VoiceChannel, VoiceState } from "discord.js";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 import { VoiceStateChange } from "../event-distribution/events/voice-state-update";
 import { isProdVoiceChannel, revertProductivityPermissions } from "./common";
@@ -13,8 +13,8 @@ class ChannelSwitchCheck
   implements CommandHandler<DiscordEvent.VOICE_STATE_UPDATE>
 {
   async handle(oldState: VoiceState, newState: VoiceState): Promise<void> {
-    const oldChannel = oldState.channel;
-    const newChannel = newState.channel;
+    const oldChannel = oldState.channel as VoiceChannel;
+    const newChannel = newState.channel as VoiceChannel;
 
     if (isProdVoiceChannel(oldChannel) && !isProdVoiceChannel(newChannel)) {
       const guildMember = newState.member;

@@ -1,4 +1,4 @@
-import { VoiceState } from "discord.js";
+import { VoiceChannel, VoiceState } from "discord.js";
 import { hasRole } from "../common/moderator";
 import Tools from "../common/tools";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
@@ -15,7 +15,7 @@ class AddBreakRoleOnJoin
   async handle(oldState: VoiceState, newState: VoiceState): Promise<void> {
     if (hasRole(newState.member, "Break")) return;
 
-    const channel = newState.channel;
+    const channel = newState.channel as VoiceChannel;
 
     if (!isProdVoiceChannel(channel)) return;
 
