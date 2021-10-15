@@ -2,7 +2,11 @@ import { Message, VoiceChannel } from "discord.js";
 import { ChatNames } from "../../collections/chat-names";
 import { hasRole } from "../../common/moderator";
 import Tools from "../../common/tools";
-import { Command, CommandHandler, DiscordEvent } from "../../event-distribution";
+import {
+  Command,
+  CommandHandler,
+  DiscordEvent,
+} from "../../event-distribution";
 import { isProdVoiceChannel } from "./common";
 
 @Command({
@@ -16,7 +20,7 @@ class ToggleChannelsInProdVC implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
     const guildMember = message.member;
 
-    if (!isProdVoiceChannel((guildMember.voice.channel) as VoiceChannel)) {
+    if (!isProdVoiceChannel(guildMember.voice.channel as VoiceChannel)) {
       await Tools.handleUserError(
         message,
         "You're not in a productivity voice channel!"

@@ -1,5 +1,9 @@
 import { VoiceChannel, VoiceState } from "discord.js";
-import { Command, CommandHandler, DiscordEvent } from "../../event-distribution";
+import {
+  Command,
+  CommandHandler,
+  DiscordEvent,
+} from "../../event-distribution";
 import { VoiceStateChange } from "../../event-distribution/events/voice-state-update";
 import { isProdVoiceChannel, revertProductivityPermissions } from "./common";
 

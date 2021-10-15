@@ -1,7 +1,11 @@
 import { VoiceChannel, VoiceState } from "discord.js";
 import { hasRole } from "../../common/moderator";
 import Tools from "../../common/tools";
-import { Command, CommandHandler, DiscordEvent } from "../../event-distribution";
+import {
+  Command,
+  CommandHandler,
+  DiscordEvent,
+} from "../../event-distribution";
 import { VoiceStateChange } from "../../event-distribution/events/voice-state-update";
 import { createProductivityPermissions, isProdVoiceChannel } from "./common";
 

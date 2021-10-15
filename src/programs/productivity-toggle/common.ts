@@ -25,7 +25,9 @@ export const revertProductivityPermissions = async (
     const productivityChannel = channel.guild.channels.cache.find(
       (c) => c.name === chatName
     ) as VoiceChannel;
-    await productivityChannel.permissionOverwrites.cache.get(member.id).delete();
+    await productivityChannel.permissionOverwrites.cache
+      .get(member.id)
+      .delete();
   }
 };
 
