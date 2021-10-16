@@ -35,7 +35,7 @@ class ApproveTravelTicket extends CommandHandler<DiscordEvent.REACTION_ADD> {
       return;
     }
 
-    const ticketMember = message.mentions.members.first();
+    const ticketMember = ApproveTravelTicket.parseOriginMember(message);
     const thread = await ApproveTravelTicket.startThread(
       message,
       content,
@@ -49,6 +49,15 @@ class ApproveTravelTicket extends CommandHandler<DiscordEvent.REACTION_ADD> {
 
     await ApproveTravelTicket.recordApproval(message.guild, user, message);
     await ApproveTravelTicket.closeTicket(ticketMember.user, message.guild);
+  }
+
+  // message.mentions.members.first() might return a member other than the
+  // intended one because `first` depends on the userId and not the point of
+  // occurence within the message
+  private static parseOriginMember(message: Message): GuildMember {
+    const regex = /\*\*Who.*?\*\*: <@(\d+)>/g;
+    const [, userId] = regex.exec(message.content);
+    return message.guild.members.resolve(userId);
   }
 
   private static async startThread(
