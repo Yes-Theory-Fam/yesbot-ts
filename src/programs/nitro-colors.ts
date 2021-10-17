@@ -54,7 +54,7 @@ class CacheNitroColors implements CommandHandler<DiscordEvent.READY> {
 
 @Command({
   event: DiscordEvent.GUILD_MEMBER_UPDATE,
-  roleNamesRemoved: ["Support"],
+  roleNamesRemoved: ["Support", "Nitro Booster"],
   description:
     "This handler is to remove Nitro color role if the user has lost one of the two roles.",
 })
