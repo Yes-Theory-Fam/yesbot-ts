@@ -99,9 +99,7 @@ export class EventDistribution {
       try {
         await instance.handle(...args);
       } catch (e) {
-        logger.error(`Error running handler ${getIocName(ioc)}: `, {
-          error: e,
-        });
+        logger.error(`Error running handler ${getIocName(ioc)}: `, e);
         const reason = e instanceof Error ? e.message : e.toString();
         if (errors && errors[reason]) {
           const text = errors[reason];
@@ -145,7 +143,7 @@ export class EventDistribution {
 
       glob(`${directory}/programs/**/*${extension}`, async (e, matches) => {
         if (e) {
-          logger.error("Error loading commands: ", { error: e });
+          logger.error("Error loading commands: ", e);
           rej(e);
           return;
         }
