@@ -28,6 +28,7 @@ const bot = new Client({
     "GUILDS",
     "GUILD_MEMBERS",
     "GUILD_BANS",
+    "GUILD_PRESENCES",
     "GUILD_VOICE_STATES",
     "GUILD_MESSAGES",
     "GUILD_MESSAGE_REACTIONS",
