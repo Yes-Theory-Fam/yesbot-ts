@@ -114,7 +114,7 @@ async function getTarget(arg: string, message: Message): Promise<User> {
 
   const targetCollection =
     arg && arg === "online"
-      ? sdRole.members.filter((member) => member.presence.status === "online")
+      ? sdRole.members.filter((member) => member.presence?.status === "online")
       : sdRole.members;
 
   if (
