@@ -30,7 +30,7 @@ export class GithubReleaseNotesUsecase {
       : "";
     if (!!latestRelease) {
       return {
-        tagMessage: `Hello everyone :wave: I'm back after a short break :sleeping:`,
+        tagMessage: "",
         releaseNotes: "",
       };
     }

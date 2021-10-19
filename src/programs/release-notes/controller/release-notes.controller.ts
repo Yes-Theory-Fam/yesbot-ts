@@ -38,7 +38,10 @@ export class ReleaseNotesController extends CommandHandler<DiscordEvent.READY> {
         .channels.cache.find(
           (channel) => channel.name === ChatNames.BOT_DEVELOPMENT
         ) as TextChannel;
-      await botDevChannel.send(message.releaseNotes);
+
+      if (message.tagMessage.length > 0) {
+        await botDevChannel.send(message.releaseNotes);
+      }
     } else {
       logger.info("There was no new releaseNotes");
     }
