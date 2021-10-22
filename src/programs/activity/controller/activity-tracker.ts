@@ -9,7 +9,7 @@ import { ChatNames } from "../../../collections/chat-names";
 
 @Command({
   event: DiscordEvent.MESSAGE,
-  categoryNames: [
+  parentNames: [
     "Africa",
     "Asia",
     "Chatting",

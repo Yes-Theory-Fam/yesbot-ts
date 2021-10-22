@@ -1,5 +1,7 @@
 export enum ChatNames {
   BOT_DEVELOPMENT = "bot-development",
+  BUDDY_PROJECT_INFO = "buddy-project-info",
+  BUDDY_PROJECT = "buddy-project",
   CHAT = "chat",
   CHAT_FIVE = "chat-v",
   CHAT_TOO = "chat-too",
