@@ -48,7 +48,7 @@ bot.on(
   "guildMemberRemove",
   async (member: GuildMember | PartialGuildMember) => {
     await distribution.handleEvent(DiscordEvent.MEMBER_LEAVE, member);
-    await memberLeave(member);
+    await memberLeave(member).catch((error) => logger.error('Error in legacy memberLeave handler: ', error));;
   }
 );
 bot.on("guildMemberAdd", async (member: GuildMember | PartialGuildMember) => {
@@ -60,7 +60,7 @@ bot.on(
     oldMember: GuildMember | PartialGuildMember,
     newMember: GuildMember | PartialGuildMember
   ) => {
-    await guildMemberUpdate(oldMember, newMember);
+    await guildMemberUpdate(oldMember, newMember).catch((error) => logger.error('Error in legacy guildMemberUpdate handler: ', error));
     await distribution.handleEvent(
       DiscordEvent.GUILD_MEMBER_UPDATE,
       oldMember,
@@ -69,7 +69,7 @@ bot.on(
   }
 );
 bot.on("messageCreate", async (msg: Message) => {
-  await messageManager(msg);
+  await messageManager(msg).catch((error) => logger.error('Error in legacy messageManager handler: ', error));
   await distribution.handleEvent(DiscordEvent.MESSAGE, msg);
 });
 bot.on(
@@ -101,7 +101,7 @@ bot.on(
 bot.on("ready", async () => {
   await distribution.handleEvent(DiscordEvent.READY, bot);
   LoadCron.init();
-  await ready(bot);
+  await ready(bot).catch((error) => logger.error('Error in legacy messageManager handler: ', error));
 });
 bot.on(
   "voiceStateUpdate",
@@ -111,7 +111,7 @@ bot.on(
       oldState,
       newState
     );
-    await voiceStateUpdate(oldState, newState);
+    await voiceStateUpdate(oldState, newState).catch((error) => logger.error('Error in legacy voiceStateUpdate handler: ', error));
   }
 );
 //! ================= /EVENT HANDLERS ===================
