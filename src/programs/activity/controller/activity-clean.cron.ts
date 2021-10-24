@@ -1,14 +1,13 @@
 import { CleanupActivity } from "../usecase/cleanup-activity";
 import { createYesBotLogger } from "../../../log";
-
-const cron = require("node-cron");
+import cron from "node-cron";
 
 export class ActivityCleanCron {
   static init() {
     cron.schedule("*/20 * * * * *", async () => {
       logger.debug("start cleaning activities");
       await CleanupActivity.instance()
-        .findOldActivities()
+        .cleanOldActivities()
         .then(() => {
           logger.debug("finished cleaning activities");
         });

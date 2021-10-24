@@ -3,12 +3,12 @@ import {
   CommandHandler,
   DiscordEvent,
   HandlerRejectedReason,
-} from "../../event-distribution";
+} from "../../../event-distribution";
 import { Message } from "discord.js";
-import prisma from "../../prisma";
-import { ChatNames } from "../../collections/chat-names";
+import prisma from "../../../prisma";
+import { ChatNames } from "../../../collections/chat-names";
 
-enum BuddyErrors {
+enum FindBuddyErrors {
   NOT_SIGNED_UP = "NOT_SIGNED_UP",
   NOT_MATCHED = "NOT_MATCHED",
 }
@@ -18,18 +18,17 @@ enum BuddyErrors {
   allowedRoles: ["Buddy Project 2021"],
   trigger: "!buddy",
   description: "Pings the buddy of the author",
-  stateful: false,
   errors: {
     [HandlerRejectedReason.MISSING_ROLE]:
       "It seems you have not signed up to this year's iteration of the buddy project! You can join at https://yestheory.family/buddyproject !",
-    [BuddyErrors.NOT_SIGNED_UP]:
+    [FindBuddyErrors.NOT_SIGNED_UP]:
       "It seems you have not signed up to this year's iteration of the buddy project! You can join at https://yestheory.family/buddyproject !",
-    [BuddyErrors.NOT_MATCHED]:
+    [FindBuddyErrors.NOT_MATCHED]:
       "It seems you haven't been matched yet! Have some patience, I will message you with your buddy and questions once you are matched, pinky promise!",
   },
   channelNames: [ChatNames.BUDDY_PROJECT],
 })
-class BuddyCommand extends CommandHandler<DiscordEvent.MESSAGE> {
+class FindBuddyCommand extends CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
     const {
       member,
@@ -46,11 +45,11 @@ class BuddyCommand extends CommandHandler<DiscordEvent.MESSAGE> {
     });
 
     if (!buddyEntry) {
-      throw new Error(BuddyErrors.NOT_SIGNED_UP);
+      throw new Error(FindBuddyErrors.NOT_SIGNED_UP);
     }
 
     if (!buddyEntry.buddy) {
-      throw new Error(BuddyErrors.NOT_MATCHED);
+      throw new Error(FindBuddyErrors.NOT_MATCHED);
     }
 
     const buddyMember = await member.guild.members.fetch(buddyEntry.buddyId);
