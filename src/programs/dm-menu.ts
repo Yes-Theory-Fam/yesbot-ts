@@ -13,7 +13,6 @@ import {
   EventLocation,
 } from "../event-distribution";
 import { getMember, textLog } from "../common/moderator";
-import { Game } from ".";
 import { createYesBotLogger } from "../log";
 
 const logger = createYesBotLogger("programs", "DmMenu");
@@ -24,18 +23,6 @@ const removeIgnore = (channel: DMChannel) => {
     state.ignoredGroupDMs.splice(index, 1);
   }
 };
-
-@Command({
-  event: DiscordEvent.MESSAGE,
-  location: EventLocation.DIRECT_MESSAGE,
-  description: "This handler is temporarily until we refactor games.ts",
-})
-class HandleGameInput implements CommandHandler<DiscordEvent.MESSAGE> {
-  async handle(message: Message) {
-    //Since game.ts isn't refactored this is a temporarily solution for it not to be "nuked"
-    Game.handleGameInput(message);
-  }
-}
 
 @Command({
   event: DiscordEvent.MESSAGE,
