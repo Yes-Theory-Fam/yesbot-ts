@@ -41,8 +41,23 @@ export class GithubReleaseNotesUsecase {
     );
     await this.saveRelease(newRelease);
 
+    const isPatchRelease = GithubReleaseNotesUsecase.isPatchRelease(
+      newRelease.node.tagName
+    );
+    const releaseNoteMessage = this.createReleaseNotes(releaseNotes);
+    if (isPatchRelease) {
+      return { tagMessage: "", releaseNotes: releaseNoteMessage };
+    }
+
     tagMessage = `**${newRelease.node.name}**\n${tagMessage}`;
-    return { tagMessage, releaseNotes: this.createReleaseNotes(releaseNotes) };
+    return { tagMessage, releaseNotes: releaseNoteMessage };
+  }
+
+  private static isPatchRelease(tagName: string): boolean {
+    const split = tagName.split(".");
+    if (split.length !== 3) return false;
+
+    return Number(split[2]) !== 0;
   }
 
   private async fetchLatestReleasesFormGitHub() {
