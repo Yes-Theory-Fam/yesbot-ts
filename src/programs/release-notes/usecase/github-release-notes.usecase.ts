@@ -42,7 +42,8 @@ export class GithubReleaseNotesUsecase {
     await this.saveRelease(newRelease);
 
     const isPatchRelease = GithubReleaseNotesUsecase.isPatchRelease(
-      newRelease.node.tagName
+      newRelease.node.tagName,
+      lastRelease.releaseTag
     );
     const releaseNoteMessage = this.createReleaseNotes(releaseNotes);
     if (isPatchRelease) {
@@ -53,11 +54,18 @@ export class GithubReleaseNotesUsecase {
     return { tagMessage, releaseNotes: releaseNoteMessage };
   }
 
-  private static isPatchRelease(tagName: string): boolean {
-    const split = tagName.split(".");
-    if (split.length !== 3) return false;
+  private static isPatchRelease(
+    currentTagName: string,
+    previousTagName: string
+  ): boolean {
+    const splitCurrent = currentTagName.split(".");
+    const splitPrevious = previousTagName.split(".");
+    if (splitCurrent.length !== 3 || splitPrevious.length !== 3) return false;
 
-    return Number(split[2]) !== 0;
+    return (
+      splitCurrent[0] === splitPrevious[0] &&
+      splitCurrent[1] === splitPrevious[1]
+    );
   }
 
   private async fetchLatestReleasesFormGitHub() {
