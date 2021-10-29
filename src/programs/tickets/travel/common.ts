@@ -12,7 +12,27 @@ import { ChatNames } from "../../../collections/chat-names";
 const fiveMinutes = 5 * 60 * 1000;
 type CancellationToken = { cancelled: boolean };
 
+enum TravelErrors {
+  CANCELLED = "CANCELLED",
+  TOO_MANY_RETRIES = "TOO_MANY_RETRIES",
+}
+
 export const promptAndSendForApproval = async (
+  channel: TextChannel,
+  userId: Snowflake
+) => {
+  try {
+    await _promptAndSendForApproval(channel, userId);
+  } catch (e) {
+    if (e instanceof Error && e.message === TravelErrors.TOO_MANY_RETRIES) {
+      await channel.send(
+        `Oops, I didn't get a good answer after 5 attempts <@${userId}>; if you want to start over again, please use \`!retry\`.`
+      );
+    }
+  }
+};
+
+const _promptAndSendForApproval = async (
   channel: TextChannel,
   userId: Snowflake
 ) => {
@@ -25,6 +45,9 @@ export const promptAndSendForApproval = async (
     ct.cancelled = true;
   });
 
+  await channel.send(
+    "Hey there! Let's collect the information needed for a travel shoutout! If you mistyped anything, don't worry, you can always use `!retry` to start over."
+  );
   const countries = await getCountries(channel, userId, ct);
   const places = await getString(
     channel,
@@ -78,7 +101,7 @@ export const promptAndSendForApproval = async (
     await channel.send(
       "No worries, we can go through everything one more time :)"
     );
-    await promptAndSendForApproval(channel, userId);
+    await _promptAndSendForApproval(channel, userId);
     return;
   }
 
@@ -314,12 +337,14 @@ const retryUntilSatisfied = async <T>(
   ct: CancellationToken,
   onFailure?: () => unknown | Promise<unknown>
 ): Promise<T> => {
+  let retryCount = 5;
+
   let result: T;
   do {
     result = await producer();
 
     if (ct.cancelled) {
-      throw new Error("Cancelled");
+      throw new Error(TravelErrors.CANCELLED);
     }
 
     if (satisfiedPredicate(result)) {
@@ -327,6 +352,11 @@ const retryUntilSatisfied = async <T>(
     }
 
     await onFailure();
+
+    retryCount -= 1;
+    if (!retryCount) {
+      throw new Error(TravelErrors.TOO_MANY_RETRIES);
+    }
   } while (true);
 
   return result;
