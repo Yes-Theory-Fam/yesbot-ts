@@ -13,10 +13,9 @@ import {
 } from "discord.js";
 import prisma from "../../../prisma";
 import { ChatNames } from "../../../collections/chat-names";
+import { BuddyProjectError, commonMessages } from "../errors";
 
-enum RescueErrors {
-  NOT_MATCHED = "NOT_MATCHED",
-  NOT_SIGNED_UP = "NOT_SIGNED_UP",
+const enum RescueErrors {
   THREAD_ALREADY_EXISTS = "THREAD_ALREADY_EXISTS",
   TOO_MANY_THREADS = "TOO_MANY_THREADS",
 }
@@ -24,10 +23,7 @@ enum RescueErrors {
 @Command({
   event: DiscordEvent.MESSAGE,
   errors: {
-    [RescueErrors.NOT_MATCHED]:
-      "Hey, you are not matched yet! Please have some patience while the matching process is still ongoing.",
-    [RescueErrors.NOT_SIGNED_UP]:
-      "Hey, it looks like you are not signed up yet! Head over to <https://yestheory.family/buddyproject> to sign up and get matched soon.",
+    ...commonMessages,
     [RescueErrors.THREAD_ALREADY_EXISTS]: `Hey, it seems like you or your buddy already opened a thread to find the other. In either case, you should find it under the last message in #${ChatNames.BUDDY_PROJECT_INFO}.`,
     [RescueErrors.TOO_MANY_THREADS]: `Oof! It appears too many threads are already in use. Please try again later or try to use the instructions in #${ChatNames.BUDDY_PROJECT_INFO}, sorry about that!`,
   },
@@ -106,11 +102,11 @@ If you want to help us out, please click the checkmark below to prematurely clos
     });
 
     if (!userAndBuddy) {
-      throw new Error(RescueErrors.NOT_SIGNED_UP);
+      throw new Error(BuddyProjectError.NOT_SIGNED_UP);
     }
 
     if (!userAndBuddy.buddyId) {
-      throw new Error(RescueErrors.NOT_MATCHED);
+      throw new Error(BuddyProjectError.NOT_MATCHED);
     }
 
     return userAndBuddy.buddyId;

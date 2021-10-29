@@ -263,6 +263,9 @@ export const rejectWithMessage = async (
         messageArg.guild
       );
       return await Tools.handleUserError(messageArg, channelResolvedMessage);
+    case DiscordEvent.REACTION_ADD:
+      const userArg = args[1] as User;
+      return userArg.createDM().then((dm) => dm.send(message));
     default:
       logger.error(
         `Tried to reject event ${event} with message: ${message} but rejection isn't implemented for this event.`

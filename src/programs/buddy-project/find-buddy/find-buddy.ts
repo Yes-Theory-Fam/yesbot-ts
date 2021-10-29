@@ -7,11 +7,8 @@ import {
 import { Message } from "discord.js";
 import prisma from "../../../prisma";
 import { ChatNames } from "../../../collections/chat-names";
-
-enum FindBuddyErrors {
-  NOT_SIGNED_UP = "NOT_SIGNED_UP",
-  NOT_MATCHED = "NOT_MATCHED",
-}
+import { BuddyProjectError, commonMessages } from "../errors";
+import { BuddyProjectMatching } from "../matching/matching";
 
 @Command({
   event: DiscordEvent.MESSAGE,
@@ -19,12 +16,9 @@ enum FindBuddyErrors {
   trigger: "!buddy",
   description: "Pings the buddy of the author",
   errors: {
+    ...commonMessages,
     [HandlerRejectedReason.MISSING_ROLE]:
-      "It seems you have not signed up to this year's iteration of the buddy project! You can join at https://yestheory.family/buddyproject !",
-    [FindBuddyErrors.NOT_SIGNED_UP]:
-      "It seems you have not signed up to this year's iteration of the buddy project! You can join at https://yestheory.family/buddyproject !",
-    [FindBuddyErrors.NOT_MATCHED]:
-      "It seems you haven't been matched yet! Have some patience, I will message you with your buddy and questions once you are matched, pinky promise!",
+      commonMessages[BuddyProjectError.NOT_SIGNED_UP],
   },
   channelNames: [ChatNames.BUDDY_PROJECT],
 })
@@ -45,11 +39,11 @@ class FindBuddyCommand extends CommandHandler<DiscordEvent.MESSAGE> {
     });
 
     if (!buddyEntry) {
-      throw new Error(FindBuddyErrors.NOT_SIGNED_UP);
+      throw new Error(BuddyProjectError.NOT_SIGNED_UP);
     }
 
     if (!buddyEntry.buddy) {
-      throw new Error(FindBuddyErrors.NOT_MATCHED);
+      throw new Error(BuddyProjectError.NOT_MATCHED);
     }
 
     const buddyMember = await member.guild.members.fetch(buddyEntry.buddyId);

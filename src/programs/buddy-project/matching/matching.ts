@@ -8,11 +8,8 @@ import cron from "node-cron";
 
 // TODO, throw members with disabled DMs out of matching until they hit a reaction in the disabled DMs channel?
 
-// TODO; also figure out sensible interval for the amount chosen.
 const matchAmount = 100;
-const cronSchedule = "*/20 * * * *"; // Every 20 minutes
-
-const logger = createYesBotLogger("buddy-project", "matching");
+const cronSchedule = "*/30 * * * *"; // Every 20 minutes
 
 const shuffle = <T>(...items: T[]): T[] => {
   const copy = [...items];
@@ -169,3 +166,5 @@ export class BuddyProjectMatching {
     });
   }
 }
+
+const logger = createYesBotLogger("buddy-project", BuddyProjectMatching.name);

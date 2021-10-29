@@ -8,7 +8,7 @@ import {
 import { VoiceState } from "discord.js";
 import { addToTree } from "../helper";
 
-export enum VoiceStateChange {
+export const enum VoiceStateChange {
   JOINED = "JOINED",
   LEFT = "LEFT",
   SWITCHED_CHANNEL = "SWITCHED_CHANNEL",

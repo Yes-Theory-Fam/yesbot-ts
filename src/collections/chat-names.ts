@@ -1,4 +1,4 @@
-export enum ChatNames {
+export const enum ChatNames {
   BOT_DEVELOPMENT = "bot-development",
   BUDDY_PROJECT = "buddy-project",
   BUDDY_PROJECT_DMS_DISABLD = "buddy-project-dms-disabled",
