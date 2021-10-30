@@ -67,14 +67,19 @@ export class EventDistribution {
     info: HandlerInfo,
     event: T
   ): FilterResult<T>[] {
-    const { handlerKeys, isDirectMessage, member } = info;
+    const { handlerKeys, isDirectMessage, member, content = null } = info;
 
     const roleNames = member?.roles.cache.map((r) => r.name) ?? [];
     const eventHandlers = this.getHandlers<T>(
       this.handlers[event] as StringIndexedHIOCTreeNode<T>,
       handlerKeys
     );
-    return this.filterHandlers<T>(eventHandlers, isDirectMessage, roleNames);
+    return this.filterHandlers<T>(
+      eventHandlers,
+      isDirectMessage,
+      roleNames,
+      content
+    );
   }
 
   async handleInteraction(interaction: Interaction) {
@@ -279,10 +284,21 @@ export class EventDistribution {
     );
   }
 
+  private static matchesContentRegex<T extends DiscordEvent>(
+    handler: HIOC<T>,
+    content: string | null
+  ): boolean {
+    if (!isMessageRelated(handler.options)) return true;
+    if (content === null) return false;
+
+    return !!content.match(handler.options.contentRegex);
+  }
+
   private filterHandlers<T extends DiscordEvent>(
     handlers: HIOC<T>[],
     isDirectMessage: boolean,
-    roleNames: string[]
+    roleNames: string[],
+    content: string | null
   ): FilterResult<T>[] {
     return handlers
       .map<FilterResult<T>>((eh) => {
@@ -311,6 +327,22 @@ export class EventDistribution {
               ...r,
               accepted: false,
               reason: HandlerRejectedReason.MISSING_ROLE,
+            };
+      })
+      .map<FilterResult<T>>((r) => {
+        if (!r.accepted) return r;
+
+        const matchesContentRegex = EventDistribution.matchesContentRegex(
+          r.handler,
+          content
+        );
+
+        return matchesContentRegex
+          ? r
+          : {
+              ...r,
+              accepted: false,
+              reason: HandlerRejectedReason.DOESNT_MATCH_REGEX,
             };
       });
   }
