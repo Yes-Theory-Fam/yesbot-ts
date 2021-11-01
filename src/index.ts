@@ -35,7 +35,7 @@ const bot = new Client({
     "DIRECT_MESSAGES",
     "DIRECT_MESSAGE_REACTIONS",
   ],
-  partials: ["REACTION", "MESSAGE"],
+  partials: ["REACTION", "MESSAGE", "CHANNEL"],
 });
 logger.info("Initializing event-distribution");
 distribution.initialize().then(() => {
