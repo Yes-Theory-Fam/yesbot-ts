@@ -9,7 +9,7 @@ import cron from "node-cron";
 // TODO, throw members with disabled DMs out of matching until they hit a reaction in the disabled DMs channel?
 
 const matchAmount = 100;
-const cronSchedule = "*/30 * * * *"; // Every 20 minutes
+const cronSchedule = "*/30 * * * *"; // Every 30 minutes
 
 const shuffle = <T>(...items: T[]): T[] => {
   const copy = [...items];
@@ -75,7 +75,7 @@ export class BuddyProjectMatching {
   ): PrismaPromise<unknown> {
     return prisma.buddyProjectEntry.update({
       where: { userId },
-      data: { buddyId },
+      data: { buddyId, matchedDate: new Date() },
     });
   }
 
