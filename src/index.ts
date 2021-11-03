@@ -2,6 +2,7 @@ import { createYesBotLogger } from "./log";
 import {
   Client,
   GuildMember,
+  Interaction,
   Message,
   MessageReaction,
   PartialGuildMember,
@@ -77,6 +78,9 @@ bot.on("messageCreate", async (msg: Message) => {
     logger.error("Error in legacy messageManager handler: ", error)
   );
   await distribution.handleEvent(DiscordEvent.MESSAGE, msg);
+});
+bot.on("interactionCreate", async (interaction: Interaction) => {
+  await distribution.handleInteraction(interaction);
 });
 bot.on(
   "messageReactionAdd",

@@ -1,9 +1,23 @@
-import { CommandHandler, DiscordEvent } from ".";
+import {
+  CommandHandler,
+  DiscordEvent,
+  HandlerInfo,
+  MessageRelatedOptions,
+} from ".";
 import {
   HIOC,
   InstanceOrConstructor,
   StringIndexedHIOCTree,
 } from "./types/hioc";
+import {
+  Client,
+  GuildChannel,
+  GuildMember,
+  Message,
+  PartialMessage,
+  TextBasedChannels,
+} from "discord.js";
+import { APIGuildMember, APIMessage } from "discord-api-types";
 
 export const getIdFromCategoryName = (name: string) =>
   `c_${name.toLowerCase()}`;
@@ -12,6 +26,55 @@ export const getIocName = <T extends DiscordEvent>(
   ioc: InstanceOrConstructor<CommandHandler<T>>
 ) => {
   return typeof ioc === "function" ? ioc.name : ioc.constructor.name;
+};
+
+export const collectChannelDefinitions = (options: MessageRelatedOptions) => {
+  const channels = options.channelNames ?? [];
+  const categories = options.categoryNames ?? [];
+  if (channels.length === 0 && categories.length === 0) channels.push("");
+
+  return [...channels, ...categories.map((c) => getIdFromCategoryName(c))];
+};
+
+type HandlerKeyFromChannelIdResolver = (channelIdentifier: string) => string[];
+
+export const withMessageRelatedInfo = (
+  message: Message | PartialMessage,
+  member: GuildMember | null,
+  resolver: HandlerKeyFromChannelIdResolver
+): HandlerInfo[] => {
+  const getChannelIdentifier = (channel: TextBasedChannels) =>
+    channel.type === "DM" ? channel.id : channel.name;
+
+  const channel = message.channel;
+  const channelIdentifier = getChannelIdentifier(channel);
+
+  const baseInfo = {
+    member: member,
+    isDirectMessage: message.channel.type === "DM",
+  };
+
+  const info = [
+    {
+      ...baseInfo,
+      handlerKeys: resolver(channelIdentifier),
+    },
+  ];
+
+  const maybeCategory = (channel as GuildChannel).parent;
+  if (maybeCategory) {
+    const normalizedCategoryName = maybeCategory.name
+      .match(/[a-z\d\s.]+/gi)[0]
+      .trim();
+    const categoryIdentifier = getIdFromCategoryName(normalizedCategoryName);
+
+    info.push({
+      ...baseInfo,
+      handlerKeys: resolver(categoryIdentifier),
+    });
+  }
+
+  return info;
 };
 
 export const addToTree = <T extends DiscordEvent>(
