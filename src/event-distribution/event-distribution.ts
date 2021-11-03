@@ -288,7 +288,8 @@ export class EventDistribution {
     handler: HIOC<T>,
     content: string | null
   ): boolean {
-    if (!isMessageRelated(handler.options)) return true;
+    if (!isMessageRelated(handler.options) || !handler.options.contentRegex)
+      return true;
     if (content === null) return false;
 
     return !!content.match(handler.options.contentRegex);

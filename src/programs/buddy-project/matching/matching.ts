@@ -61,9 +61,11 @@ export class BuddyProjectMatching {
 
     logger.debug(`Matching ${pairs.length} pairs!`);
 
-    const matchingPromises = pairs.map((p) =>
-      BuddyProjectMatching.match(p as [string, string], this.guild)
-    );
+    const matchingPromises = pairs
+      .filter((p) => p.length === 2)
+      .map((p) =>
+        BuddyProjectMatching.match(p as [string, string], this.guild)
+      );
 
     await Promise.all(matchingPromises);
     logger.info("Done matching, destroying client in 3 seconds.");
@@ -137,7 +139,7 @@ export class BuddyProjectMatching {
 
       logger.error("Could not send DMs", e);
       const disabledDmsChannel = guild.channels.cache.find(
-        (c): c is TextChannel => c.name === ChatNames.BUDDY_PROJECT_DMS_DISABLD
+        (c): c is TextChannel => c.name === ChatNames.BUDDY_PROJECT_DMS_DISABLED
       );
       if (!disabledDmsChannel) {
         const message = "Could not find disabled DMs channel";
