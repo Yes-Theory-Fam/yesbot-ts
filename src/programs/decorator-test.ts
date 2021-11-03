@@ -1,4 +1,13 @@
-import { Client, Message, MessageReaction, User, VoiceState } from "discord.js";
+import {
+  ButtonInteraction,
+  Client,
+  Message,
+  MessageActionRow,
+  MessageButton,
+  MessageReaction,
+  User,
+  VoiceState,
+} from "discord.js";
 import {
   Command,
   CommandHandler,
@@ -210,5 +219,36 @@ export class DecoratorTest11 extends CommandHandler<DiscordEvent.MESSAGE> {
 export class DecoratorTest12 extends CommandHandler<DiscordEvent.MESSAGE> {
   handle(message: Message): void {
     throw new Error("Custom Error");
+  }
+}
+
+@Command({
+  event: DiscordEvent.MESSAGE,
+  trigger: "!button",
+  description: "Creates an example button",
+})
+class DecoratorTest13Helper extends CommandHandler<DiscordEvent.MESSAGE> {
+  async handle(message: Message): Promise<void> {
+    const button = new MessageButton({
+      customId: "example-button",
+      style: "PRIMARY",
+      label: "tadaaa",
+    });
+
+    const actions = new MessageActionRow().addComponents(button);
+    await message.reply({ content: "Tadaaaaa", components: [actions] });
+  }
+}
+
+/**
+ * Example of a button click handler
+ */
+@Command({
+  event: DiscordEvent.BUTTON_CLICKED,
+  customId: "example-button",
+})
+class DecoratorTest13 extends CommandHandler<DiscordEvent.BUTTON_CLICKED> {
+  handle(button: ButtonInteraction): void {
+    console.log("Handler 13 called");
   }
 }

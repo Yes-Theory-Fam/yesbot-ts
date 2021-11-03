@@ -4,6 +4,7 @@ import { CommandHandler } from "./handler";
 import { InstanceOrConstructor, StringIndexedHIOCTree } from "./hioc";
 
 export const enum DiscordEvent {
+  BUTTON_CLICKED = "BUTTON_CLICKED",
   GUILD_MEMBER_UPDATE = "GUILD_MEMBER_UPDATE",
   MEMBER_LEAVE = "MEMBER_LEAVE",
   MESSAGE = "MESSAGE",

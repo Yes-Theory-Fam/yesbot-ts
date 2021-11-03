@@ -24,6 +24,7 @@ import {
   HandlerRejectedReason,
 } from "./types/base";
 import { getIocName } from "./helper";
+import { Interaction } from "discord.js";
 
 const logger = createYesBotLogger("event-distribution", "event-distribution");
 
@@ -47,6 +48,7 @@ const isRejection = <T extends DiscordEvent>(
 
 export class EventDistribution {
   handlers: EventDistributionHandlers = {
+    [DiscordEvent.BUTTON_CLICKED]: {},
     [DiscordEvent.MEMBER_LEAVE]: {},
     [DiscordEvent.MESSAGE]: {},
     [DiscordEvent.REACTION_ADD]: {},
@@ -70,6 +72,12 @@ export class EventDistribution {
       handlerKeys
     );
     return this.filterHandlers<T>(eventHandlers, isDirectMessage, roleNames);
+  }
+
+  async handleInteraction(interaction: Interaction) {
+    if (interaction.isButton()) {
+      return await this.handleEvent(DiscordEvent.BUTTON_CLICKED, interaction);
+    }
   }
 
   async handleEvent<T extends DiscordEvent>(
