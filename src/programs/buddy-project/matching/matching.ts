@@ -52,7 +52,7 @@ export class BuddyProjectMatching {
   async runMatching(): Promise<void> {
     const availableIds = await prisma.buddyProjectEntry.findMany({
       select: { userId: true },
-      where: { buddyId: null },
+      where: { buddyId: null, blocked: false },
     });
 
     const shuffledIds = shuffle(...availableIds.map(({ userId }) => userId));
@@ -158,6 +158,11 @@ export class BuddyProjectMatching {
       });
 
       await ping.delete();
+
+      await prisma.buddyProjectEntry.update({
+        where: { userId },
+        data: { blocked: true },
+      });
     }
   }
 
