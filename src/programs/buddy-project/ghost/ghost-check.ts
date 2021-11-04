@@ -79,8 +79,8 @@ export class BuddyGhostCheck {
       (m) => m.author.bot && !!m.content.match(ghostWarningMessageRegex)
     );
 
-    await ghostWarningMessage.reactions.removeAll();
-    await ghostWarningMessage.edit(
+    await ghostWarningMessage.delete();
+    await dm.send(
       `**Buddy Project Ghosted**
 
 Hey there! It appears you have gone offline on us and didn't reach out to your buddy. I tried contacting you but without success 😦
