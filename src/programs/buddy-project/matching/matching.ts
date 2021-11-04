@@ -168,7 +168,7 @@ export class BuddyProjectMatching {
 
   private static async rollbackMatch(ids: [string, string]): Promise<void> {
     await prisma.buddyProjectEntry.updateMany({
-      data: { buddyId: null },
+      data: { buddyId: null, matchedDate: null },
       where: { userId: { in: ids } },
     });
   }
