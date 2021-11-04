@@ -1,4 +1,11 @@
 import {
+  AddEventHandlerFunction,
+  DiscordEvent,
+  ExtractInfoForEventFunction,
+  HandlerFunctionFor,
+  MessageRelatedOptions,
+} from "../types/base";
+import {
   ChannelType,
   MessageReaction,
   PartialMessageReaction,
@@ -10,13 +17,6 @@ import {
   collectChannelDefinitions,
   withMessageRelatedInfo,
 } from "../helper";
-import {
-  AddEventHandlerFunction,
-  DiscordEvent,
-  ExtractInfoForEventFunction,
-  HandlerFunctionFor,
-  MessageRelatedOptions,
-} from "../types/base";
 
 export interface ReactionEventHandlerOptions extends MessageRelatedOptions {
   emoji: string;

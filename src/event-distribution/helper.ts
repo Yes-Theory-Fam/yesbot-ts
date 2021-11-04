@@ -31,10 +31,10 @@ export const getIocName = <T extends DiscordEvent>(
 
 export const collectChannelDefinitions = (options: MessageRelatedOptions) => {
   const channels = options.channelNames ?? [];
-  const categories = options.categoryNames ?? [];
+  const categories = options.parentNames ?? [];
   if (channels.length === 0 && categories.length === 0) channels.push("");
 
-  return [...channels, ...categories.map((c) => getIdFromCategoryName(c))];
+  return [...channels, ...categories.map((c) => getIdFromParentName(c))];
 };
 
 type HandlerKeyFromChannelIdResolver = (channelIdentifier: string) => string[];
@@ -53,6 +53,7 @@ export const withMessageRelatedInfo = (
   const baseInfo = {
     member: member,
     isDirectMessage: message.channel.type === ChannelType.DM,
+    content: message.content,
   };
 
   const info = [
@@ -66,7 +67,7 @@ export const withMessageRelatedInfo = (
   if (maybeCategory) {
     const normalizedCategoryName =
       maybeCategory.name.match(/[a-z\d\s.]+/gi)?.[0].trim() ?? "";
-    const categoryIdentifier = getIdFromCategoryName(normalizedCategoryName);
+    const categoryIdentifier = getIdFromParentName(normalizedCategoryName);
 
     info.push({
       ...baseInfo,

@@ -58,7 +58,7 @@ export interface HandlerInfo {
   handlerKeys: string[];
   member?: GuildMember | PartialGuildMember | null;
   isDirectMessage: boolean;
-  content?: string;
+  content?: string | null;
 }
 
 export type ExtractInfoFunction<T extends DiscordEvent> = (
