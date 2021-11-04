@@ -94,7 +94,7 @@ export class BuddyProjectMatching {
 
       const firstSentMessage = await BuddyProjectMatching.trySendQuestions(
         first,
-        `${intro}\n${oddQuestions}`,
+        `${intro(second)}\n${oddQuestions}`,
         guild
       );
 
@@ -105,7 +105,7 @@ export class BuddyProjectMatching {
 
       const secondSentMessage = await BuddyProjectMatching.trySendQuestions(
         second,
-        `${intro}\n${evenQuestions}`,
+        `${intro(first)}\n${evenQuestions}`,
         guild
       );
 
