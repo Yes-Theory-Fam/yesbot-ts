@@ -2,6 +2,7 @@ import { ActivityCleanCron } from "./programs/activity/controller/activity-clean
 import { Client } from "discord.js";
 import { BuddyProjectMatching } from "./programs/buddy-project/matching/matching";
 import { BuddyGhostCheck } from "./programs/buddy-project/ghost/ghost-check";
+import { RescueForceClose } from "./programs/buddy-project/find-buddy/rescue-force-close";
 
 export class LoadCron {
   private static loadCronInstance: LoadCron;
@@ -24,5 +25,6 @@ export class LoadCron {
   private initBuddyProjectCrons() {
     BuddyProjectMatching.init(this.bot);
     BuddyGhostCheck.init(this.bot);
+    RescueForceClose.init(this.bot);
   }
 }
