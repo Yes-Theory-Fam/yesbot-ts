@@ -4,8 +4,18 @@ import prisma from "../../prisma";
 
 export class TimerService {
   private static async handleTimer(timer: Timer) {
+    const exists = await prisma.timer.delete({
+      where: { id: timer.id },
+      select: { id: true },
+    });
+
+    if (!exists?.id) {
+      // Cancelled
+      return;
+    }
+
     try {
-      distribution.handleEvent(DiscordEvent.TIMER, timer);
+      await distribution.handleEvent(DiscordEvent.TIMER, timer);
     } finally {
       await prisma.timer.delete({ where: { id: timer.id } });
     }
@@ -24,10 +34,20 @@ export class TimerService {
     handlerIdentifier: string,
     executeTime: Date,
     data?: Prisma.JsonValue
-  ): Promise<void> {
+  ): Promise<string> {
     const timer = await prisma.timer.create({
       data: { handlerIdentifier, executeTime, data },
     });
     TimerService.scheduleTimer(timer);
+    return timer.id;
+  }
+
+  public static async cancelTimer(id: string): Promise<boolean> {
+    try {
+      await prisma.timer.delete({ where: { id } });
+      return true;
+    } catch {
+      return false;
+    }
   }
 }
