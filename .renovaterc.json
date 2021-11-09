@@ -20,7 +20,8 @@
     {
       "matchPackageNames": [
         "prisma",
-        "typegraphql-prisma"
+        "typegraphql-prisma",
+        "@yes-theory-fam/database"
       ],
       "labels": [
         "renovate",
@@ -47,5 +48,15 @@
       ],
       "groupName": "node version"
     }
-  ]
+  ],
+  "hostRules": [
+    {
+      "matchHost": "https://npm.pkg.github.com/",
+      "hostType": "npm",
+      "encrypted": {
+        "token": "wcFMA/xDdHCJBTolAQ/+IWBwxn6pt/JSe/Vij8M80Q/TW5IGhaZJzHVTTznNscsXgIy2WBt+/OZFgszSBq1eLU+m7qgYAMcjB0cx92jxYsZVi8X6lTOga+ok1fQT/zuZHpLjZfQ7iPudMUaemiaxQmVrofO+5FH1cQLMQRua30hMfbrQb5lFdFWEQZQsBfhiOw+agkc6QePVL2hQ7kotO+3dO4WxpnduqePyO0+wOMHR3TjU/6wkD+NM4+ap9x+4SvXJQUjAQu6/1gJl+UaX2GEKOW9uCg3UN3Am2TmTiRtmluc8T5r8WMGx3CSCpQ5i/u7K15BcQfp5fqx6X+Hp1hYqlrJe+g/rfFVauPjmNLqch3EMKPf3p3INqrHUiPYtGw/eETopFPb8a+pH+S7Q/I9+T50eTE6AmOj3Y9et4XPReg0ZieO0+Um94mCMxmx9Cjj01kcIn8oxK6JOTRAghwVlFQnEa1NLPdT3kge4aSMXIsWVNVPq45zJ6L8Q5iKQEMf7F7JNmXuOAXvx/V3JONvGm3DlDuABRRvlW0XI5BAK9hSK9gjVWP+7tWxuWM/AY4fMd4p1q344T90EK1gtbFn2g8c7TLHpA+/ZnARAD9S1dTqnfLwwV/OFAfgvelga2ZrEE76w3ZEhS0hEjIfuAtnluxVKvlyhAz+dUIdi849LCAEXcFmapv3DaYPSdp3SfQG0fz1BOZTjbV3ELMzXAlNa4tlt5hJ8uMSd4/zOIxZ6Rs4PBi/gwPCGKCMVjnXO3NDQoTq3L7Or2PYpFPsVCF+WgnpNmIeu47tdmIdB2liAVFZAlEb63nk1DsEqiqK7J9ugOGdYYBBPb98/VkbMckvKNxOZ21prwckWT9Za"
+      }
+    }
+  ],
+  "npmrc": "@yes-theory-fam:registry=https://npm.pkg.github.com/"
 }
