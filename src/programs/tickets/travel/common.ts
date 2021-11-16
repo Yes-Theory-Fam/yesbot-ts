@@ -8,6 +8,7 @@ import {
 } from "discord.js";
 import { CountryRoleFinder } from "../../../utils/country-role-finder";
 import { ChatNames } from "../../../collections/chat-names";
+import { createYesBotLogger } from "../../../log";
 
 const fiveMinutes = 5 * 60 * 1000;
 type CancellationToken = { cancelled: boolean };
@@ -28,7 +29,13 @@ export const promptAndSendForApproval = async (
       await channel.send(
         `Oops, I didn't get a good answer after 5 attempts <@${userId}>; if you want to start over again, please use \`!retry\`.`
       );
+      return;
     }
+
+    if (e instanceof Error && e.message === TravelErrors.CANCELLED) return;
+
+    const logger = createYesBotLogger("travel", "promptAndSendForApproval");
+    logger.error("Error occurred while collecting information: ", e);
   }
 };
 
@@ -136,7 +143,7 @@ const getCountries = async (
     async () =>
       channel
         .send(
-          "I couldn't find any countries in your message, please try again!"
+          "I couldn't find any countries that we have roles for in your message, please try again!"
         )
         .then((m) => setTimeout(() => m.delete(), 10000))
   );
@@ -156,9 +163,9 @@ async function _getCountries(
     countries.splice(usaIndex, 1);
   }
 
-  const mappedRoles = countries.map((c) =>
-    CountryRoleFinder.getRoleForCountry(c, channel.guild)
-  );
+  const mappedRoles = countries
+    .map((c) => CountryRoleFinder.getRoleForCountry(c, channel.guild))
+    .filter(Boolean);
   const usaRoles = hasUsa ? await _getUSARegions(channel, userId) : [];
 
   return [...mappedRoles, ...usaRoles];
@@ -311,7 +318,7 @@ function formatMessage(
 ): string {
   const rolePings = countries.map((r) => `<@&${r.id}>`).join(", ");
   return `Hey ${rolePings}!
-  
+
 **Who's traveling**: <@${userId}>${
     travelPartners !== "" ? `and ${travelPartners}` : ""
   }
