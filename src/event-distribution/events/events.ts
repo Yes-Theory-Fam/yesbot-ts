@@ -213,7 +213,7 @@ export const extractEventInfo: ExtractInfoFunction<DiscordEvent> = (
   return Array.isArray(infos) ? infos : [infos];
 };
 
-export const rejectWithMessage = (
+export const rejectWithMessage = async (
   message: string,
   event: DiscordEvent,
   ...args: Parameters<HandlerFunction<DiscordEvent>>
@@ -225,7 +225,7 @@ export const rejectWithMessage = (
         message,
         messageArg.guild
       );
-      return messageArg.reply(channelResolvedMessage);
+      return await Tools.handleUserError(messageArg, channelResolvedMessage);
     default:
       logger.error(
         `Tried to reject event ${event} with message: ${message} but rejection isn't implemented for this event.`
