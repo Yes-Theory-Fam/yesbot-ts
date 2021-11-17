@@ -43,14 +43,13 @@ class Filter implements CommandHandler<DiscordEvent.MESSAGE> {
 
     if (messageContent.match(/(nigga|nigger)/i)) {
       await message.delete();
-      member
+      await member
         .createDM()
         .then((dm) =>
           dm.send(
             `Usage of the N word is absolutely banned within this server. Please refer to the <#450102410262609943>.`
           )
         );
-      return;
     }
   }
 }
