@@ -21,11 +21,11 @@ class Filter implements CommandHandler<DiscordEvent.MESSAGE> {
           hasRole(member, "Seek Discomfort")
         )
       ) {
-        member.createDM().then((dm) => {
-          dm.send(
+        await member.createDM().then(async (dm) => {
+          await dm.send(
             "Hey there! You tagged more than 20 people in a single message. The message has been deleted and you have beeen timed out. Here is the message sent: "
           );
-          dm.send(messageContent);
+          await dm.send(messageContent);
         });
         await message.delete();
         const supportRole = Tools.getRoleByName(
@@ -34,7 +34,7 @@ class Filter implements CommandHandler<DiscordEvent.MESSAGE> {
         );
         const timeoutRole = Tools.getRoleByName("Time Out", message.guild);
         await message.member.roles.add(timeoutRole);
-        textLog(
+        await textLog(
           `<@&${supportRole.id}>: <@${message.author.id}> just tagged more than 20 people in a single message in <#${message.channel.id}>. The message has been deleted and they have beeen timed out.`
         ).then(() => textLog(`Message content was: ${messageContent}`));
       }
