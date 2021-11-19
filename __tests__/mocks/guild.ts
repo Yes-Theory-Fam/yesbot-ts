@@ -1,6 +1,7 @@
 import { Client, Guild, GuildMember, Snowflake } from "discord.js";
 import { RawGuildData } from "discord.js/typings/rawDataTypes";
 
+// @ts-expect-error: https://github.com/discordjs/discord.js/issues/6798
 export class MockGuild extends Guild {
   _members: GuildMember[] = [];
 
