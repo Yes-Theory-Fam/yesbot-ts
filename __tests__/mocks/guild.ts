@@ -1,6 +1,7 @@
 import { Client, Guild, GuildMember, Snowflake } from "discord.js";
 import { RawGuildData } from "discord.js/typings/rawDataTypes";
 
+// @ts-expect-error: https://github.com/discordjs/discord.js/issues/6798
 export class MockGuild extends Guild {
   _members: GuildMember[] = [];
 
@@ -12,12 +13,6 @@ export class MockGuild extends Guild {
         resolve: (id: Snowflake) => this._members.find((m) => m.id === id),
       }),
     });
-
-    // Object.defineProperty(this, "roles", {
-    //   get: () => ({
-    //     everyone: { id: "test" },
-    //   }),
-    // });
   }
 
   addMember(member: GuildMember) {

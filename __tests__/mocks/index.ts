@@ -137,6 +137,7 @@ export default class MockDiscord {
   }
 
   private mockChannel(): void {
+    // @ts-expect-error: https://github.com/discordjs/discord.js/issues/6798
     this.channel = new Channel(this.client, {
       id: "channel-id",
       name: "Frank",
@@ -145,6 +146,7 @@ export default class MockDiscord {
   }
 
   private mockGuildChannel(): void {
+    // @ts-expect-error: https://github.com/discordjs/discord.js/issues/6798
     this.guildChannel = new GuildChannel(this.guild, {
       ...this.channel,
 
@@ -157,6 +159,7 @@ export default class MockDiscord {
   }
 
   private mockTextChannel(): void {
+    // @ts-expect-error: https://github.com/discordjs/discord.js/issues/6798
     this.textChannel = new TextChannel(this.guild, {
       ...this.guildChannel,
 
@@ -170,6 +173,7 @@ export default class MockDiscord {
   }
 
   private mockUser(): void {
+    // @ts-expect-error: https://github.com/discordjs/discord.js/issues/6798
     this.user = new User(this.client, {
       id: "222222222222222200",
       username: "user username",
@@ -252,6 +256,7 @@ export default class MockDiscord {
   }
 
   private mockRole() {
+    // @ts-expect-error: https://github.com/discordjs/discord.js/issues/6798
     this.role = new Role(
       this.client,
       {
@@ -269,6 +274,7 @@ export default class MockDiscord {
   }
 
   private mockVoiceState() {
+    // @ts-expect-error: https://github.com/discordjs/discord.js/issues/6798
     this.voiceState = new VoiceState(this.guild, {
       deaf: false,
       mute: false,

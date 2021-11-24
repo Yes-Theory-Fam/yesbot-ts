@@ -20,7 +20,10 @@ Object {
   ],
   "isDirectMessage": false,
   "member": Object {
+    "avatar": null,
+    "avatarURL": null,
     "deleted": false,
+    "displayAvatarURL": "https://cdn.discordapp.com/avatars/222222222222222200/user avatar url.webp",
     "displayName": "nick",
     "guildId": "guild-id",
     "joinedTimestamp": NaN,
