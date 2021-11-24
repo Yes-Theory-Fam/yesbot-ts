@@ -17,7 +17,7 @@ import {
   collectChannelDefinitions,
   withMessageRelatedInfo,
 } from "../helper";
-import { APIGuildMember } from "discord-api-types";
+import { APIGuildMember, APIMessage } from "discord-api-types";
 
 export interface ButtonClickedHandlerOptions extends MessageRelatedOptions {
   event: DiscordEvent.BUTTON_CLICKED;
@@ -53,14 +53,21 @@ const ensureGuildMemberOrNull = (
     );
   }
 
-  return new GuildMember(client, member, guild);
+  return new (GuildMember as unknown as new (
+    client: Client,
+    member: APIGuildMember,
+    guild: Guild
+  ) => GuildMember)(client, member, guild);
 };
 
 export const extractButtonClickedInfo: ExtractInfoForEventFunction<DiscordEvent.BUTTON_CLICKED> =
   (button: ButtonInteraction) => {
     let message = button.message;
     if (!(message instanceof Message)) {
-      message = new Message(button.client, message);
+      message = new (Message as unknown as new (
+        client: Client,
+        message: APIMessage
+      ) => Message)(button.client, message);
     }
 
     const member = ensureGuildMemberOrNull(
