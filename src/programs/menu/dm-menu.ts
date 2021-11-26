@@ -1,10 +1,5 @@
-import {
-  CollectorFilter,
-  DMChannel,
-  Message,
-  MessageReaction,
-  User,
-} from "discord.js";
+import { DMChannel, Message } from "discord.js";
+import { getMember } from "../../common/moderator";
 import state from "../../common/state";
 import {
   Command,
@@ -12,19 +7,15 @@ import {
   DiscordEvent,
   EventLocation,
 } from "../../event-distribution";
-import { getMember, textLog } from "../../common/moderator";
-import { createYesBotLogger } from "../../log";
-
-const logger = createYesBotLogger("programs", "DmMenu");
-
-const removeIgnore = (channel: DMChannel) => {
-  const index = state.ignoredGroupDMs.indexOf(channel.id);
-  if (index > -1) {
-    state.ignoredGroupDMs.splice(index, 1);
-  }
-};
-
-const availableEmojiOptions = ["👶", "🦥"];
+import { addBreakRole } from "./break-handler/addBreak";
+import { removeBreakRole } from "./break-handler/removeBreak";
+import {
+  emojiCollector,
+  handleError,
+  isOnBreak,
+  mainOptionsEmojis,
+} from "./common";
+import { nameCollector } from "./nameChange";
 
 @Command({
   event: DiscordEvent.MESSAGE,
@@ -44,13 +35,20 @@ class ShowMenu implements CommandHandler<DiscordEvent.MESSAGE> {
       return;
     }
 
+    const userOnBreak = await isOnBreak(member.id);
+
+    if (userOnBreak) {
+      await removeBreakRole(member, userOnBreak, dmChannel);
+      return;
+    }
+
     if (state.ignoredGroupDMs.includes(dmChannel.id)) return;
 
     const optionsMessage = await message.reply(
       "Hey, I'm just a bot! Most of what I can do, I do on the YesFam discord, so talk to me there instead! I can help you change your name, though, if you're new around here. Click the :baby: if you want to change your name! Or if you feel like you need a break you can click on the :sloth:"
     );
 
-    availableEmojiOptions.forEach(
+    mainOptionsEmojis.forEach(
       async (emoji) => await optionsMessage.react(emoji)
     );
 
@@ -60,6 +58,9 @@ class ShowMenu implements CommandHandler<DiscordEvent.MESSAGE> {
       switch (reactions.emoji.toString()) {
         case "👶":
           await nameCollector(dmChannel, message);
+          break;
+        case "🦥":
+          await addBreakRole(member, dmChannel);
       }
     } catch (err) {
       await handleError(optionsMessage, dmChannel);
@@ -68,91 +69,3 @@ class ShowMenu implements CommandHandler<DiscordEvent.MESSAGE> {
     await optionsMessage.delete();
   }
 }
-
-const proposeNameChange = async (name: string, botMessage: Message) => {
-  await botMessage.reply(
-    "Perfect! I've sent your name request to the mods, hopefully they answer soon! In the meantime, you're free to roam around the server and explore. Maybe post an introduction to get started? :grin:"
-  );
-  const message = `Username: ${botMessage.author.toString()} would like to rename to "${name}". Allow?`;
-  try {
-    const sentMessage = await textLog(message);
-    sentMessage.react("✅").then(() => sentMessage.react("🚫"));
-    sentMessage
-      .awaitReactions({
-        filter: (_, user: User) => {
-          return !user.bot;
-        },
-        max: 1,
-        time: 6000000,
-        errors: ["time"],
-      })
-      .then((collected) => {
-        const reaction = collected.first();
-        switch (reaction.emoji.toString()) {
-          case "✅":
-            const member = getMember(botMessage.author.id);
-            member.setNickname(name);
-            sentMessage.delete();
-            textLog(`${botMessage.author.toString()} was renamed to ${name}.`);
-            break;
-          case "🚫":
-            sentMessage.delete();
-            textLog(
-              `${botMessage.author.toString()} was *not* renamed to ${name}.`
-            );
-            break;
-
-          default:
-            break;
-        }
-      });
-  } catch (err) {
-    logger.error("(proposeNameChange) Error changing name: ", err);
-  }
-};
-
-const nameCollector = async (dmChannel: DMChannel, message: Message) => {
-  const requestMessage = await dmChannel.send(
-    "Okay, what's your name then? Please only respond with your name like Henry or Julie, that makes things easier for the Supports! :upside_down:"
-  );
-  state.ignoredGroupDMs.push(dmChannel.id);
-  const nameMessage = await dmChannel.awaitMessages({
-    filter: (message) => !message.author.bot,
-    time: 60000,
-    max: 1,
-  });
-  removeIgnore(dmChannel);
-
-  if (nameMessage.size === 0) {
-    requestMessage.delete();
-    throw "No response";
-  }
-
-  const requestedName = nameMessage.first().content;
-  proposeNameChange(requestedName, message);
-  await requestMessage.delete();
-};
-
-const emojiCollector = async (optionsMessage: Message) => {
-  const filter: CollectorFilter<[MessageReaction, User]> = (reaction, user) =>
-    availableEmojiOptions.includes(reaction.emoji.name) && !user.bot;
-
-  const reactions = await optionsMessage.awaitReactions({
-    filter,
-    time: 60000,
-    max: 1,
-  });
-  if (reactions.size === 0) throw "No reactions";
-
-  return reactions.first();
-};
-
-const handleError = async (optionsMessage: Message, dmChannel: DMChannel) => {
-  removeIgnore(dmChannel);
-
-  dmChannel.send(
-    "Because of technical reasons I can only wait 60 seconds for a reaction. I removed the other message to not confuse you. If you need anything from me, just drop me a message!"
-  );
-
-  await optionsMessage.delete();
-};
