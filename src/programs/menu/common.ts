@@ -21,7 +21,7 @@ export const handleError = async (
 ) => {
   removeIgnore(dmChannel);
 
-  dmChannel.send(
+  await dmChannel.send(
     "Because of technical reasons I can only wait 60 seconds for a reaction. I removed the other message to not confuse you. If you need anything from me, just drop me a message!"
   );
   await optionsMessage.delete();

@@ -26,13 +26,13 @@ export const addBreakRole = async (
       await confirmationMessage.delete();
       await member.roles.add(breakRole);
       await prisma.usersOnBreak.create({ data: { userId: member.id } });
-      dmChannel.send("Enjoy your break!");
+      await dmChannel.send("Enjoy your break!");
       return;
     } catch (e) {
       logger.error("Failed to update break status", e);
       removeIgnore(dmChannel);
       await textLog(`I could not give <@${member.id}> the break role!`);
-      dmChannel.send(
+      await dmChannel.send(
         "Looks like I couldn't give you the break role, I informed the Support team about it, in the meantime you can manually ask one of the Moderators!"
       );
       return;

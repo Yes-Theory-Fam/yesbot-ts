@@ -20,7 +20,7 @@ export const removeBreakRole = async (
   const checkTime = await isCooldownDone(userData);
 
   if (!checkTime) {
-    dmChannel.send(
+    await dmChannel.send(
       "I'm sorry it hasn't been 24 hours since you used this command! If you really want the break role removed you can contact one of our moderators!"
     );
     return;
