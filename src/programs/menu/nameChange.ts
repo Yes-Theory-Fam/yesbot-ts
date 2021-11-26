@@ -17,7 +17,13 @@ export const proposeNameChange = async (name: string, botMessage: Message) => {
     switch (reaction.emoji.toString()) {
       case "✅":
         const member = getMember(botMessage.author.id);
-        member.setNickname(name);
+        member
+        .setNickname(name)
+        .catch((error) =>
+          textLog(
+            `Could not rename ${botMessage.author.toString()} due to this error: ${error}`
+          )
+        );
         sentMessage.delete();
         textLog(`${botMessage.author.toString()} was renamed to ${name}.`);
         break;
@@ -54,6 +60,6 @@ export const nameCollector = async (dmChannel: DMChannel, message: Message) => {
   }
 
   const requestedName = nameMessage.first().content;
-  proposeNameChange(requestedName, message);
+  await proposeNameChange(requestedName, message);
   await requestMessage.delete();
 };
