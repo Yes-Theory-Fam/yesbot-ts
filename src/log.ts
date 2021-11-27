@@ -40,7 +40,7 @@ if (SHOW_TIMESTAMP) {
 formatters.push(fmt);
 
 const loggerOpts: winston.LoggerOptions = {
-  level: process.env.NODE_ENV === "production" ? "info" : "debug",
+  level: process.env.LOG_LEVEL ?? "debug",
   format: format.combine(...formatters),
   transports: [new transports.Console()],
 };
