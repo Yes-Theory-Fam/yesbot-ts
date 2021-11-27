@@ -20,24 +20,26 @@ export type TimerHandlerFunction<T extends DiscordEvent> = HandlerFunctionFor<
   [Timer]
 >;
 
-export const addTimerHandler: AddEventHandlerFunction<TimerEventHandlerOptions> =
-  (options, ioc, tree) => {
-    const logger = createYesBotLogger("event-distribution", "timer");
+export const addTimerHandler: AddEventHandlerFunction<
+  TimerEventHandlerOptions
+> = (options, ioc, tree) => {
+  const logger = createYesBotLogger("event-distribution", "timer");
 
-    const key = options.handlerIdentifier;
-    if (tree[key]) {
-      logger.warn(
-        "Added multiple timer handlers with identifier: " +
-          key +
-          ". This may not be intended."
-      );
-    }
+  const key = options.handlerIdentifier;
+  if (tree[key]) {
+    logger.warn(
+      "Added multiple timer handlers with identifier: " +
+        key +
+        ". This may not be intended."
+    );
+  }
 
-    addToTree([key], { ioc, options }, tree);
-  };
+  addToTree([key], { ioc, options }, tree);
+};
 
-export const extractTimerInfo: ExtractInfoForEventFunction<DiscordEvent.TIMER> =
-  (timer: Timer) => ({
-    handlerKeys: [timer.handlerIdentifier],
-    isDirectMessage: false,
-  });
+export const extractTimerInfo: ExtractInfoForEventFunction<
+  DiscordEvent.TIMER
+> = (timer: Timer) => ({
+  handlerKeys: [timer.handlerIdentifier],
+  isDirectMessage: false,
+});

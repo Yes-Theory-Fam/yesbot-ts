@@ -32,15 +32,16 @@ export type ReactionHandlerFunction<T extends DiscordEvent> =
     [MessageReaction | PartialMessageReaction, User | PartialUser]
   >;
 
-export const addReactionHandler: AddEventHandlerFunction<ReactionEventHandlerOptions> =
-  (options, ioc, tree) => {
-    const combinedChannels = collectChannelDefinitions(options);
-    const emoji = options.emoji ?? "";
+export const addReactionHandler: AddEventHandlerFunction<
+  ReactionEventHandlerOptions
+> = (options, ioc, tree) => {
+  const combinedChannels = collectChannelDefinitions(options);
+  const emoji = options.emoji ?? "";
 
-    for (const channel of combinedChannels) {
-      addToTree([channel, emoji], { options, ioc }, tree);
-    }
-  };
+  for (const channel of combinedChannels) {
+    addToTree([channel, emoji], { options, ioc }, tree);
+  }
+};
 
 export const extractReactionInfo: ExtractInfoForEventFunction<
   DiscordEvent.REACTION_ADD | DiscordEvent.REACTION_REMOVE

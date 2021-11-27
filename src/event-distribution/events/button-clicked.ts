@@ -27,14 +27,15 @@ export interface ButtonClickedHandlerOptions extends MessageRelatedOptions {
 export type ButtonClickedHandlerFunction<T extends DiscordEvent> =
   HandlerFunctionFor<T, DiscordEvent.BUTTON_CLICKED, ButtonInteraction>;
 
-export const addButtonClickedHandler: AddEventHandlerFunction<ButtonClickedHandlerOptions> =
-  (options, ioc, tree) => {
-    const combinedChannels = collectChannelDefinitions(options);
+export const addButtonClickedHandler: AddEventHandlerFunction<
+  ButtonClickedHandlerOptions
+> = (options, ioc, tree) => {
+  const combinedChannels = collectChannelDefinitions(options);
 
-    for (const channel of combinedChannels) {
-      addToTree([channel, options.customId], { options, ioc }, tree);
-    }
-  };
+  for (const channel of combinedChannels) {
+    addToTree([channel, options.customId], { options, ioc }, tree);
+  }
+};
 
 const ensureGuildMemberOrNull = (
   member: GuildMember | APIGuildMember | null,
@@ -60,24 +61,25 @@ const ensureGuildMemberOrNull = (
   ) => GuildMember)(client, member, guild);
 };
 
-export const extractButtonClickedInfo: ExtractInfoForEventFunction<DiscordEvent.BUTTON_CLICKED> =
-  (button: ButtonInteraction) => {
-    let message = button.message;
-    if (!(message instanceof Message)) {
-      message = new (Message as unknown as new (
-        client: Client,
-        message: APIMessage
-      ) => Message)(button.client, message);
-    }
+export const extractButtonClickedInfo: ExtractInfoForEventFunction<
+  DiscordEvent.BUTTON_CLICKED
+> = (button: ButtonInteraction) => {
+  let message = button.message;
+  if (!(message instanceof Message)) {
+    message = new (Message as unknown as new (
+      client: Client,
+      message: APIMessage
+    ) => Message)(button.client, message);
+  }
 
-    const member = ensureGuildMemberOrNull(
-      button.member,
-      button.client,
-      button.guild
-    );
+  const member = ensureGuildMemberOrNull(
+    button.member,
+    button.client,
+    button.guild
+  );
 
-    return withMessageRelatedInfo(message, member, (channelId) => [
-      channelId,
-      button.customId,
-    ]);
-  };
+  return withMessageRelatedInfo(message, member, (channelId) => [
+    channelId,
+    button.customId,
+  ]);
+};

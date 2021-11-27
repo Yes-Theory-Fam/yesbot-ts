@@ -18,10 +18,12 @@ export type MemberLeaveHandlerFunction<T extends DiscordEvent> =
   HandlerFunctionFor<T, DiscordEvent.MEMBER_LEAVE, [MemberLeaveArgument]>;
 const baseKey = "";
 
-export const addMemberLeaveHandler: AddEventHandlerFunction<MemberLeaveEventHandlerOptions> =
-  (options, ioc, tree) => addToTree([""], { options, ioc }, tree);
+export const addMemberLeaveHandler: AddEventHandlerFunction<
+  MemberLeaveEventHandlerOptions
+> = (options, ioc, tree) => addToTree([""], { options, ioc }, tree);
 
-export const extractMemberLeaveInfo: ExtractInfoForEventFunction<DiscordEvent.MEMBER_LEAVE> =
-  (member: MemberLeaveArgument) => {
-    return { handlerKeys: [baseKey], member, isDirectMessage: false };
-  };
+export const extractMemberLeaveInfo: ExtractInfoForEventFunction<
+  DiscordEvent.MEMBER_LEAVE
+> = (member: MemberLeaveArgument) => {
+  return { handlerKeys: [baseKey], member, isDirectMessage: false };
+};

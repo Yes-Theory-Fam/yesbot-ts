@@ -18,14 +18,16 @@ export type MemberJoinHandlerFunction<T extends DiscordEvent> =
   HandlerFunctionFor<T, DiscordEvent.MEMBER_JOIN, [MemberJoinArgument]>;
 const baseKey = "";
 
-export const addMemberJoinHandler: AddEventHandlerFunction<MemberJoinEventHandlerOptions> =
-  (options, ioc, tree) => {
-    tree[baseKey] ??= [];
-    const handlers = tree[baseKey] as HIOC<DiscordEvent.MEMBER_JOIN>[];
-    handlers.push({ ioc, options });
-  };
+export const addMemberJoinHandler: AddEventHandlerFunction<
+  MemberJoinEventHandlerOptions
+> = (options, ioc, tree) => {
+  tree[baseKey] ??= [];
+  const handlers = tree[baseKey] as HIOC<DiscordEvent.MEMBER_JOIN>[];
+  handlers.push({ ioc, options });
+};
 
-export const extractMemberJoinInfo: ExtractInfoForEventFunction<DiscordEvent.MEMBER_JOIN> =
-  (member: MemberJoinArgument) => {
-    return { handlerKeys: [baseKey], member, isDirectMessage: false };
-  };
+export const extractMemberJoinInfo: ExtractInfoForEventFunction<
+  DiscordEvent.MEMBER_JOIN
+> = (member: MemberJoinArgument) => {
+  return { handlerKeys: [baseKey], member, isDirectMessage: false };
+};

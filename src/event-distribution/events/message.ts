@@ -26,26 +26,28 @@ export type MessageHandlerFunction<T extends DiscordEvent> = HandlerFunctionFor<
   Message
 >;
 
-export const addMessageHandler: AddEventHandlerFunction<MessageEventHandlerOptions> =
-  (options, ioc, tree) => {
-    const trigger = options.trigger ?? "";
-    const subTrigger = options.subTrigger ?? "";
-    const combinedChannels = collectChannelDefinitions(options);
+export const addMessageHandler: AddEventHandlerFunction<
+  MessageEventHandlerOptions
+> = (options, ioc, tree) => {
+  const trigger = options.trigger ?? "";
+  const subTrigger = options.subTrigger ?? "";
+  const combinedChannels = collectChannelDefinitions(options);
 
-    for (const channel of combinedChannels) {
-      addToTree([channel, trigger, subTrigger], { options, ioc }, tree);
-    }
-  };
+  for (const channel of combinedChannels) {
+    addToTree([channel, trigger, subTrigger], { options, ioc }, tree);
+  }
+};
 
-export const extractMessageInfo: ExtractInfoForEventFunction<DiscordEvent.MESSAGE> =
-  (message) => {
-    const split = message.content.split(" ");
-    const trigger = split[0];
-    const subTrigger = split[1];
+export const extractMessageInfo: ExtractInfoForEventFunction<
+  DiscordEvent.MESSAGE
+> = (message) => {
+  const split = message.content.split(" ");
+  const trigger = split[0];
+  const subTrigger = split[1];
 
-    return withMessageRelatedInfo(message, message.member, (channelId) => [
-      channelId,
-      trigger,
-      subTrigger,
-    ]);
-  };
+  return withMessageRelatedInfo(message, message.member, (channelId) => [
+    channelId,
+    trigger,
+    subTrigger,
+  ]);
+};

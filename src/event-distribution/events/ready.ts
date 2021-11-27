@@ -18,8 +18,10 @@ export type ReadyHandlerFunction<T extends DiscordEvent> = HandlerFunctionFor<
   Client
 >;
 
-export const addReadyHandler: AddEventHandlerFunction<ReadyEventHandlerOptions> =
-  (options, ioc, tree) => addToTree([""], { options, ioc }, tree);
+export const addReadyHandler: AddEventHandlerFunction<
+  ReadyEventHandlerOptions
+> = (options, ioc, tree) => addToTree([""], { options, ioc }, tree);
 
-export const extractReadyInfo: ExtractInfoForEventFunction<DiscordEvent.READY> =
-  () => ({ handlerKeys: [""], isDirectMessage: false });
+export const extractReadyInfo: ExtractInfoForEventFunction<
+  DiscordEvent.READY
+> = () => ({ handlerKeys: [""], isDirectMessage: false });
