@@ -1,23 +1,33 @@
 import distribution, { DiscordEvent } from "../../event-distribution";
 import { Timer, Prisma } from "@yes-theory-fam/database/client";
 import prisma from "../../prisma";
+import { createYesBotLogger } from "../../log";
 
 export class TimerService {
   private static async handleTimer(timer: Timer) {
-    const exists = await prisma.timer.delete({
-      where: { id: timer.id },
-      select: { id: true },
-    });
+    try {
+      const exists = await prisma.timer.delete({
+        where: { id: timer.id },
+        select: { id: true },
+      });
 
-    if (!exists?.id) {
-      // Cancelled
-      return;
+      if (!exists?.id) {
+        // Cancelled
+        return;
+      }
+    } catch (e) {
+      if (
+        !(e instanceof Prisma.PrismaClientKnownRequestError) ||
+        e.code !== "P2025"
+      ) {
+        logger.error("Failed to delete timer entry: ", e);
+      }
     }
 
     try {
       await distribution.handleEvent(DiscordEvent.TIMER, timer);
-    } finally {
-      await prisma.timer.delete({ where: { id: timer.id } });
+    } catch (e) {
+      logger.error("Failed to handle timer event: ", e);
     }
   }
 
@@ -51,3 +61,5 @@ export class TimerService {
     }
   }
 }
+
+const logger = createYesBotLogger("programs", TimerService.name);
