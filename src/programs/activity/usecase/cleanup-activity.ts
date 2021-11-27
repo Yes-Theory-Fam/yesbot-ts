@@ -69,7 +69,7 @@ export class CleanupActivity {
           });
         });
       })
-      .then(() => logger.info(`deleted activities: ${activities.length}`));
+      .then(() => logger.debug(`deleted activities: ${activities.length}`));
   }
 
   private static calculateValue(value: number, activeMinutes: number) {
