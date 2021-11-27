@@ -28,31 +28,33 @@ export type VoiceStateHandlerFunction<T extends DiscordEvent> =
     [VoiceState, VoiceState]
   >;
 
-export const addVoiceStateUpdateHandler: AddEventHandlerFunction<VoiceStateUpdateEventHandlerOptions> =
-  (options, ioc, tree) => {
-    for (const baseKey of options.changes) {
-      addToTree([baseKey], { options, ioc }, tree);
-    }
-  };
+export const addVoiceStateUpdateHandler: AddEventHandlerFunction<
+  VoiceStateUpdateEventHandlerOptions
+> = (options, ioc, tree) => {
+  for (const baseKey of options.changes) {
+    addToTree([baseKey], { options, ioc }, tree);
+  }
+};
 
-export const extractVoiceStateUpdateInfo: ExtractInfoForEventFunction<DiscordEvent.VOICE_STATE_UPDATE> =
-  (oldState: VoiceState, newState: VoiceState) => {
-    const changes: VoiceStateChange[] = [];
+export const extractVoiceStateUpdateInfo: ExtractInfoForEventFunction<
+  DiscordEvent.VOICE_STATE_UPDATE
+> = (oldState: VoiceState, newState: VoiceState) => {
+  const changes: VoiceStateChange[] = [];
 
-    if (!oldState.mute && newState.mute) changes.push(VoiceStateChange.MUTED);
-    if (oldState.mute && !newState.mute) changes.push(VoiceStateChange.UNMUTED);
+  if (!oldState.mute && newState.mute) changes.push(VoiceStateChange.MUTED);
+  if (oldState.mute && !newState.mute) changes.push(VoiceStateChange.UNMUTED);
 
-    if (!oldState.channel && newState.channel)
-      changes.push(VoiceStateChange.JOINED);
-    if (oldState.channel && !newState.channel)
-      changes.push(VoiceStateChange.LEFT);
+  if (!oldState.channel && newState.channel)
+    changes.push(VoiceStateChange.JOINED);
+  if (oldState.channel && !newState.channel)
+    changes.push(VoiceStateChange.LEFT);
 
-    if (
-      oldState.channel &&
-      newState.channel &&
-      oldState.channelId !== newState.channelId
-    )
-      changes.push(VoiceStateChange.SWITCHED_CHANNEL);
+  if (
+    oldState.channel &&
+    newState.channel &&
+    oldState.channelId !== newState.channelId
+  )
+    changes.push(VoiceStateChange.SWITCHED_CHANNEL);
 
-    return changes.map((c) => ({ handlerKeys: [c], isDirectMessage: false }));
-  };
+  return changes.map((c) => ({ handlerKeys: [c], isDirectMessage: false }));
+};
