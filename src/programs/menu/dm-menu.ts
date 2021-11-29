@@ -7,15 +7,13 @@ import {
   DiscordEvent,
   EventLocation,
 } from "../../event-distribution";
-import { addBreakRole } from "./break-handler/addBreak";
-import { removeBreakRole } from "./break-handler/removeBreak";
+import { breakToggle } from "./break-handler/toggle-break";
 import {
   emojiCollector,
-  handleError,
-  isOnBreak,
+  handleReactionTimeout,
   mainOptionsEmojis,
 } from "./common";
-import { nameCollector } from "./nameChange";
+import { nameCollector } from "./name-change";
 
 @Command({
   event: DiscordEvent.MESSAGE,
@@ -32,13 +30,6 @@ class ShowMenu implements CommandHandler<DiscordEvent.MESSAGE> {
       await dmChannel.send(
         "Hey, I am the bot of the Yes Theory Fam Discord Server :) Looks like you are not on it currently, so I cannot really do a lot for you. If you'd like to join, click here: https://discord.gg/yestheory"
       );
-      return;
-    }
-
-    const userOnBreak = await isOnBreak(member.id);
-
-    if (userOnBreak) {
-      await removeBreakRole(member, userOnBreak, dmChannel);
       return;
     }
 
@@ -60,10 +51,10 @@ class ShowMenu implements CommandHandler<DiscordEvent.MESSAGE> {
           await nameCollector(dmChannel, message);
           break;
         case "🦥":
-          await addBreakRole(member, dmChannel);
+          await breakToggle(member, dmChannel);
       }
     } catch (err) {
-      await handleError(optionsMessage, dmChannel);
+      await handleReactionTimeout(optionsMessage, dmChannel);
     }
 
     await optionsMessage.delete();

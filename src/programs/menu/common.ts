@@ -15,7 +15,7 @@ export const allCollectedEmojis = ["👶", "🦥", "✅", "🚫"];
 
 export const logger = createYesBotLogger("programs", "DmMenu");
 
-export const handleError = async (
+export const handleReactionTimeout = async (
   optionsMessage: Message,
   dmChannel: DMChannel
 ) => {
@@ -36,7 +36,7 @@ export const isCooldownDone = async (
 ): Promise<boolean> => {
   const twentyFourHours = 24 * 60 * 60 * 1000;
   const userCoolDownTime = userData.addedAt;
-  return Date.now() - Number(userCoolDownTime) > twentyFourHours;
+  return Date.now() - userCoolDownTime.getTime() > twentyFourHours;
 };
 
 export const removeIgnore = (channel: DMChannel) => {
@@ -46,10 +46,7 @@ export const removeIgnore = (channel: DMChannel) => {
   }
 };
 
-export const emojiCollector = async (
-  optionsMessage: Message,
-  emoji?: string
-) => {
+export const emojiCollector = async (optionsMessage: Message) => {
   const filter: CollectorFilter<[MessageReaction, User]> = (reaction, user) =>
     allCollectedEmojis.includes(reaction.emoji.name) && !user.bot;
 
@@ -60,6 +57,5 @@ export const emojiCollector = async (
   });
   if (reactions.size === 0) throw "No reactions";
 
-  if (!emoji) return reactions.first();
-  return reactions.find((e) => e.emoji.toString() === emoji);
+  return reactions.first();
 };
