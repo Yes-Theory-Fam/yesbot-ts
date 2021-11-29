@@ -6,6 +6,7 @@ import {
   CommandHandler,
   DiscordEvent,
 } from "../../event-distribution";
+import { logger } from "./add-reaction";
 
 @Command({
   event: DiscordEvent.MESSAGE,
@@ -46,6 +47,7 @@ class SendMessage implements CommandHandler<DiscordEvent.MESSAGE> {
 
       await message.delete();
     } catch (err) {
+      logger.error("Failed to send custom yesbot message", err);
       await message.reply(
         "I seem to had a little hiccup while sending custom messages please verify I didn't send anything by mistake :c"
       );

@@ -1,4 +1,4 @@
-import { Message, TextChannel } from "discord.js";
+import { GuildEmoji, Message, TextChannel } from "discord.js";
 import bot from "../..";
 import Tools from "../../common/tools";
 import {
@@ -6,6 +6,7 @@ import {
   CommandHandler,
   DiscordEvent,
 } from "../../event-distribution";
+import { logger } from "./add-reaction";
 
 @Command({
   event: DiscordEvent.MESSAGE,
@@ -37,9 +38,11 @@ class EditMessage implements CommandHandler<DiscordEvent.MESSAGE> {
       return;
     }
 
+    const emoji =
+      message.guild.emojis.cache.find((emoji) => emoji.name === "yesbot") ??
+      "🦥";
     const requestMessage = await message.channel.send({
-      content:
-        "Okay, now all you need to do is copy the original message and edit it and send it here and I will take care of the rest! :yesbot:",
+      content: `Okay, now all you need to do is copy the original message and edit it and send it here and I will take care of the rest! ${emoji}`,
     });
 
     try {
@@ -55,6 +58,7 @@ class EditMessage implements CommandHandler<DiscordEvent.MESSAGE> {
       await requestMessage.delete();
       await message.react("👍");
     } catch (err) {
+      logger.error("Failed to edit yesbot message", err);
       await message.react("👎");
     }
   }
