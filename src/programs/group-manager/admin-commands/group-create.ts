@@ -33,19 +33,18 @@ class CreateGroup implements CommandHandler<DiscordEvent.MESSAGE> {
       return;
     }
 
-    await prisma.userGroup
-      .create({
+    try {
+      await prisma.userGroup.create({
         data: {
           name: requestedGroupName,
           description,
         },
-      })
-      .catch(async (error) => {
-        logger.error("Failed to create group, ", error);
-        await message.react("👎");
-        return;
       });
-
+    } catch (error) {
+      logger.error("Failed to create group, ", error);
+      await message.react("👎");
+      return;
+    }
     await message.react("👍");
   }
 }

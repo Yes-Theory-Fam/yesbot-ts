@@ -37,16 +37,16 @@ class ChangeCooldown implements CommandHandler<DiscordEvent.MESSAGE> {
       return;
     }
 
-    await prisma.userGroup
-      .update({
+    try {
+      await prisma.userGroup.update({
         where: { id: group.id },
         data: { cooldown: cooldownNumber },
-      })
-      .catch(async (error) => {
-        logger.error("Failed to update database cooldown, ", error);
-        await message.react("👎");
-        return;
       });
+    } catch (error) {
+      logger.error("Failed to update database cooldown, ", error);
+      await message.react("👎");
+      return;
+    }
 
     await message.react("👍");
   }

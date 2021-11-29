@@ -34,16 +34,16 @@ class UpdateGroup implements CommandHandler<DiscordEvent.MESSAGE> {
 
     const previousDescription = group.description;
 
-    await prisma.userGroup
-      .update({
+    try {
+      await prisma.userGroup.update({
         where: { id: group.id },
         data: { description },
-      })
-      .catch(async (error) => {
-        logger.error("Failed to update group description, ", error);
-        await message.react("👎");
-        return;
       });
+    } catch (error) {
+      logger.error("Failed to update group description, ", error);
+      await message.react("👎");
+      return;
+    }
 
     await message.reply(
       `Group description updated from \n> ${previousDescription} \nto \n> ${description}`

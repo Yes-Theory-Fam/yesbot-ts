@@ -31,13 +31,13 @@ class DeleteGroup implements CommandHandler<DiscordEvent.MESSAGE> {
       return;
     }
 
-    await prisma.userGroup
-      .delete({ where: { id: group.id } })
-      .catch(async (error) => {
-        logger.error("Failed to delete group, ", error);
-        await message.react("👎");
-        return;
-      });
+    try {
+      await prisma.userGroup.delete({ where: { id: group.id } });
+    } catch (error) {
+      logger.error("Failed to delete group, ", error);
+      await message.react("👎");
+      return;
+    }
 
     await message.react("👍");
   }

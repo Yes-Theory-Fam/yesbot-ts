@@ -43,17 +43,16 @@ class ChangeGroupPingSettings implements CommandHandler<DiscordEvent.MESSAGE> {
       return;
     }
 
-    await prisma.userGroup
-      .update({
+    try {
+      await prisma.userGroup.update({
         where: { id: group.id },
         data: { groupPingSetting: GroupPingSetting[setting] },
-      })
-      .catch(async (error) => {
-        logger.error("Failed to update database group ping settings, ", error);
-        await message.react("👎");
-        return;
       });
-
+    } catch (error) {
+      logger.error("Failed to update database group ping settings, ", error);
+      await message.react("👎");
+      return;
+    }
     await message.react("👍");
   }
 }
