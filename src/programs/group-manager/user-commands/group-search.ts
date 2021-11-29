@@ -59,7 +59,7 @@ class SearchGroup implements CommandHandler<DiscordEvent.MESSAGE> {
         embed.addField("Group Name:", group.name, true);
         embed.addField(
           "Number of Members:",
-          group.userGroupMembersGroupMembers.length,
+          group.userGroupMembersGroupMembers.length.toString(),
           true
         );
         embed.addField("Description", group.description || "-");
@@ -77,8 +77,9 @@ class SearchGroup implements CommandHandler<DiscordEvent.MESSAGE> {
       if (page < 0) page = 0;
       if (page >= pages.length) page = pages.length - 1;
 
-      await shownPageMessage.edit(message.author.toString(), {
-        embed: pages[page],
+      await shownPageMessage.edit({
+        content: message.author.toString(),
+        embeds: [pages[page]],
       });
       await reaction.users.remove(message.author.id);
       await setupPaging(page, shownPageMessage);
@@ -93,7 +94,8 @@ class SearchGroup implements CommandHandler<DiscordEvent.MESSAGE> {
       };
 
       try {
-        const reactions = await pagedMessage.awaitReactions(filter, {
+        const reactions = await pagedMessage.awaitReactions({
+          filter,
           max: 1,
           time: 60000,
           errors: ["time"],
@@ -108,7 +110,7 @@ class SearchGroup implements CommandHandler<DiscordEvent.MESSAGE> {
       } catch (error) {}
     };
 
-    const sentMessagePromise = message.channel.send(pages[0]);
+    const sentMessagePromise = message.channel.send({ embeds: [pages[0]] });
     if (pages.length > 1) {
       sentMessagePromise
         .then(async (msg) => {

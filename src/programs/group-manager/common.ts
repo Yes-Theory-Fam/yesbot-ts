@@ -200,9 +200,10 @@ export const timeRemainingForDeadchat = async (
   message: Message,
   group: UserGroup
 ) => {
-  const lastMessages = (
+  const lastTwoMessages = (
     await message.channel.messages.fetch({ limit: 2 })
-  ).array();
+  ).values();
+  const lastMessages = [...lastTwoMessages];
 
   if (lastMessages.length < 2) {
     return 0;
