@@ -50,11 +50,11 @@
     "@types/ws": "8.2.2",
     "@yestheoryfam/prettier-config": "1.0.0",
     "env-cmd": "10.1.0",
-    "jest": "27.4.4",
+    "jest": "27.4.5",
     "jest-mock-extended": "2.0.4",
     "prettier": "2.5.1",
     "prisma": "3.6.0",
-    "ts-jest": "27.1.1",
+    "ts-jest": "27.1.2",
     "ts-node-dev": "1.1.8",
     "typegraphql-prisma": "0.18.2",
     "typescript": "4.5.3"
