@@ -150,7 +150,9 @@ class BirthdayManager implements CommandHandler<DiscordEvent.MESSAGE> {
       } else if (err instanceof Error && err.message === "time expired") {
         await message.react("⏰");
       } else if (err instanceof Error && err.message === "No timezone found") {
-        await message.reply(`Whoops! We couldn't figure out potential timezones for you. Calling for help :telephone: ${engineerRole.toString()}`);
+        await message.reply(
+          `Whoops! We couldn't figure out potential timezones for you. Calling for help :telephone: ${engineerRole.toString()}`
+        );
       } else {
         logger.error(
           "An unknown error has occurred awaiting the users timezone: ",
@@ -429,7 +431,7 @@ function timezonesFromRole(props: CountryWithRegion): readonly string[] {
       ];
     }
     case "Canada": {
-      return getCountry("CA", {deprecated: true}).timezones.filter((tz) =>
+      return getCountry("CA", { deprecated: true }).timezones.filter((tz) =>
         tz.startsWith("Canada/")
       );
     }
