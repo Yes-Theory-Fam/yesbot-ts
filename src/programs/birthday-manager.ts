@@ -411,9 +411,7 @@ function timezonesFromRole(props: CountryWithRegion): readonly string[] {
     case "UK":
       return getCountry("GB").timezones;
     case "Mexico":
-      return getCountry("MX")
-        .timezones // BajaSur and BajaNorth are invalid in JS.
-        .filter((tz) => !tz.startsWith("Mexico/Baja"));
+      return getCountry("MX").timezones;
     case "Australia": {
       return [
         "Australia/Perth",
@@ -424,7 +422,7 @@ function timezonesFromRole(props: CountryWithRegion): readonly string[] {
       ];
     }
     case "Canada": {
-      return getCountry("CA").timezones.filter((tz) =>
+      return getCountry("CA", {deprecated: true}).timezones.filter((tz) =>
         tz.startsWith("Canada/")
       );
     }
