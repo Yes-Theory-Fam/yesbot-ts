@@ -28,6 +28,7 @@ const routeMessage = async (message: Message) => {
         !message.content.toLowerCase().startsWith("!group toggle")
       )
         await GroupManager(message, true);
+      break;
     case "bot-commands":
       if (
         firstWord === "!group" &&
