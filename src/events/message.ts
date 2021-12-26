@@ -1,4 +1,4 @@
-import { GuildChannel, Message, TextChannel } from "discord.js";
+import { Message, TextChannel } from "discord.js";
 import {
   ExportManager,
   GroupManager,
@@ -18,7 +18,6 @@ const routeMessage = async (message: Message) => {
   const words = message.content.split(/\s+/);
   const channel = <TextChannel>message.channel;
   const firstWord = words[0];
-  const restOfMessage = words.slice(1).join(" ");
 
   switch (channel.name) {
     case "permanent-testing":
