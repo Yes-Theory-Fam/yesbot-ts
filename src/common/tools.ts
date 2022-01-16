@@ -62,7 +62,7 @@ class Tools {
     messageId: Snowflake,
     guild: Guild,
     channelId: string
-  ): Promise<[Message, Channel]> {
+  ): Promise<[Message | null, Channel | null]> {
     try {
       const channel: TextChannel = <TextChannel>(
         guild.channels.cache.find((c) => c.id == channelId)
@@ -103,7 +103,7 @@ class Tools {
         where: { emoji: reactionName, messageId },
       });
 
-      if (toggle !== undefined) {
+      if (toggle) {
         const channel = guild.channels.cache.find(
           (channel) => channel.id === toggle.channel
         );
@@ -178,6 +178,7 @@ class Tools {
 
     collector.on("collect", (reaction, user) => {
       const emoji = reaction.emoji.name;
+      if (!emoji) return;
       // If players are not allowed to change votes and the reaction was collected,
       // they cannot already have an entry in the votes so we can just add them without any further checks.
       if (!allowChangeVote) {
@@ -249,10 +250,16 @@ class Tools {
     single: boolean = true,
     deleteMessage = false,
     timeout: number = 60000
-  ): Promise<MessageReaction | Collection<Snowflake, MessageReaction>> {
-    const filter = (reaction: MessageReaction, user: User) =>
-      pickOptions.includes(reaction.emoji.name) &&
-      allowedVoterIds.includes(user.id);
+  ): Promise<
+    undefined | MessageReaction | Collection<Snowflake, MessageReaction>
+  > {
+    const filter = (reaction: MessageReaction, user: User) => {
+      if (!reaction.emoji.name) return false;
+      return (
+        pickOptions.includes(reaction.emoji.name) &&
+        allowedVoterIds.includes(user.id)
+      );
+    };
 
     // Using a wrapped object allows cancelling adding the reactions from the outside
     const cancellationToken = { cancelled: false };

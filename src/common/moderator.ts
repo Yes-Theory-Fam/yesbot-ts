@@ -8,6 +8,7 @@ import {
 } from "discord.js";
 
 export const isAuthorModerator = (message: Message): boolean => {
+  if (!message.member) return false;
   if (message.member.roles.hoist) {
     return message.member.roles.hoist.name === process.env.MODERATOR_ROLE_NAME;
   } else {
@@ -41,7 +42,9 @@ export const textLog = (text: string | MessageEmbed): Promise<Message> => {
     : outputChannel.send({ embeds: [text] });
 };
 
-export const getMember = (userId: string): GuildMember => {
+export const getMember = (userId: string): GuildMember | null => {
   const bot = require("..") as Client;
-  return bot.guilds.resolve(process.env.GUILD_ID).members.resolve(userId);
+  const guild = bot.guilds.resolve(process.env.GUILD_ID);
+  if (!guild) return null;
+  return guild.members.resolve(userId);
 };
