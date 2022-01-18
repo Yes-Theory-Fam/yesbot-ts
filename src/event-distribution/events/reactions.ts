@@ -49,9 +49,10 @@ export const extractReactionInfo: ExtractInfoForEventFunction<
   const channel = reaction.message.channel;
   const guild = channel.type === "DM" ? null : channel.guild;
   const member = guild?.members.resolve(user.id) ?? null;
-
+  const reactionEmojiName = reaction.emoji.name;
+  if (!reactionEmojiName) return;
   return withMessageRelatedInfo(reaction.message, member, (channelId) => [
     channelId,
-    reaction.emoji.name,
+    reactionEmojiName,
   ]);
 };

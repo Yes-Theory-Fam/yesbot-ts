@@ -51,19 +51,21 @@ export type HandlerFunctionFor<
 > = Event extends TargetEvent ? VoidFunctionWithArgs<VoidFunctionArgs> : never;
 
 export interface HandlerInfo {
-  handlerKeys: string[];
+  handlerKeys?: string[];
   member?: GuildMember | PartialGuildMember;
-  isDirectMessage: boolean;
+  isDirectMessage?: boolean;
 }
+
+export type HandlerInfoUnionType = HandlerInfo | {};
 
 export type ExtractInfoFunction<T extends DiscordEvent> = (
   event: T,
   ...args: Parameters<HandlerFunction<T>>
-) => HandlerInfo[];
+) => HandlerInfoUnionType[] | undefined;
 
 export type ExtractInfoForEventFunction<T extends DiscordEvent> = (
   ...args: Parameters<HandlerFunction<T>>
-) => HandlerInfo | HandlerInfo[];
+) => HandlerInfoUnionType | HandlerInfoUnionType[] | undefined;
 
 export type AddEventHandlerFunction<T extends EventHandlerOptions> = (
   options: T,

@@ -33,7 +33,8 @@ export const addButtonClickedHandler: AddEventHandlerFunction<
   const combinedChannels = collectChannelDefinitions(options);
 
   for (const channel of combinedChannels) {
-    addToTree([channel, options.customId], { options, ioc }, tree);
+    if (options.customId)
+      addToTree([channel, options.customId], { options, ioc }, tree);
   }
 };
 

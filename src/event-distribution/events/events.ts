@@ -180,30 +180,49 @@ export const extractEventInfo: ExtractInfoFunction<DiscordEvent> = (
   const getInfos = () => {
     switch (event) {
       case DiscordEvent.BUTTON_CLICKED:
-        return extractButtonClickedInfo(args[0] as ButtonInteraction);
+        const extractedButtonClickedInfo = extractButtonClickedInfo(
+          args[0] as ButtonInteraction
+        );
+        if (extractedButtonClickedInfo) return extractButtonClickedInfo;
       case DiscordEvent.MEMBER_LEAVE:
-        return extractMemberLeaveInfo(args[0] as MemberLeaveArgument);
+        const extractedMemberLeaveInfo = extractMemberLeaveInfo(
+          args[0] as MemberLeaveArgument
+        );
+        if (extractedMemberLeaveInfo) return extractedMemberLeaveInfo;
       case DiscordEvent.MEMBER_JOIN:
-        return extractMemberJoinInfo(args[0] as MemberJoinArgument);
+        const extractedMemberJoinInfo = extractMemberJoinInfo(
+          args[0] as MemberJoinArgument
+        );
+        if (extractedMemberJoinInfo) return extractedMemberJoinInfo;
       case DiscordEvent.MESSAGE:
-        return extractMessageInfo(args[0] as Message);
+        const extractedMessageInfo = extractMessageInfo(args[0] as Message);
+        if (extractedMessageInfo) return extractedMessageInfo;
       case DiscordEvent.REACTION_ADD:
       case DiscordEvent.REACTION_REMOVE:
-        return extractReactionInfo(args[0] as MessageReaction, args[1] as User);
+        const extractedReactionInfo = extractReactionInfo(
+          args[0] as MessageReaction,
+          args[1] as User
+        );
+        if (extractedReactionInfo) return extractedReactionInfo;
       case DiscordEvent.GUILD_MEMBER_UPDATE:
-        return extractGuildMemberUpdateInfo(
+        const extractedGuildMemberUpdateInfo = extractGuildMemberUpdateInfo(
           args[0] as GuildMemberUpdateArgument,
           args[1] as GuildMemberUpdateArgument
         );
+        if (extractedGuildMemberUpdateInfo)
+          return extractedGuildMemberUpdateInfo;
       case DiscordEvent.READY:
-        return extractReadyInfo(args[0] as Client);
+        const extractedReadyInfo = extractReadyInfo(args[0] as Client);
+        if (extractedReadyInfo) return extractedReadyInfo;
       case DiscordEvent.TIMER:
-        return extractTimerInfo(args[0] as Timer);
+        const extractedTimerInfo = extractTimerInfo(args[0] as Timer);
+        if (extractedTimerInfo) return extractedTimerInfo;
       case DiscordEvent.VOICE_STATE_UPDATE:
-        return extractVoiceStateUpdateInfo(
+        const extractedVoiceStateUpdateInfo = extractVoiceStateUpdateInfo(
           args[0] as VoiceState,
           args[1] as VoiceState
         );
+        if (extractedVoiceStateUpdateInfo) return extractedVoiceStateUpdateInfo;
       default:
         throw new Error("Could not extract info for event " + event);
     }
@@ -221,6 +240,7 @@ export const rejectWithMessage = async (
   switch (event) {
     case DiscordEvent.MESSAGE:
       const messageArg = args[0] as Message;
+      if (!messageArg.guild) return;
       const channelResolvedMessage = Tools.resolveChannelNamesInString(
         message,
         messageArg.guild

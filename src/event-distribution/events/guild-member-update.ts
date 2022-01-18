@@ -107,7 +107,7 @@ export const extractGuildMemberUpdateInfo: ExtractInfoForEventFunction<
 const getRoleDiff = (
   oldRoles: Collection<Snowflake, Role>,
   newRoles: Collection<Snowflake, Role>
-): { added: Role[]; removed: Role[] } => {
+): { added: (Role | undefined)[]; removed: (Role | undefined)[] } => {
   const oldIds = oldRoles.map(({ id }) => id);
   const newIds = newRoles.map(({ id }) => id);
 
