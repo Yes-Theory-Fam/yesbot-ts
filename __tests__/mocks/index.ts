@@ -1,6 +1,6 @@
 import Discord, {
   Channel,
-  Client,
+  Client, ClientUser,
   Guild,
   GuildChannel,
   GuildMember,
@@ -21,8 +21,12 @@ import { MockMessage } from "./message";
 import { MockMessageReaction } from "./reaction";
 import { MockGuild } from "./guild";
 import { MockGuildMember } from "./guildmember";
+import {RawUserData} from 'discord.js/typings/rawDataTypes';
 
 type Writeable<T> = { -readonly [P in keyof T]: T[P] };
+
+// In some minor update, Discord.JS uses BigInt internally disallowing arbitrary strings for ids
+const idString = "9007199254740991";
 
 export default class MockDiscord {
   public message!: Message;
@@ -100,10 +104,22 @@ export default class MockDiscord {
     this.guild.addMember(this.guildMember);
   };
 
+  private rawUserData: RawUserData = {
+    id: idString,
+    username: "user username",
+    discriminator: "user#0000",
+    avatar: "user avatar url",
+    bot: false,
+  };
+
   private mockClient(): void {
     this.client = new Discord.Client({ intents: [], restSweepInterval: 0 });
 
     this.client.users.fetch = jest.fn(() => Promise.resolve(this.getUser()));
+    // @ts-expect-error: https://github.com/discordjs/discord.js/issues/6798
+    this.client.user = new ClientUser(this.client, {...this.rawUserData, bot: true});
+    this.client.user.id = idString;
+
     this.client.login = jest.fn(() => Promise.resolve("LOGIN_TOKEN"));
     this.client.token = process.env.BOT_TOKEN;
   }
@@ -111,7 +127,7 @@ export default class MockDiscord {
   private mockGuild(): void {
     this.guild = new MockGuild(this.client, {
       unavailable: false,
-      id: "guild-id",
+      id: idString,
       name: "mocked js guild",
       icon: "mocked guild icon url",
       splash: "mocked guild splash url",
@@ -119,15 +135,15 @@ export default class MockDiscord {
       member_count: 42,
       large: false,
       features: [],
-      application_id: "application-id",
+      application_id: idString,
       afk_timeout: 1000,
-      afk_channel_id: "afk-channel-id",
-      system_channel_id: "system-channel-id",
+      afk_channel_id: idString,
+      system_channel_id: idString,
       verification_level: 2,
       explicit_content_filter: 3,
       mfa_level: 8,
       joined_at: new Date("2018-01-01").getTime().toString(),
-      owner_id: "owner-id",
+      owner_id: idString,
       channels: [],
       roles: [],
       presences: [],
@@ -139,7 +155,7 @@ export default class MockDiscord {
   private mockChannel(): void {
     // @ts-expect-error: https://github.com/discordjs/discord.js/issues/6798
     this.channel = new Channel(this.client, {
-      id: "channel-id",
+      id: idString,
       name: "Frank",
       type: ChannelType.GuildText,
     });
@@ -151,9 +167,9 @@ export default class MockDiscord {
       ...this.channel,
 
       type: ChannelType.GuildText,
-      name: "guild-channel",
+      name: idString,
       position: 1,
-      parent_id: "123456789",
+      parent_id: idString,
       permission_overwrites: [],
     });
   }
@@ -166,7 +182,7 @@ export default class MockDiscord {
       type: ChannelType.GuildText,
       topic: "topic",
       nsfw: false,
-      last_message_id: "123456789",
+      last_message_id: idString,
       last_pin_timestamp: new Date("2019-01-01").getTime().toString(),
       rate_limit_per_user: 0,
     });
@@ -174,13 +190,7 @@ export default class MockDiscord {
 
   private mockUser(): void {
     // @ts-expect-error: https://github.com/discordjs/discord.js/issues/6798
-    this.user = new User(this.client, {
-      id: "222222222222222200",
-      username: "user username",
-      discriminator: "user#0000",
-      avatar: "user avatar url",
-      bot: false,
-    });
+    this.user = new User(this.client, this.rawUserData);
   }
 
   private apiUser(): APIUser {
@@ -215,7 +225,7 @@ export default class MockDiscord {
       this.guildMember,
       this.client,
       {
-        id: "message-id",
+        id: idString,
         channel_id: this.channel.id,
         type: MessageType.Default,
         content: "this is the message content",
@@ -260,7 +270,7 @@ export default class MockDiscord {
     this.role = new Role(
       this.client,
       {
-        id: "",
+        id: idString,
         name: "Jeremy",
         color: 0xffff00,
         hoist: false,
