@@ -1,4 +1,11 @@
-import {BaseGuildVoiceChannel, GuildBasedChannel, MessageReaction, TextChannel, User, VoiceChannel} from "discord.js";
+import {
+  BaseGuildVoiceChannel,
+  GuildBasedChannel,
+  MessageReaction,
+  TextChannel,
+  User,
+  VoiceChannel,
+} from "discord.js";
 import { hasRole, textLog } from "../../common/moderator";
 import Tools from "../../common/tools";
 import {

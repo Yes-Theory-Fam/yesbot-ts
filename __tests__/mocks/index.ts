@@ -1,6 +1,7 @@
 import Discord, {
   Channel,
-  Client, ClientUser,
+  Client,
+  ClientUser,
   Guild,
   GuildChannel,
   GuildMember,
@@ -21,7 +22,7 @@ import { MockMessage } from "./message";
 import { MockMessageReaction } from "./reaction";
 import { MockGuild } from "./guild";
 import { MockGuildMember } from "./guildmember";
-import {RawUserData} from 'discord.js/typings/rawDataTypes';
+import { RawUserData } from "discord.js/typings/rawDataTypes";
 
 type Writeable<T> = { -readonly [P in keyof T]: T[P] };
 
@@ -117,7 +118,10 @@ export default class MockDiscord {
 
     this.client.users.fetch = jest.fn(() => Promise.resolve(this.getUser()));
     // @ts-expect-error: https://github.com/discordjs/discord.js/issues/6798
-    this.client.user = new ClientUser(this.client, {...this.rawUserData, bot: true});
+    this.client.user = new ClientUser(this.client, {
+      ...this.rawUserData,
+      bot: true,
+    });
     this.client.user.id = idString;
 
     this.client.login = jest.fn(() => Promise.resolve("LOGIN_TOKEN"));
