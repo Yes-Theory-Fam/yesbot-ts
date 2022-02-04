@@ -22,15 +22,15 @@ Object {
   "member": Object {
     "avatar": null,
     "avatarURL": null,
-    "deleted": false,
-    "displayAvatarURL": "https://cdn.discordapp.com/avatars/222222222222222200/user avatar url.webp",
+    "communicationDisabledUntilTimestamp": null,
+    "displayAvatarURL": "https://cdn.discordapp.com/avatars/9007199254740991/user avatar url.webp",
     "displayName": "nick",
-    "guildId": "guild-id",
+    "guildId": "9007199254740991",
     "joinedTimestamp": NaN,
     "nickname": "nick",
     "pending": false,
     "premiumSinceTimestamp": null,
-    "userId": "222222222222222200",
+    "userId": "9007199254740991",
   },
 }
 `;

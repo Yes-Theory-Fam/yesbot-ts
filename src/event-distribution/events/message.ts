@@ -5,7 +5,7 @@ import {
   HandlerFunctionFor,
   MessageRelatedOptions,
 } from "../types/base";
-import { GuildChannel, Message, TextBasedChannels } from "discord.js";
+import { GuildChannel, Message, TextBasedChannel } from "discord.js";
 import {
   addToTree,
   collectChannelDefinitions,

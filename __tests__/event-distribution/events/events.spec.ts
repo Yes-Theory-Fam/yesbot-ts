@@ -11,7 +11,7 @@ import {
   addReactionHandler,
   extractReactionInfo,
 } from "../../../src/event-distribution/events/reactions";
-import { mocked } from "ts-jest/utils";
+import { mocked } from "jest-mock";
 import MockDiscord from "../../mocks";
 import {
   addReadyHandler,

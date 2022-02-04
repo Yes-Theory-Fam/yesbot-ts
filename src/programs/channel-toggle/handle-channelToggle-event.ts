@@ -1,4 +1,11 @@
-import { GuildChannel, MessageReaction, User } from "discord.js";
+import {
+  BaseGuildVoiceChannel,
+  GuildBasedChannel,
+  MessageReaction,
+  TextChannel,
+  User,
+  VoiceChannel,
+} from "discord.js";
 import { hasRole, textLog } from "../../common/moderator";
 import Tools from "../../common/tools";
 import {
@@ -91,7 +98,7 @@ class HandleChannelToggleReactionRemove
     }
 
     const channel = guild.channels.cache.find(
-      (c): c is GuildChannel => c.id === toggle.channel
+      (c): c is TextChannel | VoiceChannel => c.id === toggle.channel
     );
 
     if (!channel) {
