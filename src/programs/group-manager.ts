@@ -5,7 +5,7 @@ import {
   MessageEmbed,
   MessageReaction,
   Snowflake,
-  TextBasedChannels,
+  TextBasedChannel,
   TextChannel,
   User,
   Util,
@@ -760,8 +760,8 @@ const groupInteractionAndReport = async (
   await message.reply("\n" + report.join("\n"));
 };
 
-const isChannelAllowed = (channel: TextBasedChannels): boolean => {
-  const isTextChannel = (channel: TextBasedChannels): channel is TextChannel =>
+const isChannelAllowed = (channel: TextBasedChannel): boolean => {
+  const isTextChannel = (channel: TextBasedChannel): channel is TextChannel =>
     (channel as TextChannel).name && !!(channel as TextChannel).parent;
   if (!isTextChannel(channel)) return;
 

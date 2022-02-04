@@ -10,7 +10,7 @@ import {
   MessageReaction,
   PartialMessageReaction,
   PartialUser,
-  TextBasedChannels,
+  TextBasedChannel,
   User,
 } from "discord.js";
 import {

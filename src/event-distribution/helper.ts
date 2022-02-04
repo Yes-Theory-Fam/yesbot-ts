@@ -10,14 +10,12 @@ import {
   StringIndexedHIOCTree,
 } from "./types/hioc";
 import {
-  Client,
   GuildChannel,
   GuildMember,
   Message,
   PartialMessage,
-  TextBasedChannels,
+  TextBasedChannel,
 } from "discord.js";
-import { APIGuildMember, APIMessage } from "discord-api-types";
 
 export const getIdFromCategoryName = (name: string) =>
   `c_${name.toLowerCase()}`;
@@ -43,7 +41,7 @@ export const withMessageRelatedInfo = (
   member: GuildMember | null,
   resolver: HandlerKeyFromChannelIdResolver
 ): HandlerInfo[] => {
-  const getChannelIdentifier = (channel: TextBasedChannels) =>
+  const getChannelIdentifier = (channel: TextBasedChannel) =>
     channel.type === "DM" ? channel.id : channel.name;
 
   const channel = message.channel;
