@@ -238,7 +238,7 @@ async function getString(
   return await retryUntilSatisfied(
     () => _getString(channel, userId, prompt, timeout),
     (s) => Boolean(s?.length),
-    ct,
+    ct
   );
 }
 
