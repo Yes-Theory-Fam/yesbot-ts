@@ -238,7 +238,7 @@ async function getString(
   return await retryUntilSatisfied(
     () => _getString(channel, userId, prompt, timeout),
     (s) => Boolean(s?.length),
-    ct
+    ct,
   );
 }
 
@@ -358,7 +358,7 @@ const retryUntilSatisfied = async <T>(
       break;
     }
 
-    await onFailure();
+    await onFailure?.();
 
     retryCount -= 1;
     if (!retryCount) {
