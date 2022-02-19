@@ -70,7 +70,7 @@ class DailyChallengeTimerKickStart
 class PostDailyChallenge implements CommandHandler<DiscordEvent.TIMER> {
   async handle(timer: Timer) {
     const guild = bot.guilds.resolve(process.env.GUILD_ID);
-    const DailyChallengeChannel = guild.channels.cache.find(
+    const dailyChallengeChannel = guild.channels.cache.find(
       (channel) => channel.name === ChatNames.DAILY_CHALLENGE
     ) as TextChannel;
 
@@ -99,8 +99,10 @@ class PostDailyChallenge implements CommandHandler<DiscordEvent.TIMER> {
         );
       }
 
-      await DailyChallengeChannel.send("@group dailychallenge");
-      await DailyChallengeChannel.send({ embeds: [embed] });
+      await dailyChallengeChannel.send({
+        content: "@group dailychallenge",
+        embeds: [embed],
+      });
 
       await startDailyChallengeTimer(dailyChallengeIdentifier);
     }
