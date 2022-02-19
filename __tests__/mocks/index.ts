@@ -20,7 +20,7 @@ import {
 } from "discord-api-types";
 import { MockMessage } from "./message";
 import { MockMessageReaction } from "./reaction";
-import { MockGuild } from "./guild";
+import { GuildMock, MockGuild } from "./guild";
 import { MockGuildMember } from "./guildmember";
 import { RawUserData } from "discord.js/typings/rawDataTypes";
 
@@ -33,7 +33,7 @@ export default class MockDiscord {
   public message!: Message;
   public messageReaction!: MessageReaction;
   private client!: Client;
-  private guild!: MockGuild;
+  private guild!: GuildMock;
   private channel!: Channel;
   private guildChannel!: GuildChannel;
   private textChannel!: TextChannel;
@@ -67,14 +67,6 @@ export default class MockDiscord {
 
   public getChannel(): Channel {
     return this.channel;
-  }
-
-  public getGuildChannel(): GuildChannel {
-    return this.guildChannel;
-  }
-
-  public getTextChannel(): TextChannel {
-    return this.textChannel;
   }
 
   public getUser(): User {
@@ -117,11 +109,13 @@ export default class MockDiscord {
     this.client = new Discord.Client({ intents: [], restSweepInterval: 0 });
 
     this.client.users.fetch = jest.fn(() => Promise.resolve(this.getUser()));
-    // @ts-expect-error: https://github.com/discordjs/discord.js/issues/6798
-    this.client.user = new ClientUser(this.client, {
-      ...this.rawUserData,
-      bot: true,
-    });
+    this.client.user = Reflect.construct(ClientUser, [
+      this.client,
+      {
+        ...this.rawUserData,
+        bot: true,
+      },
+    ]);
     this.client.user.id = idString;
 
     this.client.login = jest.fn(() => Promise.resolve("LOGIN_TOKEN"));
@@ -129,7 +123,7 @@ export default class MockDiscord {
   }
 
   private mockGuild(): void {
-    this.guild = new MockGuild(this.client, {
+    this.guild = MockGuild.new(this.client, {
       unavailable: false,
       id: idString,
       name: "mocked js guild",
@@ -157,44 +151,49 @@ export default class MockDiscord {
   }
 
   private mockChannel(): void {
-    // @ts-expect-error: https://github.com/discordjs/discord.js/issues/6798
-    this.channel = new Channel(this.client, {
-      id: idString,
-      name: "Frank",
-      type: ChannelType.GuildText,
-    });
+    this.channel = Reflect.construct(Channel, [
+      this.client,
+      {
+        id: idString,
+        name: "Frank",
+        type: ChannelType.GuildText,
+      },
+    ]);
   }
 
   private mockGuildChannel(): void {
-    // @ts-expect-error: https://github.com/discordjs/discord.js/issues/6798
-    this.guildChannel = new GuildChannel(this.guild, {
-      ...this.channel,
+    this.guildChannel = Reflect.construct(GuildChannel, [
+      this.guild,
+      {
+        ...this.channel,
 
-      type: ChannelType.GuildText,
-      name: idString,
-      position: 1,
-      parent_id: idString,
-      permission_overwrites: [],
-    });
+        type: ChannelType.GuildText,
+        name: idString,
+        position: 1,
+        parent_id: idString,
+        permission_overwrites: [],
+      },
+    ]);
   }
 
   private mockTextChannel(): void {
-    // @ts-expect-error: https://github.com/discordjs/discord.js/issues/6798
-    this.textChannel = new TextChannel(this.guild, {
-      ...this.guildChannel,
+    this.textChannel = Reflect.construct(TextChannel, [
+      this.guild,
+      {
+        ...this.guildChannel,
 
-      type: ChannelType.GuildText,
-      topic: "topic",
-      nsfw: false,
-      last_message_id: idString,
-      last_pin_timestamp: new Date("2019-01-01").getTime().toString(),
-      rate_limit_per_user: 0,
-    });
+        type: ChannelType.GuildText,
+        topic: "topic",
+        nsfw: false,
+        last_message_id: idString,
+        last_pin_timestamp: new Date("2019-01-01").getTime().toString(),
+        rate_limit_per_user: 0,
+      },
+    ]);
   }
 
   private mockUser(): void {
-    // @ts-expect-error: https://github.com/discordjs/discord.js/issues/6798
-    this.user = new User(this.client, this.rawUserData);
+    this.user = Reflect.construct(User, [this.client, this.rawUserData]);
   }
 
   private apiUser(): APIUser {
@@ -216,7 +215,7 @@ export default class MockDiscord {
   }
 
   private mockGuildMember(): void {
-    this.guildMember = new MockGuildMember(
+    this.guildMember = MockGuildMember.new(
       this.client,
       this.apiMember(),
       this.guild
@@ -224,7 +223,7 @@ export default class MockDiscord {
   }
 
   private mockMessage(): void {
-    this.message = new MockMessage(
+    this.message = MockMessage.new(
       this.textChannel,
       this.guildMember,
       this.client,
@@ -252,7 +251,7 @@ export default class MockDiscord {
   }
 
   private mockMessageReaction(): void {
-    this.messageReaction = new MockMessageReaction(
+    this.messageReaction = MockMessageReaction.new(
       this.guildMember,
       this.client,
       {
@@ -270,8 +269,7 @@ export default class MockDiscord {
   }
 
   private mockRole() {
-    // @ts-expect-error: https://github.com/discordjs/discord.js/issues/6798
-    this.role = new Role(
+    this.role = Reflect.construct(Role, [
       this.client,
       {
         id: idString,
@@ -283,23 +281,25 @@ export default class MockDiscord {
         managed: false,
         permissions: "",
       },
-      this.guild
-    );
+      this.guild,
+    ]);
   }
 
   private mockVoiceState() {
-    // @ts-expect-error: https://github.com/discordjs/discord.js/issues/6798
-    this.voiceState = new VoiceState(this.guild, {
-      deaf: false,
-      mute: false,
-      suppress: false,
-      channel_id: this.channel.id,
-      user_id: this.user.id,
-      session_id: "",
-      self_deaf: false,
-      self_mute: false,
-      self_video: true,
-      request_to_speak_timestamp: null,
-    });
+    this.voiceState = Reflect.construct(VoiceState, [
+      this.guild,
+      {
+        deaf: false,
+        mute: false,
+        suppress: false,
+        channel_id: this.channel.id,
+        user_id: this.user.id,
+        session_id: "",
+        self_deaf: false,
+        self_mute: false,
+        self_video: true,
+        request_to_speak_timestamp: null,
+      },
+    ]);
   }
 }
