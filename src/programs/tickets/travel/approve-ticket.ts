@@ -78,9 +78,11 @@ class ApproveTravelTicket extends CommandHandler<DiscordEvent.REACTION_ADD> {
       ticketMember.displayName
     } in ${ApproveTravelTicket.resolveTraveledPlace(message.cleanContent)}`;
 
+    const trimmedThreadName = threadName.substring(0, 100);
+
     return await travelMessage.startThread({
       autoArchiveDuration: "MAX",
-      name: threadName,
+      name: trimmedThreadName,
     });
   }
 
