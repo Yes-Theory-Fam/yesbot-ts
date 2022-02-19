@@ -16,6 +16,7 @@ import {
 } from "discord.js";
 import { ChatNames } from "../../../collections/chat-names";
 import { closeTicket, getChannelName, TicketType } from "../common";
+import { createYesBotLogger } from "../../../log";
 
 @Command({
   event: DiscordEvent.REACTION_ADD,
@@ -42,10 +43,16 @@ class ApproveTravelTicket extends CommandHandler<DiscordEvent.REACTION_ADD> {
       ticketMember
     );
 
-    await ApproveTravelTicket.includeTravelingMembers(
-      message.mentions.members,
-      thread
-    );
+    try {
+      await ApproveTravelTicket.includeTravelingMembers(
+        message.mentions.members,
+        thread
+      );
+    } catch {
+      logger.info(
+        "Failed to add some members to the travel thread; if no-one complains, this is probably not actionable"
+      );
+    }
 
     await ApproveTravelTicket.recordApproval(message.guild, user, message);
     await ApproveTravelTicket.closeTicket(ticketMember.user, message.guild);
@@ -119,3 +126,5 @@ class ApproveTravelTicket extends CommandHandler<DiscordEvent.REACTION_ADD> {
     return Promise.all(promises);
   }
 }
+
+const logger = createYesBotLogger("travel", ApproveTravelTicket.name);
