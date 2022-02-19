@@ -1,18 +1,23 @@
 import { Client, GuildMember, Message, MessageReaction } from "discord.js";
 import { RawMessageReactionData } from "discord.js/typings/rawDataTypes";
 
-// @ts-expect-error: https://github.com/discordjs/discord.js/issues/6798
-export class MockMessageReaction extends MessageReaction {
-  constructor(
+export class MockMessageReaction {
+  static new(
     member: GuildMember,
     client: Client,
     data: RawMessageReactionData,
     message: Message
-  ) {
-    super(client, data, message);
+  ): MessageReaction {
+    const reaction = Reflect.construct(MessageReaction, [
+      client,
+      data,
+      message,
+    ]);
 
-    Object.defineProperty(this, "member", {
+    Object.defineProperty(reaction, "member", {
       get: () => member,
     });
+
+    return reaction;
   }
 }

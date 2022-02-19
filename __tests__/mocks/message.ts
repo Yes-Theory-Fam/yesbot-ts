@@ -1,22 +1,23 @@
 import { Client, GuildMember, Message, TextBasedChannel } from "discord.js";
 import { RawMessageData } from "discord.js/typings/rawDataTypes";
 
-// @ts-expect-error: https://github.com/discordjs/discord.js/issues/6798
-export class MockMessage extends Message {
-  constructor(
+export class MockMessage {
+  static new(
     channel: TextBasedChannel,
     member: GuildMember,
     client: Client,
     data: RawMessageData
-  ) {
-    super(client, data);
+  ): Message {
+    const message = Reflect.construct(Message, [client, data]);
 
-    Object.defineProperty(this, "channel", {
+    Object.defineProperty(message, "channel", {
       get: () => channel,
     });
 
-    Object.defineProperty(this, "member", {
+    Object.defineProperty(message, "member", {
       get: () => member,
     });
+
+    return message;
   }
 }

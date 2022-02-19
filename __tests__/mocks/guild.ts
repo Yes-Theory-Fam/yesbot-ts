@@ -1,21 +1,26 @@
 import { Client, Guild, GuildMember, Snowflake } from "discord.js";
 import { RawGuildData } from "discord.js/typings/rawDataTypes";
 
-// @ts-expect-error: https://github.com/discordjs/discord.js/issues/6798
-export class MockGuild extends Guild {
-  _members: GuildMember[] = [];
+export interface GuildMock extends Guild {
+  addMember(member: GuildMember): void;
+}
 
-  constructor(client: Client, data: RawGuildData) {
-    super(client, data);
+export class MockGuild {
+  static new(client: Client, data: RawGuildData): GuildMock {
+    const members: GuildMember[] = [];
 
-    Object.defineProperty(this, "members", {
+    const guild = Reflect.construct(Guild, [client, data]) as GuildMock;
+
+    const addMember = (member: GuildMember) => members.push(member);
+
+    Object.defineProperty(guild, "addMember", { get: () => addMember });
+
+    Object.defineProperty(guild, "members", {
       get: () => ({
-        resolve: (id: Snowflake) => this._members.find((m) => m.id === id),
+        resolve: (id: Snowflake) => members.find((m) => m.id === id),
       }),
     });
-  }
 
-  addMember(member: GuildMember) {
-    this._members.push(member);
+    return guild;
   }
 }
