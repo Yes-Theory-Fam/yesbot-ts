@@ -1,9 +1,5 @@
 import { Message, TextChannel } from "discord.js";
-import {
-  ExportManager,
-  MapTools,
-  VoiceOnDemand,
-} from "../programs";
+import { ExportManager, MapTools, VoiceOnDemand } from "../programs";
 
 const message = async (msg: Message) => {
   if (msg.channel.type === "DM" && !msg.author.bot) {

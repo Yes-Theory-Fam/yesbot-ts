@@ -17,26 +17,27 @@ import {
 
 @Command({
   event: DiscordEvent.MESSAGE,
-  trigger: "@group",
+  trigger: "",
   categoryNames: ["hobbies", "gaming"],
   channelNames: [
-    ChatNames.CHAT.toString(),
-    ChatNames.CHAT_TOO.toString(),
-    ChatNames.FOURTH_CHAT.toString(),
-    ChatNames.CHAT_FIVE.toString(),
-    ChatNames.VOICE_CHAT.toString(),
-    ChatNames.VOICE_CHAT_TWO.toString(),
-    ChatNames.SELF_DEVELOPMENT.toString(),
-    ChatNames.LEARNING_SPANISH.toString(),
-    ChatNames.DAILY_CHALLENGE.toString(),
-    ChatNames.YESTHEORY_DISCUSSION.toString(),
-    "permanent-testing",
+    ChatNames.CHAT,
+    ChatNames.CHAT_TOO,
+    ChatNames.FOURTH_CHAT,
+    ChatNames.CHAT_FIVE,
+    ChatNames.VOICE_CHAT,
+    ChatNames.VOICE_CHAT_TWO,
+    ChatNames.SELF_DEVELOPMENT,
+    ChatNames.LEARNING_SPANISH,
+    ChatNames.DAILY_CHALLENGE,
+    ChatNames.YESTHEORY_DISCUSSION,
+    ChatNames.PERMANENT_TESTING,
   ],
   description: "This handler is to ping all users in the group",
 })
 class PingGroup implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
     const content = message.content;
+    if (!content.includes("@group")) return;
 
     const lines = content.split("\n");
     const unquoted = lines.filter((line) => !line.startsWith(">")).join("\n");
