@@ -41,13 +41,11 @@ export const removeBreakRole = async (
     await dmChannel.send(
       "Your break role was removed, we're happy to have you back!"
     );
-    return;
   } catch (e) {
     logger.error("Failed to remove break role", e);
     await textLog(`I could not remove <@${member.id}> break role!`);
     await dmChannel.send(
       "Looks like I had a little hiccup trying to remove your role, I've contacted Support about your little issue! Sorry in advance."
     );
-    return;
   }
 };

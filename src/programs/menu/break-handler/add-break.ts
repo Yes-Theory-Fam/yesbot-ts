@@ -25,13 +25,11 @@ export const addBreakRole = async (
     await confirmationMessage.delete();
     await member.roles.add(breakRole);
     await dmChannel.send("Enjoy your break!");
-    return;
   } catch (e) {
     logger.error("Failed to add break role", e);
     await textLog(`I could not give <@${member.id}> the break role!`);
     await dmChannel.send(
       "Looks like I couldn't give you the break role, I informed the Support team about it, in the meantime you can manually ask one of the Moderators!"
     );
-    return;
   }
 };
