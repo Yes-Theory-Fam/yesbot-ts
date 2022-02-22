@@ -41,10 +41,10 @@ export const addMessageHandler: AddEventHandlerFunction<
 export const extractMessageInfo: ExtractInfoForEventFunction<
   DiscordEvent.MESSAGE
 > = (message) => {
-  const split = message.content.split(" ");
-  const trigger = split[0].toLowerCase();
-  const subTrigger = split[1];
-
+  const split = message.content.toLowerCase().split(" ");
+  const trigger = split[0] ?? ""
+  const subTrigger = split[1] ?? ""
+  
   return withMessageRelatedInfo(message, message.member, (channelId) => [
     channelId,
     trigger,
