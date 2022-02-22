@@ -42,9 +42,9 @@ export const extractMessageInfo: ExtractInfoForEventFunction<
   DiscordEvent.MESSAGE
 > = (message) => {
   const split = message.content.toLowerCase().split(" ");
-  const trigger = split[0] ?? ""
-  const subTrigger = split[1] ?? ""
-  
+  const trigger = split[0] ?? "";
+  const subTrigger = split[1] ?? "";
+
   return withMessageRelatedInfo(message, message.member, (channelId) => [
     channelId,
     trigger,
