@@ -10,7 +10,7 @@ const message = async (msg: Message) => {
 };
 
 const routeMessage = async (message: Message) => {
-  const words = message.content.split(/\s+/);
+  const words = message.content.toLowerCase().split(/\s+/);
   const channel = <TextChannel>message.channel;
   const firstWord = words[0];
 

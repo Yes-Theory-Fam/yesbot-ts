@@ -38,7 +38,7 @@ const getVoiceChannel = async (member: GuildMember): Promise<VoiceChannel> => {
 };
 
 const voiceOnDemand = async (message: Message) => {
-  const [, command] = message.content.split(" ");
+  const [, command] = message.content.toLowerCase().split(" ");
   const notYesTheoryExclusiveCommands = ["knock"];
 
   if (
@@ -77,7 +77,9 @@ const voiceOnDemand = async (message: Message) => {
 };
 
 const handleLimitCommand = async (message: Message) => {
-  const [, command, limitArg = defaultLimit] = message.content.split(" ");
+  const [, command, limitArg = defaultLimit] = message.content
+    .toLowerCase()
+    .split(" ");
   const requestedLimit = Math.floor(Number(limitArg));
 
   if (isNaN(requestedLimit)) {
