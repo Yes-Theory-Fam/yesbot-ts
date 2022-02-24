@@ -29,8 +29,8 @@ export type MessageHandlerFunction<T extends DiscordEvent> = HandlerFunctionFor<
 export const addMessageHandler: AddEventHandlerFunction<
   MessageEventHandlerOptions
 > = (options, ioc, tree) => {
-  const trigger = options.trigger ?? "";
-  const subTrigger = options.subTrigger ?? "";
+  const trigger = options.trigger?.toLowerCase() ?? "";
+  const subTrigger = options.subTrigger?.toLowerCase() ?? "";
   const combinedChannels = collectChannelDefinitions(options);
 
   for (const channel of combinedChannels) {
