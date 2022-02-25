@@ -63,7 +63,7 @@ Object {
 exports[`Messages should add data to the tree 3`] = `
 Object {
   "bot-development": Object {
-    "!otherTrigger": Object {
+    "!othertrigger": Object {
       "": Array [
         Object {
           "ioc": Object {},
@@ -115,7 +115,7 @@ Object {
     },
   },
   "bot-test-channel": Object {
-    "!otherTrigger": Object {
+    "!othertrigger": Object {
       "": Array [
         Object {
           "ioc": Object {},
