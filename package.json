@@ -47,7 +47,7 @@
     "@types/glob": "7.2.0",
     "@types/jest": "27.4.1",
     "@types/node": "16.11.25",
-    "@types/ws": "8.2.3",
+    "@types/ws": "8.5.2",
     "@yestheoryfam/prettier-config": "1.0.0",
     "env-cmd": "10.1.0",
     "jest": "27.5.1",
