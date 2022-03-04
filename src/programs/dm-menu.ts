@@ -80,7 +80,7 @@ class ShowMenu implements CommandHandler<DiscordEvent.MESSAGE> {
     } catch (err) {
       removeIgnore(dmChannel);
       // Time's up; nothing to do here, really
-      dmChannel.send(
+      await dmChannel.send(
         "Because of technical reasons I can only wait 60 seconds for a reaction. I removed the other message to not confuse you. If you need anything from me, just drop me a message!"
       );
     }
