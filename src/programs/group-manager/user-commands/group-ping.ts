@@ -36,7 +36,7 @@ import {
 })
 class PingGroup implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
-    const content = message.content;
+    const content = message.content.toLowerCase();
     if (!content.includes("@group")) return;
 
     const lines = content.split("\n");
