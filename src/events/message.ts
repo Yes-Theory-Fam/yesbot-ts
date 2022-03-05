@@ -19,8 +19,8 @@ const routeMessage = async (message: Message) => {
       if (firstWord === "!export") await ExportManager(message);
     case "bot-commands":
       if (firstWord === "!voice") await VoiceOnDemand(message);
-      if (firstWord === "!map") await MapTools.map(message);
-      if (firstWord === "!mapadd") await MapTools.mapAdd(message);
+      //if (firstWord === "!map") await MapTools.map(message);
+      //if (firstWord === "!mapadd") await MapTools.mapAdd(message);
       break;
   }
 
