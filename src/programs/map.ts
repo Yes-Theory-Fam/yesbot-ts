@@ -39,6 +39,6 @@ export const mapAdd = async (message: Message) => {
   Link to the message calling the command: ${message.url}`;
   await maintainerDm.send(infoString);
   await message.reply(
-    "I messaged the maintainer of the map, they will add you to it soon!"
+    "Josh, I am!"
   );
 };
