@@ -13,7 +13,7 @@ import { logger } from "./remote-control/add-reaction";
 })
 class Map implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message) {
-    message.reply(
+    await message.reply(
       `you can find the message link here: ${process.env.MAP_LINK} \nIf you want your city to be added to it, type !mapadd [city, country]`
     );
   }
