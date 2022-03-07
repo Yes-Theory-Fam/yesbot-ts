@@ -3,7 +3,6 @@ import Tools from "../common/tools";
 import { CountryRoleFinder } from "../utils/country-role-finder";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 import { ChatNames } from "../collections/chat-names";
-import { logger } from "./remote-control/add-reaction";
 
 @Command({
   event: DiscordEvent.MESSAGE,
