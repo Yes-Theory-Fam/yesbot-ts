@@ -3,9 +3,4 @@ import * as VoiceOnDemandTools from "./voice-on-demand";
 import VoiceOnDemand from "./voice-on-demand";
 import ExportManager from "./export-manager";
 
-export {
-  ExportManager,
-  DailyChallenge,
-  VoiceOnDemand,
-  VoiceOnDemandTools,
-};
+export { ExportManager, DailyChallenge, VoiceOnDemand, VoiceOnDemandTools };
