@@ -1,5 +1,5 @@
 import { Message, TextChannel } from "discord.js";
-import { ExportManager, MapTools, VoiceOnDemand } from "../programs";
+import { ExportManager, VoiceOnDemand } from "../programs";
 
 const message = async (msg: Message) => {
   if (msg.channel.type === "DM" && !msg.author.bot) {
@@ -19,8 +19,6 @@ const routeMessage = async (message: Message) => {
       if (firstWord === "!export") await ExportManager(message);
     case "bot-commands":
       if (firstWord === "!voice") await VoiceOnDemand(message);
-      if (firstWord === "!map") await MapTools.map(message);
-      if (firstWord === "!mapadd") await MapTools.mapAdd(message);
       break;
   }
 
