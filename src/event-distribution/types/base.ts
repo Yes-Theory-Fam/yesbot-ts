@@ -6,14 +6,15 @@ import { InstanceOrConstructor, StringIndexedHIOCTree } from "./hioc";
 export const enum DiscordEvent {
   BUTTON_CLICKED = "BUTTON_CLICKED",
   GUILD_MEMBER_UPDATE = "GUILD_MEMBER_UPDATE",
+  MEMBER_JOIN = "MEMBER_JOIN",
   MEMBER_LEAVE = "MEMBER_LEAVE",
   MESSAGE = "MESSAGE",
   REACTION_ADD = "REACTION_ADD",
   REACTION_REMOVE = "REACTION_REMOVE",
   READY = "READY",
+  SLASH_COMMAND = "SLASH_COMMAND",
   TIMER = "TIMER",
   VOICE_STATE_UPDATE = "VOICE_STATE_UPDATE",
-  MEMBER_JOIN = "MEMBER_JOIN",
 }
 
 export const enum EventLocation {

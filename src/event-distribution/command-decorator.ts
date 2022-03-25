@@ -1,5 +1,10 @@
 import { EventHandlerOptions, isMessageRelated } from "./events/events";
-import { EventLocation, MessageRelatedOptions } from "./types/base";
+import { SlashCommandHandlerOptions } from "./events/slash-commands";
+import {
+  DiscordEvent,
+  EventLocation,
+  MessageRelatedOptions,
+} from "./types/base";
 import { HandlerClass } from "./types/handler";
 import distribution from "./index";
 import { createYesBotLogger } from "../log";
@@ -21,6 +26,11 @@ export const Command = <T extends EventHandlerOptions>(options: T) => {
       checkMessageRelatedOptions(options, commandClassName);
     }
 
+    if (options.event === DiscordEvent.SLASH_COMMAND) {
+      const checkResult = checkSlashCommandRelatedOptions(options);
+      if (!checkResult) return target;
+    }
+
     try {
       distribution.addWithOptions(options, target);
     } catch (e) {
@@ -29,6 +39,7 @@ export const Command = <T extends EventHandlerOptions>(options: T) => {
         e instanceof Error ? { error: e.message } : e
       );
     }
+
     return target;
   };
 };
@@ -63,5 +74,16 @@ const checkMessageRelatedOptions = (
     logger.warn(
       `Adding command ${commandClassName} with required roles or limited channels which was set to location ${EventLocation.ANYWHERE}. ${explanation}`
     );
+  }
+};
+
+const checkSlashCommandRelatedOptions = (
+  options: SlashCommandHandlerOptions,
+  commandClassName: string
+) => {
+  const { root, subCommand, subCommandGroup } = options;
+
+  if (subCommand && !subCommandGroup) {
+    // TODO throw error here :)
   }
 };

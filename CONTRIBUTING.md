@@ -61,7 +61,7 @@ This section of the document includes information on what to consider while deve
 
 ### Project structure
 
-The bot's main code is contained in the `src` directory which contains several sub-directories:
+The bot's main code is contained in the `src` directory which contains several subdirectories:
 
 - collections - Files containing static data that the bot uses for certain tasks
 - common - Shared code for various things
@@ -138,17 +138,17 @@ Ensure that you have Docker running and no other connections on Port 5432 as thi
 
 1. Install the dependencies:
 
-```bash
-yarn install
-```
+   ```bash
+    yarn install
+    ```
 
 2. Create an `.env` in the root directory and copy the `.env.example`. Change the values to match your test server.
 
 3. Set up the tables in the database
 
-```bash
-yarn prisma db push
-```
+    ```bash
+    yarn prisma db push
+    ```
 
 4. Start the bot
 

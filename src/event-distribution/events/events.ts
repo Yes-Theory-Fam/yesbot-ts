@@ -21,6 +21,7 @@ import { StringIndexedHIOCTree } from "../types/hioc";
 import {
   ButtonInteraction,
   Client,
+  CommandInteraction,
   Message,
   MessageReaction,
   User,
@@ -74,6 +75,12 @@ import {
   ButtonClickedHandlerOptions,
   extractButtonClickedInfo,
 } from "./button-clicked";
+import {
+  addSlashCommandHandler,
+  extractSlashCommandInfo,
+  SlashCommandHandlerFunction,
+  SlashCommandHandlerOptions,
+} from "./slash-commands";
 
 export type EventHandlerOptions =
   | ButtonClickedHandlerOptions
@@ -82,6 +89,7 @@ export type EventHandlerOptions =
   | ReactionEventHandlerOptions
   | ReadyEventHandlerOptions
   | GuildMemberUpdateEventHandlerOptions
+  | SlashCommandHandlerOptions
   | TimerEventHandlerOptions
   | VoiceStateUpdateEventHandlerOptions
   | MemberJoinEventHandlerOptions;
@@ -93,6 +101,7 @@ export type HandlerFunction<T extends DiscordEvent> =
   | ReactionHandlerFunction<T>
   | ReadyHandlerFunction<T>
   | GuildMemberUpdateHandlerFunction<T>
+  | SlashCommandHandlerFunction<T>
   | TimerHandlerFunction<T>
   | VoiceStateHandlerFunction<T>
   | MemberJoinHandlerFunction<T>;
@@ -158,6 +167,12 @@ export const addEventHandler: AddEventHandlerFunction<EventHandlerOptions> = (
         ioc,
         tree as StringIndexedHIOCTree<DiscordEvent.READY>
       );
+    case DiscordEvent.SLASH_COMMAND:
+      return addSlashCommandHandler(
+        options,
+        ioc,
+        tree as StringIndexedHIOCTree<DiscordEvent.SLASH_COMMAND>
+      );
     case DiscordEvent.TIMER:
       return addTimerHandler(
         options,
@@ -199,6 +214,8 @@ export const extractEventInfo: ExtractInfoFunction<DiscordEvent> = (
         return extractReadyInfo(args[0] as Client);
       case DiscordEvent.TIMER:
         return extractTimerInfo(args[0] as Timer);
+      case DiscordEvent.SLASH_COMMAND:
+        return extractSlashCommandInfo(args[0] as CommandInteraction);
       case DiscordEvent.VOICE_STATE_UPDATE:
         return extractVoiceStateUpdateInfo(
           args[0] as VoiceState,

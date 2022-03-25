@@ -25,6 +25,7 @@ import {
 } from "./types/base";
 import { getIocName } from "./helper";
 import { Interaction } from "discord.js";
+import { registerSlashCommands } from "./events/slash-commands";
 
 const logger = createYesBotLogger("event-distribution", "event-distribution");
 
@@ -55,6 +56,7 @@ export class EventDistribution {
     [DiscordEvent.REACTION_REMOVE]: {},
     [DiscordEvent.GUILD_MEMBER_UPDATE]: {},
     [DiscordEvent.READY]: {},
+    [DiscordEvent.SLASH_COMMAND]: {},
     [DiscordEvent.TIMER]: {},
     [DiscordEvent.VOICE_STATE_UPDATE]: {},
     [DiscordEvent.MEMBER_JOIN]: {},
@@ -77,6 +79,8 @@ export class EventDistribution {
   async handleInteraction(interaction: Interaction) {
     if (interaction.isButton()) {
       return await this.handleEvent(DiscordEvent.BUTTON_CLICKED, interaction);
+    } else if (interaction.isCommand()) {
+      return await this.handleEvent(DiscordEvent.SLASH_COMMAND, interaction);
     }
   }
 
@@ -145,39 +149,47 @@ export class EventDistribution {
   }
 
   async initialize(): Promise<void> {
-    return new Promise((res, rej) => {
+    await new Promise<void>((res, rej) => {
       const isProduction = process.env.NODE_ENV === "production";
       const extension = isProduction ? ".js" : ".ts";
       const directory = isProduction ? "build/src" : "src";
 
-      glob(`${directory}/programs/**/*${extension}`, async (e, matches) => {
-        if (e) {
-          logger.error("Error loading commands: ", e);
-          rej(e);
-          return;
+      glob(
+        // `${directory}/programs/**/*${extension}`,
+        `${directory}/programs/decorator-test.ts`,
+        async (e, matches) => {
+          if (e) {
+            logger.error("Error loading commands: ", e);
+            rej(e);
+            return;
+          }
+
+          const loaders = matches
+            .filter((p) => !p.endsWith(`.spec${extension}`))
+            .map((p) => {
+              const split = p.split(".");
+              split.unshift();
+              const modulePath = path.join(process.cwd(), split.join("."));
+
+              return import(modulePath);
+            });
+
+          try {
+            await Promise.all(loaders);
+          } catch (e) {
+            logger.error("Error loading commands: ", e);
+            rej(e);
+            return;
+          }
+          logger.debug("Loading complete!");
+          res();
         }
-
-        const loaders = matches
-          .filter((p) => !p.endsWith(`.spec${extension}`))
-          .map((p) => {
-            const split = p.split(".");
-            split.unshift();
-            const modulePath = path.join(process.cwd(), split.join("."));
-
-            return import(modulePath);
-          });
-
-        try {
-          await Promise.all(loaders);
-        } catch (e) {
-          logger.error("Error loading commands: ", e);
-          rej(e);
-          return;
-        }
-        logger.debug("Loading complete!");
-        res();
-      });
+      );
     });
+
+    this.handlers[DiscordEvent.SLASH_COMMAND] = await registerSlashCommands(
+      this.handlers[DiscordEvent.SLASH_COMMAND]
+    );
   }
 
   private static isHandlerForLocation<T extends DiscordEvent>(
