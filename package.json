@@ -51,7 +51,7 @@
     "@yestheoryfam/prettier-config": "1.0.0",
     "env-cmd": "10.1.0",
     "jest": "27.5.1",
-    "jest-mock-extended": "2.0.4",
+    "jest-mock-extended": "2.0.5",
     "prettier": "2.5.1",
     "prisma": "3.10.0",
     "ts-jest": "27.1.3",
