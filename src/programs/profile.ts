@@ -1,6 +1,7 @@
 import { GuildMember, Message, MessageEmbed } from "discord.js";
 import Tools from "../common/tools";
-import { formatBirthday, getUserBirthday } from "./birthday-manager";
+import { GetUserBirthdayUseCase } from "./birthday/usecase/get-user-birthday.usecase";
+import { formatBirthday } from "./birthday/utils/birthday-utils";
 import prisma from "../prisma";
 import { CountryRoleFinder } from "../utils/country-role-finder";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
@@ -45,7 +46,9 @@ const getProfileEmbed = async (
     .map(({ name }) => name);
   const countryString = countries.join("\n");
   const yesEmoji = member.guild.emojis.cache.find((e) => e.name == "yes");
-  const birthdayString = formatBirthday(await getUserBirthday(member.user.id));
+  const birthdayString = formatBirthday(
+    await new GetUserBirthdayUseCase().getUserBirthday(member.user.id)
+  );
   if (countries.length === 0) {
     return "That user isn't registered here!";
   }
@@ -81,8 +84,9 @@ const getProfileEmbed = async (
   profileEmbed.addField("Joined on:", joinDate, true);
   profileEmbed.addField("Birthday:", birthdayString, true);
   profileEmbed.addField("Groups:", groupString || "None", true);
-  profileEmbed.setFooter(
-    "Thank you for using the Yes Theory Fam Discord Server!"
-  );
+  profileEmbed.setFooter({
+    text: "Thank you for using the Yes Theory Fam Discord Server!",
+  });
+
   return profileEmbed;
 };
