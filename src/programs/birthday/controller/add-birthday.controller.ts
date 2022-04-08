@@ -20,7 +20,7 @@ import {
 } from "../../../event-distribution";
 import { GetUserBirthdayUseCase } from "../usecase/get-user-birthday.usecase";
 import { LetUserPickTimezoneUsecase } from "../usecase/let-user-pick-timezone.usecase";
-import { formatBirthday, months } from "../utils/birthday-utils";
+import { formatBirthday, months, referenceYear } from "../utils/birthday-utils";
 
 const logger = createYesBotLogger("programs", "BirthdayManager");
 
@@ -255,5 +255,5 @@ export function getUserBirthdate(message: string): Date | null {
     return null;
   }
 
-  return new Date(1972, month, day);
+  return new Date(referenceYear, month, day);
 }

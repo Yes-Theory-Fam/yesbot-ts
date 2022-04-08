@@ -1,6 +1,6 @@
 /*
  * This file does not make use of the bot in this repository but is tracked here for documentation and versioning purposes.
- * The code in this file is ran as single scheduled job and is fully self-contained.
+ * The code in this file is ran as single scheduled cron and is fully self-contained.
  */
 
 import { config } from "dotenv";
