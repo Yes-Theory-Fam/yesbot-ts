@@ -162,13 +162,6 @@ class BirthdayManager implements CommandHandler<DiscordEvent.MESSAGE> {
         birthdate
       )} in the timezone ${timezone}.`
     );
-    await textLog(
-      "Hi there! Could someone help me by executing this command? Thank you!"
-    );
-    await textLog(
-      `\`bb.override <@${birthdayUser.id}> set ${formatBirthday(birthdate)}\`
-\`bb.override <@${birthdayUser.id}> zone ${timezone}\``
-    );
 
     const birthday = createBirthday(birthdayUser.id, birthdate, timezone);
     await prisma.birthday.create({ data: birthday });
@@ -251,7 +244,7 @@ export function getUserBirthdate(message: string): Date | null {
     monthNumMatch <= 12 &&
     day <= 12
   ) {
-    // Cannot find out since i don't know which is month and which is date
+    // Cannot find out since I don't know which is month and which is date
     return null;
   }
 
