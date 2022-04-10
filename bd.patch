@@ -1,0 +1,48 @@
+diff --git a/src/programs/birthday/cron/birthday-role-apply.activity.ts b/src/programs/birthday/cron/birthday-role-apply.activity.ts
+index 7861b34..b205a34 100644
+--- a/src/programs/birthday/cron/birthday-role-apply.activity.ts
++++ b/src/programs/birthday/cron/birthday-role-apply.activity.ts
+@@ -4,6 +4,7 @@ import { ChatNames } from "../../../collections/chat-names";
+ import { textLog } from "../../../common/moderator";
+ import prisma from "../../../prisma";
+ import { zonedTimeToUtc } from "date-fns-tz";
++import {isBirthdayToday} from '../usecase/is-birthday-today';
+ import { referenceYear } from "../utils/birthday-utils";
+ 
+ export class BirthdayRoleApplyActivity {
+@@ -86,11 +87,11 @@ export class BirthdayRoleApplyActivity {
+     });
+ 
+     const currentBirthdays = birthdays
+-      .map(({ userId, timezone, birthdate }) => ({
+-        userId,
+-        birthdate: zonedTimeToUtc(birthdate, timezone),
++      .map((birthday) => ({
++        userId: birthday.userId,
++        hasBirthday: isBirthdayToday(birthday, new Date(), referenceYear),
+       }))
+-      .filter(({ birthdate }) => differenceInDays(birthdate, reference) === 0 && reference < birthdate);
++      .filter(({ hasBirthday }) => hasBirthday);
+ 
+     const currentBirthdayRoleUsers = (
+       await this.getCurrentBirthdayRoleUsers()
+@@ -126,15 +127,12 @@ export class BirthdayRoleApplyActivity {
+       },
+     });
+ 
+-    const reference = new Date();
+-    reference.setFullYear(referenceYear);
+-
+     const pastBirthdays = theirBirthdays
+-      .map(({ userId, timezone, birthdate }) => ({
+-        userId,
+-        birthdate: zonedTimeToUtc(birthdate, timezone),
++      .map((birthday) => ({
++        userId: birthday.userId,
++        hasBirthday: isBirthdayToday(birthday, new Date(), referenceYear),
+       }))
+-      .filter(({ birthdate }) => differenceInDays(birthdate, reference) !== 0);
++      .filter(({ hasBirthday }) => hasBirthday);
+ 
+     // const birthdayRemovePromises = pastBirthdays.map(({ userId }) =>
+     //   this.removeRole(userId)

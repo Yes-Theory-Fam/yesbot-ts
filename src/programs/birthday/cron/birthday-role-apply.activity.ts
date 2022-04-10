@@ -1,8 +1,10 @@
 import { differenceInDays } from "date-fns";
 import { Client, TextChannel } from "discord.js";
 import { ChatNames } from "../../../collections/chat-names";
+import { textLog } from "../../../common/moderator";
 import prisma from "../../../prisma";
 import { zonedTimeToUtc } from "date-fns-tz";
+import {isBirthdayToday} from '../usecase/is-birthday-today';
 import { referenceYear } from "../utils/birthday-utils";
 
 export class BirthdayRoleApplyActivity {
@@ -60,10 +62,7 @@ export class BirthdayRoleApplyActivity {
   public async applyBirthdayRoles() {
     // To reduce the bot's load of calculating the timezoned dates, we only fetch two days ahead and two days behind.
     // We can likely get away with less but my head hurts, so I'm leaving it as is.
-    const reference = zonedTimeToUtc(
-      new Date(),
-      Intl.DateTimeFormat().resolvedOptions().timeZone
-    );
+    const reference = new Date();
     reference.setFullYear(referenceYear);
 
     const upperReference = new Date(
@@ -88,11 +87,11 @@ export class BirthdayRoleApplyActivity {
     });
 
     const currentBirthdays = birthdays
-      .map(({ userId, timezone, birthdate }) => ({
-        userId,
-        birthdate: zonedTimeToUtc(birthdate, timezone),
+      .map((birthday) => ({
+        userId: birthday.userId,
+        hasBirthday: isBirthdayToday(birthday, new Date(), referenceYear),
       }))
-      .filter(({ birthdate }) => differenceInDays(birthdate, reference) === 0);
+      .filter(({ hasBirthday }) => hasBirthday);
 
     const currentBirthdayRoleUsers = (
       await this.getCurrentBirthdayRoleUsers()
@@ -102,12 +101,20 @@ export class BirthdayRoleApplyActivity {
       .filter(({ userId }) => !currentBirthdayRoleUsers.includes(userId))
       .map((u) => u.userId);
 
-    const birthdayAssignPromises = missing.map((userId) =>
-      this.applyRole(userId)
-    );
-    await Promise.all(birthdayAssignPromises);
+    if (missing.length) {
+      await textLog(
+        `Would apply birthday role to ${missing
+          .map((u) => `<@${u}>`)
+          .join(", ")}.`
+      );
+    }
 
-    await this.announceBirthdays(missing);
+    // const birthdayAssignPromises = missing.map((userId) =>
+    //   this.applyRole(userId)
+    // );
+    // await Promise.all(birthdayAssignPromises);
+    //
+    // await this.announceBirthdays(missing);
   }
 
   public async removeBirthdayRoles() {
@@ -120,22 +127,24 @@ export class BirthdayRoleApplyActivity {
       },
     });
 
-    const reference = zonedTimeToUtc(
-      new Date(),
-      Intl.DateTimeFormat().resolvedOptions().timeZone
-    );
-    reference.setFullYear(referenceYear);
-
     const pastBirthdays = theirBirthdays
-      .map(({ userId, timezone, birthdate }) => ({
-        userId,
-        birthdate: zonedTimeToUtc(birthdate, timezone),
+      .map((birthday) => ({
+        userId: birthday.userId,
+        hasBirthday: isBirthdayToday(birthday, new Date(), referenceYear),
       }))
-      .filter(({ birthdate }) => differenceInDays(birthdate, reference) !== 0);
+      .filter(({ hasBirthday }) => hasBirthday);
 
-    const birthdayRemovePromises = pastBirthdays.map(({ userId }) =>
-      this.removeRole(userId)
-    );
-    await Promise.all(birthdayRemovePromises);
+    // const birthdayRemovePromises = pastBirthdays.map(({ userId }) =>
+    //   this.removeRole(userId)
+    // );
+    // await Promise.all(birthdayRemovePromises);
+
+    if (pastBirthdays.length) {
+      await textLog(
+        `Would remove birthday role from ${pastBirthdays
+          .map(({ userId }) => `<@${userId}>`)
+          .join(", ")}.`
+      );
+    }
   }
 }
