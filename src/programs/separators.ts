@@ -15,6 +15,9 @@ class SeparatorOnRoleAdd
     newMember: GuildMember | PartialGuildMember
   ) {
     if (oldMember.roles.cache.size >= newMember.roles.cache.size) return;
+    if (!newMember.roles.cache.some((r) => r.id === process.env.MEMBER_ROLE_ID))
+      return;
+
     const addedRole = newMember.roles.cache
       .filter(
         (role) =>
