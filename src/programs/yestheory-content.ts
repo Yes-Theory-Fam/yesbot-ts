@@ -21,9 +21,11 @@ class YesTheoryUploadedPing implements CommandHandler<DiscordEvent.MESSAGE> {
       .setDescription(
         `Yes Theory posted a new video! Go check it out in ${message.channel.toString()} and talk about it here`
       );
-    await channelDiscussion.send({
-      content: "@group YesTheoryUploads",
-      embeds: [embed],
-    });
+
+    await channelDiscussion.send({ content: "@group YesTheoryUploads" });
+    setTimeout(
+      async () => await channelDiscussion.send({ embeds: [embed] }),
+      1000
+    );
   }
 }
