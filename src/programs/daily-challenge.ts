@@ -99,10 +99,11 @@ class PostDailyChallenge implements CommandHandler<DiscordEvent.TIMER> {
         );
       }
 
-      await dailyChallengeChannel.send({
-        content: "@group dailychallenge",
-        embeds: [embed],
-      });
+      await dailyChallengeChannel.send({ content: "@group dailychallenge" });
+      setTimeout(
+        async () => await dailyChallengeChannel.send({ embeds: [embed] }),
+        1000
+      );
 
       await startDailyChallengeTimer(dailyChallengeIdentifier);
     }
