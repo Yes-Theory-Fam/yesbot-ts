@@ -1,5 +1,5 @@
 import Axios from "axios";
-import Discord, { Client, Message, TextChannel } from "discord.js";
+import Discord, { Client, Message, TextChannel, Util } from "discord.js";
 import { createYesBotLogger } from "../log";
 import { ChatNames } from "../collections/chat-names";
 import prisma from "../prisma";
@@ -7,6 +7,7 @@ import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 import { Timer } from "@yes-theory-fam/database/client";
 import bot from "..";
 import { TimerService } from "./timer/timer.service";
+import { findManyRequestedGroups } from "./group-manager/common";
 
 const dailyChallengeIdentifier = "dailychallenge";
 
@@ -99,11 +100,34 @@ class PostDailyChallenge implements CommandHandler<DiscordEvent.TIMER> {
         );
       }
 
-      await dailyChallengeChannel.send({ content: "@group dailychallenge" });
-      setTimeout(
-        async () => await dailyChallengeChannel.send({ embeds: [embed] }),
-        1000
-      );
+      const dailyChallengeGroup = (
+        await findManyRequestedGroups("dailychallenge")
+      )[0];
+      const groupPingMessage =
+        `**@${dailyChallengeGroup.name}**: ` +
+        dailyChallengeGroup.userGroupMembersGroupMembers
+          .map((member) => `<@${member.groupMemberId}>`)
+          .join(", ");
+
+      const pingBatches = Util.splitMessage(groupPingMessage, { char: "," });
+
+      try {
+        await dailyChallengeChannel.send({ embeds: [embed] });
+
+        for (const batch of pingBatches) {
+          await dailyChallengeChannel.send({ content: batch });
+        }
+
+        await prisma.userGroup.update({
+          where: { id: dailyChallengeGroup.id },
+          data: { lastUsed: new Date() },
+        });
+      } catch (err) {
+        logger.error(
+          "(postDailyMessage) There was an error posting Daily Challenge: ",
+          err
+        );
+      }
 
       await startDailyChallengeTimer(dailyChallengeIdentifier);
     }
