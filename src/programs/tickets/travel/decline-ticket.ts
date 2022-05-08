@@ -16,7 +16,7 @@ import { getChannelName, TicketType } from "../common";
 })
 class DeclineTravelTicket extends CommandHandler<DiscordEvent.REACTION_ADD> {
   async handle(reaction: MessageReaction, user: User): Promise<void> {
-    const message = reaction.message;
+    const message = await reaction.message.fetch(true);
 
     // Guard against two mods voting at the same time.
     const content = message.content;
