@@ -1,9 +1,8 @@
-import Discord, { Message, TextChannel, Util } from "discord.js";
+import Discord, { Message, TextChannel } from "discord.js";
 import { ChatNames } from "../collections/chat-names";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
-import { findManyRequestedGroups } from "./group-manager/common";
-import prisma from "../prisma";
 import { createYesBotLogger } from "../log";
+import Tools from "../common/tools";
 
 const logger = createYesBotLogger("programs", "yestheorycontent");
 
@@ -26,34 +25,7 @@ class YesTheoryUploadedPing implements CommandHandler<DiscordEvent.MESSAGE> {
       .setDescription(
         `Yes Theory posted a new video! Go check it out in ${message.channel.toString()} and talk about it here`
       );
-
-    const yestheoryUploadNotiGroup = (
-      await findManyRequestedGroups("YesTheoryUploads")
-    )[0];
-    const groupPingMessage =
-      `**@${yestheoryUploadNotiGroup.name}**: ` +
-      yestheoryUploadNotiGroup.userGroupMembersGroupMembers
-        .map((member) => `<@${member.groupMemberId}>`)
-        .join(", ");
-
-    const pingBatches = Util.splitMessage(groupPingMessage, { char: "," });
-
-    try {
-      await channelDiscussion.send({ embeds: [embed] });
-
-      for (const batch of pingBatches) {
-        await channelDiscussion.send({ content: batch });
-      }
-
-      await prisma.userGroup.update({
-        where: { id: yestheoryUploadNotiGroup.id },
-        data: { lastUsed: new Date() },
-      });
-    } catch (err) {
-      logger.error(
-        "(pingYestheoryContent) There was an error pinging users about a new video: ",
-        err
-      );
-    }
+    await channelDiscussion.send({ embeds: [embed] });
+    await Tools.forcePingGroup("YesTheoryUploads", channelDiscussion);
   }
 }

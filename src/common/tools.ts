@@ -12,11 +12,13 @@ import {
   Snowflake,
   TextChannel,
   User,
+  Util,
 } from "discord.js";
 import { textLog } from "./moderator";
 import { createYesBotLogger } from "../log";
 import prisma from "../prisma";
 import axios from "axios";
+import { findManyRequestedGroups } from "../programs/group-manager/common";
 
 export const unicodeEmojiRegex =
   /^(\p{RI}\p{RI}|\p{Emoji}(\p{Emoji_Modifier_Base}|\uFE0F\u20E3?|[\u{E0020}-\u{E007E}]+\u{E007F})?(\u{200D}\p{Emoji}(\p{Emoji_Modifier_Base}|\uFE0F\u20E3?|[\u{E0020}-\u{E007E}]+\u{E007F})?)*)/gu;
@@ -380,6 +382,33 @@ class Tools {
     }
 
     return true;
+  }
+
+  static async forcePingGroup(groupName: string, channel: TextChannel) {
+    const requestedGroup = (await findManyRequestedGroups(groupName))[0];
+    const groupPingMessage =
+      `**@${requestedGroup.name}**: ` +
+      requestedGroup.userGroupMembersGroupMembers
+        .map((member) => `<@${member.groupMemberId}>`)
+        .join(", ");
+
+    const pingBatches = Util.splitMessage(groupPingMessage, { char: "," });
+
+    try {
+      for (const batch of pingBatches) {
+        await channel.send({ content: batch });
+      }
+
+      await prisma.userGroup.update({
+        where: { id: requestedGroup.id },
+        data: { lastUsed: new Date() },
+      });
+    } catch (err) {
+      logger.error(
+        "(forcePing) There was an error force pinging users group: ",
+        err
+      );
+    }
   }
 }
 
