@@ -1,5 +1,5 @@
 import { GroupPingSetting, UserGroup } from "@yes-theory-fam/database/client";
-import { Message, Util } from "discord.js";
+import { Message, TextChannel, Util } from "discord.js";
 import { ChatNames } from "../../../collections/chat-names";
 import { isAuthorModerator } from "../../../common/moderator";
 import Tools from "../../../common/tools";
@@ -112,21 +112,6 @@ class PingGroup implements CommandHandler<DiscordEvent.MESSAGE> {
       );
       return;
     }
-
-    const groupPingMessage =
-      `**@${group.name}**: ` +
-      group.userGroupMembersGroupMembers
-        .map((member) => `<@${member.groupMemberId}>`)
-        .join(", ");
-
-    const pingBatches = Util.splitMessage(groupPingMessage, { char: "," });
-    for (const batch of pingBatches) {
-      await message.channel.send({ content: batch });
-    }
-
-    await prisma.userGroup.update({
-      where: { id: group.id },
-      data: { lastUsed: new Date() },
-    });
+    await Tools.forcePingGroup(group.name, message.channel as TextChannel);
   }
 }
