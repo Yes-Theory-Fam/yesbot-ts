@@ -921,8 +921,8 @@ export const countries: Country[] = [
     code: "LA",
     emoji: "🇱🇦",
     unicode: "U+1F1F1 U+1F1E6",
-    name: "Lao People's Democratic Republic",
-    title: "flag for Lao People's Democratic Republic",
+    name: "Laos",
+    title: "Laos",
   },
   {
     code: "LB",
