@@ -47,10 +47,12 @@ class SearchGroup implements CommandHandler<DiscordEvent.MESSAGE> {
         "YesBot",
         "https://cdn.discordapp.com/avatars/614101602046836776/61d02233797a400bc0e360098e3fe9cb.png?size=$%7BrequestedImageSize%7D"
       );
+      const resultsSentence =
+        requestedGroupName == undefined
+          ? "Results for all groups"
+          : `Results for group ${requestedGroupName}`;
       embed.setDescription(
-        `Results for group "${requestedGroupName}" (Page ${
-          i + 1
-        } / ${pageAmount})`
+        `${resultsSentence} (Page ${i + 1} / ${pageAmount})`
       );
 
       const chunk = copy.splice(0, groupsPerPage);
