@@ -1,10 +1,10 @@
-FROM node:16.15-alpine AS builder
+FROM node:18.2-alpine AS builder
 RUN apk add --no-cache libc6-compat
 WORKDIR /usr/src/app
 COPY . .
 RUN yarn run tsc
 
-FROM node:16.15-alpine
+FROM node:18.2-alpine
 RUN apk add --no-cache libc6-compat
 # Create app directory
 WORKDIR /usr/src/app
