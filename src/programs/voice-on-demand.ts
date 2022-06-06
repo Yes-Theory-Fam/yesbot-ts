@@ -420,7 +420,7 @@ export const voiceOnDemandPermissions = async (
   });
 
   // We don't need this overwrite anymore
-  channel.permissionOverwrites.resolve(mapping.userId)?.delete();
+  await channel.permissionOverwrites.resolve(mapping.userId)?.delete();
 };
 
 // I would like to keep the function here so everything belongs together as piece.

@@ -70,7 +70,7 @@ class ShowMenu implements CommandHandler<DiscordEvent.MESSAGE> {
       removeIgnore(dmChannel);
 
       if (nameMessage.size === 0) {
-        requestMessage.delete();
+        await requestMessage.delete();
         throw "No response";
       }
 
@@ -110,7 +110,7 @@ const proposeNameChange = async (name: string, botMessage: Message) => {
         time: 6000000,
         errors: ["time"],
       })
-      .then((collected) => {
+      .then(async (collected) => {
         const reaction = collected.first();
         switch (reaction?.emoji.toString()) {
           case "✅":
@@ -122,12 +122,14 @@ const proposeNameChange = async (name: string, botMessage: Message) => {
                   `Could not rename ${botMessage.author.toString()} due to this error: ${error}`
                 )
               );
-            sentMessage.delete();
-            textLog(`${botMessage.author.toString()} was renamed to ${name}.`);
+            await sentMessage.delete();
+            await textLog(
+              `${botMessage.author.toString()} was renamed to ${name}.`
+            );
             break;
           case "🚫":
-            sentMessage.delete();
-            textLog(
+            await sentMessage.delete();
+            await textLog(
               `${botMessage.author.toString()} was *not* renamed to ${name}.`
             );
             break;

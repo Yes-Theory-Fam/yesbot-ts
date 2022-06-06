@@ -88,8 +88,8 @@ class Tools {
 
   static async handleUserError(message: Message, reply: string) {
     message.reply(reply).then((msg) => {
-      message.delete();
-      setTimeout(() => msg.delete(), 10000);
+      message.delete().catch(() => {});
+      setTimeout(() => msg.delete().catch(() => {}), 10000);
     });
   }
 
