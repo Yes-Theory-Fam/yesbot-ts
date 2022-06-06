@@ -25,7 +25,8 @@ class AddVote implements CommandHandler<DiscordEvent.MESSAGE> {
         botMessage
           .delete()
           .then(() => messageToVote.react("👍"))
-          .then(() => messageToVote.react("👎"));
+          .then(() => messageToVote.react("👎"))
+          .catch(() => {});
     } catch (err) {
       logger.error("Error adding voting: ", err);
     }
