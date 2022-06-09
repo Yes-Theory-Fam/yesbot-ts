@@ -116,10 +116,10 @@ export default class MockDiscord {
         bot: true,
       },
     ]);
-    this.client.user.id = idString;
+    this.client.user!.id = idString;
 
     this.client.login = jest.fn(() => Promise.resolve("LOGIN_TOKEN"));
-    this.client.token = process.env.BOT_TOKEN;
+    this.client.token = process.env.BOT_TOKEN ?? null;
   }
 
   private mockGuild(): void {
@@ -233,7 +233,7 @@ export default class MockDiscord {
         type: MessageType.Default,
         content: "this is the message content",
         author: this.apiUser(),
-        webhook_id: null,
+        webhook_id: undefined,
         member: this.apiMember(),
         pinned: false,
         tts: false,
@@ -260,7 +260,7 @@ export default class MockDiscord {
         emoji: {
           id: null,
           animated: false,
-          name: undefined,
+          name: null,
         },
         channel_id: this.channel.id,
       },
