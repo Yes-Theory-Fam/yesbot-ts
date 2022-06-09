@@ -43,5 +43,7 @@ export const textLog = (text: string | MessageEmbed): Promise<Message> => {
 
 export const getMember = (userId: string): GuildMember | null => {
   const bot = require("..") as Client;
-  return bot.guilds.resolve(process.env.GUILD_ID)?.members.resolve(userId) ?? null;
+  return (
+    bot.guilds.resolve(process.env.GUILD_ID)?.members.resolve(userId) ?? null
+  );
 };

@@ -130,7 +130,7 @@ const resolvePerUserPermissions = async (
     const message = await channel.messages.fetch(messageId);
 
     const relevantReactions = message.reactions.cache
-      .filter((reaction) => toggles.includes(reaction.emoji.name ?? ''))
+      .filter((reaction) => toggles.includes(reaction.emoji.name ?? ""))
       .values();
 
     for (const reaction of relevantReactions) {
@@ -175,7 +175,8 @@ const getCountryChannels = (guild: Guild) => {
 
 const lockCountryChannels = (member: GuildMember | PartialGuildMember) => {
   const hasReadPermissions = (channel: GuildChannel) =>
-    channel.permissionsFor(member.id)?.has(Permissions.FLAGS.VIEW_CHANNEL) ?? false;
+    channel.permissionsFor(member.id)?.has(Permissions.FLAGS.VIEW_CHANNEL) ??
+    false;
 
   getCountryChannels(member.guild)
     .filter(hasReadPermissions)

@@ -1,5 +1,9 @@
-import {Message} from "discord.js";
-import {addToTree, collectChannelDefinitions, withMessageRelatedInfo,} from "../helper";
+import { Message } from "discord.js";
+import {
+  addToTree,
+  collectChannelDefinitions,
+  withMessageRelatedInfo,
+} from "../helper";
 import {
   AddEventHandlerFunction,
   DiscordEvent,

@@ -1,10 +1,14 @@
-import {GroupPingSetting, UserGroup} from "@yes-theory-fam/database/client";
-import {Message, TextChannel} from "discord.js";
-import {ChatNames} from "../../../collections/chat-names";
-import {isAuthorModerator} from "../../../common/moderator";
+import { GroupPingSetting, UserGroup } from "@yes-theory-fam/database/client";
+import { Message, TextChannel } from "discord.js";
+import { ChatNames } from "../../../collections/chat-names";
+import { isAuthorModerator } from "../../../common/moderator";
 import Tools from "../../../common/tools";
-import {Command, CommandHandler, DiscordEvent,} from "../../../event-distribution";
-import {findManyRequestedGroups, timeRemainingForDeadchat,} from "../common";
+import {
+  Command,
+  CommandHandler,
+  DiscordEvent,
+} from "../../../event-distribution";
+import { findManyRequestedGroups, timeRemainingForDeadchat } from "../common";
 
 @Command({
   event: DiscordEvent.MESSAGE,
