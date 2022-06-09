@@ -61,9 +61,8 @@ export const withMessageRelatedInfo = (
 
   const maybeCategory = (channel as GuildChannel).parent;
   if (maybeCategory) {
-    const normalizedCategoryName = maybeCategory.name
-      .match(/[a-z\d\s.]+/gi)?.[0]
-      .trim() ?? '';
+    const normalizedCategoryName =
+      maybeCategory.name.match(/[a-z\d\s.]+/gi)?.[0].trim() ?? "";
     const categoryIdentifier = getIdFromCategoryName(normalizedCategoryName);
 
     info.push({

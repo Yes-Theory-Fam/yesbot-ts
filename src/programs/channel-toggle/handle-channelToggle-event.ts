@@ -1,9 +1,14 @@
-import {MessageReaction, TextChannel, User, VoiceChannel,} from "discord.js";
-import {hasRole, textLog} from "../../common/moderator";
+import { MessageReaction, TextChannel, User, VoiceChannel } from "discord.js";
+import { hasRole, textLog } from "../../common/moderator";
 import Tools from "../../common/tools";
-import {Command, CommandHandler, DiscordEvent, EventLocation,} from "../../event-distribution";
+import {
+  Command,
+  CommandHandler,
+  DiscordEvent,
+  EventLocation,
+} from "../../event-distribution";
 import prisma from "../../prisma";
-import {backfillReactions} from "./common";
+import { backfillReactions } from "./common";
 
 @Command({
   event: DiscordEvent.REACTION_ADD,

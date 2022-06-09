@@ -17,7 +17,7 @@ const ready = async (bot: Client) => {
   const guild = bot.guilds.resolve(guildId);
 
   if (!guild) {
-    logger.error('Could not resolve guild on startup, mayday!!!');
+    logger.error("Could not resolve guild on startup, mayday!!!");
     return;
   }
 

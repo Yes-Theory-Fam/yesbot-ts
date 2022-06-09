@@ -1,5 +1,14 @@
-import {MessageReaction, PartialMessageReaction, PartialUser, User,} from "discord.js";
-import {addToTree, collectChannelDefinitions, withMessageRelatedInfo,} from "../helper";
+import {
+  MessageReaction,
+  PartialMessageReaction,
+  PartialUser,
+  User,
+} from "discord.js";
+import {
+  addToTree,
+  collectChannelDefinitions,
+  withMessageRelatedInfo,
+} from "../helper";
 import {
   AddEventHandlerFunction,
   DiscordEvent,
@@ -40,6 +49,6 @@ export const extractReactionInfo: ExtractInfoForEventFunction<
 
   return withMessageRelatedInfo(reaction.message, member, (channelId) => [
     channelId,
-    reaction.emoji.name ?? '',
+    reaction.emoji.name ?? "",
   ]);
 };
