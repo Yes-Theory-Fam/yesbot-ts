@@ -127,7 +127,7 @@ Array [
   Object {
     "handlerKeys": Array [
       "9007199254740991",
-      null,
+      "",
     ],
     "isDirectMessage": true,
     "member": null,
@@ -140,7 +140,7 @@ Array [
   Object {
     "handlerKeys": Array [
       "9007199254740991",
-      null,
+      "",
     ],
     "isDirectMessage": false,
     "member": Object {
