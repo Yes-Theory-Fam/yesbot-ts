@@ -20,6 +20,7 @@
   "include": [
     "./index.d.ts",
     "./environment.d.ts",
-    "./src"
+    "./src",
+    "./__tests__"
   ]
 }

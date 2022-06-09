@@ -92,7 +92,7 @@ describe("GithubReleaseNotesUsecase", () => {
     const releaseNotes = `> * chore(DOCKERFILE): docker image migrates th database by start
 > * chore(DOCKERFILE): docker image migrates th database by start\n`;
     const result =
-      githubReleaseNotesUsecase["createReleaseNotes"](releaseNotes);
+      GithubReleaseNotesUsecase["createReleaseNotes"](releaseNotes);
     expect(result).toMatchSnapshot();
   });
 });
