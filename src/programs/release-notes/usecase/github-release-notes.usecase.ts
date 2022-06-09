@@ -34,18 +34,21 @@ export class GithubReleaseNotesUsecase {
         releaseNotes: "",
       };
     }
-    const lastRelease = await this.findLastRelease(oldRelease);
+    const lastRelease = await GithubReleaseNotesUsecase.findLastRelease(
+      oldRelease
+    );
     const releaseNotes = await this.getCommitMessages(
       lastRelease,
       newRelease.node.tagName
     );
-    await this.saveRelease(newRelease);
+    await GithubReleaseNotesUsecase.saveRelease(newRelease);
 
     const isPatchRelease = GithubReleaseNotesUsecase.isPatchRelease(
       newRelease.node.tagName,
       lastRelease.releaseTag
     );
-    const releaseNoteMessage = this.createReleaseNotes(releaseNotes);
+    const releaseNoteMessage =
+      GithubReleaseNotesUsecase.createReleaseNotes(releaseNotes);
     if (isPatchRelease) {
       return { tagMessage: "", releaseNotes: releaseNoteMessage };
     }
@@ -102,18 +105,18 @@ export class GithubReleaseNotesUsecase {
     return releaseNotes;
   }
 
-  private async findLastRelease(oldRelease: Edge) {
+  private static async findLastRelease(oldRelease: Edge) {
     let result = await prisma.release.findFirst({
       where: { releaseTime: oldRelease.node.publishedAt },
     });
 
     if (!result) {
-      result = await this.saveRelease(oldRelease);
+      result = await GithubReleaseNotesUsecase.saveRelease(oldRelease);
     }
     return result;
   }
 
-  private async saveRelease(release: Edge) {
+  private static async saveRelease(release: Edge) {
     return await prisma.release.create({
       data: {
         releaseName: release.node.name,
@@ -123,7 +126,7 @@ export class GithubReleaseNotesUsecase {
     });
   }
 
-  private createReleaseNotes(releaseNotes: string) {
+  private static createReleaseNotes(releaseNotes: string) {
     return `Hello everyone :wave: I'm back after a short break :sleeping:
 During this time I have been worked on a lot. Here is a small overview:
 

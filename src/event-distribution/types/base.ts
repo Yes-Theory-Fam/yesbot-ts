@@ -52,7 +52,7 @@ export type HandlerFunctionFor<
 
 export interface HandlerInfo {
   handlerKeys: string[];
-  member?: GuildMember | PartialGuildMember;
+  member?: GuildMember | PartialGuildMember | null;
   isDirectMessage: boolean;
 }
 

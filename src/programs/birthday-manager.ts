@@ -3,12 +3,15 @@ import {
   GuildMember,
   Message,
   MessageEmbed,
-  MessageMentionOptions,
   MessageReaction,
   User,
 } from "discord.js";
 import { utcToZonedTime, zonedTimeToUtc } from "date-fns-tz";
-import { getAllCountries, getCountry } from "countries-and-timezones";
+import {
+  getAllCountries,
+  getCountry,
+  TimezoneName,
+} from "countries-and-timezones";
 
 import Tools from "../common/tools";
 import { isAuthorModerator, textLog } from "../common/moderator";
@@ -44,6 +47,8 @@ const months = [
 })
 class BirthdayManager implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
+    if (!message.guild) return;
+
     const words = Tools.stringToWords(message.content);
 
     if (words.length < 2) {
@@ -58,6 +63,8 @@ class BirthdayManager implements CommandHandler<DiscordEvent.MESSAGE> {
       isAuthorModerator(message) && message.mentions.users.size === 1
         ? message.mentions.users.first()
         : message.author;
+
+    if (!birthdayUser) return;
 
     const userExistingBirthday = await getUserBirthday(birthdayUser.id);
 
@@ -95,7 +102,7 @@ class BirthdayManager implements CommandHandler<DiscordEvent.MESSAGE> {
     ) => {
       return (
         (user.id === birthdayUser.id || user.id === message.author.id) &&
-        ["👍", "👎"].includes(reaction.emoji.name)
+        ["👍", "👎"].includes(reaction.emoji.name ?? "")
       );
     };
 
@@ -112,7 +119,7 @@ class BirthdayManager implements CommandHandler<DiscordEvent.MESSAGE> {
       return;
     }
 
-    if (birthdayAccepted.first().emoji.name === "👎") {
+    if (birthdayAccepted.first()?.emoji.name === "👎") {
       await message.channel.send(
         "Okay, please be more specific and try again, or hang around for a Support to help you out! :grin:"
       );
@@ -136,22 +143,17 @@ class BirthdayManager implements CommandHandler<DiscordEvent.MESSAGE> {
         err.message === "Too many available time zones"
       ) {
         await message.delete();
-        const allowedMentions: MessageMentionOptions = {
-          roles: [engineerRole.id],
-          users: [message.author.id],
-        };
         await message.reply({
           content:
             "Ouch, it seems like you have an extreme amounts of timezones available!" +
             "\nPlease wait while I call for my masters. :grin:" +
-            `\nBeep boop ${engineerRole.toString()}? :telephone:`,
-          allowedMentions,
+            `\nBeep boop ${engineerRole?.toString()}? :telephone:`,
         });
       } else if (err instanceof Error && err.message === "time expired") {
         await message.react("⏰");
       } else if (err instanceof Error && err.message === "No timezone found") {
         await message.reply(
-          `Whoops! We couldn't figure out potential timezones for you. Calling for help :telephone: ${engineerRole.toString()}`
+          `Whoops! We couldn't figure out potential timezones for you. Calling for help :telephone: ${engineerRole?.toString()}`
         );
       } else {
         logger.error(
@@ -267,6 +269,10 @@ export function getUserBirthdate(message: string): Date | null {
 }
 
 async function getUserTimezone(message: Message): Promise<string> {
+  if (!message.member) {
+    throw new Error("Trying to find timezone for user outside of guild");
+  }
+
   const countryRole = await fetchUserCountryRoles(message.member);
 
   const timezones = countryRole
@@ -312,7 +318,8 @@ async function getUserTimezone(message: Message): Promise<string> {
 
   const filter: CollectorFilter<[MessageReaction, User]> = (reaction, user) => {
     return (
-      user.id === message.author.id && reactions.includes(reaction.emoji.name)
+      user.id === message.author.id &&
+      reactions.includes(reaction.emoji.name ?? "")
     );
   };
 
@@ -325,7 +332,11 @@ async function getUserTimezone(message: Message): Promise<string> {
       errors: ["time"],
     });
   } catch (err) {
-    if (err.toString() === "[object Map]") {
+    // TODO clean up
+    // @ts-expect-error
+    console.log(err, err.constructor.name);
+
+    if (err instanceof Map) {
       await sentMessage.delete();
       throw new Error("time expired");
     } else {
@@ -334,7 +345,7 @@ async function getUserTimezone(message: Message): Promise<string> {
   }
 
   const reaction = received.first();
-  const selectedTz = timezones[reactions.indexOf(reaction.emoji.name)];
+  const selectedTz = timezones[reactions.indexOf(reaction?.emoji.name ?? "")];
 
   await sentMessage.delete();
   return selectedTz;
@@ -351,7 +362,8 @@ async function fetchUserCountryRoles(
   return user.roles.cache
     .filter((role) => CountryRoleFinder.isCountryRole(role.name, true))
     .map<CountryWithRegion>((role) => ({
-      country: CountryRoleFinder.getCountryByRole(role.name, true),
+      // Cast is valid here because the filter above already ensures we get strings back
+      country: CountryRoleFinder.getCountryByRole(role.name, true) as string,
       region: role.name.substring(
         role.name.indexOf("(") + 1,
         role.name.indexOf(")")
@@ -413,7 +425,7 @@ function timezonesFromRole(props: CountryWithRegion): readonly string[] {
                 return null;
               }
             })
-            .filter((tz) => tz !== null);
+            .filter((tz): tz is TimezoneName => tz !== null);
         }
       }
     case "UK":
@@ -492,15 +504,15 @@ export async function getUserBirthday(userId: string): Promise<Date | null> {
   });
 
   return userExistingBirthday
-    ? utcToZonedTime(
-        userExistingBirthday.birthdate,
-        userExistingBirthday.timezone
-      )
+    ? userExistingBirthday.timezone
+      ? utcToZonedTime(
+          userExistingBirthday.birthdate,
+          userExistingBirthday.timezone
+        )
+      : userExistingBirthday.birthdate
     : null;
 }
 
 export function formatBirthday(date: Date | null): string {
-  return date === null
-    ? "Unknown"
-    : `${months[date.getMonth()]}-${date.getDate()}`;
+  return !date ? "Unknown" : `${months[date.getMonth()]}-${date.getDate()}`;
 }

@@ -71,7 +71,7 @@ class DailyChallengeTimerKickStart
 class PostDailyChallenge implements CommandHandler<DiscordEvent.TIMER> {
   async handle(timer: Timer) {
     const guild = bot.guilds.resolve(process.env.GUILD_ID);
-    const dailyChallengeChannel = guild.channels.cache.find(
+    const dailyChallengeChannel = guild?.channels.cache.find(
       (channel) => channel.name === ChatNames.DAILY_CHALLENGE
     ) as TextChannel;
 
@@ -79,32 +79,32 @@ class PostDailyChallenge implements CommandHandler<DiscordEvent.TIMER> {
       orderBy: { lastUsed: "asc" },
     });
 
-    if (res) {
-      const embed = new Discord.MessageEmbed()
-        .setColor("BLUE")
-        .setTitle("YesFam Daily Challenge!")
-        .setDescription(res.result);
+    if (!res) return;
 
-      try {
-        const used = new Date();
-        used.setUTCHours(0, 0, 0, 0);
-        res.lastUsed = used;
-        await prisma.dailyChallenge.update({
-          where: { id: res.id },
-          data: res,
-        });
-      } catch (err) {
-        logger.error(
-          "(postDailyMessage) There was an error posting Daily Challenge: ",
-          err
-        );
-      }
+    const embed = new Discord.MessageEmbed()
+      .setColor("BLUE")
+      .setTitle("YesFam Daily Challenge!")
+      .setDescription(res.result);
 
-      await dailyChallengeChannel.send({ embeds: [embed] });
-      await Tools.forcePingGroup("dailychallenge", dailyChallengeChannel);
-
-      await startDailyChallengeTimer(dailyChallengeIdentifier);
+    try {
+      const used = new Date();
+      used.setUTCHours(0, 0, 0, 0);
+      res.lastUsed = used;
+      await prisma.dailyChallenge.update({
+        where: { id: res.id },
+        data: res,
+      });
+    } catch (err) {
+      logger.error(
+        "(postDailyMessage) There was an error posting Daily Challenge: ",
+        err
+      );
     }
+
+    await dailyChallengeChannel.send({ embeds: [embed] });
+    await Tools.forcePingGroup("dailychallenge", dailyChallengeChannel);
+
+    await startDailyChallengeTimer(dailyChallengeIdentifier);
   }
 }
 

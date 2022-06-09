@@ -17,6 +17,7 @@ import {
 import { ChatNames } from "../../../collections/chat-names";
 import { closeTicket, getChannelName, TicketType } from "../common";
 import { createYesBotLogger } from "../../../log";
+import { parseOriginMember } from "./common";
 
 @Command({
   event: DiscordEvent.REACTION_ADD,
@@ -28,6 +29,7 @@ import { createYesBotLogger } from "../../../log";
 class ApproveTravelTicket extends CommandHandler<DiscordEvent.REACTION_ADD> {
   async handle(reaction: MessageReaction, user: User): Promise<void> {
     const message = await reaction.message.fetch(true);
+    if (!message.guild) return;
 
     // Guard against two mods voting at the same time.
     const content = message.content;
@@ -36,7 +38,8 @@ class ApproveTravelTicket extends CommandHandler<DiscordEvent.REACTION_ADD> {
       return;
     }
 
-    const ticketMember = ApproveTravelTicket.parseOriginMember(message);
+    const ticketMember = parseOriginMember(message);
+
     const thread = await ApproveTravelTicket.startThread(
       message,
       content,
@@ -44,10 +47,12 @@ class ApproveTravelTicket extends CommandHandler<DiscordEvent.REACTION_ADD> {
     );
 
     try {
-      await ApproveTravelTicket.includeTravelingMembers(
-        message.mentions.members,
-        thread
-      );
+      if (message.mentions.members) {
+        await ApproveTravelTicket.includeTravelingMembers(
+          message.mentions.members,
+          thread
+        );
+      }
     } catch {
       logger.info(
         "Failed to add some members to the travel thread; if no-one complains, this is probably not actionable"
@@ -56,15 +61,6 @@ class ApproveTravelTicket extends CommandHandler<DiscordEvent.REACTION_ADD> {
 
     await ApproveTravelTicket.recordApproval(message.guild, user, message);
     await ApproveTravelTicket.closeTicket(ticketMember.user, message.guild);
-  }
-
-  // message.mentions.members.first() might return a member other than the
-  // intended one because `first` depends on the userId and not the point of
-  // occurence within the message
-  private static parseOriginMember(message: Message): GuildMember {
-    const regex = /\*\*Who.*?\*\*: <@(\d+)>/g;
-    const [, userId] = regex.exec(message.content);
-    return message.guild.members.resolve(userId);
   }
 
   private static async startThread(
@@ -102,7 +98,7 @@ class ApproveTravelTicket extends CommandHandler<DiscordEvent.REACTION_ADD> {
     await message.reactions.removeAll();
     const { content } = message;
     await message.edit(
-      content + `\n\nApproved by ${reactingMember.displayName}`
+      content + `\n\nApproved by ${reactingMember?.displayName}`
     );
   }
 
@@ -117,7 +113,8 @@ class ApproveTravelTicket extends CommandHandler<DiscordEvent.REACTION_ADD> {
   private static resolveTraveledPlace(message: string) {
     const regex = /^\*\*Where\*\*: (.*)$/gm;
     const match = regex.exec(message);
-    return match[1];
+
+    return match?.[1];
   }
 
   private static async includeTravelingMembers(

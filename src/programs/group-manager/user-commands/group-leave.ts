@@ -19,6 +19,8 @@ class LeaveGroup implements CommandHandler<DiscordEvent.MESSAGE> {
     const [requestedGroupNames, ...rest] = words;
     const member = message.member;
 
+    if (!member) return;
+
     await groupInteractionAndReport(
       message,
       [requestedGroupNames, ...rest],

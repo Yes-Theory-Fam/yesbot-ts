@@ -52,7 +52,7 @@ export class CleanupActivity {
     const movedActivities = data.map((value) => {
       return prisma.currency
         .findUnique({ where: { userId: value.userId } })
-        .then((user: Currency) => {
+        .then((user: Currency | null) => {
           if (!!user) {
             return CleanupActivity.updateCurrencyForUser(value, user);
           } else {

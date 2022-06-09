@@ -44,7 +44,7 @@ class TimeOutAdded implements CommandHandler<DiscordEvent.GUILD_MEMBER_UPDATE> {
       );
       logger.error("Failed to add user to the DB ", e);
       await textLog(
-        `Failed to register <@${member.id}> to the DB, please contact a <@&${engineerRole.id}>`
+        `Failed to register <@${member.id}> to the DB, please contact a <@&${engineerRole?.id}>`
       );
     }
   }
@@ -73,7 +73,7 @@ class TimeOutRemoved
       );
       logger.error("Failed to remove user from the DB ", e);
       await textLog(
-        `Failed to remove <@${member.id}> from timed out DB, please contact a <@&${engineerRole.id}>`
+        `Failed to remove <@${member.id}> from timed out DB, please contact a <@&${engineerRole?.id}>`
       );
     }
   }
@@ -98,7 +98,10 @@ class ReportUserOnJoin implements CommandHandler<DiscordEvent.MEMBER_JOIN> {
   async handle(member: GuildMember): Promise<void> {
     if (!(await isUserTimedOut(member))) return;
     const timeoutRole = Tools.getRoleByName("Time Out", member.guild);
-    await member.roles.add(timeoutRole);
+    if (timeoutRole) {
+      await member.roles.add(timeoutRole);
+    }
+
     await textLog(
       `<@${member.id}>, has rejoined and was assigned the timeout role for evading timeout`
     );
@@ -114,9 +117,9 @@ class ClearDBOnStart implements CommandHandler<DiscordEvent.READY> {
     const guild = bot.guilds.resolve(process.env.GUILD_ID);
     for (let i = 0; i < timedOutUsersId.length; i++) {
       const { userId } = timedOutUsersId[i];
-      const user = guild.members.resolve(userId);
+      const user = guild?.members.resolve(userId);
 
-      if (!hasRole(user, "Time Out")) {
+      if (user && !hasRole(user, "Time Out")) {
         await prisma.timedOutUsers.delete({ where: { userId: user.id } });
       }
     }

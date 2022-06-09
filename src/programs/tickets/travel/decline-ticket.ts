@@ -6,6 +6,7 @@ import {
 import { ChatNames } from "../../../collections/chat-names";
 import { MessageReaction, TextChannel, User } from "discord.js";
 import { getChannelName, TicketType } from "../common";
+import { parseOriginMember } from "./common";
 
 @Command({
   event: DiscordEvent.REACTION_ADD,
@@ -25,8 +26,9 @@ class DeclineTravelTicket extends CommandHandler<DiscordEvent.REACTION_ADD> {
       return;
     }
 
-    const ticketAuthor = message.mentions.users.first();
-    const channelName = getChannelName(ticketAuthor, TicketType.TRAVEL);
+    const ticketAuthor = parseOriginMember(message);
+
+    const channelName = getChannelName(ticketAuthor.user, TicketType.TRAVEL);
     const channel = message.guild!.channels.cache.find(
       (c) => c.name === channelName
     ) as TextChannel;
@@ -38,7 +40,7 @@ class DeclineTravelTicket extends CommandHandler<DiscordEvent.REACTION_ADD> {
     const reactingMember = channel.guild.members.resolve(user);
     await message.reactions.removeAll();
     await message.edit(
-      message.content + `\n\nDeclined by ${reactingMember.displayName}`
+      message.content + `\n\nDeclined by ${reactingMember?.displayName}`
     );
   }
 }

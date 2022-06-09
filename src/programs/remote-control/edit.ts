@@ -1,4 +1,4 @@
-import { GuildEmoji, Message, TextChannel } from "discord.js";
+import { Message, TextChannel } from "discord.js";
 import bot from "../..";
 import Tools from "../../common/tools";
 import {
@@ -39,7 +39,7 @@ class EditMessage implements CommandHandler<DiscordEvent.MESSAGE> {
     }
 
     const emoji =
-      message.guild.emojis.cache.find((emoji) => emoji.name === "yesbot") ??
+      message.guild?.emojis.cache.find((emoji) => emoji.name === "yesbot") ??
       "🦥";
     const requestMessage = await message.channel.send({
       content: `Okay, now all you need to do is copy the original message and edit it and send it here and I will take care of the rest! ${emoji}`,
@@ -52,9 +52,11 @@ class EditMessage implements CommandHandler<DiscordEvent.MESSAGE> {
         max: 1,
       });
 
-      const requestedEdit = editMessage.first().content;
-      await messageToEdit.edit(requestedEdit);
-      await editMessage.first().delete();
+      const requestedEdit = editMessage.first()?.content;
+      if (requestedEdit) {
+        await messageToEdit.edit(requestedEdit);
+      }
+      await editMessage.first()?.delete();
       await requestMessage.delete();
       await message.react("👍");
     } catch (err) {

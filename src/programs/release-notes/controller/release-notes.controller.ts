@@ -24,7 +24,7 @@ export class ReleaseNotesController extends CommandHandler<DiscordEvent.READY> {
     if (!!message.tagMessage) {
       const updateChannel = client.guilds
         .resolve(process.env.GUILD_ID)
-        .channels.cache.find(
+        ?.channels.cache.find(
           (channel) => channel.name === ChatNames.UPDATES
         ) as TextChannel;
       await updateChannel.send(message.tagMessage);
@@ -35,7 +35,7 @@ export class ReleaseNotesController extends CommandHandler<DiscordEvent.READY> {
     if (!!message.releaseNotes) {
       const botDevChannel = client.guilds
         .resolve(process.env.GUILD_ID)
-        .channels.cache.find(
+        ?.channels.cache.find(
           (channel) => channel.name === ChatNames.BOT_DEVELOPMENT
         ) as TextChannel;
 

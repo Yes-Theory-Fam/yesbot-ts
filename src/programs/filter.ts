@@ -13,7 +13,12 @@ class Filter implements CommandHandler<DiscordEvent.MESSAGE> {
     const mentionedMembers = message.mentions.users.size;
     const member = message.member;
 
-    if (mentionedMembers > 20 && !message.author.bot) {
+    if (
+      mentionedMembers > 20 &&
+      !message.author.bot &&
+      member &&
+      message.guild
+    ) {
       if (
         !(
           hasRole(member, "Support") ||
@@ -28,14 +33,19 @@ class Filter implements CommandHandler<DiscordEvent.MESSAGE> {
           await dm.send(messageContent);
         });
         await message.delete();
+
         const supportRole = Tools.getRoleByName(
           process.env.MODERATOR_ROLE_NAME,
           message.guild
         );
+
         const timeoutRole = Tools.getRoleByName("Time Out", message.guild);
-        await message.member.roles.add(timeoutRole);
+        if (timeoutRole) {
+          await message.member.roles.add(timeoutRole);
+        }
+
         await textLog(
-          `<@&${supportRole.id}>: <@${message.author.id}> just tagged more than 20 people in a single message in <#${message.channel.id}>. The message has been deleted and they have beeen timed out.`
+          `<@&${supportRole?.id}>: <@${message.author.id}> just tagged more than 20 people in a single message in <#${message.channel.id}>. The message has been deleted and they have beeen timed out.`
         ).then(() => textLog(`Message content was: ${messageContent}`));
       }
       return;
@@ -44,7 +54,7 @@ class Filter implements CommandHandler<DiscordEvent.MESSAGE> {
     if (messageContent.match(/(nigga|nigger)/i)) {
       await message.delete();
       await member
-        .createDM()
+        ?.createDM()
         .then((dm) =>
           dm.send(
             `Usage of the N word is absolutely banned within this server. Please refer to the <#450102410262609943>.`

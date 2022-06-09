@@ -15,18 +15,22 @@ import {
 })
 class SearchForRole implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
+    if (!message.guild) return;
+
     const words = message.content.split(/\s+/);
     const roleSearchString = words.splice(2).join(" ");
     if (!roleSearchString) {
       await Tools.handleUserError(message, "You must write a role name.");
       return;
     }
+
     let foundRole = Tools.getRoleByName(roleSearchString, message.guild);
     if (!foundRole) {
-      foundRole = message.guild.roles.cache.find((role) =>
+      foundRole = message.guild?.roles.cache.find((role) =>
         role.name.toLowerCase().includes(roleSearchString.toLowerCase())
       );
     }
+
     if (!foundRole) {
       await message.reply("I couldn't find that role!");
     } else {

@@ -43,19 +43,19 @@ class Topics implements CommandHandler<DiscordEvent.MESSAGE> {
 
       case "beauty-and-fashion":
         await message.channel.send({
-          embeds: [new MessageAttachment(MAKEUP_CHALLENGE_PICTURE_URL)],
+          attachments: [new MessageAttachment(MAKEUP_CHALLENGE_PICTURE_URL)],
         });
         break;
 
       case "visual-design":
         await message.channel.send({
-          embeds: [new MessageAttachment(DRAWING_CHALLENGE_PICTURE_URL)],
+          attachments: [new MessageAttachment(DRAWING_CHALLENGE_PICTURE_URL)],
         });
         break;
 
       case "filmmaking":
         await message.channel.send({
-          embeds: [new MessageAttachment(MOVIE_CHALLENGE_PICTURE_URL)],
+          attachments: [new MessageAttachment(MOVIE_CHALLENGE_PICTURE_URL)],
         });
         break;
     }

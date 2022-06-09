@@ -1,3 +1,5 @@
+import {Message} from "discord.js";
+import {addToTree, collectChannelDefinitions, withMessageRelatedInfo,} from "../helper";
 import {
   AddEventHandlerFunction,
   DiscordEvent,
@@ -5,13 +7,6 @@ import {
   HandlerFunctionFor,
   MessageRelatedOptions,
 } from "../types/base";
-import { GuildChannel, Message, TextBasedChannel } from "discord.js";
-import {
-  addToTree,
-  collectChannelDefinitions,
-  getIdFromCategoryName,
-  withMessageRelatedInfo,
-} from "../helper";
 
 export interface MessageEventHandlerOptions extends MessageRelatedOptions {
   event: DiscordEvent.MESSAGE;

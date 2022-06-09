@@ -1,6 +1,7 @@
 import {
   GuildChannelCreateOptions,
   Message,
+  OverwriteResolvable,
   TextChannel,
   User,
   Util,
@@ -75,15 +76,17 @@ function timeConverter(unixTimestamp: number) {
 }
 
 const hasTicket = async (message: Message, channelName: string) => {
-  if (message.guild.channels.cache.find((c) => c.name === channelName)) {
-    message.author.createDM().then((channel) => {
-      channel.send(
-        "You already have a ticket open, please close that one first before opening another."
-      );
-    });
-    return true;
-  }
-  return false;
+  const channel = message.guild?.channels.cache.find(
+    (c) => c.name === channelName
+  );
+  if (!channel) return false;
+
+  message.author.createDM().then((channel) => {
+    channel.send(
+      "You already have a ticket open, please close that one first before opening another."
+    );
+  });
+  return true;
 };
 
 export const getChannelName = (user: User, ticketType: TicketType) => {
@@ -91,7 +94,7 @@ export const getChannelName = (user: User, ticketType: TicketType) => {
     user.username + user.discriminator
   ).toLowerCase()}`;
   channelName = channelName.replace(/\s+/g, "-").toLowerCase();
-  return channelName.replace(/[^0-9A-Z\s+-]/gi, "");
+  return channelName.replace(/[^\dA-Z\s+-]/gi, "");
 };
 
 const createTicket = async (
@@ -99,33 +102,41 @@ const createTicket = async (
   channelName: string,
   ticketType: string
 ): Promise<TextChannel> => {
+  if (!message.guild)
+    throw new Error("Trying to create Ticket outside of guild");
+
   const category = message.guild.channels.cache.find((c) =>
     c.name.toLowerCase().includes(ticketType)
-  ).id;
+  )?.id;
 
   const moderatorRole = Tools.getRoleByName(
     process.env.MODERATOR_ROLE_NAME,
     message.guild
   );
 
+  const permissionOverwrites: OverwriteResolvable[] = [
+    {
+      id: message.guild.id,
+      deny: ["VIEW_CHANNEL"],
+    },
+    {
+      id: message.author.id,
+      allow: ["VIEW_CHANNEL", "READ_MESSAGE_HISTORY", "SEND_MESSAGES"],
+      deny: ["ADD_REACTIONS"],
+    },
+  ];
+
+  if (moderatorRole) {
+    permissionOverwrites.push({
+      id: moderatorRole.id,
+      allow: ["VIEW_CHANNEL", "READ_MESSAGE_HISTORY", "SEND_MESSAGES"],
+    });
+  }
+
   const channelOptions: GuildChannelCreateOptions & { type: "GUILD_TEXT" } = {
-    topic: "Support ticket for " + message.member.user.username,
+    topic: "Support ticket for " + message.member?.user.username,
     type: "GUILD_TEXT",
-    permissionOverwrites: [
-      {
-        id: message.guild.id,
-        deny: ["VIEW_CHANNEL"],
-      },
-      {
-        id: message.author.id,
-        allow: ["VIEW_CHANNEL", "READ_MESSAGE_HISTORY", "SEND_MESSAGES"],
-        deny: ["ADD_REACTIONS"],
-      },
-      {
-        id: moderatorRole.id,
-        allow: ["VIEW_CHANNEL", "READ_MESSAGE_HISTORY", "SEND_MESSAGES"],
-      },
-    ],
+    permissionOverwrites,
     parent: category,
   };
 
@@ -150,6 +161,8 @@ export const maybeCreateTicket = async (
   initialMessageText: string,
   pingSupport = true
 ): Promise<TextChannel | undefined> => {
+  if (!triggerMessage.guild) return;
+
   await triggerMessage.delete();
 
   const channelName = getChannelName(triggerMessage.author, ticketType);
@@ -162,6 +175,7 @@ export const maybeCreateTicket = async (
     process.env.MODERATOR_ROLE_NAME,
     triggerMessage.guild
   );
+
   const ticketChannel = await createTicket(
     triggerMessage,
     channelName,
@@ -171,7 +185,7 @@ export const maybeCreateTicket = async (
   const message =
     initialMessageText +
     (pingSupport
-      ? `\nA ${moderatorRole.toString()} will be with you as soon as possible.`
+      ? `\nA ${moderatorRole?.toString()} will be with you as soon as possible.`
       : "");
 
   await ticketChannel.send(message);

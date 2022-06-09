@@ -1,4 +1,5 @@
 import {
+  GuildMember,
   Message,
   MessageReaction,
   Role,
@@ -151,7 +152,7 @@ const getCountries = async (
 async function _getCountries(
   channel: TextChannel,
   userId: Snowflake
-): Promise<Role[] | undefined> {
+): Promise<Role[]> {
   const prompt =
     "First, please send a message with all countries you are planning to travel to. That can be both the country names or their flags as emojis.";
 
@@ -168,7 +169,7 @@ async function _getCountries(
     .filter(Boolean);
   const usaRoles = hasUsa ? await _getUSARegions(channel, userId) : [];
 
-  return [...mappedRoles, ...usaRoles];
+  return [...mappedRoles, ...usaRoles].filter((r): r is Role => !!r);
 }
 
 async function _getUSARegions(
@@ -207,7 +208,7 @@ Here is a map of the regions: https://cdn.discordapp.com/attachments/60339977517
   await promptMessage.awaitReactions({ filter, max: 1, time: fiveMinutes });
 
   const reactionUserPromises = promptMessage.reactions.cache
-    .filter((r) => regions.includes(r.emoji.name))
+    .filter((r) => regions.includes(r.emoji.name ?? ""))
     .map(async (r) => {
       return { reaction: r, fetchedUsers: await r.users.fetch() };
     });
@@ -219,7 +220,7 @@ Here is a map of the regions: https://cdn.discordapp.com/attachments/60339977517
   await promptMessage.reactions.removeAll();
 
   const activeRegions = activeRegionReactions.map(
-    (e) => emojisToRegionNames[e.emoji.name]
+    (e) => emojisToRegionNames[e.emoji.name ?? ""]
   );
 
   const pickedRoles = channel.guild.roles.cache
@@ -247,7 +248,7 @@ async function _getString(
   userId: Snowflake,
   prompt: string,
   timeout?: number
-): Promise<string | undefined> {
+): Promise<string> {
   await channel.send(prompt);
   const filter = (message: Message) => message.author.id === userId;
   const response = await channel.awaitMessages({
@@ -258,7 +259,7 @@ async function _getString(
 
   const message = response.first();
   if (!message) {
-    return undefined;
+    return "";
   }
 
   return message.content;
@@ -270,11 +271,11 @@ async function getBool(
   prompt: string,
   ct: CancellationToken
 ): Promise<boolean> {
-  return await retryUntilSatisfied(
+  return !!(await retryUntilSatisfied(
     () => _getBool(channel, user, prompt),
     (result) => result !== undefined,
     ct
-  );
+  ));
 }
 
 async function _getBool(
@@ -292,7 +293,7 @@ async function _getBool(
   }
 
   const filter = (reaction: MessageReaction, user: User) =>
-    choices.includes(reaction.emoji.name) && user.id === userId;
+    choices.includes(reaction.emoji.name ?? "") && user.id === userId;
   const choice = await promptMessage.awaitReactions({
     filter,
     max: 1,
@@ -367,4 +368,23 @@ const retryUntilSatisfied = async <T>(
   } while (true);
 
   return result;
+};
+
+// message.mentions.members.first() might return a member other than the
+// intended one because `first` depends on the userId and not the point of
+// occurrence within the message
+export const parseOriginMember = (message: Message): GuildMember => {
+  const regex = /\*\*Who.*?\*\*: <@(\d+)>/g;
+  const match = regex.exec(message.content);
+
+  const originMember = message.guild?.members.resolve(match?.[1] ?? "");
+
+  if (!originMember) {
+    message.channel.send(
+      "Failed to parse origin member from ticket! Ping Michel, he was too lazy to implement a Developer ping in here 🦥"
+    );
+    throw new Error("Failed to parse origin member");
+  }
+
+  return originMember;
 };

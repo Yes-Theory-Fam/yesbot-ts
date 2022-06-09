@@ -7,14 +7,20 @@ const developerChannelName = "bot-development";
 const logger = createYesBotLogger("events", "ready");
 
 const readyMessageString = (bot: Client, status: string) =>
-  `${bot.user.tag} - Online - ${status}`;
+  `${bot.user?.tag} - Online - ${status}`;
 
 const ready = async (bot: Client) => {
-  logger.info(`Bot is online - ${bot.user.tag}`);
+  logger.info(`Bot is online - ${bot.user?.tag}`);
 
   const guildId = process.env.GUILD_ID;
   logger.debug("Finding guild based on GUILD_ID", { GUILD_ID: guildId });
   const guild = bot.guilds.resolve(guildId);
+
+  if (!guild) {
+    logger.error('Could not resolve guild on startup, mayday!!!');
+    return;
+  }
+
   if (process.env.OUTPUT_CHANNEL_ID) {
     await VoiceOnDemandTools.voiceOnDemandReady(bot);
 

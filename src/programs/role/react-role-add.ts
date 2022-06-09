@@ -24,7 +24,7 @@ class AddReactRoleObject implements CommandHandler<DiscordEvent.MESSAGE> {
     const [, , reaction, roleId, messageId, channelId] =
       message.content.split(" ");
 
-    if (message.reference && reaction && roleId) {
+    if (message.reference?.messageId && reaction && roleId) {
       const referencedMessageId = message.reference.messageId;
       const channelId = message.reference.channelId;
       const channel = bot.channels.resolve(channelId) as TextChannel;
@@ -50,11 +50,17 @@ class AddReactRoleObject implements CommandHandler<DiscordEvent.MESSAGE> {
       return;
     }
 
-    const [requestedMessage, requestedChannel] = await Tools.getMessageById(
+    if (!message.guild) return;
+
+    const messageDetails = await Tools.getMessageById(
       messageId,
       message.guild,
       channelId
     );
+
+    if (!messageDetails) return;
+
+    const [requestedMessage, requestedChannel] = messageDetails;
 
     await addReactRoleObject(
       message,
@@ -73,9 +79,11 @@ const addReactRoleObject = async (
   roleId: string,
   referencedMessage: Message
 ) => {
+  if (!message.guild) return;
+
   if (roleId.startsWith("<")) roleId = roleId.substring(3, 21);
 
-  let role = await Tools.getRoleById(roleId, message.guild);
+  const role = await Tools.getRoleById(roleId, message.guild);
 
   if (!role) {
     await Tools.handleUserError(

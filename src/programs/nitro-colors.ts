@@ -29,7 +29,7 @@ class CacheNitroColors implements CommandHandler<DiscordEvent.READY> {
     try {
       const pickYourColorChannel = bot.guilds
         .resolve(process.env.GUILD_ID)
-        .channels.cache.find(
+        ?.channels.cache.find(
           (channel) => channel.name === "pick-your-color"
         ) as TextChannel;
 
@@ -68,16 +68,16 @@ class RemoveNitroColorIfNotAllowed
   implements CommandHandler<DiscordEvent.GUILD_MEMBER_UPDATE>
 {
   async handle(member: GuildMember) {
-    const nitroColor: Role = member.roles.cache.find((r) =>
+    const nitroColor = member.roles.cache.find((r) =>
       nitroRolesCache.some((role) => role.id === r.id)
     );
 
-    if (nitroColor) {
-      colorSelectionMessage.reactions.cache.find(
-        (reactions) => !!reactions.users.remove(member)
-      );
-      await member.roles.remove(nitroColor);
-    }
+    if (!nitroColor) return;
+
+    colorSelectionMessage.reactions.cache.find(
+      (reactions) => !!reactions.users.remove(member)
+    );
+    await member.roles.remove(nitroColor);
   }
 }
 
@@ -97,6 +97,9 @@ class NitroColorSelector implements CommandHandler<DiscordEvent.REACTION_ADD> {
 
     const { message } = reaction;
     const guild = bot.guilds.resolve(process.env.GUILD_ID);
+
+    if (!guild) return;
+
     const guildMember =
       guild.members.resolve(user.id) ?? (await guild.members.fetch(user.id));
 
@@ -128,7 +131,10 @@ class NitroColorSelector implements CommandHandler<DiscordEvent.REACTION_ADD> {
 
     for (const reactionRole of reactRoleObjects) {
       const roleToAdd = guild.roles.resolve(reactionRole.roleId);
-      await guildMember.roles.add(roleToAdd);
+
+      if (roleToAdd) {
+        await guildMember.roles.add(roleToAdd);
+      }
     }
   }
 }

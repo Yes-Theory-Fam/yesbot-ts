@@ -25,7 +25,7 @@ class SeparatorOnRoleAdd
       )
       .first();
 
-    if (addedRole.name.startsWith(separatorStart)) return;
+    if (addedRole?.name.startsWith(separatorStart)) return;
     const { guild } = oldMember;
 
     const separators = guild.roles.cache
@@ -34,15 +34,21 @@ class SeparatorOnRoleAdd
 
     // We can find the matching separator by sorting the array of the separators and the added role.
     //   The separator above the added role is the correct one. If there is none, no separator is added.
-    const sorted = [...separators, addedRole].sort((a, b) =>
-      b.comparePositionTo(a)
-    );
+    const sorted = [...separators, addedRole].sort((a, b) => {
+      if (!a && !b) return 0;
+      if (!a) return -1;
+      if (!b) return 1;
+
+      return b.comparePositionTo(a);
+    });
     const addedIndex = sorted.indexOf(addedRole);
     const separatorIndex = addedIndex - 1;
 
-    if (separatorIndex < 0) return;
+    const toAdd = sorted[separatorIndex];
 
-    newMember.roles.add(sorted[separatorIndex]);
+    if (separatorIndex < 0 || !toAdd) return;
+
+    newMember.roles.add(toAdd);
   }
 }
 

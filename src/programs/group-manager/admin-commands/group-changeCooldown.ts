@@ -33,7 +33,7 @@ class ChangeCooldown implements CommandHandler<DiscordEvent.MESSAGE> {
     const group = await getRequestedGroup(requestedGroupName);
 
     if (!group) {
-      Tools.handleUserError(message, "That group doesn't exist!");
+      await Tools.handleUserError(message, "That group doesn't exist!");
       return;
     }
 

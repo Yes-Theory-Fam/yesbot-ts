@@ -30,32 +30,37 @@ class DeleteReactRoleObjects implements CommandHandler<DiscordEvent.MESSAGE> {
       where: { id: index },
     });
 
-    if (objectToRemove) {
-      try {
-        await prisma.reactionRole.delete({ where: { id: index } });
-      } catch (err) {
-        await message.channel.send(`Failed to delete reaction role.`);
-        logger.error("Failed to delete reaction role: ", err);
-        return;
-      }
-      let [messageWithReaction] = await Tools.getMessageById(
-        objectToRemove.messageId,
-        message.guild,
-        objectToRemove.channelId
-      );
-      try {
-        await messageWithReaction.reactions.removeAll();
-      } catch (err) {
-        // We don't really care about the error, since the message/channel might have been removed.
-        // We log it for good measure.
-        logger.error(
-          "Error while removing all reactions from a reactionRole message",
-          err
-        );
-      }
-      await message.channel.send("Successfully removed reaction role.");
-    } else {
+    if (!objectToRemove) {
       await message.reply("I cannot find a role with that ID.");
+      return;
     }
+
+    if (!message.guild) return;
+
+    try {
+      await prisma.reactionRole.delete({ where: { id: index } });
+    } catch (err) {
+      await message.channel.send(`Failed to delete reaction role.`);
+      logger.error("Failed to delete reaction role: ", err);
+      return;
+    }
+
+    const [messageWithReaction] = (await Tools.getMessageById(
+      objectToRemove.messageId,
+      message.guild,
+      objectToRemove.channelId
+    )) ?? [null];
+
+    try {
+      await messageWithReaction?.reactions.removeAll();
+    } catch (err) {
+      // We don't really care about the error, since the message/channel might have been removed.
+      // We log it for good measure.
+      logger.error(
+        "Error while removing all reactions from a reactionRole message",
+        err
+      );
+    }
+    await message.channel.send("Successfully removed reaction role.");
   }
 }

@@ -99,6 +99,8 @@ const getChannelAccessToggleMessages =
       [key: string]: { channelId: string; toggles: string[] };
     } = {};
     for (const toggle of toggles) {
+      if (!toggle.message?.channel) continue;
+
       const messageId = toggle.message.id;
       if (messageToggleList[messageId]) {
         messageToggleList[messageId].toggles.push(toggle.emoji);
@@ -128,7 +130,7 @@ const resolvePerUserPermissions = async (
     const message = await channel.messages.fetch(messageId);
 
     const relevantReactions = message.reactions.cache
-      .filter((reaction) => toggles.includes(reaction.emoji.name))
+      .filter((reaction) => toggles.includes(reaction.emoji.name ?? ''))
       .values();
 
     for (const reaction of relevantReactions) {
@@ -136,7 +138,7 @@ const resolvePerUserPermissions = async (
         after,
         limit: 10,
       });
-      if (!users.has(newMember.id)) continue;
+      if (!users.has(newMember.id) || !reaction.emoji.name) continue;
 
       await Tools.addPerUserPermissions(
         reaction.emoji.name,
@@ -173,7 +175,7 @@ const getCountryChannels = (guild: Guild) => {
 
 const lockCountryChannels = (member: GuildMember | PartialGuildMember) => {
   const hasReadPermissions = (channel: GuildChannel) =>
-    channel.permissionsFor(member.id).has(Permissions.FLAGS.VIEW_CHANNEL);
+    channel.permissionsFor(member.id)?.has(Permissions.FLAGS.VIEW_CHANNEL) ?? false;
 
   getCountryChannels(member.guild)
     .filter(hasReadPermissions)

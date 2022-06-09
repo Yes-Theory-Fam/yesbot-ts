@@ -31,7 +31,7 @@ class ChannelReactionAdd implements CommandHandler<DiscordEvent.MESSAGE> {
       return;
     }
 
-    const existingChannel = message.guild.channels.cache.find(
+    const existingChannel = message.guild?.channels.cache.find(
       (c) => c.name === channelName.toLocaleLowerCase()
     );
 
@@ -71,7 +71,7 @@ class ChannelReactionAdd implements CommandHandler<DiscordEvent.MESSAGE> {
       return;
     }
 
-    if (reactionMessage.channel !== null) {
+    if (reactionMessage.channel !== null && message.guild) {
       await backfillReactions(
         reactionMessage.id,
         reactionMessage.channel,

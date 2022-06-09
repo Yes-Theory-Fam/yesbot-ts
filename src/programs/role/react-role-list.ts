@@ -20,6 +20,8 @@ const logger = createYesBotLogger("programs", "role-list");
 class ListReactRoleObjects implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
     const guild = message.guild;
+    if (!guild) return;
+
     const reactRoleObjects = await prisma.reactionRole.findMany({
       orderBy: { id: "asc" },
     });
@@ -54,14 +56,20 @@ class ListReactRoleObjects implements CommandHandler<DiscordEvent.MESSAGE> {
     try {
       await Promise.all(
         reactRoleObjects.slice(start, end).map(async (reactionRoleObject) => {
-          let role = guild.roles.cache.find(
+          const role = guild?.roles.cache.find(
             (r) => r.id == reactionRoleObject.roleId
           );
-          let [message, channel] = await Tools.getMessageById(
+
+          const messageDetails = await Tools.getMessageById(
             reactionRoleObject.messageId,
             guild,
             reactionRoleObject.channelId
           );
+
+          if (!messageDetails) return;
+
+          const [message, channel] = messageDetails;
+
           returnString += `__**${reactionRoleObject.id}:**__\n**Message**: ${message?.cleanContent}\n`;
           returnString += `**Channel**: ${channel}\n`;
           returnString += `**Reaction**: ${reactionRoleObject.reaction}\n`;
