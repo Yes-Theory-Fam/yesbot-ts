@@ -4,7 +4,6 @@ import {
   CommandHandler,
   DiscordEvent,
 } from "../../../event-distribution";
-import prisma from "../../../prisma";
 import {
   findManyRequestedGroups,
   GroupWithMemberRelationList,
@@ -43,10 +42,11 @@ class SearchGroup implements CommandHandler<DiscordEvent.MESSAGE> {
     const pageAmount = Math.ceil(copy.length / groupsPerPage);
 
     for (let i = 0; i < pageAmount; i++) {
-      const embed = new MessageEmbed({}).setAuthor(
-        "YesBot",
-        "https://cdn.discordapp.com/avatars/614101602046836776/61d02233797a400bc0e360098e3fe9cb.png?size=$%7BrequestedImageSize%7D"
-      );
+      const embed = new MessageEmbed({}).setAuthor({
+        name: "YesBot",
+        iconURL:
+          "https://cdn.discordapp.com/avatars/614101602046836776/61d02233797a400bc0e360098e3fe9cb.png?size=$%7BrequestedImageSize%7D",
+      });
       const resultsSentence =
         requestedGroupName == undefined
           ? "Results for all groups"
@@ -90,7 +90,7 @@ class SearchGroup implements CommandHandler<DiscordEvent.MESSAGE> {
     const setupPaging = async (currentPage: number, pagedMessage: Message) => {
       const filter = (reaction: MessageReaction, user: User) => {
         return (
-          ["⬅️", "➡️"].includes(reaction.emoji.name) &&
+          ["⬅️", "➡️"].includes(reaction.emoji.name ?? "") &&
           user.id === message.author.id
         );
       };
@@ -103,10 +103,10 @@ class SearchGroup implements CommandHandler<DiscordEvent.MESSAGE> {
           errors: ["time"],
         });
         const first = reactions.first();
-        if (first.emoji.name === "⬅️") {
+        if (first?.emoji.name === "⬅️") {
           await flip(currentPage - 1, pagedMessage, first);
         }
-        if (first.emoji.name === "➡️") {
+        if (first?.emoji.name === "➡️") {
           await flip(currentPage + 1, pagedMessage, first);
         }
       } catch (error) {}

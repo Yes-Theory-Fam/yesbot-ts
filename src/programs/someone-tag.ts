@@ -35,13 +35,15 @@ class SomeoneTag implements CommandHandler<DiscordEvent.MESSAGE> {
       });
     else {
       const { member } = message;
+      if (!member) return;
+
       const target = await getTarget(arg, message);
       const question = await getQuestion();
-      if (!target)
+      if (!target) {
         await message.reply(
           "There were no available users to ping! This is embarrassing. How could this have happened? There's so many people on here that statistically this message should never even show up. Oh well. Congratulations, I guess."
         );
-      else {
+      } else {
         await updateLastMessage(message);
         await sendMessage(
           member,
@@ -101,8 +103,11 @@ async function isAllowed(user: User) {
   return isAfter(new Date(), addHours(someone.time, 24));
 }
 
-async function getTarget(arg: string, message: Message): Promise<User> {
-  if (!message) return;
+async function getTarget(
+  arg: string,
+  message: Message
+): Promise<User | undefined> {
+  if (!message?.guild) return;
 
   const sdRole = Tools.getRoleByName("Seek Discomfort", message.guild);
   if (!sdRole) {
@@ -120,14 +125,14 @@ async function getTarget(arg: string, message: Message): Promise<User> {
   if (
     targetCollection.size === 0 ||
     (targetCollection.size === 1 &&
-      targetCollection.first().user.id === message.author.id)
+      targetCollection.first()?.user.id === message.author.id)
   )
     return;
 
   let randomUser;
   do {
-    randomUser = targetCollection.random().user;
-  } while (randomUser.id === message.author.id);
+    randomUser = targetCollection.random()?.user;
+  } while (randomUser?.id === message.author.id);
 
   return randomUser;
 }

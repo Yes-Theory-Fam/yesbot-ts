@@ -15,7 +15,10 @@ const regionCountries = ["USA"];
 
 const welcomeMember = async (user: User, guild: Guild) => {
   const memberRole = guild.roles.cache.find(({ name }) => name === "Member");
-  await guild.members.resolve(user).roles.add(memberRole);
+
+  if (memberRole) {
+    await guild.members.resolve(user)?.roles.add(memberRole);
+  }
 
   const welcomeChat = <TextChannel>(
     guild.channels.cache.find((c) => c.name === "welcome-chat")
@@ -41,7 +44,7 @@ const getWelcomeMessage = (user: User) => {
 };
 
 const ghostPing = async (message: Message, region: String) => {
-  const regionChannel = message.guild.channels.cache.find(
+  const regionChannel = message.guild?.channels.cache.find(
     (channel) => channel.name === `${region}-regions`
   ) as TextChannel;
   const ping = await regionChannel.send(`<@${message.member}>`);
@@ -61,6 +64,8 @@ const hasSpecificRole = (
 ) => {
   const emoji = role.name.split(" ").pop();
 
+  if (!emoji) return false;
+
   return member.roles.cache.some(
     ({ name }) => name.includes("(") && name.includes(emoji)
   );
@@ -74,6 +79,8 @@ const hasSpecificRole = (
 })
 class WhereAreYouFrom implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
+    if (!message.member || !message.guild) return;
+
     const newUser = !isRegistered(message.member);
 
     if (newUser && !message.author.bot) {
@@ -108,7 +115,7 @@ class WhereAreYouFrom implements CommandHandler<DiscordEvent.MESSAGE> {
             (r) => r.name === process.env.MODERATOR_ROLE_NAME
           );
           await textLog(
-            `${moderatorRole.toString()}: <@${
+            `${moderatorRole?.toString()}: <@${
               message.author.id
             }> just requested role for country ${
               countryToAssign.name
@@ -136,14 +143,16 @@ class WhereAreYouFrom implements CommandHandler<DiscordEvent.MESSAGE> {
           await welcomeMember(message.member.user, message.member.guild);
         }
         await memberDm.send(
-          `Hey! My name is YesBot, I'm so happy to see you've made it into our world, we really hope you stick around!\n\nIn the meantime, you should checkout ${rules.toString()} and ${generalInfo.toString()} , they contain a lot of good-to-knows about our server and what cool stuff you can do.\nIf you'd like me to change your name on the server for you, just message me \`!menu\` and I will help you out! Then I can introduce you to our family :grin:\n\nI know Discord can be a lot to take in at first, trust me, but it's really quite a wonderful place.`
+          `Hey! My name is YesBot, I'm so happy to see you've made it into our world, we really hope you stick around!\n\nIn the meantime, you should checkout ${rules?.toString()} and ${generalInfo?.toString()} , they contain a lot of good-to-knows about our server and what cool stuff you can do.\nIf you'd like me to change your name on the server for you, just message me \`!menu\` and I will help you out! Then I can introduce you to our family :grin:\n\nI know Discord can be a lot to take in at first, trust me, but it's really quite a wonderful place.`
         );
 
         if (isCountryWithRegionRole) {
           const lowerCaseCountry = CountryRoleFinder.getCountryByRole(
             roleToAssign.name
-          ).toLowerCase();
-          await ghostPing(message, lowerCaseCountry);
+          )?.toLowerCase();
+          if (lowerCaseCountry) {
+            await ghostPing(message, lowerCaseCountry);
+          }
         }
       }
     }

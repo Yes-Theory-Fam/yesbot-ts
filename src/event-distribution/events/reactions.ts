@@ -1,3 +1,5 @@
+import {MessageReaction, PartialMessageReaction, PartialUser, User,} from "discord.js";
+import {addToTree, collectChannelDefinitions, withMessageRelatedInfo,} from "../helper";
 import {
   AddEventHandlerFunction,
   DiscordEvent,
@@ -5,20 +7,6 @@ import {
   HandlerFunctionFor,
   MessageRelatedOptions,
 } from "../types/base";
-import {
-  GuildChannel,
-  MessageReaction,
-  PartialMessageReaction,
-  PartialUser,
-  TextBasedChannel,
-  User,
-} from "discord.js";
-import {
-  addToTree,
-  collectChannelDefinitions,
-  getIdFromCategoryName,
-  withMessageRelatedInfo,
-} from "../helper";
 
 export interface ReactionEventHandlerOptions extends MessageRelatedOptions {
   emoji: string;
@@ -52,6 +40,6 @@ export const extractReactionInfo: ExtractInfoForEventFunction<
 
   return withMessageRelatedInfo(reaction.message, member, (channelId) => [
     channelId,
-    reaction.emoji.name,
+    reaction.emoji.name ?? '',
   ]);
 };

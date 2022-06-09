@@ -108,7 +108,8 @@ export class EventDistribution {
         await instance.handle(...args);
       } catch (e) {
         logger.error(`Error running handler ${getIocName(ioc)}: `, e);
-        const reason = e instanceof Error ? e.message : e.toString();
+        const reason = e instanceof Error ? e.message : (e + '');
+
         if (errors && errors[reason]) {
           const text = errors[reason];
           await rejectWithMessage(text, event, ...args);
@@ -194,6 +195,8 @@ export class EventDistribution {
       case EventLocation.SERVER:
         return !isDirectMessage;
     }
+
+    return false;
   }
 
   private static isHandlerForRole<T extends DiscordEvent>(
@@ -204,7 +207,7 @@ export class EventDistribution {
 
     const { allowedRoles } = handler.options;
     return (
-      allowedRoles.length === 0 ||
+      !allowedRoles?.length ||
       allowedRoles.some((role) => roleNames.includes(role))
     );
   }

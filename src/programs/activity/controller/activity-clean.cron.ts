@@ -1,7 +1,7 @@
 import { CleanupActivity } from "../usecase/cleanup-activity";
 import { createYesBotLogger } from "../../../log";
 
-var cron = require("node-cron");
+const cron = require("node-cron");
 
 export class ActivityCleanCron {
   static init() {

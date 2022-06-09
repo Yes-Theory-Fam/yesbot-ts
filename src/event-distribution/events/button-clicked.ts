@@ -17,11 +17,11 @@ import {
   collectChannelDefinitions,
   withMessageRelatedInfo,
 } from "../helper";
-import { APIGuildMember, APIMessage } from "discord-api-types";
+import { APIGuildMember, APIMessage } from "discord-api-types/v9";
 
 export interface ButtonClickedHandlerOptions extends MessageRelatedOptions {
   event: DiscordEvent.BUTTON_CLICKED;
-  customId?: string;
+  customId: string;
 }
 
 export type ButtonClickedHandlerFunction<T extends DiscordEvent> =

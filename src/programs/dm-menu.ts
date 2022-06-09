@@ -74,8 +74,12 @@ class ShowMenu implements CommandHandler<DiscordEvent.MESSAGE> {
         throw "No response";
       }
 
-      const requestedName = nameMessage.first().content;
-      await proposeNameChange(requestedName, message);
+      const requestedName = nameMessage.first()?.content;
+
+      if (requestedName) {
+        await proposeNameChange(requestedName, message);
+      }
+
       await requestMessage.delete();
     } catch (err) {
       removeIgnore(dmChannel);
@@ -108,11 +112,11 @@ const proposeNameChange = async (name: string, botMessage: Message) => {
       })
       .then((collected) => {
         const reaction = collected.first();
-        switch (reaction.emoji.toString()) {
+        switch (reaction?.emoji.toString()) {
           case "✅":
             const member = getMember(botMessage.author.id);
             member
-              .setNickname(name)
+              ?.setNickname(name)
               .catch((error) =>
                 textLog(
                   `Could not rename ${botMessage.author.toString()} due to this error: ${error}`

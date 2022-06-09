@@ -14,7 +14,7 @@ import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 })
 class Profile implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
-    const requestedMember = message.mentions.members.first() || message.member;
+    const requestedMember = message.mentions.members?.first() ?? message.member;
 
     if (!requestedMember) {
       await Tools.handleUserError(
@@ -65,24 +65,27 @@ const getProfileEmbed = async (
     .map(({ userGroup: { name } }) => name)
     .join(", ");
 
-  const joinDate = member.joinedAt.toDateString();
-  profileEmbed.setThumbnail(member.user.avatarURL());
+  const joinDate = member.joinedAt?.toDateString();
+  const avatarUrl = member.user.avatarURL();
+  if (avatarUrl) {
+    profileEmbed.setThumbnail(avatarUrl);
+  }
   profileEmbed.setTitle(
-    yesEmoji.toString() +
+    yesEmoji?.toString() +
       " " +
       member.user.username +
       "#" +
       member.user.discriminator
   );
-  profileEmbed.setColor(member.roles.color.color);
+  profileEmbed.setColor(member.roles.color?.color ?? "#004dff");
   profileEmbed.addField("Hi! My name is:", member.displayName, true);
   profileEmbed.addField("Where I'm from:", countryString, true);
   profileEmbed.addField("\u200b", "\u200b");
-  profileEmbed.addField("Joined on:", joinDate, true);
+  profileEmbed.addField("Joined on:", joinDate ?? "Unknown", true);
   profileEmbed.addField("Birthday:", birthdayString, true);
   profileEmbed.addField("Groups:", groupString || "None", true);
-  profileEmbed.setFooter(
-    "Thank you for using the Yes Theory Fam Discord Server!"
-  );
+  profileEmbed.setFooter({
+    text: "Thank you for using the Yes Theory Fam Discord Server!",
+  });
   return profileEmbed;
 };

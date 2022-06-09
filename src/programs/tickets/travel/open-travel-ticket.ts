@@ -23,7 +23,7 @@ class OpenTravelTicket implements CommandHandler<DiscordEvent.MESSAGE> {
     const channel = await maybeCreateTicket(
       message,
       TicketType.TRAVEL,
-      `Hi ${message.member.toString()}, let's collect all important information for your trip!`,
+      `Hi ${message.member?.toString()}, let's collect all important information for your trip!`,
       false
     );
 

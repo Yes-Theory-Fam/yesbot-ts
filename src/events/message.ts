@@ -1,5 +1,5 @@
 import { Message, TextChannel } from "discord.js";
-import { ExportManager, VoiceOnDemand } from "../programs";
+import { VoiceOnDemand } from "../programs";
 
 const message = async (msg: Message) => {
   if (msg.channel.type === "DM" && !msg.author.bot) {
@@ -15,18 +15,9 @@ const routeMessage = async (message: Message) => {
   const firstWord = words[0];
 
   switch (channel.name) {
-    case "permanent-testing":
-      if (firstWord === "!export") await ExportManager(message);
     case "bot-commands":
       if (firstWord === "!voice") await VoiceOnDemand(message);
       break;
-  }
-
-  if (firstWord === "!goodbye") {
-    const guildRole = message.guild.roles.cache.find(
-      (r) => r.name.toLowerCase() === "head"
-    );
-    await message.member.roles.remove(guildRole);
   }
 };
 

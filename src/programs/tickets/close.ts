@@ -46,9 +46,9 @@ class CloseTicket implements CommandHandler<DiscordEvent.MESSAGE> {
       })
       .then((collected) => {
         const reaction = collected.first();
-        const user = reaction.users.cache.find((u) => !u.bot);
-        if (reaction.emoji.toString() === "📑") {
-          user.createDM().then(async (dm) => {
+        const user = reaction?.users.cache.find((u) => !u.bot);
+        if (reaction?.emoji.toString() === "📑") {
+          user?.createDM().then(async (dm) => {
             const messages = Util.splitMessage(
               await createOutput(channel, member)
             );
@@ -58,11 +58,9 @@ class CloseTicket implements CommandHandler<DiscordEvent.MESSAGE> {
           });
         }
 
-        closeTicket(
-          reaction.message.channel as TextChannel,
-          user,
-          TICKET_LOG_CHANNEL
-        );
+        if (reaction?.message.channel.type !== "GUILD_TEXT" || !user) return;
+
+        closeTicket(reaction.message.channel, user, TICKET_LOG_CHANNEL);
       });
   }
 }

@@ -20,6 +20,8 @@ interface TimeoutTimerData {
 })
 class TimeoutTimer implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
+    if (!message.guild) return;
+
     const words = message.content.split(/\s+/);
     const targetedUser = message.mentions.users.first();
     const time = Number(words[2]);
@@ -34,9 +36,12 @@ class TimeoutTimer implements CommandHandler<DiscordEvent.MESSAGE> {
     const targetedGuildMember = message.guild.members.resolve(targetedUser);
     const timeoutRole = Tools.getRoleByName("Time Out", message.guild);
 
+    if (!targetedGuildMember || !timeoutRole) return;
+
     if (hasRole(targetedGuildMember, "Time Out")) {
       return Tools.handleUserError(message, "User is already timed out!");
     }
+
     try {
       await targetedGuildMember.roles.add(timeoutRole);
       await message.react("👍");
@@ -61,8 +66,13 @@ class TimeoutPardon implements CommandHandler<DiscordEvent.TIMER> {
   async handle(timer: Timer): Promise<void> {
     const data = timer.data as unknown as TimeoutTimerData;
     const guild = bot.guilds.resolve(process.env.GUILD_ID);
+
+    if (!guild) return;
+
     const guildMember = guild.members.resolve(data.userId);
     const timeoutRole = Tools.getRoleByName("Time Out", guild);
+
+    if (!timeoutRole || !guildMember) return;
 
     try {
       await guildMember.roles.remove(timeoutRole);

@@ -29,12 +29,12 @@ class QuoteMessage implements CommandHandler<DiscordEvent.MESSAGE> {
     }
 
     const emojiByName = (name: string) =>
-      message.guild.emojis.cache.find((e) => e.name === name);
+      message.guild?.emojis.cache.find((e) => e.name === name);
     const positiveEmoji = emojiByName(positiveEmojiName);
     const negativeEmoji = emojiByName(negativeEmojiName);
 
-    await message.react(positiveEmoji);
-    await message.react(negativeEmoji);
+    await message.react(positiveEmoji ?? "✅");
+    await message.react(negativeEmoji ?? "❌");
 
     const executeTime = new Date();
     executeTime.setDate(executeTime.getDate() + 1);
@@ -57,7 +57,7 @@ class QuoteTally implements CommandHandler<DiscordEvent.TIMER> {
 
     const countByEmoji = (name: string) =>
       message.reactions.cache.find((reaction) => reaction.emoji.name === name)
-        .count ?? 0;
+        ?.count ?? 0;
     const positiveReactions = countByEmoji(positiveEmojiName);
     const negativeReactions = countByEmoji(negativeEmojiName);
 

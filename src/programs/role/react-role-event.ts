@@ -30,18 +30,20 @@ class AddRolesFromReaction
       where: {
         messageId: messageId,
         channelId: channel.id,
-        reaction: emoji,
+        reaction: emoji ?? undefined,
       },
     });
 
     if (!reactRoleObjects) return;
 
     const guildMember =
-      guild.members.resolve(user.id) ?? (await guild.members.fetch(user.id));
+      guild?.members.resolve(user.id) ?? (await guild?.members.fetch(user.id));
 
     for (const reactionRole of reactRoleObjects) {
-      const roleToAdd = guild.roles.resolve(reactionRole.roleId);
-      await guildMember.roles.add(roleToAdd);
+      const roleToAdd = guild?.roles.resolve(reactionRole.roleId);
+      if (roleToAdd) {
+        await guildMember?.roles.add(roleToAdd);
+      }
     }
   }
 }
@@ -68,16 +70,18 @@ class RemoveRolesFromReaction
       where: {
         messageId: messageId,
         channelId: channel.id,
-        reaction: emoji,
+        reaction: emoji ?? undefined,
       },
     });
 
     if (!reactRoleObjects) return;
 
     reactRoleObjects.forEach((reactionRole) => {
-      const guildMember = guild.members.resolve(user.id);
-      const roleToRemove = guild.roles.resolve(reactionRole.roleId);
-      guildMember.roles.remove(roleToRemove);
+      const guildMember = guild?.members.resolve(user.id);
+      const roleToRemove = guild?.roles.resolve(reactionRole.roleId);
+      if (roleToRemove) {
+        guildMember?.roles.remove(roleToRemove);
+      }
     });
   }
 }

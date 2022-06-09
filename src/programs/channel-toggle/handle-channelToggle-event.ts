@@ -1,21 +1,9 @@
-import {
-  BaseGuildVoiceChannel,
-  GuildBasedChannel,
-  MessageReaction,
-  TextChannel,
-  User,
-  VoiceChannel,
-} from "discord.js";
-import { hasRole, textLog } from "../../common/moderator";
+import {MessageReaction, TextChannel, User, VoiceChannel,} from "discord.js";
+import {hasRole, textLog} from "../../common/moderator";
 import Tools from "../../common/tools";
-import {
-  Command,
-  CommandHandler,
-  DiscordEvent,
-  EventLocation,
-} from "../../event-distribution";
+import {Command, CommandHandler, DiscordEvent, EventLocation,} from "../../event-distribution";
 import prisma from "../../prisma";
-import { backfillReactions } from "./common";
+import {backfillReactions} from "./common";
 
 @Command({
   event: DiscordEvent.REACTION_ADD,
@@ -44,13 +32,13 @@ class HandleChannelToggleReactionAdd
       return;
     }
 
-    const member = guild.members.resolve(user.id);
+    const member = guild?.members.resolve(user.id);
     // Catch users who are timeouted and deny their attempts at accessing other channels
-    if (hasRole(member, "Time Out")) {
+    if (member && hasRole(member, "Time Out")) {
       const reaction = message.reactions.cache.find(
         (reaction) => reaction.emoji.name === emoji
       );
-      await reaction.users.remove(member);
+      await reaction?.users.remove(member);
       return;
     }
 
@@ -63,10 +51,15 @@ class HandleChannelToggleReactionAdd
       });
       // record what channel this message is in
       await message.react(emoji);
-      await backfillReactions(messageId, channel.id, guild);
+
+      if (guild) {
+        await backfillReactions(messageId, channel.id, guild);
+      }
     }
 
-    await Tools.addPerUserPermissions(emoji, messageId, guild, member);
+    if (guild && member) {
+      await Tools.addPerUserPermissions(emoji, messageId, guild, member);
+    }
   }
 }
 
@@ -97,7 +90,7 @@ class HandleChannelToggleReactionRemove
       return;
     }
 
-    const channel = guild.channels.cache.find(
+    const channel = guild?.channels.cache.find(
       (c): c is TextChannel | VoiceChannel => c.id === toggle.channel
     );
 

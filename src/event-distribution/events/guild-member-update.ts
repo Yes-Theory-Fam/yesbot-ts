@@ -113,10 +113,13 @@ const getRoleDiff = (
 
   const added = newIds
     .filter((id) => !oldIds.includes(id))
-    .map((id) => newRoles.get(id));
+    .map((id) => newRoles.get(id))
+    .filter((r): r is Role => !!r);
+
   const removed = oldIds
     .filter((id) => !newIds.includes(id))
-    .map((id) => oldRoles.get(id));
+    .map((id) => oldRoles.get(id))
+    .filter((r): r is Role => !!r);
 
   return { added, removed };
 };

@@ -1,5 +1,4 @@
 import prisma from "../../../prisma";
-import { createYesBotLogger } from "../../../log";
 
 export class GetBalance {
   private static getBalanceInstance: GetBalance;
@@ -16,7 +15,7 @@ export class GetBalance {
           userId,
         },
       })
-      .then((result) => result.ammount)
+      .then((result) => result?.ammount)
       .catch(() => 0);
   }
 

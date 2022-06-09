@@ -52,8 +52,8 @@ class ChannelReactionRemove implements CommandHandler<DiscordEvent.MESSAGE> {
     }
 
     const guild = message.guild;
-    const toggledMessageChannelId = reactionMessageObject.channel;
-    const channel = guild.channels.resolve(
+    const toggledMessageChannelId = reactionMessageObject.channel ?? '';
+    const channel = guild?.channels.resolve(
       toggledMessageChannelId
     ) as TextChannel;
     const reactionMessage = await channel.messages.fetch(messageId);
@@ -76,15 +76,15 @@ class ChannelReactionRemove implements CommandHandler<DiscordEvent.MESSAGE> {
         },
       });
 
-      const reactedUsers = reaction.users.cache;
+      const reactedUsers = reaction?.users.cache;
       reactedUsers
-        .filter((user) => !user.bot)
+        ?.filter((user) => !user.bot)
         .forEach(
-          async (user) =>
-            await revokeToggleChannelPermissions(user, toggledChannelId)
+          (user) =>
+            revokeToggleChannelPermissions(user, toggledChannelId)
         );
 
-      await reaction.remove();
+      await reaction?.remove();
     } catch (err) {
       logger.error(
         "Error while removing all reactions from channelToggle message",

@@ -16,7 +16,7 @@ class OpenShoutoutTicket implements CommandHandler<DiscordEvent.MESSAGE> {
     await maybeCreateTicket(
       message,
       TicketType.SHOUTOUT,
-      `Hi ${message.member.toString()}, please list the details of your shoutout below.`
+      `Hi ${message.member?.toString()}, please list the details of your shoutout below.`
     );
   }
 }

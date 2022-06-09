@@ -1,4 +1,4 @@
-import fs from "fs";
+import axios from "axios";
 import {
   Channel,
   Collection,
@@ -6,7 +6,6 @@ import {
   GuildChannel,
   GuildMember,
   Message,
-  MessageMentions,
   MessageReaction,
   PartialGuildMember,
   Snowflake,
@@ -14,11 +13,11 @@ import {
   User,
   Util,
 } from "discord.js";
-import { textLog } from "./moderator";
+import fs from "fs";
 import { createYesBotLogger } from "../log";
 import prisma from "../prisma";
-import axios from "axios";
 import { findManyRequestedGroups } from "../programs/group-manager/common";
+import { textLog } from "./moderator";
 
 export const unicodeEmojiRegex =
   /^(\p{RI}\p{RI}|\p{Emoji}(\p{Emoji_Modifier_Base}|\uFE0F\u20E3?|[\u{E0020}-\u{E007E}]+\u{E007F})?(\u{200D}\p{Emoji}(\p{Emoji_Modifier_Base}|\uFE0F\u20E3?|[\u{E0020}-\u{E007E}]+\u{E007F})?)*)/gu;
@@ -50,10 +49,10 @@ class Tools {
     });
   }
 
-  static resolveChannelNamesInString(s: string, guild?: Guild): string {
+  static resolveChannelNamesInString(s: string, guild?: Guild | null): string {
     if (!guild) return s;
 
-    return s.replace(/#[a-zA-Z0-9-]+/g, (match) => {
+    return s.replace(/#[a-zA-Z\d-]+/g, (match) => {
       const name = match.substring(1);
       const channelId = guild.channels.cache.find((c) => c.name === name)?.id;
       return channelId ? `<#${channelId}>` : match;
@@ -64,7 +63,7 @@ class Tools {
     messageId: Snowflake,
     guild: Guild,
     channelId: string
-  ): Promise<[Message, Channel]> {
+  ): Promise<[Message, Channel] | null> {
     try {
       const channel: TextChannel = <TextChannel>(
         guild.channels.cache.find((c) => c.id == channelId)
@@ -73,7 +72,7 @@ class Tools {
       return [message, channel];
     } catch (error) {
       logger.error("(getMessageById) Failed to fetch message", error);
-      return [null, null];
+      return null;
     }
   }
 
@@ -105,7 +104,7 @@ class Tools {
         where: { emoji: reactionName, messageId },
       });
 
-      if (toggle !== undefined) {
+      if (toggle) {
         const channel = guild.channels.cache.find(
           (channel) => channel.id === toggle.channel
         );
@@ -180,6 +179,8 @@ class Tools {
 
     collector.on("collect", (reaction, user) => {
       const emoji = reaction.emoji.name;
+      if (!emoji) return;
+
       // If players are not allowed to change votes and the reaction was collected,
       // they cannot already have an entry in the votes so we can just add them without any further checks.
       if (!allowChangeVote) {
@@ -212,7 +213,7 @@ class Tools {
       votes[emoji].push(user.id);
     });
 
-    return new Promise((res, rej) => {
+    return new Promise((res) => {
       collector.on("end", () => res(votes));
     });
   }
@@ -253,8 +254,11 @@ class Tools {
     timeout: number = 60000
   ): Promise<MessageReaction | Collection<Snowflake, MessageReaction>> {
     const filter = (reaction: MessageReaction, user: User) =>
-      pickOptions.includes(reaction.emoji.name) &&
-      allowedVoterIds.includes(user.id);
+      Boolean(
+        reaction.emoji.name &&
+          pickOptions.includes(reaction.emoji.name) &&
+          allowedVoterIds.includes(user.id)
+      );
 
     // Using a wrapped object allows cancelling adding the reactions from the outside
     const cancellationToken = { cancelled: false };
@@ -286,7 +290,17 @@ class Tools {
       if (deleteMessage) {
         await toMessage.delete();
       }
-      return single ? selection.first() : selection;
+      if (single) {
+        const result = selection.first();
+
+        if (!result) {
+          throw new Error("time");
+        }
+
+        return result;
+      }
+
+      return selection;
     } catch {
       cancellationToken.cancelled = true;
 

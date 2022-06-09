@@ -34,7 +34,7 @@ export class TimerService {
   public static scheduleTimer(timer: Timer): void {
     const timeDiff = timer.executeTime.getTime() - Date.now();
     if (timeDiff <= 0) {
-      TimerService.handleTimer(timer);
+      void TimerService.handleTimer(timer);
     } else {
       setTimeout(() => TimerService.handleTimer(timer), timeDiff);
     }
@@ -46,7 +46,7 @@ export class TimerService {
     data?: Prisma.JsonValue
   ): Promise<string> {
     const timer = await prisma.timer.create({
-      data: { handlerIdentifier, executeTime, data },
+      data: { handlerIdentifier, executeTime, data: data ?? undefined },
     });
     TimerService.scheduleTimer(timer);
     return timer.id;

@@ -26,7 +26,11 @@ export class CountryRoleFinder {
 
     for (const key in CountryRoleFinder.emojiOverrides) {
       const value = CountryRoleFinder.emojiOverrides[key];
-      result[key] = countries.find((c) => c.emoji == value);
+      const country = countries.find((c) => c.emoji == value);
+
+      if (!country) continue;
+
+      result[key] = country;
     }
 
     return result;
@@ -53,7 +57,7 @@ export class CountryRoleFinder {
     );
   };
 
-  static getRoleForCountry(country: Country, guild: Guild): Role {
+  static getRoleForCountry(country: Country, guild: Guild): Role | undefined {
     return guild.roles.cache.find((role) =>
       CountryRoleFinder.isRoleFromCountry(country, role)
     );
@@ -86,7 +90,9 @@ export class CountryRoleFinder {
       this.check(country, input, allowRegions)
     );
 
-    return CountryRoleFinder.emojiToCountryOverrides[match?.emoji] ?? match;
+    return (
+      CountryRoleFinder.emojiToCountryOverrides[match?.emoji ?? ""] ?? match
+    );
   }
 
   private static check(

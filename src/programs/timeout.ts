@@ -11,6 +11,8 @@ import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 })
 class TimeoutUser implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message) {
+    if (!message.guild) return;
+
     const targetedUser = message.mentions.users.first();
     if (!targetedUser) {
       return Tools.handleUserError(
@@ -23,6 +25,8 @@ class TimeoutUser implements CommandHandler<DiscordEvent.MESSAGE> {
     const timeoutRole = message.guild.roles.cache.find(
       (r) => r.name === "Time Out"
     );
+
+    if (!targetedGuildMember || !timeoutRole) return;
 
     if (hasRole(targetedGuildMember, "Time Out")) {
       return Tools.handleUserError(message, "User is already timed out!");
