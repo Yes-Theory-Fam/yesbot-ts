@@ -15,7 +15,7 @@
     "lint:fix": "prettier --write \"src/**/*.(js|ts|json)\" \"__tests__/**/*.(js|ts|json)\"",
     "postinstall": "yarn run db:generate",
     "start": "env-cmd ts-node-dev --files --respawn src/index.ts",
-    "start:prod": "node build/index.js",
+    "start:prod": "node build/src/index.js",
     "start:prodOld": "env-cmd ts-node src/index.ts",
     "test": "jest",
     "test:cov": "jest --coverage",
