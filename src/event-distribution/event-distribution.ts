@@ -148,7 +148,7 @@ export class EventDistribution {
     return new Promise((res, rej) => {
       const isProduction = process.env.NODE_ENV === "production";
       const extension = isProduction ? ".js" : ".ts";
-      const directory = isProduction ? "build" : "src";
+      const directory = isProduction ? "build/src" : "src";
 
       glob(`${directory}/programs/**/*${extension}`, async (e, matches) => {
         if (e) {
