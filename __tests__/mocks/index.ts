@@ -130,8 +130,7 @@ export default class MockDiscord {
       icon: "mocked guild icon url",
       splash: "mocked guild splash url",
       region: "eu-west",
-      member_count: 42,
-      large: false,
+      approximate_member_count: 42,
       features: [],
       application_id: idString,
       afk_timeout: 1000,
@@ -140,12 +139,8 @@ export default class MockDiscord {
       verification_level: 2,
       explicit_content_filter: 3,
       mfa_level: 8,
-      joined_at: new Date("2018-01-01").getTime().toString(),
       owner_id: idString,
-      channels: [],
       roles: [],
-      presences: [],
-      voice_states: [],
       emojis: [],
     });
   }
