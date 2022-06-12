@@ -17,7 +17,7 @@ import {
   APIGuildMember,
   ChannelType,
   MessageType,
-} from "discord-api-types";
+} from "discord-api-types/v9";
 import { MockMessage } from "./message";
 import { MockMessageReaction } from "./reaction";
 import { GuildMock, MockGuild } from "./guild";
