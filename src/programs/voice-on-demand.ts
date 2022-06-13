@@ -30,14 +30,17 @@ const emojiPool = ["📹", "💬", "📺", "🎲", "🎵", "🏋️"];
 const getChannelName = (m: GuildMember, e: string) =>
   `• ${e} ${m.displayName}'s Room`;
 
-const getVoiceChannel = async (member: GuildMember): Promise<VoiceChannel> => {
+const getVoiceChannel = async (
+  member: GuildMember
+): Promise<VoiceChannel | undefined> => {
   const guild = member.guild;
   const mapping = await prisma.voiceOnDemandMapping.findUnique({
     where: { userId: member.id },
-    rejectOnNotFound: true,
   });
 
-  return guild.channels.resolve(mapping.channelId) as VoiceChannel;
+  return mapping
+    ? (guild.channels.resolve(mapping.channelId) as VoiceChannel)
+    : undefined;
 };
 
 const voiceOnDemand = async (message: Message) => {
