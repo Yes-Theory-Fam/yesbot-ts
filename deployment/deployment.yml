@@ -1,0 +1,74 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: yesbot-deployment
+  namespace: ytf
+spec:
+  selector:
+    matchLabels:
+      app: yesbot
+  template:
+    metadata:
+      labels:
+        app: yesbot
+    spec:
+      imagePullSecrets:
+        - name: github
+      containers:
+        - name: YesBot
+          image: ghcr.io/yes-theory-fam/yesbot-ts:1.4.8
+          imagePullPolicy: Always
+          env:
+            - name: GUILD_ID
+              value: "449984633342525462"
+            - name: OUTPUT_CHANNEL_ID
+              value: "702911310840594442"
+            - name: MODERATOR_ROLE_NAME
+              value: "Support"
+            - name: ENGINEER_ROLE_NAME
+              value: "Developer"
+            - name: MEMBER_ROLE_ID
+              value: "853214462784569375"
+            - name: NODE_ENV
+              value: "production"
+            - name: GITHUB_GRAPHQL_ENDPOINT
+              value: "https://api.github.com/graphql"
+            - name: ACTIVITY_TIME_DELAY
+              value: "5"
+
+# TODO kubectl --namespace ytf create secret generic yesbot-secrets --from-env-file=${DARK_MAGIC} --dry-run -o yaml | kubectl apply -f -
+            - name: BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: yesbot-secrets
+                  key: BOT_TOKEN
+
+            - name: MAP_LINK
+              valueFrom:
+                secretKeyRef:
+                  name: yesbot-secrets
+                  key: MAP_LINK
+
+            - name: MAP_ADD_DM_USER_ID
+              valueFrom:
+                secretKeyRef:
+                  name: yesbot-secrets
+                  key: MAP_ADD_DM_USER_ID
+
+            - name: PRISMA_DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: yesbot-secrets
+                  key: PRISMA_DATABASE_URL
+
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: yesbot-secrets
+                  key: GITHUB_TOKEN
+
+            - name: GOOGLE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: yesbot-secrets
+                  key: GOOGLE_API_KEY

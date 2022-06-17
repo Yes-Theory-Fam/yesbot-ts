@@ -22,7 +22,7 @@ jobs:
           key: ${{ secrets.DEPLOYMENT_KEY }}
           username: ${{ secrets.YESBOT_USERNAME }}
           script: |
-            sudo ./updater.sh
+            kubectl -n ytf rollout restart deploy yesbot-deployment
 
   build-and-push-image:
     runs-on: ubuntu-latest
