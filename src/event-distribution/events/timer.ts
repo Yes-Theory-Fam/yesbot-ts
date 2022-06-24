@@ -6,7 +6,7 @@ import {
   HandlerFunctionFor,
 } from "..";
 import { createYesBotLogger } from "../../log";
-import { Timer } from "@yes-theory-fam/database/client";
+import { Timer } from "@prisma/client";
 import { addToTree } from "../helper";
 
 export interface TimerEventHandlerOptions extends BaseOptions {

@@ -65,11 +65,10 @@ The bot's main code is contained in the `src` directory which contains several s
 
 - collections - Files containing static data that the bot uses for certain tasks
 - common - Shared code for various things
-- events - Event handlers for the different events discord.js exposes
+- events - Event handlers for a few events discord.js exposes; the rest of these should eventually be moved to programs
+- event-distribution - Core of YesBot that ties most commands together using a decorator
 - programs - Code containing logic for all the commands and features of the bot. This directory contains an `index.ts`
   which reexports all exports from all files in this folder, please do so to, when adding your own feature.
-- scripts - Standalone scripts that are designed to be manually run for one-off tasks (like importing birthdays for
-  example)
 
 It also contains two single files:
 
@@ -137,24 +136,21 @@ Ensure that you have Docker running and no other connections on Port 5432 as thi
 
 #### Set up the bot
 
-1. Make sure your NPM
-   is [configured to install the YTF Database package](https://github.com/Yes-Theory-Fam/database#npm-configuration).
-
-2. Install the dependencies:
+1. Install the dependencies:
 
 ```bash
 yarn install
 ```
 
-3. Create an `.env` in the root directory and copy the `.env.example`. Change the values to match your test server.
+2. Create an `.env` in the root directory and copy the `.env.example`. Change the values to match your test server.
 
-4. Set up the tables in the database
+3. Set up the tables in the database
 
 ```bash
 yarn prisma db push
 ```
 
-5. Start the bot
+4. Start the bot
 
 ```bash
 yarn run start

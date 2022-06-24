@@ -1,7 +1,7 @@
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 import { Message, Snowflake, TextChannel } from "discord.js";
 import { TimerService } from "./timer/timer.service";
-import { Timer } from "@yes-theory-fam/database/client";
+import { Timer } from "@prisma/client";
 import bot from "../index";
 
 const quoteVotingIdentifier = "quotevoting";

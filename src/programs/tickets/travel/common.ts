@@ -7,7 +7,7 @@ import {
   TextChannel,
   User,
 } from "discord.js";
-import { CountryRoleFinder } from "../../../utils/country-role-finder";
+import { CountryRoleFinder } from "../../../common/country-role-finder";
 import { ChatNames } from "../../../collections/chat-names";
 import { createYesBotLogger } from "../../../log";
 

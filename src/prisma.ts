@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { PrismaClient } from "@yes-theory-fam/database/client";
+import { PrismaClient } from "@prisma/client";
 import { createYesBotLogger } from "./log";
 
 const logger = createYesBotLogger("db", "init");

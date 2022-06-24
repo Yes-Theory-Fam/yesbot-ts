@@ -1,4 +1,4 @@
-import { GroupPingSetting, UserGroup } from "@yes-theory-fam/database/client";
+import { GroupPingSetting, UserGroup } from "@prisma/client";
 import { Message, TextChannel } from "discord.js";
 import { ChatNames } from "../../../collections/chat-names";
 import { isAuthorModerator } from "../../../common/moderator";

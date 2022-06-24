@@ -1,5 +1,5 @@
 import distribution, { DiscordEvent } from "../../event-distribution";
-import { Timer, Prisma } from "@yes-theory-fam/database/client";
+import { Timer, Prisma } from "@prisma/client";
 import prisma from "../../prisma";
 import { createYesBotLogger } from "../../log";
 

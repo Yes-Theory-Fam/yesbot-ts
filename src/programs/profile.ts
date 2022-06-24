@@ -2,7 +2,7 @@ import { GuildMember, Message, MessageEmbed } from "discord.js";
 import Tools from "../common/tools";
 import { formatBirthday, getUserBirthday } from "./birthday-manager";
 import prisma from "../prisma";
-import { CountryRoleFinder } from "../utils/country-role-finder";
+import { CountryRoleFinder } from "../common/country-role-finder";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 
 @Command({

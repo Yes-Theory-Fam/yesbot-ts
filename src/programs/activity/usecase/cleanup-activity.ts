@@ -1,5 +1,5 @@
 import prisma from "../../../prisma";
-import { Activity, Currency } from "@yes-theory-fam/database/client";
+import { Activity, Currency } from "@prisma/client";
 import { createYesBotLogger } from "../../../log";
 
 export class CleanupActivity {

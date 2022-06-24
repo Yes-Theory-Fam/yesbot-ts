@@ -1,4 +1,4 @@
-import { CountryRoleFinder } from "../../src/utils/country-role-finder";
+import { CountryRoleFinder } from "../../src/common/country-role-finder";
 import MockDiscord from "../mocks";
 import { Collection, Role, RoleManager } from "discord.js";
 import { countries } from "../../src/collections/flagEmojis";

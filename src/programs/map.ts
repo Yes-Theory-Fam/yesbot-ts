@@ -1,6 +1,6 @@
 import { Message, MessageEmbed } from "discord.js";
 import Tools from "../common/tools";
-import { CountryRoleFinder } from "../utils/country-role-finder";
+import { CountryRoleFinder } from "../common/country-role-finder";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 import { ChatNames } from "../collections/chat-names";
 

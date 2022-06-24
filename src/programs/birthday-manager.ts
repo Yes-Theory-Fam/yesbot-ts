@@ -17,8 +17,8 @@ import Tools from "../common/tools";
 import { isAuthorModerator, textLog } from "../common/moderator";
 import { createYesBotLogger } from "../log";
 import prisma from "../prisma";
-import { Birthday } from "@yes-theory-fam/database/client";
-import { CountryRoleFinder } from "../utils/country-role-finder";
+import { Birthday } from "@prisma/client";
+import { CountryRoleFinder } from "../common/country-role-finder";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 
 const logger = createYesBotLogger("programs", "BirthdayManager");

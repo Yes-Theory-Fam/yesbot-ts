@@ -1,4 +1,4 @@
-import { GroupPingSetting } from "@yes-theory-fam/database/client";
+import { GroupPingSetting } from "@prisma/client";
 import { Message } from "discord.js";
 import Tools from "../../../common/tools";
 import {

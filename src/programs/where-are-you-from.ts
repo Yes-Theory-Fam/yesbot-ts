@@ -9,7 +9,7 @@ import {
 } from "discord.js";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 import { isRegistered, textLog } from "../common/moderator";
-import { CountryRoleFinder } from "../utils/country-role-finder";
+import { CountryRoleFinder } from "../common/country-role-finder";
 
 const regionCountries = ["USA"];
 
