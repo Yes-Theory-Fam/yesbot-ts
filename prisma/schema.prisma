@@ -1,0 +1,191 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl", "darwin", "windows", "debian-openssl-1.1.x", "debian-openssl-1.1.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PRISMA_DATABASE_URL")
+}
+
+model Birthday {
+  userId    String   @id @map("userid")
+  birthdate DateTime @db.Timestamptz(6)
+  timezone  String?
+
+  @@map(name: "birthday")
+}
+
+model ChannelToggle {
+  id        Int      @id @default(autoincrement())
+  channel   String
+  emoji     String
+  messageId String?  @db.VarChar
+  message   Message? @relation(fields: [messageId], references: [id])
+
+  @@unique([emoji, messageId], name: "IDX_886c4545692691c28e48cb964f")
+  @@map(name: "channel_toggle")
+}
+
+model DailyChallenge {
+  id       Int      @id @default(autoincrement())
+  result   String   @db.VarChar
+  lastUsed DateTime @default(dbgenerated("'1969-12-31 23:00:00'::timestamp without time zone")) @map("last_used") @db.Timestamp(6)
+
+  @@map(name: "daily_challenge")
+}
+
+model DeadchatQuestion {
+  id       Int      @id @default(autoincrement())
+  question String   @db.VarChar
+  lastUsed DateTime @default(now()) @map("last_used") @db.Timestamp(6)
+
+  @@map(name: "deadchat_question")
+}
+
+model GroupMember {
+  id                           String                        @id @db.VarChar
+  userGroupMembersGroupMembers UserGroupMembersGroupMember[]
+
+  @@map(name: "group_member")
+}
+
+model Message {
+  id             String          @id @db.VarChar
+  channel        String?
+  channelToggles ChannelToggle[]
+
+  @@map(name: "message")
+}
+
+model ReactionRole {
+  id        Int    @id @default(autoincrement())
+  messageId String @map("message_id") @db.VarChar
+  channelId String @map("channel_id") @db.VarChar
+  reaction  String @db.VarChar
+  roleId    String @map("role_id") @db.VarChar
+
+  @@unique([messageId, channelId, reaction], name: "IDX_9a7f4eb4ad5822073b7454344b")
+  @@map(name: "reaction_role")
+}
+
+model SomeoneUser {
+  id   String   @id @db.VarChar
+  time DateTime @db.Timestamptz(6)
+
+  @@map(name: "someone_user")
+}
+
+model Timer {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  handlerIdentifier String   @db.VarChar
+  executeTime       DateTime @db.Timestamp(6)
+  data              Json?    @db.Json
+
+  @@map(name: "timer")
+}
+
+model Topic {
+  id      Int      @id @default(autoincrement())
+  topic   String   @db.VarChar
+  channel String   @db.VarChar
+  created DateTime @default(now()) @db.Timestamp(6)
+
+  @@map(name: "topic")
+}
+
+model UserGroup {
+  id                           Int                           @id @default(autoincrement())
+  name                         String                        @unique
+  description                  String
+  lastUsed                     DateTime                      @default(dbgenerated("'1969-12-31 23:00:00'::timestamp without time zone")) @map("last_used") @db.Timestamp(6)
+  cooldown                     Int                           @default(60)
+  deadtime                     Int                           @default(0)
+  groupPingSetting             GroupPingSetting              @default(MEMBER)
+  userGroupMembersGroupMembers UserGroupMembersGroupMember[]
+
+  @@map(name: "user_group")
+}
+
+enum GroupPingSetting {
+  BOT
+  MODERATOR
+  OFF
+  MEMBER
+}
+
+model UserGroupMembersGroupMember {
+  userGroupId   Int
+  groupMemberId String      @db.VarChar
+  groupMember   GroupMember @relation(fields: [groupMemberId], references: [id])
+  userGroup     UserGroup   @relation(fields: [userGroupId], references: [id], onDelete: Cascade)
+
+  @@id([userGroupId, groupMemberId])
+  @@index([userGroupId], name: "IDX_4d5a864456d00dafe30649263e")
+  @@index([groupMemberId], name: "IDX_b21e7c86a67e5a158ef88b530b")
+  @@map(name: "user_group_members_group_member")
+}
+
+model Valentine {
+  userId String    @id @db.VarChar
+  start  DateTime? @db.Timestamp(6)
+  end    DateTime? @db.Timestamp(6)
+
+  @@map(name: "valentine")
+}
+
+model VoiceOnDemandMapping {
+  userId    String @id @map("user_id") @db.VarChar
+  channelId String @map("channel_id") @db.VarChar
+  emoji     String @db.VarChar
+
+  @@unique([channelId], name: "IDX_VoiceOnDemandMapping_Unique_Channel")
+  @@map(name: "voice_on_demand_mapping")
+}
+
+model Release {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  releaseName String   @map("release_name") @db.VarChar
+  releaseTime String   @map("release_time") @db.VarChar
+  releaseTag  String   @map("release_tag") @db.VarChar
+  created     DateTime @default(now()) @db.Timestamp(6)
+
+  @@index([releaseTime])
+  @@map(name: "release")
+}
+
+model TimedOutUsers {
+  userId String @id @map("user_id") @db.VarChar
+
+  @@map(name: "timed_out_users")
+}
+
+model UsersOnBreak {
+  userId  String   @id @map("user_id") @db.VarChar
+  addedAt DateTime @default(now()) @map("created_at")
+
+  @@map(name: "users_on_break")
+}
+
+// The next section is for the curreny system.
+// All following models are core related to this.
+
+model Activity {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  counter   Int      @default(0) @map("counter")
+
+  @@map(name: "activity")
+}
+
+model Currency {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @unique @map("user_id")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  ammount   Int      @default(0) @map("ammount")
+
+  @@map(name: "currency")
+}

@@ -4,7 +4,7 @@ import { createYesBotLogger } from "../log";
 import { ChatNames } from "../collections/chat-names";
 import prisma from "../prisma";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
-import { Timer } from "@yes-theory-fam/database/client";
+import { Timer } from "@prisma/client";
 import bot from "..";
 import { TimerService } from "./timer/timer.service";
 import Tools from "../common/tools";

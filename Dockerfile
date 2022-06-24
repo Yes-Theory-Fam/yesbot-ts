@@ -2,7 +2,7 @@ FROM node:16.16-alpine AS builder
 RUN apk add --no-cache libc6-compat
 WORKDIR /usr/src/app
 COPY . .
-RUN yarn run tsc
+RUN yarn install --frozen-lockfile && yarn run tsc
 
 FROM node:16.16-alpine
 RUN apk add --no-cache libc6-compat
@@ -10,6 +10,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /usr/src/app
 
 COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/prisma ./prisma
 COPY --from=builder /usr/src/app/package.json ./package.json
 COPY --from=builder /usr/src/app/yarn.lock ./yarn.lock
 COPY --from=builder /usr/src/app/build ./build

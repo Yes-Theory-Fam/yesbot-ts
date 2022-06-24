@@ -1,7 +1,7 @@
 import { UpdateActivityType } from "../types/update-activity.type";
 import prisma from "../../../prisma";
 import { createYesBotLogger } from "../../../log";
-import { Activity } from "@yes-theory-fam/database/client";
+import { Activity } from "@prisma/client";
 
 export class UpdateActivity {
   private static updateActivityInstance: UpdateActivity;

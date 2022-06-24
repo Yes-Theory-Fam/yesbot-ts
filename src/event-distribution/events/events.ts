@@ -65,7 +65,7 @@ import {
   MemberJoinEventHandlerOptions,
   MemberJoinHandlerFunction,
 } from "./member-join";
-import { Timer } from "@yes-theory-fam/database/client";
+import { Timer } from "@prisma/client";
 import { createYesBotLogger } from "../../log";
 import Tools from "../../common/tools";
 import {

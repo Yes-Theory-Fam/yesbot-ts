@@ -8,9 +8,8 @@
     "build:docker": "docker build --force-rm --label yesbot --build-arg VCS_REF=$(git rev-parse --short HEAD) -t yesbot .",
     "build:prepare": "NODE_ENV=production && rm -rf node_modules && yarn install && yarn run tsc",
     "build:run": "docker run --link yesbot-ts_postgres_1 .",
-    "db:generate": "yarn run db:prisma generate",
-    "db:migrate": "env-cmd yarn run db:prisma migrate",
-    "db:prisma": "npx prisma",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate",
     "lint": "prettier --check \"src/**/*.(js|ts|json)\" \"__tests__/**/*.(js|ts|json)\"",
     "lint:fix": "prettier --write \"src/**/*.(js|ts|json)\" \"__tests__/**/*.(js|ts|json)\"",
     "postinstall": "yarn run db:generate",
@@ -21,13 +20,10 @@
     "test:cov": "jest --coverage",
     "tsc": "tsc"
   },
-  "prisma": {
-    "schema": "node_modules/@yes-theory-fam/database/prisma/schema.prisma"
-  },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@yes-theory-fam/database": "0.19.5",
+    "@prisma/client": "3.12.0",
     "axios": "0.27.2",
     "countries-and-timezones": "3.3.0",
     "country-code-emoji": "2.3.0",
@@ -40,6 +36,7 @@
     "pg": "8.7.3",
     "reflect-metadata": "0.1.13",
     "ts-node": "10.9.1",
+    "uuid": "^8.3.2",
     "winston": "3.8.1"
   },
   "devDependencies": {
@@ -56,7 +53,6 @@
     "prisma": "3.12.0",
     "ts-jest": "28.0.5",
     "ts-node-dev": "2.0.0",
-    "typegraphql-prisma": "0.20.0",
     "typescript": "4.7.4"
   }
 }

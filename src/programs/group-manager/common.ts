@@ -2,7 +2,7 @@ import {
   GroupMember,
   UserGroup,
   UserGroupMembersGroupMember,
-} from "@yes-theory-fam/database/client";
+} from "@prisma/client";
 import { GuildMember, Message } from "discord.js";
 import {
   GroupInteractionSuccess,

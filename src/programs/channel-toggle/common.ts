@@ -1,5 +1,5 @@
 import { Guild, Snowflake, TextChannel, User } from "discord.js";
-import { Message as MessageEntity } from "@yes-theory-fam/database/client";
+import { Message as MessageEntity } from "@prisma/client";
 import prisma from "../../prisma";
 import bot from "../..";
 

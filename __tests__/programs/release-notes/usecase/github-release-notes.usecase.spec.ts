@@ -4,7 +4,7 @@ import {
   Node,
 } from "../../../../src/programs/release-notes/types/github-release.types";
 import { GithubReleaseNotesAccessor } from "../../../../src/programs/release-notes/acessor/github-release-notes.accessor";
-import { Release } from "@yes-theory-fam/database/client";
+import { Release } from "@prisma/client";
 
 jest.mock(
   "../../../../src/programs/release-notes/acessor/github-release-notes.accessor"
