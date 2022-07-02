@@ -50,7 +50,7 @@
     "@types/ws": "8.5.3",
     "@yestheoryfam/prettier-config": "1.0.0",
     "env-cmd": "10.1.0",
-    "jest": "28.1.1",
+    "jest": "28.1.2",
     "jest-mock-extended": "2.0.6",
     "prettier": "2.7.1",
     "prisma": "3.12.0",
