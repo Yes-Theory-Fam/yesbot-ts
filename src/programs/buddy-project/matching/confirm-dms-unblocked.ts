@@ -11,7 +11,7 @@ import {
   TextChannel,
   User,
 } from "discord.js";
-import prisma from "../../../prisma";
+import { BuddyProjectService } from "../services/buddy-project.service";
 
 @Command({
   event: DiscordEvent.REACTION_ADD,
@@ -21,14 +21,13 @@ import prisma from "../../../prisma";
 class BuddyProjectConfirmDmsUnblocked extends CommandHandler<DiscordEvent.REACTION_ADD> {
   async handle(reaction: MessageReaction, user: User): Promise<void> {
     const dmsWork = await this.ensureDmsWork(user.id, reaction.client);
+    await reaction.users.remove(user.id);
+
     if (!dmsWork) {
       await this.rejectConfirmation(reaction, user.id);
     }
 
     await this.resetBlockedStatus(user.id);
-
-    const textChannel = reaction.message.channel as TextChannel;
-    await this.resetChannelPermissions(user.id, textChannel);
   }
 
   async ensureDmsWork(userId: Snowflake, client: Client) {
@@ -52,13 +51,6 @@ class BuddyProjectConfirmDmsUnblocked extends CommandHandler<DiscordEvent.REACTI
   }
 
   async resetBlockedStatus(userId: Snowflake) {
-    await prisma.buddyProjectEntry.update({
-      where: { userId },
-      data: { blocked: false },
-    });
-  }
-
-  async resetChannelPermissions(userId: Snowflake, channel: TextChannel) {
-    await channel.permissionOverwrites.delete(userId);
+    await new BuddyProjectService().unblock(userId);
   }
 }

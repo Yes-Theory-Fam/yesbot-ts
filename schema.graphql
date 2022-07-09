@@ -1,0 +1,62 @@
+# This file was generated based on ".graphqlconfig". Do not edit manually.
+
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+directive @export(exportName: String) on FIELD
+
+type BuddyProjectEntry {
+    blocked: Boolean!
+    buddyId: String
+    matchedDate: DateTime
+    reportedGhostDate: DateTime
+    userId: String!
+    username: String
+}
+
+type BuddyProjectStatusPayload {
+    buddy: BuddyProjectEntry
+    status: BuddyProjectStatus!
+}
+
+type MarkGhostedPayload {
+    buddyId: String
+    error: MarkGhostedError
+    success: Boolean!
+}
+
+type Mutation {
+    block(userId: String!): Boolean!
+    kick(userId: String!): Boolean!
+    markAsNotGhosting(userId: String!): Boolean!
+    markGhosted(userId: String!): MarkGhostedPayload!
+    match(aId: String!, bId: String!): Boolean!
+    rollbackMatch(aId: String!, bId: String!): Boolean!
+    unblock(userId: String!): Boolean!
+    unmatch(userId: String!): Boolean!
+}
+
+type Query {
+    getBuddy(userId: String!): BuddyProjectStatusPayload!
+    getGhostedBuddies(before: DateTime!): [BuddyProjectEntry!]!
+    unmatchedBuddyIds(limit: Float!): [String!]!
+}
+
+enum BuddyProjectStatus {
+    MATCHED
+    NOT_SIGNED_UP
+    SIGNED_UP
+}
+
+enum MarkGhostedError {
+    ALREADY_MARKED
+    BUDDY_MARKED_ALREADY
+    NOT_MATCHED
+    NOT_SIGNED_UP
+    WAITED_TOO_LITTLE
+}
+
+"The javascript `Date` as string. Type represents date and time as the ISO Date string."
+scalar DateTime

@@ -11,7 +11,7 @@ import {
   Snowflake,
   User,
 } from "discord.js";
-import prisma from "../../../prisma";
+import { BuddyProjectService } from "../services/buddy-project.service";
 import { ghostWarningMessageRegex } from "./constants";
 
 @Command({
@@ -22,15 +22,16 @@ import { ghostWarningMessageRegex } from "./constants";
 })
 class NotifyNotGhosting extends CommandHandler<DiscordEvent.REACTION_ADD> {
   async handle(reaction: MessageReaction, user: User): Promise<void> {
-    const dm = reaction.message.channel as PartialDMChannel;
-    const entry = await this.findEntry(user.id);
-    await this.clearGhostingDate(entry.buddyId);
-    await this.notifyBuddy(entry.buddyId, reaction.client);
-    await this.notifyGhoster(dm);
-  }
+    const bpService = new BuddyProjectService();
+    const entry = await bpService.getBuddy(user.id);
 
-  findEntry(userId: Snowflake) {
-    return prisma.buddyProjectEntry.findUnique({ where: { userId } });
+    const dm = reaction.message.channel as PartialDMChannel;
+
+    const ghostedId = entry.buddy.buddyId;
+    await bpService.markAsNotGhosting(user.id);
+
+    await this.notifyBuddy(ghostedId, reaction.client);
+    await this.notifyGhoster(dm);
   }
 
   async notifyBuddy(buddyId: Snowflake, client: Client) {
@@ -46,12 +47,5 @@ class NotifyNotGhosting extends CommandHandler<DiscordEvent.REACTION_ADD> {
     await channel.send(
       "Glad to see you are still with us! Now don't forget to message your buddy ;)"
     );
-  }
-
-  async clearGhostingDate(reporterUserId: Snowflake) {
-    await prisma.buddyProjectEntry.update({
-      where: { userId: reporterUserId },
-      data: { reportedGhostDate: null },
-    });
   }
 }

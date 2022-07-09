@@ -1,0 +1,24 @@
+mutation markGhosted($userId: String!) {
+    markGhosted(userId: $userId) @export(exportName: "MarkGhostedPayload") {
+        error
+        success
+        buddyId
+    }
+}
+
+mutation markAsNotGhosting($userId: String!) {
+    markAsNotGhosting(userId: $userId)
+}
+
+query getBuddy($userId: String!) {
+    getBuddy(userId: $userId) @export(exportName: "BuddyProjectStatusPayload") {
+        status
+        buddy {
+            buddyId
+        }
+    }
+}
+
+mutation unblock($userId: String!) {
+    unblock(userId: $userId)
+}

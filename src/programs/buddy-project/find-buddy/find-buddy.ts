@@ -1,18 +1,19 @@
+import { Message } from "discord.js";
+import { BuddyProjectStatus } from "../../../__generated__/types";
+import { ChatNames } from "../../../collections/chat-names";
+import { RoleNames } from "../../../collections/role-names";
 import {
   Command,
   CommandHandler,
   DiscordEvent,
   HandlerRejectedReason,
 } from "../../../event-distribution";
-import { Message } from "discord.js";
-import prisma from "../../../prisma";
-import { ChatNames } from "../../../collections/chat-names";
 import { BuddyProjectError, commonMessages } from "../errors";
-import { BuddyProjectMatching } from "../matching/matching";
+import { BuddyProjectService } from "../services/buddy-project.service";
 
 @Command({
   event: DiscordEvent.MESSAGE,
-  allowedRoles: ["Buddy Project 2021"],
+  allowedRoles: [RoleNames.BUDDY_PROJECT],
   trigger: "!buddy",
   description: "Pings the buddy of the author",
   errors: {
@@ -28,32 +29,28 @@ class FindBuddyCommand extends CommandHandler<DiscordEvent.MESSAGE> {
       member,
       author: { id: userId },
     } = message;
-    const buddyEntry = await prisma.buddyProjectEntry.findUnique({
-      where: {
-        userId,
-      },
-      include: {
-        buddy: true,
-      },
-      rejectOnNotFound: false,
-    });
 
-    if (!buddyEntry) {
+    const {
+      buddy: { buddyId },
+      status,
+    } = await new BuddyProjectService().getBuddy(userId);
+
+    if (status === BuddyProjectStatus.NotSignedUp) {
       throw new Error(BuddyProjectError.NOT_SIGNED_UP);
     }
 
-    if (!buddyEntry.buddy) {
+    if (!buddyId) {
       throw new Error(BuddyProjectError.NOT_MATCHED);
     }
 
-    const buddyMember = await member.guild.members.fetch(buddyEntry.buddyId);
+    const buddyMember = await member.guild.members.fetch(buddyId);
     const tag = `${buddyMember.user.username}#${buddyMember.user.discriminator}`;
     const infoChannel = member.guild.channels.cache.find(
       (c) => c.name === ChatNames.BUDDY_PROJECT_INFO
     );
 
     await message.reply(
-      `Hey, your buddy is <@${buddyEntry.buddyId}> (${tag})! If that just shows some symbols and numbers, head here to find out how to fix that: ${infoChannel}.
+      `Hey, your buddy is <@${buddyId}> (${tag})! If that just shows some symbols and numbers, head here to find out how to fix that: ${infoChannel}.
 If that doesn't help either, send \`!rescue\` in this channel.`
     );
   }

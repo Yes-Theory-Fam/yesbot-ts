@@ -1,9 +1,4 @@
 import {
-  Command,
-  CommandHandler,
-  DiscordEvent,
-} from "../../../event-distribution";
-import {
   Guild,
   GuildMember,
   Message,
@@ -11,9 +6,16 @@ import {
   TextChannel,
   ThreadChannel,
 } from "discord.js";
-import prisma from "../../../prisma";
+import { BuddyProjectStatus } from "../../../__generated__/types";
 import { ChatNames } from "../../../collections/chat-names";
+import { RoleNames } from "../../../collections/role-names";
+import {
+  Command,
+  CommandHandler,
+  DiscordEvent,
+} from "../../../event-distribution";
 import { BuddyProjectError, commonMessages } from "../errors";
+import { BuddyProjectService } from "../services/buddy-project.service";
 
 const enum RescueErrors {
   THREAD_ALREADY_EXISTS = "THREAD_ALREADY_EXISTS",
@@ -29,7 +31,7 @@ const enum RescueErrors {
   },
   trigger: "!rescue",
   channelNames: [ChatNames.BUDDY_PROJECT],
-  allowedRoles: ["Buddy Project 2021"],
+  allowedRoles: [RoleNames.BUDDY_PROJECT],
   description:
     "Allows signed up members to more easily find their buddy using some cheeky Discord tricks.",
   stateful: false,
@@ -96,20 +98,20 @@ If you want to help us out, please click the checkmark below to prematurely clos
   }
 
   static async ensureMatched(userId: Snowflake): Promise<Snowflake> {
-    const userAndBuddy = await prisma.buddyProjectEntry.findUnique({
-      where: { userId },
-      select: { userId: true, buddyId: true },
-    });
+    const {
+      status,
+      buddy: { buddyId },
+    } = await new BuddyProjectService().getBuddy(userId);
 
-    if (!userAndBuddy) {
+    if (status === BuddyProjectStatus.NotSignedUp) {
       throw new Error(BuddyProjectError.NOT_SIGNED_UP);
     }
 
-    if (!userAndBuddy.buddyId) {
+    if (!buddyId) {
       throw new Error(BuddyProjectError.NOT_MATCHED);
     }
 
-    return userAndBuddy.buddyId;
+    return buddyId;
   }
 
   static ensureThreadCapacity(guild: Guild): void {
