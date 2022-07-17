@@ -174,12 +174,12 @@ export class EventDistribution {
       try {
         await instance.handle(...args);
       } catch (e) {
-        logger.error(`Error running handler ${getIocName(ioc)}: `, e);
         const reason = e instanceof Error ? e.message : e + "";
-
         if (errors && errors[reason]) {
           const text = errors[reason];
           await rejectWithMessage(text, event, ...args);
+        } else {
+          logger.error(`Error running handler ${getIocName(ioc)}: `, e);
         }
       }
 

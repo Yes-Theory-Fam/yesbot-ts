@@ -30,18 +30,17 @@ class FindBuddyCommand extends CommandHandler<DiscordEvent.MESSAGE> {
       author: { id: userId },
     } = message;
 
-    const {
-      buddy: { buddyId },
-      status,
-    } = await new BuddyProjectService().getBuddy(userId);
+    const { buddy, status } = await new BuddyProjectService().getBuddy(userId);
 
     if (status === BuddyProjectStatus.NotSignedUp) {
       throw new Error(BuddyProjectError.NOT_SIGNED_UP);
     }
 
-    if (!buddyId) {
+    if (!buddy) {
       throw new Error(BuddyProjectError.NOT_MATCHED);
     }
+
+    const { userId: buddyId } = buddy;
 
     const buddyMember = await member.guild.members.fetch(buddyId);
     const tag = `${buddyMember.user.username}#${buddyMember.user.discriminator}`;

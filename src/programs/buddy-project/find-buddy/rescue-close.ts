@@ -13,7 +13,10 @@ import { ChatNames } from "../../../collections/chat-names";
 })
 class RescueClose extends CommandHandler<DiscordEvent.REACTION_ADD> {
   async handle(reaction: MessageReaction, user: User): Promise<void> {
+    if (user.bot) return;
+
     const channel = reaction.message.channel;
+
     if (!(channel instanceof ThreadChannel)) return;
 
     if (!channel.name.endsWith(`(${user.id})`)) {

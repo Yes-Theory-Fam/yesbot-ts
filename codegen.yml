@@ -1,6 +1,8 @@
 overwrite: true
 schema:
-  - http://localhost:5001/graphql
+  - http://localhost:5001/graphql:
+      headers:
+        X-YesBot-Authentication: ""
 documents: ./**/*.graphql
 hooks:
   afterAllFileWrite:

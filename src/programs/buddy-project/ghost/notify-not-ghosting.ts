@@ -27,9 +27,9 @@ class NotifyNotGhosting extends CommandHandler<DiscordEvent.REACTION_ADD> {
 
     const dm = reaction.message.channel as PartialDMChannel;
 
-    const ghostedId = entry.buddy.buddyId;
     await bpService.markAsNotGhosting(user.id);
 
+    const ghostedId = entry.buddy.userId;
     await this.notifyBuddy(ghostedId, reaction.client);
     await this.notifyGhoster(dm);
   }

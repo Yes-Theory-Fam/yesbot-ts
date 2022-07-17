@@ -14,7 +14,7 @@ query getBuddy($userId: String!) {
     getBuddy(userId: $userId) @export(exportName: "BuddyProjectStatusPayload") {
         status
         buddy {
-            buddyId
+            userId
         }
     }
 }

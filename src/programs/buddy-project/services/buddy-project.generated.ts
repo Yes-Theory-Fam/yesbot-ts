@@ -41,7 +41,7 @@ export type GetBuddyQuery = {
 export type BuddyProjectStatusPayload = {
   __typename?: "BuddyProjectStatusPayload";
   status: Types.BuddyProjectStatus;
-  buddy?: { __typename?: "BuddyProjectEntry"; buddyId?: string | null } | null;
+  buddy?: { __typename?: "BuddyProjectEntry"; userId: string } | null;
 };
 
 export type UnblockMutationVariables = Types.Exact<{
@@ -69,7 +69,7 @@ export const GetBuddyDocument = gql`
     getBuddy(userId: $userId) @export(exportName: "BuddyProjectStatusPayload") {
       status
       buddy {
-        buddyId
+        userId
       }
     }
   }

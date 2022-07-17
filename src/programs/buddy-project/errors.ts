@@ -1,5 +1,3 @@
-import { BuddyProjectMatching } from "./matching/matching";
-
 export const enum BuddyProjectError {
   NOT_SIGNED_UP = "NOT_SIGNED_UP",
   NOT_MATCHED = "NOT_MATCHED",

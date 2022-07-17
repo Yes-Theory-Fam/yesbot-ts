@@ -28,20 +28,13 @@ type MarkGhostedPayload {
 }
 
 type Mutation {
-    block(userId: String!): Boolean!
-    kick(userId: String!): Boolean!
     markAsNotGhosting(userId: String!): Boolean!
     markGhosted(userId: String!): MarkGhostedPayload!
-    match(aId: String!, bId: String!): Boolean!
-    rollbackMatch(aId: String!, bId: String!): Boolean!
     unblock(userId: String!): Boolean!
-    unmatch(userId: String!): Boolean!
 }
 
 type Query {
     getBuddy(userId: String!): BuddyProjectStatusPayload!
-    getGhostedBuddies(before: DateTime!): [BuddyProjectEntry!]!
-    unmatchedBuddyIds(limit: Float!): [String!]!
 }
 
 enum BuddyProjectStatus {

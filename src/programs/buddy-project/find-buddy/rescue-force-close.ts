@@ -3,6 +3,11 @@ import { Client, TextChannel, ThreadChannel } from "discord.js";
 import { ChatNames } from "../../../collections/chat-names";
 import { createYesBotLogger } from "../../../log";
 
+interface OldThreads {
+  toWarn: ThreadChannel[];
+  toDelete: ThreadChannel[];
+}
+
 export class RescueForceClose {
   static schedulingMinutes = 5;
   static threadMaxLifetimeMinutes = 60;
@@ -26,7 +31,7 @@ export class RescueForceClose {
     await Promise.all([warnThreads, deleteThreads]);
   }
 
-  findOldThreads(): { toDelete: ThreadChannel[]; toWarn: ThreadChannel[] } {
+  findOldThreads(): OldThreads {
     const guild = this.bot.guilds.resolve(process.env.GUILD_ID);
     const threadParent = guild.channels.cache.find(
       (c): c is TextChannel => c.name === ChatNames.BUDDY_PROJECT_INFO
@@ -35,30 +40,28 @@ export class RescueForceClose {
     const allThreads = threadParent.threads.cache.values();
     const nowTimestamp = Date.now();
 
-    /*
-    12:00 - 11:00 > 1
-    12:00 - 11:05
-    A thread shall be deleted if now - createdTime > threadMaxLifetimeMinutes
-    A thread shall be warned if threadMaxLifetimeMinutes - now - createdTime < schedulingMinutes
-     */
-    return [...allThreads].reduce(
-      (acc, current) => {
-        const channelLifetime = nowTimestamp - current.createdTimestamp;
-        if (channelLifetime > RescueForceClose.threadMaxLifetimeMinutes) {
-          acc.toDelete.push(current);
-        }
+    const result: OldThreads = { toDelete: [], toWarn: [] };
 
-        if (
-          RescueForceClose.threadMaxLifetimeMinutes - channelLifetime <
-          RescueForceClose.schedulingMinutes
-        ) {
-          acc.toWarn.push(current);
-        }
+    for (const thread of allThreads) {
+      const channelLifetimeInMinutes =
+        (nowTimestamp - thread.createdTimestamp) / 1000 / 60;
 
-        return acc;
-      },
-      { toDelete: [], toWarn: [] }
-    );
+      if (
+        channelLifetimeInMinutes > RescueForceClose.threadMaxLifetimeMinutes
+      ) {
+        result.toDelete.push(thread);
+        continue;
+      }
+
+      if (
+        RescueForceClose.threadMaxLifetimeMinutes - channelLifetimeInMinutes <
+        RescueForceClose.schedulingMinutes
+      ) {
+        result.toWarn.push(thread);
+      }
+    }
+
+    return result;
   }
 
   async warnThreads(threads: ThreadChannel[]) {

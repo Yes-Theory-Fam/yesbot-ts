@@ -98,20 +98,17 @@ If you want to help us out, please click the checkmark below to prematurely clos
   }
 
   static async ensureMatched(userId: Snowflake): Promise<Snowflake> {
-    const {
-      status,
-      buddy: { buddyId },
-    } = await new BuddyProjectService().getBuddy(userId);
+    const { status, buddy } = await new BuddyProjectService().getBuddy(userId);
 
     if (status === BuddyProjectStatus.NotSignedUp) {
       throw new Error(BuddyProjectError.NOT_SIGNED_UP);
     }
 
-    if (!buddyId) {
+    if (!buddy) {
       throw new Error(BuddyProjectError.NOT_MATCHED);
     }
 
-    return buddyId;
+    return buddy.userId;
   }
 
   static ensureThreadCapacity(guild: Guild): void {
