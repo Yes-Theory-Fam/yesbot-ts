@@ -1,9 +1,10 @@
+import Tools from "../../common/tools";
 import {
   Command,
   CommandHandler,
   DiscordEvent,
 } from "../../event-distribution";
-import { Message, TextChannel, User, Util } from "discord.js";
+import { ChannelType, Message, TextChannel, User } from "discord.js";
 import { createOutput, closeTicket } from "./common";
 
 @Command({
@@ -49,7 +50,7 @@ class CloseTicket implements CommandHandler<DiscordEvent.MESSAGE> {
         const user = reaction?.users.cache.find((u) => !u.bot);
         if (reaction?.emoji.toString() === "📑") {
           user?.createDM().then(async (dm) => {
-            const messages = Util.splitMessage(
+            const messages = Tools.splitMessage(
               await createOutput(channel, member)
             );
             for (const message of messages) {
@@ -58,7 +59,8 @@ class CloseTicket implements CommandHandler<DiscordEvent.MESSAGE> {
           });
         }
 
-        if (reaction?.message.channel.type !== "GUILD_TEXT" || !user) return;
+        if (reaction?.message.channel.type !== ChannelType.GuildText || !user)
+          return;
 
         closeTicket(reaction.message.channel, user, TICKET_LOG_CHANNEL);
       });

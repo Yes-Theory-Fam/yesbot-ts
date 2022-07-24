@@ -1,10 +1,11 @@
 import {
+  ChannelType,
   GuildChannelCreateOptions,
   Message,
   OverwriteResolvable,
+  PermissionsBitField,
   TextChannel,
   User,
-  Util,
 } from "discord.js";
 import Tools from "../../common/tools";
 
@@ -19,7 +20,7 @@ export const closeTicket = async (
       (c) => c.name.startsWith(logChannelName) && c.name.endsWith("logs")
     )
   );
-  const messages = Util.splitMessage(text);
+  const messages = Tools.splitMessage(text);
   for (const message of messages) {
     await logChannel.send(message);
   }
@@ -117,30 +118,39 @@ const createTicket = async (
   const permissionOverwrites: OverwriteResolvable[] = [
     {
       id: message.guild.id,
-      deny: ["VIEW_CHANNEL"],
+      deny: [PermissionsBitField.Flags.ViewChannel],
     },
     {
       id: message.author.id,
-      allow: ["VIEW_CHANNEL", "READ_MESSAGE_HISTORY", "SEND_MESSAGES"],
-      deny: ["ADD_REACTIONS"],
+      allow: [
+        PermissionsBitField.Flags.ViewChannel,
+        PermissionsBitField.Flags.ReadMessageHistory,
+        PermissionsBitField.Flags.SendMessages,
+      ],
+      deny: [PermissionsBitField.Flags.AddReactions],
     },
   ];
 
   if (moderatorRole) {
     permissionOverwrites.push({
       id: moderatorRole.id,
-      allow: ["VIEW_CHANNEL", "READ_MESSAGE_HISTORY", "SEND_MESSAGES"],
+      allow: [
+        PermissionsBitField.Flags.ViewChannel,
+        PermissionsBitField.Flags.ReadMessageHistory,
+        PermissionsBitField.Flags.SendMessages,
+      ],
     });
   }
 
-  const channelOptions: GuildChannelCreateOptions & { type: "GUILD_TEXT" } = {
+  const channelOptions: GuildChannelCreateOptions = {
+    name: channelName,
     topic: "Support ticket for " + message.member?.user.username,
-    type: "GUILD_TEXT",
+    type: ChannelType.GuildText,
     permissionOverwrites,
     parent: category,
   };
 
-  return await message.guild.channels.create(channelName, channelOptions);
+  return await message.guild.channels.create(channelOptions);
 };
 
 export enum TicketType {

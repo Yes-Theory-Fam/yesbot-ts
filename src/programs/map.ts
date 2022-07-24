@@ -1,4 +1,4 @@
-import { Message, MessageEmbed } from "discord.js";
+import { Message, EmbedBuilder } from "discord.js";
 import Tools from "../common/tools";
 import { CountryRoleFinder } from "../common/country-role-finder";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
@@ -46,14 +46,19 @@ class MapAdd implements CommandHandler<DiscordEvent.MESSAGE> {
       ?.user.createDM();
     const author = message.member;
 
-    const dmEmbed = new MessageEmbed()
+    const dmEmbed = new EmbedBuilder()
       .setTitle(`Map Update Requested`)
-      .addField("UserID:", `${message.author.id}`)
-      .addField("Current Name on the server:", `${author?.displayName}`)
-      .addField("Current Discord Tag:", `${author?.user.tag}`)
-      .addField("City / Location:", `${city}`)
-      .addField("Countries:", `${countries?.join(",")}`)
-      .addField("Link to the message:", `[here](${message.url})`);
+      .setFields([
+        { name: "UserID:", value: message.author.id },
+        {
+          name: "Current Name on the server:",
+          value: author?.displayName ?? "",
+        },
+        { name: "Current Discord Tag:", value: author?.user.tag ?? "" },
+        { name: "City / Location:", value: city },
+        { name: "Countries:", value: countries?.join(",") ?? "" },
+        { name: "Link to the message:", value: `[here](${message.url})` },
+      ]);
 
     await mapMaintainerDm?.send({ embeds: [dmEmbed] });
     await message.reply(

@@ -5,6 +5,7 @@ import {
   GuildMember,
   PartialGuildMember,
   Permissions,
+  PermissionsBitField,
   TextChannel,
 } from "discord.js";
 import Tools from "../common/tools";
@@ -169,20 +170,23 @@ const getCountryChannels = (guild: Guild) => {
   );
 
   return [...countryCategoryChannels.values()]
-    .map((category) => [...(category as CategoryChannel).children.values()])
+    .map((category) => [
+      ...(category as CategoryChannel).children.cache.values(),
+    ])
     .flat();
 };
 
 const lockCountryChannels = (member: GuildMember | PartialGuildMember) => {
   const hasReadPermissions = (channel: GuildChannel) =>
-    channel.permissionsFor(member.id)?.has(Permissions.FLAGS.VIEW_CHANNEL) ??
-    false;
+    channel
+      .permissionsFor(member.id)
+      ?.has(PermissionsBitField.Flags.ViewChannel) ?? false;
 
   getCountryChannels(member.guild)
     .filter(hasReadPermissions)
     .forEach((channel) =>
       channel.permissionOverwrites.edit(member.id, {
-        VIEW_CHANNEL: false,
+        ViewChannel: false,
       })
     );
 };

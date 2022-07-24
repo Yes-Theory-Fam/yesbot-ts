@@ -11,6 +11,7 @@ import {
   MessageReaction,
   Snowflake,
   TextChannel,
+  ThreadAutoArchiveDuration,
   ThreadChannel,
   User,
 } from "discord.js";
@@ -84,7 +85,7 @@ class ApproveTravelTicket extends CommandHandler<DiscordEvent.REACTION_ADD> {
     const trimmedThreadName = threadName.substring(0, 100);
 
     return await travelMessage.startThread({
-      autoArchiveDuration: "MAX",
+      autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
       name: trimmedThreadName,
     });
   }

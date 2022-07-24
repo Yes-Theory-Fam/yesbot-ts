@@ -1,16 +1,18 @@
-import { createYesBotLogger } from "./log";
 import {
   Client,
+  GatewayIntentBits,
   GuildMember,
   Interaction,
   Message,
   MessageReaction,
   PartialGuildMember,
   PartialMessageReaction,
+  Partials,
   PartialUser,
   User,
   VoiceState,
 } from "discord.js";
+import distribution, { DiscordEvent } from "./event-distribution";
 import {
   guildMemberUpdate,
   memberLeave,
@@ -18,25 +20,28 @@ import {
   ready,
   voiceStateUpdate,
 } from "./events";
-import distribution, { DiscordEvent } from "./event-distribution";
 import { LoadCron } from "./load-cron";
+import { createYesBotLogger } from "./log";
 
 const logger = createYesBotLogger("main", "index");
 logger.info("Starting YesBot");
 
 const bot = new Client({
   intents: [
-    "GUILDS",
-    "GUILD_MEMBERS",
-    "GUILD_BANS",
-    "GUILD_PRESENCES",
-    "GUILD_VOICE_STATES",
-    "GUILD_MESSAGES",
-    "GUILD_MESSAGE_REACTIONS",
-    "DIRECT_MESSAGES",
-    "DIRECT_MESSAGE_REACTIONS",
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.DirectMessageReactions,
+
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildBans,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.GuildPresences,
+    GatewayIntentBits.GuildVoiceStates,
+
+    GatewayIntentBits.MessageContent,
   ],
-  partials: ["REACTION", "MESSAGE", "CHANNEL"],
+  partials: [Partials.Channel, Partials.Message, Partials.Reaction],
 });
 logger.info("Initializing event-distribution");
 distribution.initialize().then(() => {
