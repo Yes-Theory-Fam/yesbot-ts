@@ -10,6 +10,7 @@ import {
   StringIndexedHIOCTree,
 } from "./types/hioc";
 import {
+  ChannelType,
   GuildChannel,
   GuildMember,
   Message,
@@ -42,14 +43,14 @@ export const withMessageRelatedInfo = (
   resolver: HandlerKeyFromChannelIdResolver
 ): HandlerInfo[] => {
   const getChannelIdentifier = (channel: TextBasedChannel) =>
-    channel.type === "DM" ? channel.id : channel.name;
+    channel.type === ChannelType.DM ? channel.id : channel.name;
 
   const channel = message.channel;
   const channelIdentifier = getChannelIdentifier(channel);
 
   const baseInfo = {
     member: member,
-    isDirectMessage: message.channel.type === "DM",
+    isDirectMessage: message.channel.type === ChannelType.DM,
   };
 
   const info = [

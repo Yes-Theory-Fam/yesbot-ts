@@ -66,7 +66,13 @@ export class GithubReleaseNotesAccessor {
           },
         }
       )
-      .catch((e) => logger.error(e));
+      .catch((e) =>
+        logger.error("Failed to fetch release data from github", {
+          status: e.response.status,
+          statusText: e.response.statusText,
+          data: e.response.data,
+        })
+      );
   }
 }
 

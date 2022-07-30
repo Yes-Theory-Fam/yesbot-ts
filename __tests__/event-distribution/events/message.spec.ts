@@ -1,3 +1,4 @@
+import { ChannelType } from "discord.js";
 import {
   addMessageHandler,
   extractMessageInfo,
@@ -24,7 +25,7 @@ describe("Messages", () => {
 
   it("should extract messages from direct message", () => {
     const message = mockDiscord.getMessage();
-    message.channel.type = "DM";
+    message.channel.type = ChannelType.DM;
     const result = extractMessageInfo(message);
     expect(result).toMatchSnapshot();
   });

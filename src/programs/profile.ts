@@ -1,4 +1,4 @@
-import { GuildMember, Message, MessageEmbed } from "discord.js";
+import { GuildMember, Message, EmbedBuilder } from "discord.js";
 import Tools from "../common/tools";
 import { formatBirthday, getUserBirthday } from "./birthday-manager";
 import prisma from "../prisma";
@@ -26,7 +26,7 @@ class Profile implements CommandHandler<DiscordEvent.MESSAGE> {
 
     const profileEmbed = await getProfileEmbed(requestedMember);
     const messageContent =
-      profileEmbed instanceof MessageEmbed
+      profileEmbed instanceof EmbedBuilder
         ? { embeds: [profileEmbed] }
         : { content: profileEmbed };
 
@@ -36,8 +36,8 @@ class Profile implements CommandHandler<DiscordEvent.MESSAGE> {
 
 const getProfileEmbed = async (
   member: GuildMember
-): Promise<MessageEmbed | string> => {
-  const profileEmbed = new MessageEmbed();
+): Promise<EmbedBuilder | string> => {
+  const profileEmbed = new EmbedBuilder();
   const countries = member.roles.cache
     .filter((role) => {
       return CountryRoleFinder.isCountryRole(role.name, true);
@@ -71,19 +71,21 @@ const getProfileEmbed = async (
     profileEmbed.setThumbnail(avatarUrl);
   }
   profileEmbed.setTitle(
-    yesEmoji?.toString() +
+    (yesEmoji?.toString() ?? "") +
       " " +
       member.user.username +
       "#" +
       member.user.discriminator
   );
   profileEmbed.setColor(member.roles.color?.color ?? "#004dff");
-  profileEmbed.addField("Hi! My name is:", member.displayName, true);
-  profileEmbed.addField("Where I'm from:", countryString, true);
-  profileEmbed.addField("\u200b", "\u200b");
-  profileEmbed.addField("Joined on:", joinDate ?? "Unknown", true);
-  profileEmbed.addField("Birthday:", birthdayString, true);
-  profileEmbed.addField("Groups:", groupString || "None", true);
+  profileEmbed.setFields([
+    { name: "Hi! My name is:", value: member.displayName, inline: true },
+    { name: "Where I'm from:", value: countryString, inline: true },
+    { name: "\u200b", value: "\u200b" },
+    { name: "Joined on:", value: joinDate ?? "Unknown", inline: true },
+    { name: "Birthday:", value: birthdayString, inline: true },
+    { name: "Groups:", value: groupString || "None", inline: true },
+  ]);
   profileEmbed.setFooter({
     text: "Thank you for using the Yes Theory Fam Discord Server!",
   });

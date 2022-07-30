@@ -1,4 +1,5 @@
 import {
+  ChannelType,
   MessageReaction,
   PartialMessageReaction,
   PartialUser,
@@ -44,7 +45,7 @@ export const extractReactionInfo: ExtractInfoForEventFunction<
   DiscordEvent.REACTION_ADD | DiscordEvent.REACTION_REMOVE
 > = (reaction, user) => {
   const channel = reaction.message.channel;
-  const guild = channel.type === "DM" ? null : channel.guild;
+  const guild = channel.type === ChannelType.DM ? null : channel.guild;
   const member = guild?.members.resolve(user.id) ?? null;
 
   return withMessageRelatedInfo(reaction.message, member, (channelId) => [

@@ -17,7 +17,7 @@ import {
   APIGuildMember,
   ChannelType,
   MessageType,
-} from "discord-api-types/v9";
+} from "discord-api-types/v10";
 import { MockMessage } from "./message";
 import { MockMessageReaction } from "./reaction";
 import { GuildMock, MockGuild } from "./guild";
@@ -106,7 +106,7 @@ export default class MockDiscord {
   };
 
   private mockClient(): void {
-    this.client = new Discord.Client({ intents: [], restSweepInterval: 0 });
+    this.client = new Discord.Client({ intents: [] });
 
     this.client.users.fetch = jest.fn(() => Promise.resolve(this.getUser()));
     this.client.user = Reflect.construct(ClientUser, [
@@ -146,13 +146,14 @@ export default class MockDiscord {
   }
 
   private mockChannel(): void {
-    this.channel = Reflect.construct(Channel, [
-      this.client,
+    this.channel = Reflect.construct(TextChannel, [
+      this.guild,
       {
         id: idString,
         name: "Frank",
         type: ChannelType.GuildText,
       },
+      this.client,
     ]);
   }
 
@@ -168,6 +169,7 @@ export default class MockDiscord {
         parent_id: idString,
         permission_overwrites: [],
       },
+      this.client,
     ]);
   }
 
@@ -229,7 +231,6 @@ export default class MockDiscord {
         content: "this is the message content",
         author: this.apiUser(),
         webhook_id: undefined,
-        member: this.apiMember(),
         pinned: false,
         tts: false,
         nonce: "nonce",

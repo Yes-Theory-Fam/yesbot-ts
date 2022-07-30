@@ -1,8 +1,8 @@
-import { Message, TextChannel } from "discord.js";
+import { ChannelType, Message, TextChannel } from "discord.js";
 import { VoiceOnDemand } from "../programs";
 
 const message = async (msg: Message) => {
-  if (msg.channel.type === "DM" && !msg.author.bot) {
+  if (msg.channel.type === ChannelType.DM && !msg.author.bot) {
     return;
   } else {
     await routeMessage(msg);

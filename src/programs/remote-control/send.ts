@@ -1,4 +1,4 @@
-import { Message, TextChannel, Util } from "discord.js";
+import { Message, TextChannel } from "discord.js";
 import bot from "../..";
 import Tools from "../../common/tools";
 import {
@@ -40,7 +40,7 @@ class SendMessage implements CommandHandler<DiscordEvent.MESSAGE> {
     }
 
     try {
-      const messagesBatches = Util.splitMessage(messageToSend, { char: " " });
+      const messagesBatches = Tools.splitMessage(messageToSend, { char: " " });
       for (const batch of messagesBatches) {
         await channel.send({ content: batch });
       }

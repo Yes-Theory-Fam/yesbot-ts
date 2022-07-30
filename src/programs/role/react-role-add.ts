@@ -1,4 +1,4 @@
-import { Channel, Message, MessageEmbed, TextChannel } from "discord.js";
+import { Channel, Message, EmbedBuilder, TextChannel } from "discord.js";
 import Tools from "../../common/tools";
 import { textLog } from "../../common/moderator";
 import prisma from "../../prisma";
@@ -112,14 +112,17 @@ const addReactRoleObject = async (
   }
 
   await referencedMessage.react(reaction);
-  const successEmbed = new MessageEmbed()
+  const successEmbed = new EmbedBuilder()
     .setColor("#ff6063")
     .setTitle("Reaction role successfully added.")
-    .addField("\u200b", "\u200b")
-    .addField("Target Message:", message.cleanContent, true)
-    .addField("Target Channel:", channel.toString(), true)
-    .addField("Necessary Reaction:", reaction, true)
-    .addField("Reward Role:", role.toString(), true);
+    .setFields([
+      { name: "\u200b", value: "\u200b" },
+
+      { name: "Target Message:", value: message.cleanContent, inline: true },
+      { name: "Target Channel:", value: channel.toString(), inline: true },
+      { name: "Necessary Reaction:", value: reaction, inline: true },
+      { name: "Reward Role:", value: role.toString(), inline: true },
+    ]);
   await textLog(successEmbed);
   await message.delete();
 };

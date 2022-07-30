@@ -23,13 +23,16 @@ Object {
     "avatar": null,
     "avatarURL": null,
     "communicationDisabledUntilTimestamp": null,
-    "displayAvatarURL": "https://cdn.discordapp.com/avatars/9007199254740991/user avatar url.webp",
+    "displayAvatarURL": "https://cdn.discordapp.com/avatars/9007199254740991/user%20avatar%20url.webp",
     "displayName": "nick",
     "guildId": "9007199254740991",
     "joinedTimestamp": NaN,
     "nickname": "nick",
     "pending": false,
     "premiumSinceTimestamp": null,
+    "roles": Object {
+      "cache": Array [],
+    },
     "userId": "9007199254740991",
   },
 }

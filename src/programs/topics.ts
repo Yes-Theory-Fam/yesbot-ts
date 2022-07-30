@@ -1,4 +1,4 @@
-import { Message, MessageAttachment, TextChannel } from "discord.js";
+import { Message, AttachmentBuilder, TextChannel } from "discord.js";
 import Tools from "../common/tools";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 import { createYesBotLogger } from "../log";
@@ -43,19 +43,19 @@ class Topics implements CommandHandler<DiscordEvent.MESSAGE> {
 
       case "beauty-and-fashion":
         await message.channel.send({
-          attachments: [new MessageAttachment(MAKEUP_CHALLENGE_PICTURE_URL)],
+          files: [new AttachmentBuilder(MAKEUP_CHALLENGE_PICTURE_URL)],
         });
         break;
 
       case "visual-design":
         await message.channel.send({
-          attachments: [new MessageAttachment(DRAWING_CHALLENGE_PICTURE_URL)],
+          files: [new AttachmentBuilder(DRAWING_CHALLENGE_PICTURE_URL)],
         });
         break;
 
       case "filmmaking":
         await message.channel.send({
-          attachments: [new MessageAttachment(MOVIE_CHALLENGE_PICTURE_URL)],
+          files: [new AttachmentBuilder(MOVIE_CHALLENGE_PICTURE_URL)],
         });
         break;
     }

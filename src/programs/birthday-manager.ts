@@ -1,25 +1,25 @@
-import {
-  CollectorFilter,
-  GuildMember,
-  Message,
-  MessageEmbed,
-  MessageReaction,
-  User,
-} from "discord.js";
-import { utcToZonedTime, zonedTimeToUtc } from "date-fns-tz";
+import { Birthday } from "@prisma/client";
 import {
   getAllCountries,
   getCountry,
   TimezoneName,
 } from "countries-and-timezones";
+import { utcToZonedTime, zonedTimeToUtc } from "date-fns-tz";
+import {
+  CollectorFilter,
+  EmbedBuilder,
+  GuildMember,
+  Message,
+  MessageReaction,
+  User,
+} from "discord.js";
+import { isAuthorModerator, textLog } from "../common/moderator";
 
 import Tools from "../common/tools";
-import { isAuthorModerator, textLog } from "../common/moderator";
+import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 import { createYesBotLogger } from "../log";
 import prisma from "../prisma";
-import { Birthday } from "@prisma/client";
 import { CountryRoleFinder } from "../common/country-role-finder";
-import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 
 const logger = createYesBotLogger("programs", "BirthdayManager");
 
@@ -289,20 +289,26 @@ async function getUserTimezone(message: Message): Promise<string> {
     throw new Error("Too many available time zones");
   }
 
-  const response = new MessageEmbed();
+  const response = new EmbedBuilder();
   response.setTitle("Pick your timezone");
 
   const regionIdentifierStart = 127462;
-  const reactions: string[] = timezones.map((tz, i) => {
+  const embedFields = timezones.map((tz, i) => {
     const currentTime = new Date();
     const currentTimeString = `Current time: ${currentTime.toLocaleTimeString(
       "en-GB",
       { timeZone: tz }
     )}`;
     const identifier = String.fromCodePoint(regionIdentifierStart + i);
-    response.addField(tz, `${identifier} - ${currentTimeString}`);
-    return identifier;
+
+    return { name: tz, value: `${identifier} - ${currentTimeString}` };
   });
+
+  response.setFields(embedFields);
+
+  const reactions: string[] = timezones.map((tz, i) =>
+    String.fromCodePoint(regionIdentifierStart + i)
+  );
 
   const sentMessage = await message.channel.send({ embeds: [response] });
   for (const reaction of reactions) {

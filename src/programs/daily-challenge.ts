@@ -1,5 +1,5 @@
 import Axios from "axios";
-import Discord, { Client, Message, TextChannel } from "discord.js";
+import Discord, { Client, Colors, Message, TextChannel } from "discord.js";
 import { createYesBotLogger } from "../log";
 import { ChatNames } from "../collections/chat-names";
 import prisma from "../prisma";
@@ -81,8 +81,8 @@ class PostDailyChallenge implements CommandHandler<DiscordEvent.TIMER> {
 
     if (!res) return;
 
-    const embed = new Discord.MessageEmbed()
-      .setColor("BLUE")
+    const embed = new Discord.EmbedBuilder()
+      .setColor(Colors.Blue)
       .setTitle("YesFam Daily Challenge!")
       .setDescription(res.result);
 

@@ -1,12 +1,15 @@
 import {
   BaseGuildVoiceChannel,
   CategoryChannel,
+  ChannelType,
   Client,
   GuildMember,
   Message,
   MessageReaction,
   OverwriteResolvable,
+  OverwriteType,
   Permissions,
+  PermissionsBitField,
   TextChannel,
   User,
   VoiceChannel,
@@ -167,17 +170,15 @@ const createOnDemand = async (message: Message, userLimit: number) => {
   const parent = guild.channels.cache.find(
     (channel): channel is CategoryChannel =>
       channel.name.toLowerCase().includes("conversation") &&
-      channel.type === "GUILD_CATEGORY"
+      channel.type === ChannelType.GuildCategory
   );
 
-  const channel = await guild.channels.create(
-    getChannelName(member, reaction.emoji.name ?? "🦥"),
-    {
-      type: "GUILD_VOICE",
-      parent,
-      userLimit,
-    }
-  );
+  const channel = await guild.channels.create({
+    name: getChannelName(member, reaction.emoji.name ?? "🦥"),
+    type: ChannelType.GuildVoice,
+    parent,
+    userLimit,
+  });
 
   const mapping = {
     userId: member.id,
@@ -194,36 +195,36 @@ const createOnDemand = async (message: Message, userLimit: number) => {
   const breakRole = Tools.getRoleByName("Break", guild);
 
   await channel.permissionOverwrites.edit(guild.roles.everyone, {
-    STREAM: true,
+    Stream: true,
   });
   const overwrites: OverwriteResolvable[] = [
     {
       id: guild.roles.everyone,
       allow: [],
-      deny: [Permissions.FLAGS.CONNECT],
-      type: "role",
+      deny: [PermissionsBitField.Flags.Connect],
+      type: OverwriteType.Role,
     },
     {
       id: member.id,
-      allow: [Permissions.FLAGS.CONNECT],
+      allow: [PermissionsBitField.Flags.Connect],
       deny: [],
-      type: "member",
+      type: OverwriteType.Member,
     },
   ];
 
   if (timeoutRole) {
     overwrites.push({
       id: timeoutRole.id,
-      deny: [Permissions.FLAGS.CONNECT],
-      type: "role",
+      deny: [PermissionsBitField.Flags.Connect],
+      type: OverwriteType.Role,
     });
   }
 
   if (breakRole) {
     overwrites.push({
       id: breakRole.id,
-      deny: [Permissions.FLAGS.VIEW_CHANNEL],
-      type: "role",
+      deny: [PermissionsBitField.Flags.ViewChannel],
+      type: OverwriteType.Role,
     });
   }
 
@@ -418,8 +419,8 @@ export const voiceOnDemandPermissions = async (
   const { guild } = channel;
 
   await channel.permissionOverwrites.edit(guild.roles.everyone, {
-    STREAM: true,
-    CONNECT: null,
+    Stream: true,
+    Connect: null,
   });
 
   // We don't need this overwrite anymore
