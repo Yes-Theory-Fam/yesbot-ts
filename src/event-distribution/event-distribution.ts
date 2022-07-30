@@ -154,37 +154,33 @@ export class EventDistribution {
       const extension = isProduction ? ".js" : ".ts";
       const directory = isProduction ? "build/src" : "src";
 
-      glob(
-        // `${directory}/programs/**/*${extension}`,
-        `${directory}/programs/decorator-test.ts`,
-        async (e, matches) => {
-          if (e) {
-            logger.error("Error loading commands: ", e);
-            rej(e);
-            return;
-          }
-
-          const loaders = matches
-            .filter((p) => !p.endsWith(`.spec${extension}`))
-            .map((p) => {
-              const split = p.split(".");
-              split.unshift();
-              const modulePath = path.join(process.cwd(), split.join("."));
-
-              return import(modulePath);
-            });
-
-          try {
-            await Promise.all(loaders);
-          } catch (e) {
-            logger.error("Error loading commands: ", e);
-            rej(e);
-            return;
-          }
-          logger.debug("Loading complete!");
-          res();
+      glob(`${directory}/programs/**/*${extension}`, async (e, matches) => {
+        if (e) {
+          logger.error("Error loading commands: ", e);
+          rej(e);
+          return;
         }
-      );
+
+        const loaders = matches
+          .filter((p) => !p.endsWith(`.spec${extension}`))
+          .map((p) => {
+            const split = p.split(".");
+            split.unshift();
+            const modulePath = path.join(process.cwd(), split.join("."));
+
+            return import(modulePath);
+          });
+
+        try {
+          await Promise.all(loaders);
+        } catch (e) {
+          logger.error("Error loading commands: ", e);
+          rej(e);
+          return;
+        }
+        logger.debug("Loading complete!");
+        res();
+      });
     });
 
     this.handlers[DiscordEvent.SLASH_COMMAND] = await registerSlashCommands(
