@@ -173,30 +173,8 @@ const createOnDemand = async (message: Message, userLimit: number) => {
       channel.type === ChannelType.GuildCategory
   );
 
-  const channel = await guild.channels.create({
-    name: getChannelName(member, reaction.emoji.name ?? "🦥"),
-    type: ChannelType.GuildVoice,
-    parent,
-    userLimit,
-  });
-
-  const mapping = {
-    userId: member.id,
-    channelId: channel.id,
-    emoji: reaction.emoji.name ?? "🦥",
-  };
-  await prisma.voiceOnDemandMapping.create({ data: mapping });
-
-  await message.reply(
-    `Your room was created with a limit of ${userLimit}, have fun! Don't forget, this channel will be deleted if there is noone in it. :smile:`
-  );
-
   const timeoutRole = Tools.getRoleByName("Time Out", guild);
   const breakRole = Tools.getRoleByName("Break", guild);
-
-  await channel.permissionOverwrites.edit(guild.roles.everyone, {
-    Stream: true,
-  });
   const overwrites: OverwriteResolvable[] = [
     {
       id: guild.roles.everyone,
@@ -228,7 +206,24 @@ const createOnDemand = async (message: Message, userLimit: number) => {
     });
   }
 
-  await channel.permissionOverwrites.set(overwrites);
+  const channel = await guild.channels.create({
+    name: getChannelName(member, reaction.emoji.name ?? "🦥"),
+    type: ChannelType.GuildVoice,
+    parent,
+    userLimit,
+    permissionOverwrites: overwrites,
+  });
+
+  const mapping = {
+    userId: member.id,
+    channelId: channel.id,
+    emoji: reaction.emoji.name ?? "🦥",
+  };
+  await prisma.voiceOnDemandMapping.create({ data: mapping });
+
+  await message.reply(
+    `Your room was created with a limit of ${userLimit}, have fun! Don't forget, this channel will be deleted if there is noone in it. :smile:`
+  );
 
   const timeout = setTimeout(() => deleteIfEmpty(channel), emptyTime);
   state.voiceChannels.set(channel.id, timeout);
