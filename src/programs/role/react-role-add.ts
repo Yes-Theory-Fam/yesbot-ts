@@ -118,10 +118,10 @@ const addReactRoleObject = async (
     .setFields([
       { name: "\u200b", value: "\u200b" },
 
-      { name: "Target Message:", value: message.cleanContent },
-      { name: "Target Channel:", value: channel.toString() },
-      { name: "Necessary Reaction:", value: reaction },
-      { name: "Reward Role:", value: role.toString() },
+      { name: "Target Message:", value: message.cleanContent, inline: true },
+      { name: "Target Channel:", value: channel.toString(), inline: true },
+      { name: "Necessary Reaction:", value: reaction, inline: true },
+      { name: "Reward Role:", value: role.toString(), inline: true },
     ]);
   await textLog(successEmbed);
   await message.delete();

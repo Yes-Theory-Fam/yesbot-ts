@@ -1,4 +1,10 @@
-import { Message, EmbedBuilder, MessageReaction, User } from "discord.js";
+import {
+  Message,
+  EmbedBuilder,
+  MessageReaction,
+  User,
+  EmbedField,
+} from "discord.js";
 import {
   Command,
   CommandHandler,
@@ -41,11 +47,15 @@ class SearchGroup implements CommandHandler<DiscordEvent.MESSAGE> {
 
     const pageAmount = Math.ceil(copy.length / groupsPerPage);
 
+    const yesBotAvatarUrl = message.client.user?.avatarURL({
+      size: 256,
+      extension: "png",
+    });
+
     for (let i = 0; i < pageAmount; i++) {
       const embed = new EmbedBuilder().setAuthor({
         name: "YesBot",
-        iconURL:
-          "https://cdn.discordapp.com/avatars/614101602046836776/61d02233797a400bc0e360098e3fe9cb.png?size=$%7BrequestedImageSize%7D",
+        iconURL: yesBotAvatarUrl ?? "https://example.com/invalid.png",
       });
       const resultsSentence =
         requestedGroupName == undefined
@@ -58,10 +68,11 @@ class SearchGroup implements CommandHandler<DiscordEvent.MESSAGE> {
       const chunk = copy.splice(0, groupsPerPage);
 
       const totalFields = chunk.flatMap((group) => [
-        { name: "Group Name:", value: group.name },
+        { name: "Group Name:", value: group.name, inline: true },
         {
           name: "Number of Members:",
           value: group.userGroupMembersGroupMembers.length.toString(),
+          inline: true,
         },
         { name: "Description:", value: group.description || "-" },
         { name: "\u200B", value: "\u200B" },

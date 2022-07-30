@@ -71,7 +71,7 @@ const getProfileEmbed = async (
     profileEmbed.setThumbnail(avatarUrl);
   }
   profileEmbed.setTitle(
-    yesEmoji?.toString() +
+    (yesEmoji?.toString() ?? "") +
       " " +
       member.user.username +
       "#" +
@@ -79,12 +79,12 @@ const getProfileEmbed = async (
   );
   profileEmbed.setColor(member.roles.color?.color ?? "#004dff");
   profileEmbed.setFields([
-    { name: "Hi! My name is:", value: member.displayName },
-    { name: "Where I'm from:", value: countryString },
+    { name: "Hi! My name is:", value: member.displayName, inline: true },
+    { name: "Where I'm from:", value: countryString, inline: true },
     { name: "\u200b", value: "\u200b" },
-    { name: "Joined on:", value: joinDate ?? "Unknown" },
-    { name: "Birthday:", value: birthdayString },
-    { name: "Groups:", value: groupString || "None" },
+    { name: "Joined on:", value: joinDate ?? "Unknown", inline: true },
+    { name: "Birthday:", value: birthdayString, inline: true },
+    { name: "Groups:", value: groupString || "None", inline: true },
   ]);
   profileEmbed.setFooter({
     text: "Thank you for using the Yes Theory Fam Discord Server!",
