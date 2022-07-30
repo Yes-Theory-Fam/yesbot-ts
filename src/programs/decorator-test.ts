@@ -1,5 +1,5 @@
 import { ApplicationCommandOptionType } from "discord-api-types/payloads/v10";
-import { ChatInputCommandInteraction, CommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction } from "discord.js";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 
 @Command({
@@ -43,7 +43,7 @@ class SlashCommandPongWithOptions extends CommandHandler<DiscordEvent.SLASH_COMM
 @Command({
   event: DiscordEvent.SLASH_COMMAND,
   root: "sub",
-  subCommandGroup: "test1",
+  subCommand: "test1",
   description: "Seeing how sub commands behave",
 })
 class SlashCommandSub1 extends CommandHandler<DiscordEvent.SLASH_COMMAND> {
@@ -55,12 +55,64 @@ class SlashCommandSub1 extends CommandHandler<DiscordEvent.SLASH_COMMAND> {
 @Command({
   event: DiscordEvent.SLASH_COMMAND,
   root: "sub",
-  subTrigger: "test2",
+  subCommand: "test2",
   description: "Seeing how sub commands behave",
 })
 class SlashCommandSub2 extends CommandHandler<DiscordEvent.SLASH_COMMAND> {
   async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     await interaction.reply("Test2!");
+  }
+}
+
+@Command({
+  event: DiscordEvent.SLASH_COMMAND,
+  root: "root",
+  subCommandGroup: "subcommandgroup1",
+  subCommand: "subcommand1",
+  description: "subsub1",
+})
+class SlashCommandSubSub1 extends CommandHandler<DiscordEvent.SLASH_COMMAND> {
+  async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+    await interaction.reply("subsub1");
+  }
+}
+
+@Command({
+  event: DiscordEvent.SLASH_COMMAND,
+  root: "root",
+  subCommandGroup: "subcommandgroup1",
+  subCommand: "subcommand2",
+  description: "subsub2",
+})
+class SlashCommandSubSub2 extends CommandHandler<DiscordEvent.SLASH_COMMAND> {
+  async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+    await interaction.reply("subsub2");
+  }
+}
+
+@Command({
+  event: DiscordEvent.SLASH_COMMAND,
+  root: "root",
+  subCommandGroup: "subcommandgroup2",
+  subCommand: "subcommand1",
+  description: "subsub3",
+})
+class SlashCommandSubSub3 extends CommandHandler<DiscordEvent.SLASH_COMMAND> {
+  async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+    await interaction.reply("subsub3");
+  }
+}
+
+@Command({
+  event: DiscordEvent.SLASH_COMMAND,
+  root: "root",
+  subCommandGroup: "subcommandgroup2",
+  subCommand: "subcommand2",
+  description: "subsub4",
+})
+class SlashCommandSubSub4 extends CommandHandler<DiscordEvent.SLASH_COMMAND> {
+  async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+    await interaction.reply("subsub4");
   }
 }
 

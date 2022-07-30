@@ -1,8 +1,13 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
 import { REST } from "@discordjs/rest";
 import { APIApplicationCommandBasicOption } from "discord-api-types/payloads/v10";
 import { Routes } from "discord-api-types/rest";
-import { ChannelType, ChatInputCommandInteraction } from "discord.js";
+import {
+  ChannelType,
+  ChatInputCommandInteraction,
+  SlashCommandBuilder,
+  SlashCommandSubcommandBuilder,
+  SlashCommandSubcommandGroupBuilder,
+} from "discord.js";
 import { createYesBotLogger } from "../../../log";
 import { addToTree, ensureGuildMemberOrNull } from "../../helper";
 import {
@@ -47,7 +52,11 @@ export type SlashCommandHandlerFunction<T extends DiscordEvent> =
 export const addSlashCommandHandler: AddEventHandlerFunction<
   SlashCommandHandlerOptions
 > = (options, ioc, tree) => {
-  addToTree([options.root, options.subCommand ?? ""], { options, ioc }, tree);
+  addToTree(
+    [options.root, options.subCommandGroup ?? "", options.subCommand ?? ""],
+    { options, ioc },
+    tree
+  );
 };
 
 export const extractSlashCommandInfo: ExtractInfoForEventFunction<
@@ -63,7 +72,7 @@ export const extractSlashCommandInfo: ExtractInfoForEventFunction<
 
   if (command.isChatInputCommand()) {
     const subCommandGroup = command.options.getSubcommandGroup(false);
-    if (subCommandGroup) handlerKeys.push(subCommandGroup);
+    handlerKeys.push(subCommandGroup ?? "");
 
     const subCommand = command.options.getSubcommand(false);
     if (subCommand) handlerKeys.push(subCommand);
@@ -94,7 +103,8 @@ const getAllOptions = (
 
 const buildCommand = (
   options: SlashCommandHandlerOptions,
-  builderCache: Record<string, SlashCommandBuilder>
+  builderCache: Record<string, SlashCommandBuilder>,
+  groupBuilderCache: Record<string, SlashCommandSubcommandGroupBuilder>
 ) => {
   const builder =
     builderCache[options.root] ??
@@ -102,20 +112,34 @@ const buildCommand = (
       .setName(options.root)
       .setDescription(options.description);
 
-  // TODO
   const { subCommand, subCommandGroup } = options;
+
+  const subCommandBuilder = (input: SlashCommandSubcommandBuilder) => {
+    input.setName(subCommand ?? "");
+    input.setDescription(options.description);
+    addOptions(input, options.options);
+    return input;
+  };
 
   if (!subCommand) {
     addOptions(builder, options.options);
-  }
+  } else if (subCommandGroup) {
+    const key = `${options.root}_${options.subCommandGroup}`;
 
-  if (subCommand) {
-    builder.addSubcommand((subcommandBuilder) => {
-      subcommandBuilder.setName(subCommand);
-      subcommandBuilder.setDescription(options.description);
-      addOptions(subcommandBuilder, options.options);
-      return subcommandBuilder;
-    });
+    const subCommandgroupBuilder =
+      groupBuilderCache[key] ??
+      new SlashCommandSubcommandGroupBuilder()
+        .setName(subCommandGroup)
+        .setDescription(options.description);
+
+    subCommandgroupBuilder.addSubcommand(subCommandBuilder);
+
+    if (!groupBuilderCache[key]) {
+      builder.addSubcommandGroup(subCommandgroupBuilder);
+      groupBuilderCache[key] = subCommandgroupBuilder;
+    }
+  } else if (subCommand) {
+    builder.addSubcommand(subCommandBuilder);
   }
 
   builderCache[options.root] ??= builder;
@@ -135,34 +159,21 @@ export const registerSlashCommands = async (
   );
 
   const allOptions = getAllOptions(tree);
-  const uniqueOptionsById = allOptions.filter(
-    ({ root, subCommand }, i, a) =>
-      a.findIndex(
-        ({ root: needleTrigger, subCommand: needleSubTrigger }) =>
-          needleTrigger === root && needleSubTrigger === subCommand
-      ) === i
-  );
 
-  logger.info(`Registering ${uniqueOptionsById.length} slash commands`);
+  logger.info(`Registering ${allOptions.length} slash commands`);
 
   const builderCache: Record<string, SlashCommandBuilder> = {};
+  const groupBuilderCache: Record<string, SlashCommandSubcommandGroupBuilder> =
+    {};
 
-  uniqueOptionsById.forEach((option) => buildCommand(option, builderCache));
+  allOptions.forEach((option) =>
+    buildCommand(option, builderCache, groupBuilderCache)
+  );
   const commands = Object.values(builderCache).map((builder) =>
     builder.toJSON()
   );
 
   const rest = new REST({ version: "9" }).setToken(process.env.BOT_TOKEN);
-
-  const stupidCommand = new SlashCommandBuilder()
-    .setName("stupid")
-    .setDescription("not sure")
-    .addSubcommand((b) =>
-      b.setName("example").setDescription("stupid example :)")
-    )
-    .addSubcommand((b) =>
-      b.setName("people").setDescription("stupid people :c")
-    );
 
   try {
     const result = (await rest.put(
@@ -170,7 +181,7 @@ export const registerSlashCommands = async (
         process.env.CLIENT_ID,
         process.env.GUILD_ID
       ),
-      { body: [...commands, stupidCommand] }
+      { body: commands }
     )) as RegistrationResponseItem[];
 
     const newTree: StringIndexedHIOCTree<DiscordEvent.SLASH_COMMAND> = {};
@@ -179,9 +190,7 @@ export const registerSlashCommands = async (
       newTree[item.id] = tree[item.name];
     }
 
-    logger.info(
-      `Finished registering ${uniqueOptionsById.length} slash commands`
-    );
+    logger.info(`Finished registering ${allOptions.length} slash commands`);
 
     return newTree;
   } catch (e) {

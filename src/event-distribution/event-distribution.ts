@@ -1,4 +1,4 @@
-import { Interaction, InteractionType } from "discord.js";
+import { Interaction } from "discord.js";
 import glob from "glob";
 import path from "path";
 import { createYesBotLogger } from "../log";
