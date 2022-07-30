@@ -15,6 +15,7 @@ import {
 import {
   addToTree,
   collectChannelDefinitions,
+  ensureGuildMemberOrNull,
   withMessageRelatedInfo,
 } from "../helper";
 import { APIGuildMember, APIMessage } from "discord-api-types/v10";
@@ -37,39 +38,12 @@ export const addButtonClickedHandler: AddEventHandlerFunction<
   }
 };
 
-const ensureGuildMemberOrNull = (
-  member: GuildMember | APIGuildMember | null,
-  client: Client,
-  guild: Guild | null
-): GuildMember | null => {
-  if (!member) return null;
-
-  if (member instanceof GuildMember) {
-    return member;
-  }
-
-  if (!guild) {
-    throw new Error(
-      "Could not instantiate GuildMember from raw data; missing guild from button interaction"
-    );
-  }
-
-  return new (GuildMember as unknown as new (
-    client: Client,
-    member: APIGuildMember,
-    guild: Guild
-  ) => GuildMember)(client, member, guild);
-};
-
 export const extractButtonClickedInfo: ExtractInfoForEventFunction<
   DiscordEvent.BUTTON_CLICKED
 > = (button: ButtonInteraction) => {
   let message = button.message;
   if (!(message instanceof Message)) {
-    message = new (Message as unknown as new (
-      client: Client,
-      message: APIMessage
-    ) => Message)(button.client, message);
+    message = Reflect.construct(Message, [button.client, message]) as Message;
   }
 
   const member = ensureGuildMemberOrNull(

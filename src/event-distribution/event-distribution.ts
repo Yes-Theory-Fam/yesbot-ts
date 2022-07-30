@@ -1,3 +1,7 @@
+import { Interaction } from "discord.js";
+import glob from "glob";
+import path from "path";
+import { createYesBotLogger } from "../log";
 import {
   addEventHandler,
   EventHandlerOptions,
@@ -6,9 +10,15 @@ import {
   isMessageRelated,
   rejectWithMessage,
 } from "./events/events";
-import glob from "glob";
-import path from "path";
-import { createYesBotLogger } from "../log";
+import { registerSlashCommands } from "./events/slash-commands";
+import { getIocName } from "./helper";
+import {
+  DiscordEvent,
+  EventLocation,
+  HandlerInfo,
+  HandlerRejectedReason,
+} from "./types/base";
+import { CommandHandler, HandlerClass } from "./types/handler";
 import {
   HIOC,
   InstanceOrConstructor,
@@ -16,15 +26,6 @@ import {
   StringIndexedHIOCTree,
   StringIndexedHIOCTreeNode,
 } from "./types/hioc";
-import { CommandHandler, HandlerClass } from "./types/handler";
-import {
-  DiscordEvent,
-  EventLocation,
-  HandlerInfo,
-  HandlerRejectedReason,
-} from "./types/base";
-import { getIocName } from "./helper";
-import { Interaction } from "discord.js";
 
 const logger = createYesBotLogger("event-distribution", "event-distribution");
 
@@ -55,6 +56,7 @@ export class EventDistribution {
     [DiscordEvent.REACTION_REMOVE]: {},
     [DiscordEvent.GUILD_MEMBER_UPDATE]: {},
     [DiscordEvent.READY]: {},
+    [DiscordEvent.SLASH_COMMAND]: {},
     [DiscordEvent.TIMER]: {},
     [DiscordEvent.VOICE_STATE_UPDATE]: {},
     [DiscordEvent.MEMBER_JOIN]: {},
@@ -77,6 +79,8 @@ export class EventDistribution {
   async handleInteraction(interaction: Interaction) {
     if (interaction.isButton()) {
       return await this.handleEvent(DiscordEvent.BUTTON_CLICKED, interaction);
+    } else if (interaction.isChatInputCommand()) {
+      return await this.handleEvent(DiscordEvent.SLASH_COMMAND, interaction);
     }
   }
 
@@ -145,7 +149,7 @@ export class EventDistribution {
   }
 
   async initialize(): Promise<void> {
-    return new Promise((res, rej) => {
+    await new Promise<void>((res, rej) => {
       const isProduction = process.env.NODE_ENV === "production";
       const extension = isProduction ? ".js" : ".ts";
       const directory = isProduction ? "build/src" : "src";
@@ -178,6 +182,10 @@ export class EventDistribution {
         res();
       });
     });
+
+    this.handlers[DiscordEvent.SLASH_COMMAND] = await registerSlashCommands(
+      this.handlers[DiscordEvent.SLASH_COMMAND]
+    );
   }
 
   private static isHandlerForLocation<T extends DiscordEvent>(

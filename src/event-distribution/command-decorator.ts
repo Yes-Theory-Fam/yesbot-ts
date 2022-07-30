@@ -1,5 +1,10 @@
 import { EventHandlerOptions, isMessageRelated } from "./events/events";
-import { EventLocation, MessageRelatedOptions } from "./types/base";
+import { SlashCommandHandlerOptions } from "./events/slash-commands";
+import {
+  DiscordEvent,
+  EventLocation,
+  MessageRelatedOptions,
+} from "./types/base";
 import { HandlerClass } from "./types/handler";
 import distribution from "./index";
 import { createYesBotLogger } from "../log";
@@ -21,6 +26,14 @@ export const Command = <T extends EventHandlerOptions>(options: T) => {
       checkMessageRelatedOptions(options, commandClassName);
     }
 
+    if (options.event === DiscordEvent.SLASH_COMMAND) {
+      const checkResult = checkSlashCommandRelatedOptions(
+        options,
+        commandClassName
+      );
+      if (!checkResult) return target;
+    }
+
     try {
       distribution.addWithOptions(options, target);
     } catch (e) {
@@ -29,6 +42,7 @@ export const Command = <T extends EventHandlerOptions>(options: T) => {
         e instanceof Error ? { error: e.message } : e
       );
     }
+
     return target;
   };
 };
@@ -64,4 +78,20 @@ const checkMessageRelatedOptions = (
       `Adding command ${commandClassName} with required roles or limited channels which was set to location ${EventLocation.ANYWHERE}. ${explanation}`
     );
   }
+};
+
+const checkSlashCommandRelatedOptions = (
+  options: SlashCommandHandlerOptions,
+  commandClassName: string
+): boolean => {
+  const { subCommand, subCommandGroup } = options;
+
+  if (subCommandGroup && !subCommand) {
+    logger.error(
+      `Failed to load command ${commandClassName}! The command specifies a subCommandGroup but no subCommand. That is an invalid configuration. You may either add a subCommand or replace the subCommandGroup field with subCommand.\nSkipping adding handler ${commandClassName}.`
+    );
+    return false;
+  }
+
+  return true;
 };

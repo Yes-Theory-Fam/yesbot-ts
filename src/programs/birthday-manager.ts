@@ -338,10 +338,6 @@ async function getUserTimezone(message: Message): Promise<string> {
       errors: ["time"],
     });
   } catch (err) {
-    // TODO clean up
-    // @ts-expect-error
-    console.log(err, err.constructor.name);
-
     if (err instanceof Map) {
       await sentMessage.delete();
       throw new Error("time expired");

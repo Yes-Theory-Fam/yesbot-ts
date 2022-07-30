@@ -11,12 +11,15 @@ import {
 } from "./types/hioc";
 import {
   ChannelType,
+  Client,
+  Guild,
   GuildChannel,
   GuildMember,
   Message,
   PartialMessage,
   TextBasedChannel,
 } from "discord.js";
+import { APIGuildMember } from "discord-api-types/v10";
 
 export const getIdFromCategoryName = (name: string) =>
   `c_${name.toLowerCase()}`;
@@ -98,4 +101,24 @@ export const addToTree = <T extends DiscordEvent>(
 
   tree[key] ??= {};
   addToTree(rest, hioc, tree[key] as StringIndexedHIOCTree<T>);
+};
+
+export const ensureGuildMemberOrNull = (
+  member: GuildMember | APIGuildMember | null,
+  client: Client,
+  guild: Guild | null
+): GuildMember | null => {
+  if (!member) return null;
+
+  if (member instanceof GuildMember) {
+    return member;
+  }
+
+  if (!guild) {
+    throw new Error(
+      "Could not instantiate GuildMember from raw data; missing guild from button interaction"
+    );
+  }
+
+  return Reflect.construct(GuildMember, [client, member, guild]) as GuildMember;
 };
