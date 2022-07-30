@@ -6,6 +6,7 @@ declare namespace NodeJS {
     PWD: string;
     BOT_TOKEN: string;
     GUILD_ID: string;
+    CLIENT_ID: string;
     OUTPUT_CHANNEL_ID: string;
     MAP_LINK?: string;
     MAP_ADD_DM_USER_ID: string;

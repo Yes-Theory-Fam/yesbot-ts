@@ -5,19 +5,15 @@ import {
   SlashCommandStringOption,
   SlashCommandSubcommandBuilder,
 } from "@discordjs/builders";
+import { ApplicationCommandOptionAllowedChannelTypes } from "@discordjs/builders/dist/interactions/slashCommands/mixins/ApplicationCommandOptionChannelTypesMixin";
 import {
   APIApplicationCommandBasicOption,
   APIApplicationCommandOptionChoice,
   ApplicationCommandOptionType,
-} from "discord-api-types/payloads/v9/_interactions/_applicationCommands/chatInput";
+} from "discord-api-types/payloads/v10";
 
 export type SlashCommandOptionBase =
   SlashCommandSubcommandBuilder["options"][0];
-
-const transformAPIChoicesToOptionChoices = <T extends string | number>(
-  choices: APIApplicationCommandOptionChoice<T>[]
-): [name: string, value: T][] =>
-  choices.map(({ name, value }) => [name, value]);
 
 type ChoiceType =
   | ApplicationCommandOptionType.String
@@ -34,8 +30,8 @@ type ChoiceOption<
 const addChoices = <T extends string | number, TType extends ChoiceType>(
   option: ChoiceOption<T, TType> & {
     setChoices: (
-      choices: [name: string, value: T][]
-    ) => Omit<ChoiceOption<T, TType>, "setAutocomplete">;
+      ...choices: APIApplicationCommandOptionChoice<T>[]
+    ) => ChoiceOption<T, TType>;
   },
   data:
     | { autocomplete?: false; choices?: APIApplicationCommandOptionChoice<T>[] }
@@ -46,9 +42,7 @@ const addChoices = <T extends string | number, TType extends ChoiceType>(
   );
 
   return data.autocomplete === false
-    ? (withAutoCompleteSet.setChoices(
-        transformAPIChoicesToOptionChoices(data.choices)
-      ) as ChoiceOption<T, TType>)
+    ? withAutoCompleteSet.setChoices(...(data.choices ?? []))
     : (withAutoCompleteSet as unknown as ChoiceOption<T, TType>);
 };
 
@@ -87,7 +81,11 @@ const addOption = (
       break;
     case ApplicationCommandOptionType.Channel:
       builder.addChannelOption((o) =>
-        addDefaults(o).addChannelTypes(option.channel_types)
+        addDefaults(o).addChannelTypes(
+          ...((option.channel_types ??
+            // discord.js decided to create a type for one side and not use it on the other side, so we are casting...
+            []) as ApplicationCommandOptionAllowedChannelTypes[])
+        )
       );
       break;
     case ApplicationCommandOptionType.Role:

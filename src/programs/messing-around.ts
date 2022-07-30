@@ -3,10 +3,10 @@ import { ChatNames } from "../collections/chat-names";
 import {
   ButtonInteraction,
   Message,
-  MessageActionRow,
-  MessageButton,
+  ActionRowBuilder,
+  ButtonBuilder,
 } from "discord.js";
-import { ButtonStyle, ComponentType } from "discord-api-types";
+import { ButtonStyle, ComponentType } from "discord-api-types/v10";
 
 const messButton = "messButton";
 
@@ -18,14 +18,17 @@ const messButton = "messButton";
 })
 class MessCreatorCommand extends CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
-    const button = new MessageButton({
+    const button = new ButtonBuilder({
       custom_id: messButton,
       label: "Click me",
       style: ButtonStyle.Primary,
       type: ComponentType.Button,
     });
 
-    const actionRow = new MessageActionRow({ components: [button] });
+    const actionRow = new ActionRowBuilder<ButtonBuilder>({
+      components: [button],
+    });
+
     await message.reply({
       components: [actionRow],
       content: "This is a button",

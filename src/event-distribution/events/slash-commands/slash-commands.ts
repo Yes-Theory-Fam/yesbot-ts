@@ -1,8 +1,8 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { REST } from "@discordjs/rest";
-import { APIApplicationCommandBasicOption } from "discord-api-types/payloads/v9/_interactions/_applicationCommands/chatInput";
+import { APIApplicationCommandBasicOption } from "discord-api-types/payloads/v10";
 import { Routes } from "discord-api-types/rest";
-import { CommandInteraction } from "discord.js";
+import { ChannelType, ChatInputCommandInteraction } from "discord.js";
 import { createYesBotLogger } from "../../../log";
 import { addToTree, ensureGuildMemberOrNull } from "../../helper";
 import {
@@ -38,7 +38,11 @@ export interface SlashCommandHandlerOptions extends BaseOptions {
 // }
 
 export type SlashCommandHandlerFunction<T extends DiscordEvent> =
-  HandlerFunctionFor<T, DiscordEvent.SLASH_COMMAND, CommandInteraction>;
+  HandlerFunctionFor<
+    T,
+    DiscordEvent.SLASH_COMMAND,
+    ChatInputCommandInteraction
+  >;
 
 export const addSlashCommandHandler: AddEventHandlerFunction<
   SlashCommandHandlerOptions
@@ -48,7 +52,7 @@ export const addSlashCommandHandler: AddEventHandlerFunction<
 
 export const extractSlashCommandInfo: ExtractInfoForEventFunction<
   DiscordEvent.SLASH_COMMAND
-> = (command: CommandInteraction) => {
+> = (command: ChatInputCommandInteraction) => {
   const member = ensureGuildMemberOrNull(
     command.member,
     command.client,
@@ -57,7 +61,7 @@ export const extractSlashCommandInfo: ExtractInfoForEventFunction<
 
   const handlerKeys = [command.commandId];
 
-  if (command.isApplicationCommand()) {
+  if (command.isChatInputCommand()) {
     const subCommandGroup = command.options.getSubcommandGroup(false);
     if (subCommandGroup) handlerKeys.push(subCommandGroup);
 
@@ -68,7 +72,7 @@ export const extractSlashCommandInfo: ExtractInfoForEventFunction<
   return {
     member: member,
     handlerKeys,
-    isDirectMessage: command.channel.type === "DM",
+    isDirectMessage: command.channel?.type === ChannelType.DM ?? false,
   };
 };
 
@@ -98,13 +102,16 @@ const buildCommand = (
       .setName(options.root)
       .setDescription(options.description);
 
-  if (!options.subCommand) {
+  // TODO
+  const { subCommand, subCommandGroup } = options;
+
+  if (!subCommand) {
     addOptions(builder, options.options);
   }
 
-  if (options.subCommand) {
+  if (subCommand) {
     builder.addSubcommand((subcommandBuilder) => {
-      subcommandBuilder.setName(options.subCommand);
+      subcommandBuilder.setName(subCommand);
       subcommandBuilder.setDescription(options.description);
       addOptions(subcommandBuilder, options.options);
       return subcommandBuilder;

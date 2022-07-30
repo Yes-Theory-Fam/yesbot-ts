@@ -19,7 +19,7 @@ import {
   PartialMessage,
   TextBasedChannel,
 } from "discord.js";
-import { APIGuildMember } from "discord-api-types/v9";
+import { APIGuildMember } from "discord-api-types/v10";
 
 export const getIdFromCategoryName = (name: string) =>
   `c_${name.toLowerCase()}`;

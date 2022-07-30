@@ -27,7 +27,10 @@ export const Command = <T extends EventHandlerOptions>(options: T) => {
     }
 
     if (options.event === DiscordEvent.SLASH_COMMAND) {
-      const checkResult = checkSlashCommandRelatedOptions(options);
+      const checkResult = checkSlashCommandRelatedOptions(
+        options,
+        commandClassName
+      );
       if (!checkResult) return target;
     }
 
@@ -80,10 +83,15 @@ const checkMessageRelatedOptions = (
 const checkSlashCommandRelatedOptions = (
   options: SlashCommandHandlerOptions,
   commandClassName: string
-) => {
-  const { root, subCommand, subCommandGroup } = options;
+): boolean => {
+  const { subCommand, subCommandGroup } = options;
 
-  if (subCommand && !subCommandGroup) {
-    // TODO throw error here :)
+  if (subCommandGroup && !subCommand) {
+    logger.error(
+      `Failed to load command ${commandClassName}! The command specifies a subCommandGroup but no subCommand. That is an invalid configuration. You may either add a subCommand or replace the subCommandGroup field with subCommand.\nSkipping adding handler ${commandClassName}.`
+    );
+    return false;
   }
+
+  return true;
 };

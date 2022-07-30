@@ -20,6 +20,7 @@ import {
 import { StringIndexedHIOCTree } from "../types/hioc";
 import {
   ButtonInteraction,
+  ChatInputCommandInteraction,
   Client,
   CommandInteraction,
   Message,
@@ -215,7 +216,7 @@ export const extractEventInfo: ExtractInfoFunction<DiscordEvent> = (
       case DiscordEvent.TIMER:
         return extractTimerInfo(args[0] as Timer);
       case DiscordEvent.SLASH_COMMAND:
-        return extractSlashCommandInfo(args[0] as CommandInteraction);
+        return extractSlashCommandInfo(args[0] as ChatInputCommandInteraction);
       case DiscordEvent.VOICE_STATE_UPDATE:
         return extractVoiceStateUpdateInfo(
           args[0] as VoiceState,

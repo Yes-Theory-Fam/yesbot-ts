@@ -1,3 +1,7 @@
+import { Interaction, InteractionType } from "discord.js";
+import glob from "glob";
+import path from "path";
+import { createYesBotLogger } from "../log";
 import {
   addEventHandler,
   EventHandlerOptions,
@@ -6,9 +10,15 @@ import {
   isMessageRelated,
   rejectWithMessage,
 } from "./events/events";
-import glob from "glob";
-import path from "path";
-import { createYesBotLogger } from "../log";
+import { registerSlashCommands } from "./events/slash-commands";
+import { getIocName } from "./helper";
+import {
+  DiscordEvent,
+  EventLocation,
+  HandlerInfo,
+  HandlerRejectedReason,
+} from "./types/base";
+import { CommandHandler, HandlerClass } from "./types/handler";
 import {
   HIOC,
   InstanceOrConstructor,
@@ -16,16 +26,6 @@ import {
   StringIndexedHIOCTree,
   StringIndexedHIOCTreeNode,
 } from "./types/hioc";
-import { CommandHandler, HandlerClass } from "./types/handler";
-import {
-  DiscordEvent,
-  EventLocation,
-  HandlerInfo,
-  HandlerRejectedReason,
-} from "./types/base";
-import { getIocName } from "./helper";
-import { Interaction } from "discord.js";
-import { registerSlashCommands } from "./events/slash-commands";
 
 const logger = createYesBotLogger("event-distribution", "event-distribution");
 
@@ -79,7 +79,7 @@ export class EventDistribution {
   async handleInteraction(interaction: Interaction) {
     if (interaction.isButton()) {
       return await this.handleEvent(DiscordEvent.BUTTON_CLICKED, interaction);
-    } else if (interaction.isCommand()) {
+    } else if (interaction.isChatInputCommand()) {
       return await this.handleEvent(DiscordEvent.SLASH_COMMAND, interaction);
     }
   }
