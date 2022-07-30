@@ -31,17 +31,6 @@ export interface SlashCommandHandlerOptions extends BaseOptions {
   options?: APIApplicationCommandBasicOption[];
 }
 
-// export interface SlashCommandHandlerOptions extends BaseOptions {
-//   event: DiscordEvent.SLASH_COMMAND;
-//
-//   root: string;
-//   subCommandGroup?: string;
-//   subCommand?: string;
-//
-//   description: string;
-//   options?: APIApplicationCommandBasicOption[];
-// }
-
 export type SlashCommandHandlerFunction<T extends DiscordEvent> =
   HandlerFunctionFor<
     T,

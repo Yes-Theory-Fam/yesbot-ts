@@ -22,7 +22,6 @@ import {
   ButtonInteraction,
   ChatInputCommandInteraction,
   Client,
-  CommandInteraction,
   Message,
   MessageReaction,
   User,
