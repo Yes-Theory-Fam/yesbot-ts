@@ -160,6 +160,11 @@ export const registerSlashCommands = async (
 
   const allOptions = getAllOptions(tree);
 
+  if (allOptions.length === 0) {
+    logger.info("No slash commands registered; skipping API call!");
+    return tree;
+  }
+
   logger.info(`Registering ${allOptions.length} slash commands`);
 
   const builderCache: Record<string, SlashCommandBuilder> = {};
@@ -173,7 +178,7 @@ export const registerSlashCommands = async (
     builder.toJSON()
   );
 
-  const rest = new REST({ version: "9" }).setToken(process.env.BOT_TOKEN);
+  const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN);
 
   try {
     const result = (await rest.put(
