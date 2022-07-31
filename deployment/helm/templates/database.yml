@@ -1,0 +1,59 @@
+{{- if .Values.database.create -}}
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Values.database.service.name }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ .Values.database.service.labels | toYaml | nindent 4 }}
+spec:
+  ports:
+    - port: 5432
+      targetPort: postgres
+  selector: {{ .Values.database.service.labels | toYaml | nindent 4 }}
+
+---
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: yesbot-database-deployment-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace}}
+spec:
+  selector:
+    matchLabels:
+      {{ .Values.database.service.labels | toYaml | indent 6 }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels: {{ .Values.database.service.labels | toYaml | nindent 8 }}
+        deployedOn: {{ now | date .Values.dateformat }}
+    spec:
+      containers:
+        - name: yesbot-database-deployment-{{ .Release.Name }}
+          image: postgres:12.6
+          ports:
+            - name: postgres
+              containerPort: 5432
+          env:
+            {{- range .Values.database.secret.secrets }}
+            - name: {{ .name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.database.secret.name }}-{{ $.Release.Name }}
+                  key: {{ .name }}
+            {{- end }}
+
+---
+
+{{- with .Values.database.secret }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .name }}
+  namespace: {{ $.Release.Namespace }}
+data: {{- range $secret := .secrets }}
+  {{ $secret.name }}: {{ $secret.value | toString | b64enc }}
+  {{- end }}
+{{- end }}
+
+{{- end -}}

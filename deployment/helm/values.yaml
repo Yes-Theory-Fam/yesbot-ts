@@ -1,0 +1,57 @@
+# Default values for helm.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+imagePullSecrets:
+  github: github
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+dateformat: "2015-01-02-15-04-05"
+
+# The staging deployment may use volatile storage and thus create its own database pod since it doesn't matter when data is lost
+database:
+  create: false
+  service:
+    labels:
+      app: yesbot-db
+    name: yesbot-database-service
+  secret:
+    name: yesbot-db-secret
+    secrets:
+      - name: POSTGRES_PASSWORD
+        value: yesbot
+      - name: POSTGRES_USER
+        value: yesbot
+      - name: POSTGRES_DB
+        value: yesbot
+
+bot:
+  guildId:
+  clientId:
+  outputChannelId:
+  memberRoleId:
+  map:
+    link:
+    userId:
+
+  secret:
+    name: yesbot-secret
+    secrets:
+      - name: BOT_TOKEN
+        value:
+      - name: PRISMA_DATABASE_URL
+        value:
+      - name: GITHUB_TOKEN
+        value:
+      - name: GOOGLE_API_KEY
+        value:

@@ -9,21 +9,6 @@ on:
     types: [ created ]
 
 jobs:
-  deploy:
-    name: Deploy
-    needs: build-and-push-image
-    runs-on: ubuntu-latest
-    steps:
-      - name: deploy new bot version
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.YESBOT_HOSTNAME }}
-          port: ${{ secrets.YESBOT_PORT }}
-          key: ${{ secrets.DEPLOYMENT_KEY }}
-          username: ${{ secrets.YESBOT_USERNAME }}
-          script: |
-            kubectl -n ytf rollout restart deploy yesbot-deployment
-
   build-and-push-image:
     runs-on: ubuntu-latest
     strategy:
@@ -35,27 +20,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-
-      - name: Cache node modules
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Setup Node
-        uses: actions/setup-node@v2
-        with:
-          registry: ${{ env.REGISTRY }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          node-version: ${{ matrix.node-version }}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Log in to the Container registry
         uses: docker/login-action@v1
