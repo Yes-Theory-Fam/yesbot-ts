@@ -30,7 +30,7 @@ spec:
             - name: ENGINEER_ROLE_NAME
               value: "Developer"
             - name: MEMBER_ROLE_ID
-              value: {{ .Values.bot.memberRoleId }}
+              value: {{ .Values.bot.memberRoleId | toString }}
             - name: NODE_ENV
               value: "production"
             - name: GITHUB_GRAPHQL_ENDPOINT
@@ -41,7 +41,7 @@ spec:
             - name: MAP_LINK
               value: {{ .Values.bot.map.link }}
             - name: MAP_ADD_DM_USER_ID
-              value: {{ .Values.bot.map.userId }}
+              value: {{ .Values.bot.map.userId | toString }}
 
             {{- range .Values.bot.secret.secrets }}
             - name: {{ .name }}
