@@ -5,6 +5,7 @@ metadata:
   name: {{ .Values.database.service.name }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels: {{ .Values.database.service.labels | toYaml | nindent 4 }}
+    release: {{ .Release.Name }}
 spec:
   ports:
     - port: 5432
