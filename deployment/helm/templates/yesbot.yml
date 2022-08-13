@@ -20,17 +20,17 @@ spec:
           imagePullPolicy: Always
           env:
             - name: GUILD_ID
-              value: {{ .Values.bot.guildId | toString }}
+              value: "{{ .Values.bot.guildId }}"
             - name: CLIENT_ID
-              value: {{ .Values.bot.clientId | toString }}
+              value: "{{ .Values.bot.clientId }}"
             - name: OUTPUT_CHANNEL_ID
-              value: {{ .Values.bot.outputChannelId | toString }}
+              value: "{{ .Values.bot.outputChannelId }}"
             - name: MODERATOR_ROLE_NAME
               value: "Support"
             - name: ENGINEER_ROLE_NAME
               value: "Developer"
             - name: MEMBER_ROLE_ID
-              value: {{ .Values.bot.memberRoleId | toString }}
+              value: "{{ .Values.bot.memberRoleId }}"
             - name: NODE_ENV
               value: "production"
             - name: GITHUB_GRAPHQL_ENDPOINT
@@ -41,7 +41,7 @@ spec:
             - name: MAP_LINK
               value: {{ .Values.bot.map.link }}
             - name: MAP_ADD_DM_USER_ID
-              value: {{ .Values.bot.map.userId | toString }}
+              value: "{{ .Values.bot.map.userId }}"
 
             {{- range .Values.bot.secret.secrets }}
             - name: {{ .name }}
