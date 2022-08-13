@@ -15,7 +15,7 @@ spec:
       imagePullSecrets:
         - name: github
       containers:
-        - name: YesBot
+        - name: yesbot
           image: ghcr.io/yes-theory-fam/yesbot-ts:1.4.8
           imagePullPolicy: Always
           env:
