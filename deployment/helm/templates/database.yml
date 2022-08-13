@@ -26,7 +26,7 @@ spec:
   template:
     metadata:
       labels: {{ .Values.database.service.labels | toYaml | nindent 8 }}
-        deployedOn: {{ now | date .Values.dateformat }}
+        release: {{ .Release.Name }}
     spec:
       containers:
         - name: yesbot-database-deployment-{{ .Release.Name }}
