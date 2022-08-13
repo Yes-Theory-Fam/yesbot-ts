@@ -5,6 +5,10 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 on:
+  push:
+    branches:
+      - master
+      - feat/kubernetes-deployment
   release:
     types: [ created ]
 
