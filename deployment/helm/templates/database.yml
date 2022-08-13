@@ -49,7 +49,7 @@ spec:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: {{ .name }}
+  name: {{ .name }}-{{ $.Release.Name }}
   namespace: {{ $.Release.Namespace }}
 data: {{- range $secret := .secrets }}
   {{ $secret.name }}: {{ $secret.value | toString | b64enc }}
