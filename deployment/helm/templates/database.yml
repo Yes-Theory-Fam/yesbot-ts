@@ -20,8 +20,7 @@ metadata:
   namespace: {{ .Release.Namespace}}
 spec:
   selector:
-    matchLabels:
-      {{ .Values.database.service.labels | toYaml | indent 6 }}
+    matchLabels: {{ .Values.database.service.labels | toYaml | nindent 6 }}
       release: {{ .Release.Name }}
   template:
     metadata:
