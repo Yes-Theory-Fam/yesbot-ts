@@ -136,18 +136,32 @@ const getCountries = async (
   channel: TextChannel,
   userId: Snowflake,
   ct: CancellationToken
-): Promise<Role[]> =>
-  await retryUntilSatisfied(
-    () => _getCountries(channel, userId),
-    (countries) => Boolean(countries?.length),
+): Promise<Role[]> => {
+  const atLeastOneCountryProducer = async () =>
+    await retryUntilSatisfied(
+      () => _getCountries(channel, userId),
+      (countries) => Boolean(countries?.length),
+      ct,
+      async () =>
+        channel
+          .send(
+            "I couldn't find any countries that we have roles for in your message, please try again!"
+          )
+          .then((m) => setTimeout(() => m.delete(), 10000))
+    );
+
+  return retryUntilSatisfied(
+    () => atLeastOneCountryProducer(),
+    (countries) => countries.length < 4,
     ct,
     async () =>
       channel
         .send(
-          "I couldn't find any countries that we have roles for in your message, please try again!"
+          "To avoid chaos in the threads, we only allow pinging three roles per ticket. If you are traveling to more countries / regions, please create a new travel ticket after your first one was approved!"
         )
         .then((m) => setTimeout(() => m.delete(), 10000))
   );
+};
 
 async function _getCountries(
   channel: TextChannel,
