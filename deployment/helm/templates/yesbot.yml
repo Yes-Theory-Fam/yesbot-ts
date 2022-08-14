@@ -1,0 +1,64 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: yesbot-deployment-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: yesbot
+  template:
+    metadata:
+      labels:
+        app: yesbot
+    spec:
+      imagePullSecrets:
+        - name: github
+      containers:
+        - name: yesbot
+          image: {{ .Values.bot.image.name }}:{{ .Values.bot.image.tag }}
+          imagePullPolicy: Always
+          env:
+            - name: GUILD_ID
+              value: "{{ .Values.bot.guildId }}"
+            - name: CLIENT_ID
+              value: "{{ .Values.bot.clientId }}"
+            - name: OUTPUT_CHANNEL_ID
+              value: "{{ .Values.bot.outputChannelId }}"
+            - name: MODERATOR_ROLE_NAME
+              value: "Support"
+            - name: ENGINEER_ROLE_NAME
+              value: "Developer"
+            - name: MEMBER_ROLE_ID
+              value: "{{ .Values.bot.memberRoleId }}"
+            - name: NODE_ENV
+              value: "production"
+            - name: GITHUB_GRAPHQL_ENDPOINT
+              value: "https://api.github.com/graphql"
+            - name: ACTIVITY_TIME_DELAY
+              value: "5"
+
+            - name: MAP_LINK
+              value: {{ .Values.bot.map.link }}
+            - name: MAP_ADD_DM_USER_ID
+              value: "{{ .Values.bot.map.userId }}"
+
+            {{- range .Values.bot.secret.secrets }}
+            - name: {{ .name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.bot.secret.name }}-{{ $.Release.Name }}
+                  key: {{ .name }}
+            {{- end }}
+---
+{{- with .Values.bot.secret }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .name }}-{{ $.Release.Name }}
+  namespace: {{ $.Release.Namespace }}
+data: {{- range $secret := .secrets }}
+  {{ $secret.name }}: {{ $secret.value | toString | b64enc }}
+  {{- end }}
+{{- end }}
+
