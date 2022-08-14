@@ -24,9 +24,6 @@ import {
 })
 class SearchGroup implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
-    await message.reply("Search on your own, some useless change.");
-    return;
-
     const words = message.content.split(" ").slice(2);
     const requestedGroupName = words[0];
 
