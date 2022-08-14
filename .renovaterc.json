@@ -21,6 +21,7 @@
       "matchPackageNames": [
         "prisma",
         "typegraphql-prisma",
+        "@prisma/client"
       ],
       "labels": [
         "renovate",
