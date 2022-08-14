@@ -16,7 +16,7 @@ spec:
         - name: github
       containers:
         - name: yesbot
-          image: ghcr.io/yes-theory-fam/yesbot-ts:feat-kubernetes-deployment
+          image: {{ .Values.bot.image.name }}:{{ .Values.bot.image.tag }}
           imagePullPolicy: Always
           env:
             - name: GUILD_ID

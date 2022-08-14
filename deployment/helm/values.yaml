@@ -36,6 +36,10 @@ database:
         value: yesbot
 
 bot:
+  image:
+    name: ghcr.io/yes-theory-fam/yesbot-ts
+    tag: latest
+
   guildId:
   clientId:
   outputChannelId:
