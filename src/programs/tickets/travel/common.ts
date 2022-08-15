@@ -86,7 +86,6 @@ const _promptAndSendForApproval = async (
     "Lastly, what are you planning to do there?",
     ct
   );
-  retryCollector.stop("All information collected!");
 
   const travelRequest = formatMessage(
     userId,
@@ -104,6 +103,8 @@ const _promptAndSendForApproval = async (
     `Alright! This is what I would send to the mods for review:\n\n${travelRequest}\n\nDoes that all look good to you?`,
     ct
   );
+
+  retryCollector.stop("All information collected!");
 
   if (!userConfirmed) {
     await channel.send(

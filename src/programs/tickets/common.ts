@@ -106,8 +106,10 @@ const createTicket = async (
   if (!message.guild)
     throw new Error("Trying to create Ticket outside of guild");
 
-  const category = message.guild.channels.cache.find((c) =>
-    c.name.toLowerCase().includes(ticketType)
+  const category = message.guild.channels.cache.find(
+    (c) =>
+      c.name.toLowerCase().includes(ticketType) &&
+      c.type === ChannelType.GuildCategory
   )?.id;
 
   const moderatorRole = Tools.getRoleByName(
