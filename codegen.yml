@@ -1,8 +1,8 @@
 overwrite: true
 schema:
-  - http://localhost:5001/graphql:
+  - ${YTF_GRAPHQL_ENDPOINT:http://localhost:5001/graphql}:
       headers:
-        X-YesBot-Authentication: ""
+        X-YesBot-Authentication: ${YTF_API_AUTH_TOKEN:""}
 documents: ./**/*.graphql
 hooks:
   afterAllFileWrite:

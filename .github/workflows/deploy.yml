@@ -42,6 +42,9 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
+          build-args: |
+            "YTF_GRAPHQL_ENDPOINT=${{ github.ref == 'refs/heads/master' && 'https://staging.yestheory.family/yesbot' || 'https://yestheory.family/yesbot' }}"
+            "YTF_API_AUTH_TOKEN=${{ github.ref == 'refs/heads/master' && secrets.STAGING_API_TOKEN || secrets.API_TOKEN }}"
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

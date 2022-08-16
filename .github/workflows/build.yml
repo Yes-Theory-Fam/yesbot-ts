@@ -14,6 +14,9 @@ jobs:
     strategy:
       matrix:
         node-version: [ 16.19 ]
+    env:
+      YTF_GRAPHQL_ENDPOINT: https://staging.yestheory.family/yesbot
+      YTF_API_AUTH_TOKEN: ${{ secrets.STAGING_API_TOKEN }}
     steps:
       - uses: actions/checkout@v3
       - name: Get yarn cache directory path
@@ -31,4 +34,5 @@ jobs:
       - name: install and compile
         run: |
           yarn install --frozen-lockfile
+          yarn codegen
           yarn tsc --noEmit
