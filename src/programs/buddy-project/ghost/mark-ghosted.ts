@@ -28,7 +28,12 @@ import { MarkGhostedError } from "../../../__generated__/types";
 class MarkGhostedReaction extends CommandHandler<DiscordEvent.REACTION_ADD> {
   async handle(reaction: MessageReaction, user: User): Promise<void> {
     const buddyId = await this.ensureValidEntry(user.id);
-    const buddyMember = reaction.message.guild!.members.resolve(buddyId);
+    const buddyMember = reaction.message.guild!.members.resolve(buddyId ?? "");
+
+    if (!buddyMember) {
+      throw new Error(BuddyProjectError.NOT_MATCHED);
+    }
+
     await this.contactBuddy(buddyMember, user.id);
     await this.confirmToUser(user);
   }

@@ -33,18 +33,18 @@ export class RescueForceClose {
 
   findOldThreads(): OldThreads {
     const guild = this.bot.guilds.resolve(process.env.GUILD_ID);
-    const threadParent = guild.channels.cache.find(
+    const threadParent = guild?.channels.cache.find(
       (c): c is TextChannel => c.name === ChatNames.BUDDY_PROJECT_INFO
     );
 
-    const allThreads = threadParent.threads.cache.values();
+    const allThreads = threadParent?.threads.cache.values() ?? [];
     const nowTimestamp = Date.now();
 
     const result: OldThreads = { toDelete: [], toWarn: [] };
 
     for (const thread of allThreads) {
       const channelLifetimeInMinutes =
-        (nowTimestamp - thread.createdTimestamp) / 1000 / 60;
+        (nowTimestamp - (thread.createdTimestamp ?? 0)) / 1000 / 60;
 
       if (
         channelLifetimeInMinutes > RescueForceClose.threadMaxLifetimeMinutes

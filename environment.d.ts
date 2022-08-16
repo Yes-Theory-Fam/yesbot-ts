@@ -18,6 +18,7 @@ declare namespace NodeJS {
     GOOGLE_API_KEY?: string;
     ACTIVITY_TIME?: string;
 
-    YTF_GRAPHQL_ENDPOINT?: string;
+    YTF_GRAPHQL_ENDPOINT: string;
+    YTF_API_AUTH_TOKEN: string;
   }
 }

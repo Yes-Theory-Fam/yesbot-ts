@@ -1,4 +1,6 @@
 import {
+  AnyThreadChannel,
+  ChannelType,
   Guild,
   GuildMember,
   Message,
@@ -39,6 +41,9 @@ const enum RescueErrors {
 class BuddyProjectRescue extends CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
     const memberInTrouble = message.member;
+    // Guarded by command decorator
+    if (!memberInTrouble || !message.guild) return;
+
     const informationText = `Hey ${memberInTrouble}!
 I opened this thread to help find your buddy. Discord sometimes displays a weird mess of numbers which I assume happened in your case.
 
@@ -52,10 +57,10 @@ If you want to help us out, please click the checkmark below to prematurely clos
     await BuddyProjectRescue.ensureNoExistingThread(memberInTrouble, buddyId);
     const thread = await BuddyProjectRescue.createRescueThread(memberInTrouble);
 
-    await thread.members.add(buddyId);
+    await thread?.members.add(buddyId);
 
-    const infoMessage = await thread.send(informationText);
-    await infoMessage.react("✅");
+    const infoMessage = await thread?.send(informationText);
+    await infoMessage?.react("✅");
 
     await message.delete();
   }
@@ -68,16 +73,16 @@ If you want to help us out, please click the checkmark below to prematurely clos
     const hasPrivateThreads =
       memberInTrouble.guild.features.includes("PRIVATE_THREADS");
     const threadType = hasPrivateThreads
-      ? "GUILD_PRIVATE_THREAD"
-      : "GUILD_PUBLIC_THREAD";
+      ? ChannelType.GuildPrivateThread
+      : ChannelType.GuildPublicThread;
 
-    const thread = await infoChannel.threads.create({
+    const thread = await infoChannel?.threads.create({
       type: threadType,
       autoArchiveDuration: 60,
       name: BuddyProjectRescue.channelNameForMember(memberInTrouble),
     });
 
-    await thread.members.add(memberInTrouble);
+    await thread?.members.add(memberInTrouble);
 
     return thread;
   }
@@ -88,12 +93,14 @@ If you want to help us out, please click the checkmark below to prematurely clos
 
   static rescueChannelForMember(
     member: GuildMember
-  ): ThreadChannel | undefined {
+  ): AnyThreadChannel | undefined {
     const { guild } = member;
     const rescueName = this.channelNameForMember(member);
+
     return guild.channels.cache.find(
-      (c): c is ThreadChannel =>
-        c instanceof ThreadChannel && c.name === rescueName
+      (c): c is AnyThreadChannel =>
+        c.type === ChannelType.GuildPublicThread ||
+        (c.type === ChannelType.GuildPrivateThread && c.name === rescueName)
     );
   }
 
@@ -129,6 +136,9 @@ If you want to help us out, please click the checkmark below to prematurely clos
   ): Promise<void> {
     const guild = member.guild;
     const buddyMember = guild.members.resolve(buddyId);
+    if (!buddyMember) {
+      throw new Error(`Could not resolve member from ID ${buddyId}`);
+    }
 
     const userThread = this.rescueChannelForMember(member);
     const buddyThread = this.rescueChannelForMember(buddyMember);

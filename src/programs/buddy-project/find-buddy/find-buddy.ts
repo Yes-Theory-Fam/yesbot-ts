@@ -29,6 +29,7 @@ class FindBuddyCommand extends CommandHandler<DiscordEvent.MESSAGE> {
       member,
       author: { id: userId },
     } = message;
+    if (!member) return;
 
     const { buddy, status } = await new BuddyProjectService().getBuddy(userId);
 
