@@ -14,7 +14,6 @@ COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY . .
 
 ARG YTF_GRAPHQL_ENDPOINT
-ARG YTF_API_AUTH_TOKEN
 
 RUN yarn prisma generate && yarn codegen && yarn run tsc
 

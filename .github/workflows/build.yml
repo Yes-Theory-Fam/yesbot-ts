@@ -15,8 +15,7 @@ jobs:
       matrix:
         node-version: [ 16.19 ]
     env:
-      YTF_GRAPHQL_ENDPOINT: https://staging.yestheory.family/yesbot
-      YTF_API_AUTH_TOKEN: ${{ secrets.STAGING_API_TOKEN }}
+      YTF_GRAPHQL_ENDPOINT: https://staging.yestheory.family/_yesbot-schema
     steps:
       - uses: actions/checkout@v3
       - name: Get yarn cache directory path
