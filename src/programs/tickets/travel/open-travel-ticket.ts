@@ -15,7 +15,7 @@ import { promptAndSendForApproval } from "./common";
   description: "This handler is to create a travel ticket.",
   stateful: false,
   errors: {
-    [HandlerRejectedReason.MISSING_ROLE]: `Before meeting up with people, it's probably best to let others know who you are! This command requires the 'Seek Discomfort' role which you can get by introducing yourself in #introductions!`,
+    [HandlerRejectedReason.MISSING_ROLE]: `Before meeting up with people, it's probably best to let others know who you are! This command requires the 'Seek Discomfort' role which you can get by introducing yourself in #introductions!\n\nIf you already posted your introduction, make sure it's longer than just two or three sentences and give the support team some time to check it :)`,
   },
 })
 class OpenTravelTicket implements CommandHandler<DiscordEvent.MESSAGE> {
