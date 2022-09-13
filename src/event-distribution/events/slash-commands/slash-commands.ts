@@ -1,5 +1,4 @@
 import { REST } from "@discordjs/rest";
-import { APIApplicationCommandBasicOption } from "discord-api-types/payloads/v10";
 import { Routes } from "discord-api-types/rest";
 import {
   ChannelType,
@@ -18,7 +17,10 @@ import {
   HandlerFunctionFor,
 } from "../../types/base";
 import { StringIndexedHIOCTree } from "../../types/hioc";
-import { addOptions } from "./add-options";
+import {
+  addOptions,
+  APIApplicationCommandBasicOptionWithAutoCompleteHandler,
+} from "./add-options";
 
 export interface SlashCommandHandlerOptions extends BaseOptions {
   event: DiscordEvent.SLASH_COMMAND;
@@ -28,7 +30,7 @@ export interface SlashCommandHandlerOptions extends BaseOptions {
   subCommandGroup?: string;
 
   description: string;
-  options?: APIApplicationCommandBasicOption[];
+  options?: APIApplicationCommandBasicOptionWithAutoCompleteHandler[];
 }
 
 export type SlashCommandHandlerFunction<T extends DiscordEvent> =
@@ -41,11 +43,13 @@ export type SlashCommandHandlerFunction<T extends DiscordEvent> =
 export const addSlashCommandHandler: AddEventHandlerFunction<
   SlashCommandHandlerOptions
 > = (options, ioc, tree) => {
-  addToTree(
-    [options.root, options.subCommandGroup ?? "", options.subCommand ?? ""],
-    { options, ioc },
-    tree
-  );
+  const keys = [
+    options.root,
+    options.subCommandGroup ?? "",
+    options.subCommand ?? "",
+  ];
+
+  addToTree(keys, { options, ioc }, tree);
 };
 
 export const extractSlashCommandInfo: ExtractInfoForEventFunction<
@@ -140,18 +144,18 @@ interface RegistrationResponseItem {
 }
 
 export const registerSlashCommands = async (
-  tree: StringIndexedHIOCTree<DiscordEvent.SLASH_COMMAND>
+  commandTree: StringIndexedHIOCTree<DiscordEvent.SLASH_COMMAND>
 ): Promise<StringIndexedHIOCTree<DiscordEvent.SLASH_COMMAND>> => {
   const logger = createYesBotLogger(
     "event-distribution",
     "register-slash-commands"
   );
 
-  const allOptions = getAllOptions(tree);
+  const allOptions = getAllOptions(commandTree);
 
   if (allOptions.length === 0) {
     logger.info("No slash commands registered; skipping API call!");
-    return tree;
+    return commandTree;
   }
 
   logger.info(`Registering ${allOptions.length} slash commands`);
@@ -178,18 +182,19 @@ export const registerSlashCommands = async (
       { body: commands }
     )) as RegistrationResponseItem[];
 
-    const newTree: StringIndexedHIOCTree<DiscordEvent.SLASH_COMMAND> = {};
+    const newCommandTree: StringIndexedHIOCTree<DiscordEvent.SLASH_COMMAND> =
+      {};
 
     for (const item of result) {
-      newTree[item.id] = tree[item.name];
+      newCommandTree[item.id] = commandTree[item.name];
     }
 
     logger.info(`Finished registering ${allOptions.length} slash commands`);
 
-    return newTree;
+    return newCommandTree;
   } catch (e) {
     logger.error("Failed registering slash commands, exception was ", e);
 
-    return tree;
+    return commandTree;
   }
 };

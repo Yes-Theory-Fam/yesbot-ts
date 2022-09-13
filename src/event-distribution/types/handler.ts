@@ -10,7 +10,7 @@ export type HandlerClass<T extends DiscordEvent> = {
   };
 };
 
-type PromiseOr<T> = T | Promise<T>;
+export type PromiseOr<T> = T | Promise<T>;
 
 export abstract class CommandHandler<T extends DiscordEvent> {
   public abstract handle(

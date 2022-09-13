@@ -1,4 +1,4 @@
-import { Interaction } from "discord.js";
+import { AutocompleteInteraction, Interaction } from "discord.js";
 import glob from "glob";
 import path from "path";
 import { createYesBotLogger } from "../log";
@@ -29,7 +29,7 @@ import {
 
 const logger = createYesBotLogger("event-distribution", "event-distribution");
 
-type EventDistributionHandlers = {
+export type EventDistributionHandlers = {
   [key in DiscordEvent]: StringIndexedHIOCTree<key>;
 };
 
@@ -81,7 +81,64 @@ export class EventDistribution {
       return await this.handleEvent(DiscordEvent.BUTTON_CLICKED, interaction);
     } else if (interaction.isChatInputCommand()) {
       return await this.handleEvent(DiscordEvent.SLASH_COMMAND, interaction);
+    } else if (interaction.isAutocomplete()) {
+      return await this.handleAutocomplete(interaction);
     }
+  }
+
+  async handleAutocomplete(interaction: AutocompleteInteraction) {
+    const options = interaction.options;
+
+    const slashCommandHandlerKeys = [
+      interaction.commandId,
+      options.getSubcommandGroup(false) ?? "",
+      options.getSubcommand(false) ?? "",
+    ];
+
+    const tree = this.handlers[DiscordEvent.SLASH_COMMAND];
+    const handler = this.getHandlers<DiscordEvent.SLASH_COMMAND>(
+      tree,
+      slashCommandHandlerKeys
+    );
+
+    if (handler.length === 0) {
+      logger.warn(
+        `Received autocomplete for handlerkeys ${slashCommandHandlerKeys.join(
+          ", "
+        )}, but no handler was found!`
+      );
+
+      return;
+    }
+
+    const [slashCommandHioc] = handler;
+    const focusedOption = options.getFocused(true);
+    const focusedOptionName = focusedOption.name;
+
+    const maybeAutocompleteOption = slashCommandHioc.options.options?.find(
+      (o) => o.name === focusedOptionName
+    );
+
+    if (
+      !maybeAutocompleteOption ||
+      !("autocomplete" in maybeAutocompleteOption) ||
+      !maybeAutocompleteOption.autocomplete
+    ) {
+      logger.warn(
+        `Received autocomplete for handler ${getIocName(
+          slashCommandHioc.ioc
+        )} and option ${focusedOptionName} but no such option exists or it does not support autocomplete.`
+      );
+
+      return;
+    }
+
+    const response = await maybeAutocompleteOption.autocomplete(
+      focusedOption.value,
+      interaction
+    );
+
+    await interaction.respond(response);
   }
 
   async handleEvent<T extends DiscordEvent>(
@@ -183,6 +240,7 @@ export class EventDistribution {
       });
     });
 
+    // Slash Commands and related stuff
     this.handlers[DiscordEvent.SLASH_COMMAND] = await registerSlashCommands(
       this.handlers[DiscordEvent.SLASH_COMMAND]
     );

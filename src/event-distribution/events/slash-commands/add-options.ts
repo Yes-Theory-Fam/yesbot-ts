@@ -11,9 +11,32 @@ import {
   APIApplicationCommandOptionChoice,
   ApplicationCommandOptionType,
 } from "discord-api-types/payloads/v10";
+import { AutocompleteHandler } from "./autocomplete";
 
 export type SlashCommandOptionBase =
   SlashCommandSubcommandBuilder["options"][0];
+
+type AutocompleteOrChoice<T extends string | number> =
+  | {
+      autocomplete: AutocompleteHandler<T>;
+      choices?: never;
+    }
+  | { choices?: APIApplicationCommandOptionChoice<T>[]; autocomplete?: never };
+
+type AutocompleteToCommandHandler<T> = T extends {
+  type: ApplicationCommandOptionType.String;
+}
+  ? Omit<T, "autocomplete" | "choices"> & AutocompleteOrChoice<string>
+  : T extends {
+      type:
+        | ApplicationCommandOptionType.Number
+        | ApplicationCommandOptionType.Integer;
+    }
+  ? Omit<T, "autocomplete" | "choices"> & AutocompleteOrChoice<number>
+  : T;
+
+export type APIApplicationCommandBasicOptionWithAutoCompleteHandler =
+  AutocompleteToCommandHandler<APIApplicationCommandBasicOption>;
 
 type ChoiceType =
   | ApplicationCommandOptionType.String
@@ -34,14 +57,15 @@ const addChoices = <T extends string | number, TType extends ChoiceType>(
     ) => ChoiceOption<T, TType>;
   },
   data:
-    | { autocomplete?: false; choices?: APIApplicationCommandOptionChoice<T>[] }
-    | { autocomplete: true }
+    | {
+        autocomplete?: false;
+        choices?: APIApplicationCommandOptionChoice<T>[];
+      }
+    | { autocomplete: AutocompleteHandler<string | number> }
 ): ChoiceOption<T, TType> => {
-  const withAutoCompleteSet = option.setAutocomplete(
-    data.autocomplete ?? false
-  );
+  const withAutoCompleteSet = option.setAutocomplete(!!data.autocomplete);
 
-  return data.autocomplete === false
+  return !data.autocomplete
     ? withAutoCompleteSet.setChoices(...(data.choices ?? []))
     : (withAutoCompleteSet as unknown as ChoiceOption<T, TType>);
 };
@@ -58,6 +82,7 @@ const addMinMax = <
     typeof data.min_value === "number"
       ? option.setMinValue(data.min_value)
       : option;
+
   return typeof data.max_value === "number"
     ? withMinValueSet.setMaxValue(data.max_value)
     : withMinValueSet;
@@ -65,7 +90,7 @@ const addMinMax = <
 
 const addOption = (
   builder: SlashCommandBuilder | SlashCommandSubcommandBuilder,
-  option: APIApplicationCommandBasicOption
+  option: APIApplicationCommandBasicOptionWithAutoCompleteHandler
 ) => {
   const required = option.required ?? false;
 
@@ -123,7 +148,7 @@ const addOption = (
 
 export const addOptions = (
   builder: SlashCommandBuilder | SlashCommandSubcommandBuilder,
-  options: APIApplicationCommandBasicOption[] | undefined
+  options: APIApplicationCommandBasicOptionWithAutoCompleteHandler[] | undefined
 ) => {
   if (!options) return;
 
