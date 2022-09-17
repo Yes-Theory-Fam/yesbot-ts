@@ -11,9 +11,9 @@ with `@Command` will be registered as event handler in the instance.
 The basic structure of an event handler is basically set in stone:
 
 ```ts
-import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
+import {Command, CommandHandler, DiscordEvent} from "../event-distribution";
 
-@Command({ /* options */ })
+@Command({ /* options */})
 export class SomeEventHandler extends CommandHandler</* DiscordEvent.EVENT_NAME */> {
   handle(/* arguments */): void {
     /* Implementation */
@@ -49,7 +49,6 @@ interface MessageRelatedOptions extends BaseOptions {
 ### Events
 
 There are a few variables in there which are mostly based on the different events, so let's go over them and their
-details first.
 
 #### Message
 
@@ -115,11 +114,13 @@ interface GuildMemberUpdateEventHandlerOptions {
 
 ##### Enum
 
-Use `DiscordEvent.GUILD_MEMBER_UPDATE` as event in the decorator's options and generic argument for the `CommandHandler`.
+Use `DiscordEvent.GUILD_MEMBER_UPDATE` as event in the decorator's options and generic argument for the `CommandHandler`
+.
 
 ##### Arguments
 
-The handler function is called with two `GuildMember | PartialGuildMember` objects, the first representing the member before the change, the second after the change.
+The handler function is called with two `GuildMember | PartialGuildMember` objects, the first representing the member
+before the change, the second after the change.
 
 #### Ready
 
@@ -136,6 +137,7 @@ Use `DiscordEvent.READY` as event in the decorator's options and generic argumen
 ##### Arguments
 
 The handler function is called with the `Client` that is now ready.
+
 #### Member Leave
 
 The bot receives an event when a guild member leaves, is kicked or banned.
@@ -150,11 +152,55 @@ Use `DiscordEvent.MEMBER_LEAVE` as event in the decorator's options and generic 
 
 ##### Arguments
 
-The handler function is called with one `GuildMember | PartialGuildMember` object, which represents the member that left the server.
+The handler function is called with one `GuildMember | PartialGuildMember` object, which represents the member that left
+the server.
+
+#### Slash Commands
+
+The bot receives an event when a user uses a slash command.
+
+##### Options
+
+Additionally, to the [BaseOptions](#base-options), the following options are available
+
+```ts
+export interface SlashCommandHandlerOptions extends BaseOptions {
+  /*
+   Discord supports up to three levels for slash commands:
+
+   /root
+   /root subCommand
+   /root subCommandGroup subCommand
+   
+   Providing subCommandGroup while not providing subCommand is an invalid configuration
+  */
+
+  root: string;
+  subCommand?: string;
+  subCommandGroup?: string;
+
+  description: string; // Description to be displayed in the Client
+  options?: APIApplicationCommandBasicOptionWithAutoCompleteHandler[]; // A list of options, see the command-options section for more detail
+}
+```
+
+##### Enum
+
+Use `DiscordEvent.SLASH_COMMAND` as event in the decorator's options and generic argument for the CommandHandler.
+
+##### Arguments
+
+The handler is called with an `ChatInputCommandInteraction`.
+
+##### Command-Options
+
+The `options` argument for the handler takes a list of `APIApplicationCommandBasicOptionWithAutoCompleteHandler` which are identical to [the options defined by Discord's API](https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-option-structure) except for `autocomplete`.
+If you want autocomplete, you have to define a function of type `AutocompleteHandler<T extends string | number>`. Use `number` as generic argument when defining autocomplete for an Integer- or Number-Option and `string` when defining autocomplete. The function receives the current user-input for that value as string as first parameter and an `AutocompleteInteraction` as second parameter. The function must return an array of choices.
 
 #### Voice State Update
 
-The bot receives an event when a member's voice state changes. This includes muting, deafening, joining and leaving rooms, etc.
+The bot receives an event when a member's voice state changes. This includes muting, deafening, joining and leaving
+rooms, etc.
 
 ##### Options
 

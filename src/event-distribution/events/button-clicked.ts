@@ -5,20 +5,13 @@ import {
   HandlerFunctionFor,
   MessageRelatedOptions,
 } from "../types/base";
-import {
-  ButtonInteraction,
-  Client,
-  Guild,
-  GuildMember,
-  Message,
-} from "discord.js";
+import { ButtonInteraction, Message } from "discord.js";
 import {
   addToTree,
   collectChannelDefinitions,
   ensureGuildMemberOrNull,
   withMessageRelatedInfo,
 } from "../helper";
-import { APIGuildMember, APIMessage } from "discord-api-types/v10";
 
 export interface ButtonClickedHandlerOptions extends MessageRelatedOptions {
   event: DiscordEvent.BUTTON_CLICKED;
