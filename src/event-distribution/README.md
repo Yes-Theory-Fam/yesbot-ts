@@ -49,7 +49,6 @@ interface MessageRelatedOptions extends BaseOptions {
 ### Events
 
 There are a few variables in there which are mostly based on the different events, so let's go over them and their
-details first. Note: Since slash commands are a larger topic, they are described in [their own chapter](#slash-commands)
 
 #### Message
 
@@ -156,29 +155,6 @@ Use `DiscordEvent.MEMBER_LEAVE` as event in the decorator's options and generic 
 The handler function is called with one `GuildMember | PartialGuildMember` object, which represents the member that left
 the server.
 
-#### Voice State Update
-
-The bot receives an event when a member's voice state changes. This includes muting, deafening, joining and leaving
-rooms, etc.
-
-##### Options
-
-Additionally, to the [BaseOptions](#base-options), the following options are available:
-
-```ts
-export interface VoiceStateUpdateEventHandlerOptions {
-  changes: [VoiceStateChange, ...VoiceStateChange[]]; // A list of all changes that should trigger the handler
-}
-```
-
-##### Enum
-
-Use `DiscordEvent.VOICE_STATE_UPDATE` as event in the decorator's options and generic argument for the `CommandHandler`.
-
-##### Arguments
-
-The handler is called with two `VoiceState` objects. The first containing the state before, the second after the change.
-
 #### Slash Commands
 
 The bot receives an event when a user uses a slash command.
@@ -220,3 +196,26 @@ The handler is called with an `ChatInputCommandInteraction`.
 
 The `options` argument for the handler takes a list of `APIApplicationCommandBasicOptionWithAutoCompleteHandler` which are identical to [the options defined by Discord's API](https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-option-structure) except for `autocomplete`.
 If you want autocomplete, you have to define a function of type `AutocompleteHandler<T extends string | number>`. Use `number` as generic argument when defining autocomplete for an Integer- or Number-Option and `string` when defining autocomplete. The function receives the current user-input for that value as string as first parameter and an `AutocompleteInteraction` as second parameter. The function must return an array of choices.
+
+#### Voice State Update
+
+The bot receives an event when a member's voice state changes. This includes muting, deafening, joining and leaving
+rooms, etc.
+
+##### Options
+
+Additionally, to the [BaseOptions](#base-options), the following options are available:
+
+```ts
+export interface VoiceStateUpdateEventHandlerOptions {
+  changes: [VoiceStateChange, ...VoiceStateChange[]]; // A list of all changes that should trigger the handler
+}
+```
+
+##### Enum
+
+Use `DiscordEvent.VOICE_STATE_UPDATE` as event in the decorator's options and generic argument for the `CommandHandler`.
+
+##### Arguments
+
+The handler is called with two `VoiceState` objects. The first containing the state before, the second after the change.
