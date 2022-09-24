@@ -5,27 +5,31 @@ import {
   EventLocation,
 } from "../../../event-distribution";
 import {
+  ButtonInteraction,
   Client,
-  MessageReaction,
   PartialDMChannel,
   Snowflake,
-  User,
 } from "discord.js";
 import { BuddyProjectService } from "../services/buddy-project.service";
 import { ghostWarningMessageRegex } from "./constants";
 
+export const buddyProjectNotifyNotGhostingButtonId =
+  "buddy-project-not-ghosting";
+
 @Command({
-  event: DiscordEvent.REACTION_ADD,
+  event: DiscordEvent.BUTTON_CLICKED,
   contentRegex: ghostWarningMessageRegex,
   location: EventLocation.DIRECT_MESSAGE,
-  emoji: "✅",
+  customId: buddyProjectNotifyNotGhostingButtonId,
 })
-class NotifyNotGhosting extends CommandHandler<DiscordEvent.REACTION_ADD> {
-  async handle(reaction: MessageReaction, user: User): Promise<void> {
+class NotifyNotGhosting extends CommandHandler<DiscordEvent.BUTTON_CLICKED> {
+  async handle(interaction: ButtonInteraction): Promise<void> {
+    const { message, user, client } = interaction;
+
     const bpService = new BuddyProjectService();
     const entry = await bpService.getBuddy(user.id);
 
-    const dm = reaction.message.channel as PartialDMChannel;
+    const dm = message.channel as PartialDMChannel;
 
     await bpService.markAsNotGhosting(user.id);
 
@@ -34,7 +38,7 @@ class NotifyNotGhosting extends CommandHandler<DiscordEvent.REACTION_ADD> {
       throw new Error("Cannot mark as not ghosting; entry does not have buddy");
     }
 
-    await this.notifyBuddy(ghostedId, reaction.client);
+    await this.notifyBuddy(ghostedId, client);
     await this.notifyGhoster(dm);
   }
 

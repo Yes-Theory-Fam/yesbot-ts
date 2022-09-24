@@ -1,16 +1,18 @@
 import {
+  ActionRowBuilder,
   AnyThreadChannel,
+  ButtonBuilder,
+  ButtonStyle,
   ChannelType,
+  ChatInputCommandInteraction,
   Guild,
   GuildMember,
-  Message,
   Snowflake,
   TextChannel,
   ThreadChannel,
 } from "discord.js";
 import { BuddyProjectStatus } from "../../../__generated__/types";
 import { ChatNames } from "../../../collections/chat-names";
-import { RoleNames } from "../../../collections/role-names";
 import {
   Command,
   CommandHandler,
@@ -18,6 +20,7 @@ import {
 } from "../../../event-distribution";
 import { BuddyProjectError, commonMessages } from "../errors";
 import { BuddyProjectService } from "../services/buddy-project.service";
+import { rescueCloseButtonId } from "./rescue-close";
 
 const enum RescueErrors {
   THREAD_ALREADY_EXISTS = "THREAD_ALREADY_EXISTS",
@@ -25,26 +28,24 @@ const enum RescueErrors {
 }
 
 @Command({
-  event: DiscordEvent.MESSAGE,
+  event: DiscordEvent.SLASH_COMMAND,
   errors: {
     ...commonMessages,
     [RescueErrors.THREAD_ALREADY_EXISTS]: `Hey, it seems like you or your buddy already opened a thread to find the other. In either case, you should find it under the last message in #${ChatNames.BUDDY_PROJECT_INFO}.`,
     [RescueErrors.TOO_MANY_THREADS]: `Oof! It appears too many threads are already in use. Please try again later or try to use the instructions in #${ChatNames.BUDDY_PROJECT_INFO}, sorry about that!`,
   },
-  trigger: "!rescue",
-  channelNames: [ChatNames.BUDDY_PROJECT],
-  allowedRoles: [RoleNames.BUDDY_PROJECT],
+  root: "buddy-project",
+  subCommand: "rescue",
   description:
     "Allows signed up members to more easily find their buddy using some cheeky Discord tricks.",
-  stateful: false,
 })
-class BuddyProjectRescue extends CommandHandler<DiscordEvent.MESSAGE> {
-  async handle(message: Message): Promise<void> {
-    const memberInTrouble = message.member;
+class BuddyProjectRescue extends CommandHandler<DiscordEvent.SLASH_COMMAND> {
+  async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+    const { member, guild } = interaction;
     // Guarded by command decorator
-    if (!memberInTrouble || !message.guild) return;
+    if (!member || !guild) return;
 
-    const informationText = `Hey ${memberInTrouble}!
+    const informationText = `Hey ${member}!
 I opened this thread to help find your buddy. Discord sometimes displays a weird mess of numbers which I assume happened in your case.
 
 Pulling your buddy into this thread with you should help solve that problem because they are now displayed in the member list on the side.
@@ -52,20 +53,34 @@ Pulling your buddy into this thread with you should help solve that problem beca
 This thread will automatically be closed in an hour because we only have a limited amount of threads available.
 If you want to help us out, please click the checkmark below to prematurely close this thread to make it available for others once you have messaged your buddy.`;
 
-    const buddyId = await BuddyProjectRescue.ensureMatched(memberInTrouble.id);
-    BuddyProjectRescue.ensureThreadCapacity(message.guild);
-    await BuddyProjectRescue.ensureNoExistingThread(memberInTrouble, buddyId);
-    const thread = await BuddyProjectRescue.createRescueThread(memberInTrouble);
+    const memberId = member.user.id;
+
+    const buddyId = await BuddyProjectRescue.ensureMatched(memberId);
+    BuddyProjectRescue.ensureThreadCapacity(guild);
+    await BuddyProjectRescue.ensureNoExistingThread(guild, memberId, buddyId);
+    const thread = await BuddyProjectRescue.createRescueThread(guild, memberId);
 
     await thread?.members.add(buddyId);
 
-    const infoMessage = await thread?.send(informationText);
-    await infoMessage?.react("✅");
+    const button = new ButtonBuilder({
+      style: ButtonStyle.Success,
+      label: "Done!",
+      custom_id: rescueCloseButtonId,
+    });
 
-    await message.delete();
+    const components = new ActionRowBuilder<ButtonBuilder>({
+      components: [button],
+    });
+
+    const infoMessage = await thread?.send({
+      content: informationText,
+      components: [components],
+    });
+    await infoMessage?.react("✅");
   }
 
-  private static async createRescueThread(memberInTrouble: GuildMember) {
+  private static async createRescueThread(guild: Guild, memberId: Snowflake) {
+    const memberInTrouble = await guild.members.fetch(memberId);
     const infoChannel = memberInTrouble.guild.channels.cache.find(
       (c): c is TextChannel => c.name === ChatNames.BUDDY_PROJECT_INFO
     );
@@ -99,8 +114,9 @@ If you want to help us out, please click the checkmark below to prematurely clos
 
     return guild.channels.cache.find(
       (c): c is AnyThreadChannel =>
-        c.type === ChannelType.GuildPublicThread ||
-        (c.type === ChannelType.GuildPrivateThread && c.name === rescueName)
+        (c.type === ChannelType.GuildPublicThread ||
+          c.type === ChannelType.GuildPrivateThread) &&
+        c.name === rescueName
     );
   }
 
@@ -131,10 +147,15 @@ If you want to help us out, please click the checkmark below to prematurely clos
   }
 
   static async ensureNoExistingThread(
-    member: GuildMember,
+    guild: Guild,
+    memberId: Snowflake,
     buddyId: Snowflake
   ): Promise<void> {
-    const guild = member.guild;
+    const member = guild.members.resolve(memberId);
+    if (!member) {
+      throw new Error(`Could not resolve member from ID ${memberId}`);
+    }
+
     const buddyMember = guild.members.resolve(buddyId);
     if (!buddyMember) {
       throw new Error(`Could not resolve member from ID ${buddyId}`);

@@ -4,7 +4,14 @@ import {
   DiscordEvent,
 } from "../../../event-distribution";
 import { ChatNames } from "../../../collections/chat-names";
-import { GuildMember, MessageReaction, Snowflake, User } from "discord.js";
+import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonInteraction,
+  ButtonStyle,
+  GuildMember,
+  Snowflake,
+} from "discord.js";
 import { BuddyProjectError, commonMessages } from "../errors";
 import { BuddyProjectService } from "../services/buddy-project.service";
 import {
@@ -12,30 +19,39 @@ import {
   matchedGhostedDifferenceHours,
 } from "./constants";
 import { MarkGhostedError } from "../../../__generated__/types";
+import { buddyProjectNotifyNotGhostingButtonId } from "./notify-not-ghosting";
+
+export const buddyProjectMarkGhostedButtonId = "buddy-project-mark-ghosted";
 
 @Command({
-  event: DiscordEvent.REACTION_ADD,
-  emoji: "👻",
-  channelNames: [ChatNames.BUDDY_PROJECT_INFO],
+  event: DiscordEvent.BUTTON_CLICKED,
+  customId: buddyProjectMarkGhostedButtonId,
   errors: {
     ...commonMessages,
     [MarkGhostedError.AlreadyMarked]:
       "You already let me know you were ghosted! I have reached out to your buddy when you did and if I don't hear back from them in a few days, you will be rematched, no worries!",
-    [MarkGhostedError.BuddyMarkedAlready]: `Heh, that's a funny one! Your buddy let me know *you* ghosted *them*! There should be a message in our DMs up here somewhere about that. If you are having trouble contacting your buddy, have a look at #${ChatNames.BUDDY_PROJECT_INFO} or send \`!rescue\` in #${ChatNames.BUDDY_PROJECT}.`,
+    [MarkGhostedError.BuddyMarkedAlready]: `Heh, that's a funny one! Your buddy let me know *you* ghosted *them*! There should be a message in our DMs up here somewhere about that. If you are having trouble contacting your buddy, have a look at #${ChatNames.BUDDY_PROJECT_INFO} or send \`!rescue\` in #${ChatNames.BUDDY_PROJECT}.`, // TODO fix command reference in error message
     [MarkGhostedError.WaitedTooLittle]: `It's not been ${matchedGhostedDifferenceHours} hours since you got were matched! Give your buddy some time to respond and if they don't, come back here once ${matchedGhostedDifferenceHours} hours have passed since matching!`,
   },
 })
-class MarkGhostedReaction extends CommandHandler<DiscordEvent.REACTION_ADD> {
-  async handle(reaction: MessageReaction, user: User): Promise<void> {
+class MarkGhostedReaction extends CommandHandler<DiscordEvent.BUTTON_CLICKED> {
+  async handle(interaction: ButtonInteraction): Promise<void> {
+    console.log("Yeet");
+
+    const { user, message } = interaction;
+
     const buddyId = await this.ensureValidEntry(user.id);
-    const buddyMember = reaction.message.guild!.members.resolve(buddyId ?? "");
+    const buddyMember = message.guild!.members.resolve(buddyId ?? "");
 
     if (!buddyMember) {
       throw new Error(BuddyProjectError.NOT_MATCHED);
     }
 
     await this.contactBuddy(buddyMember, user.id);
-    await this.confirmToUser(user);
+    await interaction.reply({
+      content: `I contacted your buddy, they have ${ghostedRematchDifferenceHours} hours to react to my message and if they don't, you will be rematched.`,
+      ephemeral: true,
+    });
   }
 
   async ensureValidEntry(userId: Snowflake) {
@@ -58,18 +74,22 @@ class MarkGhostedReaction extends CommandHandler<DiscordEvent.REACTION_ADD> {
 
   async contactBuddy(buddyMember: GuildMember, userId: Snowflake) {
     const dm = await buddyMember.createDM();
-    const warningMessage = await dm.send(
-      `**Buddy Project Ghosting**
+    const button = new ButtonBuilder({
+      style: ButtonStyle.Success,
+      emoji: "✅",
+      label: "I'm here!",
+      custom_id: buddyProjectNotifyNotGhostingButtonId,
+    });
 
-Hey there, your buddy told me they couldn't reach you through DMs. If you are around on Discord, click the ✅ below to prevent getting removed from the Buddy Project and don't forget to reach out to <@${userId}>`
-    );
-    await warningMessage.react("✅");
-  }
+    const components = new ActionRowBuilder<ButtonBuilder>({
+      components: [button],
+    });
 
-  async confirmToUser(user: User) {
-    const dm = await user.createDM();
-    await dm.send(
-      `I contacted your buddy, they have ${ghostedRematchDifferenceHours} hours to react to my message and if they don't, you will be rematched.`
-    );
+    await dm.send({
+      content: `**Buddy Project Ghosting**
+
+Hey there, your buddy told me they couldn't reach you through DMs. If you are around on Discord, click the ✅ below to prevent getting removed from the Buddy Project and don't forget to reach out to <@${userId}>`,
+      components: [components],
+    });
   }
 }

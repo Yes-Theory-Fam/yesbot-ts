@@ -266,10 +266,22 @@ export const rejectWithMessage = async (
     case DiscordEvent.REACTION_ADD:
       const userArg = args[1] as User;
       const reaction = args[0] as MessageReaction;
-      return reaction.users
+      return await reaction.users
         .remove(userArg)
         .then(() => userArg.createDM())
         .then((dm) => dm.send(message));
+    case DiscordEvent.SLASH_COMMAND:
+      const commandInteractionArg = args[0] as ChatInputCommandInteraction;
+      return await commandInteractionArg.reply({
+        content: message,
+        ephemeral: true,
+      });
+    case DiscordEvent.BUTTON_CLICKED:
+      const buttonInteractionArg = args[0] as ButtonInteraction;
+      return await buttonInteractionArg.reply({
+        content: message,
+        ephemeral: true,
+      });
     default:
       logger.error(
         `Tried to reject event ${event} with message: ${message} but rejection isn't implemented for this event.`

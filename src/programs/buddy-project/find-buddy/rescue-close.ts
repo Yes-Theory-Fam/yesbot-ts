@@ -3,19 +3,21 @@ import {
   CommandHandler,
   DiscordEvent,
 } from "../../../event-distribution";
-import { MessageReaction, ThreadChannel, User } from "discord.js";
+import { ButtonInteraction, ThreadChannel } from "discord.js";
 import { ChatNames } from "../../../collections/chat-names";
 
+export const rescueCloseButtonId = "buddy-project-rescue-close";
+
 @Command({
-  event: DiscordEvent.REACTION_ADD,
-  emoji: "✅",
+  event: DiscordEvent.BUTTON_CLICKED,
+  customId: rescueCloseButtonId,
   parentNames: [ChatNames.BUDDY_PROJECT_INFO],
 })
-class RescueClose extends CommandHandler<DiscordEvent.REACTION_ADD> {
-  async handle(reaction: MessageReaction, user: User): Promise<void> {
-    if (user.bot) return;
+class RescueClose extends CommandHandler<DiscordEvent.BUTTON_CLICKED> {
+  async handle(interaction: ButtonInteraction): Promise<void> {
+    const { user, channel } = interaction;
 
-    const channel = reaction.message.channel;
+    if (user.bot) return;
 
     if (!(channel instanceof ThreadChannel)) return;
 
