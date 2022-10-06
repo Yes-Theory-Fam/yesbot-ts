@@ -4,20 +4,18 @@ import {
   EmbedBuilder,
 } from "discord.js";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
-import { ChatNames } from "../collections/chat-names";
 import { CountryRoleFinder } from "../common/country-role-finder";
 
 @Command({
   event: DiscordEvent.SLASH_COMMAND,
   root: "map",
   subCommand: "show",
-  channelNames: [ChatNames.BOT_COMMANDS],
-  description: "This handler is to manage the map command",
+  description: "Show a map of Yes Fam members' locations!",
 })
 class Map implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
   async handle(interaction: ChatInputCommandInteraction) {
     await interaction.reply({
-      content: `you can find the message link here: ${process.env.MAP_LINK} \nIf you want your city to be added to it, use </map add:${interaction.commandId}> command`,
+      content: `You can find the message link here: ${process.env.MAP_LINK} \nIf you want your city to be added to it, use </map add:${interaction.commandId}> command`,
       ephemeral: true,
     });
   }
@@ -27,19 +25,18 @@ class Map implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
   event: DiscordEvent.SLASH_COMMAND,
   root: "map",
   subCommand: "add",
-  channelNames: [ChatNames.BOT_COMMANDS],
-  description: "This handler is to manage the map add command",
+  description: "Add your location to the map!",
   options: [
     {
       type: ApplicationCommandOptionType.String,
       name: "city",
-      description: "City",
+      description: "Name of your city",
       required: true,
     },
     {
       type: ApplicationCommandOptionType.String,
       name: "country",
-      description: "Country",
+      description: "Name of your country",
     },
   ],
 })
