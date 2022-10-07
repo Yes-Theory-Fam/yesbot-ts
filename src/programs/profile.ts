@@ -85,10 +85,10 @@ const getProfileEmbed = async (
   }
   profileEmbed.setTitle(
     (yesEmoji?.toString() ?? "") +
-    " " +
-    member.user.username +
-    "#" +
-    member.user.discriminator
+      " " +
+      member.user.username +
+      "#" +
+      member.user.discriminator
   );
   profileEmbed.setColor(member.roles.color?.color ?? "#004dff");
   profileEmbed.setFields([
