@@ -1,26 +1,39 @@
-import { GuildMember, Message, EmbedBuilder } from "discord.js";
-import Tools from "../common/tools";
+import {
+  GuildMember,
+  ApplicationCommandOptionType,
+  EmbedBuilder,
+  ChatInputCommandInteraction,
+} from "discord.js";
 import { formatBirthday, getUserBirthday } from "./birthday-manager";
 import prisma from "../prisma";
 import { CountryRoleFinder } from "../common/country-role-finder";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 
 @Command({
-  event: DiscordEvent.MESSAGE,
-  trigger: "!profile",
-  channelNames: ["bot-commands", "permanent-testing"],
-  description:
-    "This handler is to show the user profile or the mentioned user.",
+  event: DiscordEvent.SLASH_COMMAND,
+  root: "profile",
+  description: "View the profile of a server member.",
+  options: [
+    {
+      type: ApplicationCommandOptionType.User,
+      name: "member",
+      description: "The member for whom the profile is to be shown",
+    },
+  ],
 })
-class Profile implements CommandHandler<DiscordEvent.MESSAGE> {
-  async handle(message: Message): Promise<void> {
-    const requestedMember = message.mentions.members?.first() ?? message.member;
+class Profile implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
+  async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+    const member = interaction.options.getUser("member");
+
+    const requestedMember = member
+      ? await interaction.guild?.members.fetch(member.id)
+      : await interaction.guild?.members.fetch(interaction.user.id);
 
     if (!requestedMember) {
-      await Tools.handleUserError(
-        message,
-        "I couldn't find that member in this server!"
-      );
+      await interaction.reply({
+        content: "I couldn't find that member in this server!",
+        ephemeral: true,
+      });
       return;
     }
 
@@ -30,7 +43,7 @@ class Profile implements CommandHandler<DiscordEvent.MESSAGE> {
         ? { embeds: [profileEmbed] }
         : { content: profileEmbed };
 
-    await message.channel.send(messageContent);
+    await interaction.reply(messageContent);
   }
 }
 
@@ -72,10 +85,10 @@ const getProfileEmbed = async (
   }
   profileEmbed.setTitle(
     (yesEmoji?.toString() ?? "") +
-      " " +
-      member.user.username +
-      "#" +
-      member.user.discriminator
+    " " +
+    member.user.username +
+    "#" +
+    member.user.discriminator
   );
   profileEmbed.setColor(member.roles.color?.color ?? "#004dff");
   profileEmbed.setFields([
