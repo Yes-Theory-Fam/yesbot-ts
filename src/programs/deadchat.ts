@@ -1,33 +1,33 @@
-import Tools from "../common/tools";
 import prisma from "../prisma";
 
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
-import { Message } from "discord.js";
+import { ChatInputCommandInteraction, TextChannel } from "discord.js";
 
 const thirtyMinutes = 30 * 60 * 1000;
 
-const isDead = async (message: Message): Promise<boolean> => {
-  const lastMessages = (
-    await message.channel.messages.fetch({ limit: 2 })
-  ).values();
-  const lastMessage = [...lastMessages][1];
+const isDead = async (
+  interaction: ChatInputCommandInteraction
+): Promise<boolean> => {
+  const channel = interaction.channel as TextChannel;
+  const lastMessage = (await channel.messages.fetch({ limit: 1 })).first();
 
+  if (!lastMessage) return true;
   return Date.now() - lastMessage.createdTimestamp > thirtyMinutes;
 };
 
 @Command({
-  event: DiscordEvent.MESSAGE,
-  trigger: "!deadchat",
-  channelNames: ["chat", "chat-too", "4th-chat", "chat-v"],
-  description: "This handler is for the deadchat command",
+  event: DiscordEvent.SLASH_COMMAND,
+  root: "deadchat",
+  description: "Revive the chat with a thought provoking question!",
 })
-class DeadchatCommand implements CommandHandler<DiscordEvent.MESSAGE> {
-  async handle(message: Message): Promise<void> {
-    if (!(await isDead(message))) {
-      await Tools.handleUserError(
-        message,
-        "Chat is not dead! You can use this command if there have been no messages in the last 30 minutes."
-      );
+class DeadchatCommand implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
+  async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+    if (!(await isDead(interaction))) {
+      await interaction.reply({
+        content:
+          "Chat is not dead You can use this command if there have been no messages in the last 30 minutes.",
+        ephemeral: true,
+      });
       return;
     }
 
@@ -38,13 +38,13 @@ class DeadchatCommand implements CommandHandler<DiscordEvent.MESSAGE> {
     });
 
     if (!question) {
-      await message.channel.send(
+      await interaction.reply(
         ":robot: Yikes! I could not find a question to use to revive chat. Is this the end?"
       );
       return;
     }
 
-    await message.channel.send(question.question);
+    await interaction.reply(question.question);
     question.lastUsed = new Date();
     await prisma.deadchatQuestion.update({
       where: { id: question.id },
