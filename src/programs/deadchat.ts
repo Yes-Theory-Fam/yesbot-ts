@@ -9,9 +9,9 @@ const isDead = async (
   interaction: ChatInputCommandInteraction
 ): Promise<boolean> => {
   const channel = interaction.channel as TextChannel;
-  const lastMessages = (await channel.messages.fetch({ limit: 2 })).values();
-  const lastMessage = [...lastMessages][1];
+  const lastMessage = (await channel.messages.fetch({ limit: 1 })).first();
 
+  if (!lastMessage) return true;
   return Date.now() - lastMessage.createdTimestamp > thirtyMinutes;
 };
 
