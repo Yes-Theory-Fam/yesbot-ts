@@ -1,25 +1,31 @@
-import { Message, TextChannel } from "discord.js";
+import { ChatInputCommandInteraction, TextChannel } from "discord.js";
 import { ChatNames } from "../collections/chat-names";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 
 @Command({
-  event: DiscordEvent.MESSAGE,
-  trigger: "!resources",
-  channelNames: ["coding", "learning-spanish"],
-  description: "This handler is for the resources command",
+  event: DiscordEvent.SLASH_COMMAND,
+  root: "resources",
+  description: "Get the resources associated with the channel.",
 })
-class Resources implements CommandHandler<DiscordEvent.MESSAGE> {
-  async handle(message: Message): Promise<void> {
-    const channel = message.channel as TextChannel;
+class Resources implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
+  async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+    const channel = interaction.channel as TextChannel;
 
-    if (channel.name === ChatNames.CODING) {
-      await message.channel.send(RESOURCES_CODING);
-      return;
-    }
+    switch (channel.name) {
+      case ChatNames.CODING:
+        await interaction.reply(RESOURCES_CODING);
+        break;
 
-    if (channel.name === ChatNames.LEARNING_SPANISH) {
-      await message.channel.send(RESOURCES_SPANISH);
-      return;
+      case ChatNames.LEARNING_SPANISH:
+        await interaction.reply(RESOURCES_SPANISH);
+        break;
+
+      default:
+        await interaction.reply({
+          content: "No resource exists for this channel.",
+          ephemeral: true,
+        });
+        break;
     }
   }
 }

@@ -1,15 +1,13 @@
-import { Message } from "discord.js";
+import { ChatInputCommandInteraction } from "discord.js";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 
 @Command({
-  event: DiscordEvent.MESSAGE,
-  trigger: "!video",
-  channelNames: ["welcome-chat"],
-  description:
-    "This handler is to send the Youtube video in the Welcome Chat to new users.",
+  event: DiscordEvent.SLASH_COMMAND,
+  root: "video",
+  description: "To send the Youtube video to new users.",
 })
-class SendVideo implements CommandHandler<DiscordEvent.MESSAGE> {
-  async handle(message: Message) {
-    await message.channel.send("https://youtu.be/v-JOe-xqPN0");
+class SendVideo implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
+  async handle(interaction: ChatInputCommandInteraction) {
+    await interaction.reply("https://youtu.be/v-JOe-xqPN0");
   }
 }
