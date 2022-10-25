@@ -1,8 +1,4 @@
-import {
-  Command,
-  CommandHandler,
-  DiscordEvent,
-} from "../event-distribution";
+import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 import { GuildMember, Message } from "discord.js";
 
 @Command({
@@ -13,16 +9,15 @@ import { GuildMember, Message } from "discord.js";
 })
 class FromStrangersToFriends implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
-    let users = message.mentions?.members
+    let users = message.mentions?.members;
 
     users?.forEach((user: GuildMember) => {
-        if(user.roles?.cache.has("499143174271270913"))
-        {return}
-        else 
-        { 
-            user.roles.add("499143174271270913")
-            return;
-        }
-    })
-    }
+      if (user.roles?.cache.has("499143174271270913")) {
+        return;
+      } else {
+        user.roles.add("499143174271270913");
+        return;
+      }
+    });
+  }
 }
