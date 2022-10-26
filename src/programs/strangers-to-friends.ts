@@ -1,23 +1,25 @@
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
-import { GuildMember, Message } from "discord.js";
+import { Message } from "discord.js";
+import { ChatNames } from "../collections/chat-names";
+import Tools from "../common/tools";
 
 @Command({
   event: DiscordEvent.MESSAGE,
-  channelNames: ["from-strangers-to-friends"],
+  channelNames: [ChatNames.STRANGERS_TO_FRIENDS],
   description:
     "This handler is for autoassigning the from strangers to friends roles to everyone mentioned in a post.",
 })
 class FromStrangersToFriends implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
-    let users = message.mentions?.members;
+    if(!message.guild) return
+    const users = message.mentions.members;
+    const role = Tools.getRoleByName("From Strangers To Friends :camera:", message.guild)
 
-    users?.forEach((user: GuildMember) => {
-      if (user.roles?.cache.has("499143174271270913")) {
-        return;
-      } else {
-        user.roles.add("499143174271270913");
-        return;
+    if (!users || !role) return;
+    for (const user of users.values()) {
+      if (!user.roles?.cache.has(role.id)) {
+        user.roles.add(role.id);
       }
-    });
+    }
   }
 }
