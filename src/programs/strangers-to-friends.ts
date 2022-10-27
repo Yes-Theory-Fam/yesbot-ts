@@ -11,9 +11,12 @@ import Tools from "../common/tools";
 })
 class FromStrangersToFriends implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
-    if(!message.guild) return
+    if (!message.guild) return;
     const users = message.mentions.members;
-    const role = Tools.getRoleByName("From Strangers To Friends :camera:", message.guild)
+    const role = Tools.getRoleByName(
+      "From Strangers To Friends :camera:",
+      message.guild
+    );
 
     if (!users || !role) return;
     for (const user of users.values()) {
