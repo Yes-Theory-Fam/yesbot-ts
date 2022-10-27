@@ -14,14 +14,14 @@ class FromStrangersToFriends implements CommandHandler<DiscordEvent.MESSAGE> {
     if (!message.guild) return;
     const users = message.mentions.members;
     const role = Tools.getRoleByName(
-      "From Strangers To Friends :camera:",
+      "From Strangers To Friends 📸",
       message.guild
     );
 
     if (!users || !role) return;
     for (const user of users.values()) {
       if (!user.roles?.cache.has(role.id)) {
-        user.roles.add(role.id);
+        await user.roles.add(role.id);
       }
     }
   }
