@@ -1,4 +1,4 @@
-import { GuildMember, Message, TextChannel, User } from "discord.js";
+import { GuildMember, APIInteractionGuildMember, TextChannel, User, ChatInputCommandInteraction, ApplicationCommandOptionType, Guild } from "discord.js";
 import Tools from "../common/tools";
 import { addHours, isAfter } from "date-fns";
 import prisma from "../prisma";
@@ -8,89 +8,60 @@ const QUESTION_SHEET_ID: string =
   "1eve4McRxECmH4dLWLJvHLr9fErBWcCGiH94ihBNzK_s";
 
 @Command({
-  event: DiscordEvent.MESSAGE,
-  trigger: "@someone",
-  allowedRoles: ["Seek Discomfort"],
-  channelNames: ["chat", "chat-too", "4th-chat", "chat-v"],
-  description: "This handler is for the someone command.",
+  event: DiscordEvent.SLASH_COMMAND,
+  root: "someone",
+  description: "Ping a random memeber.",
+  options: [
+    {
+      type: ApplicationCommandOptionType.Boolean,
+      name: "Online",
+      description: "Should the person be Online.",
+      required: true,
+    },
+    ]
 })
-class SomeoneTag implements CommandHandler<DiscordEvent.MESSAGE> {
-  async handle(message: Message): Promise<void> {
-    const allow = await isAllowed(message.author);
+class SomeoneTag implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
+  async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+    const allow = await isAllowed(interaction.user);
 
     if (!allow) {
-      await Tools.handleUserError(
-        message,
-        "You have already used this command today!"
-      );
+        interaction.reply("You have already used this command today!")
       return;
     }
 
-    const words = Tools.stringToWords(message.cleanContent);
-    const arg = words[1];
-    if (arg && arg !== "online")
-      await message.channel.send({
-        content: `Unknown argument "${arg}". Did you mean "online"?`,
-        allowedMentions: { parse: [] },
-      });
-    else {
-      const { member } = message;
+      const { member } = interaction;
       if (!member) return;
 
-      const target = await getTarget(arg, message);
+      const target = await getTarget(interaction.options.getBoolean("Online"), interaction);
       const question = await getQuestion();
       if (!target) {
-        await message.reply(
+        await interaction.reply(
           "There were no available users to ping! This is embarrassing. How could this have happened? There's so many people on here that statistically this message should never even show up. Oh well. Congratulations, I guess."
         );
       } else {
-        await updateLastMessage(message);
         await sendMessage(
-          member,
+          member.user as User,
           target,
           question,
-          message.channel as TextChannel
+          interaction.channel as TextChannel,
         );
-      }
     }
-
-    await message.delete();
   }
 }
 
 const sendMessage = async (
-  author: GuildMember,
+  author: User ,
   target: User,
   question: string,
-  channel: TextChannel
+  channel: TextChannel,
 ) => {
   const webhook = await channel.createWebhook({
-    name: author.displayName,
-    avatar: author.user.avatarURL({ extension: "png" }),
+    name: author.username,
+    avatar: author.avatarURL({ extension: "png" }),
   });
   await webhook.send(`<@${target.id}> ${question}`);
   await webhook.delete();
 };
-
-async function updateLastMessage(message: Message) {
-  const data = {
-    id: message.author.id,
-    time: new Date(),
-  };
-
-  try {
-    await prisma.someoneUser.upsert({
-      where: { id: data.id },
-      update: { time: data.time },
-      create: data,
-    });
-  } catch (e) {
-    console.error(`Failed to save @someone for user '${data.id}'`);
-    return false;
-  }
-
-  return true;
-}
 
 async function isAllowed(user: User) {
   const someone = await prisma.someoneUser.findUnique({
@@ -105,35 +76,35 @@ async function isAllowed(user: User) {
 }
 
 async function getTarget(
-  arg: string,
-  message: Message
+  arg: boolean | null,
+  message: ChatInputCommandInteraction
 ): Promise<User | undefined> {
   if (!message?.guild) return;
 
   const sdRole = Tools.getRoleByName("Seek Discomfort", message.guild);
   if (!sdRole) {
-    await message.channel.send(
+    await message.channel?.send(
       "There is no Seek Discomfort role in this server!"
     );
     return;
   }
 
   const targetCollection =
-    arg && arg === "online"
+    arg
       ? sdRole.members.filter((member) => member.presence?.status === "online")
       : sdRole.members;
 
   if (
     targetCollection.size === 0 ||
     (targetCollection.size === 1 &&
-      targetCollection.first()?.user.id === message.author.id)
+      targetCollection.first()?.user.id === message.user.id)
   )
     return;
 
   let randomUser;
   do {
     randomUser = targetCollection.random()?.user;
-  } while (randomUser?.id === message.author.id);
+  } while (randomUser?.id === message.user.id);
 
   return randomUser;
 }
