@@ -18,12 +18,12 @@ const QUESTION_SHEET_ID: string =
 @Command({
   event: DiscordEvent.SLASH_COMMAND,
   root: "someone",
-  description: "Ping a random memeber.",
+  description: "Ping a random member.",
   options: [
     {
       type: ApplicationCommandOptionType.Boolean,
-      name: "Online",
-      description: "Should the person be Online.",
+      name: "online",
+      description: "If true, ensures the pinged member is online.",
       required: true,
     },
   ],
@@ -33,7 +33,10 @@ class SomeoneTag implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
     const allow = await isAllowed(interaction.user);
 
     if (!allow) {
-      interaction.reply("You have already used this command today!");
+      await interaction.reply({
+        content: "You have already used this command today!",
+        ephemeral: true,
+      });
       return;
     }
 
@@ -41,14 +44,16 @@ class SomeoneTag implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
     if (!member) return;
 
     const target = await getTarget(
-      interaction.options.getBoolean("Online"),
+      interaction.options.getBoolean("online"),
       interaction
     );
     const question = await getQuestion();
     if (!target) {
-      await interaction.reply(
-        "There were no available users to ping! This is embarrassing. How could this have happened? There's so many people on here that statistically this message should never even show up. Oh well. Congratulations, I guess."
-      );
+      await interaction.reply({
+        content:
+          "There were no available users to ping! This is embarrassing. How could this have happened? There's so many people on here that statistically this message should never even show up. Oh well. Congratulations, I guess.",
+        ephemeral: true,
+      });
     } else {
       await sendMessage(
         member.user as User,
@@ -56,6 +61,8 @@ class SomeoneTag implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
         question,
         interaction.channel as TextChannel
       );
+
+      await interaction.reply({ content: "Done!", ephemeral: true });
     }
   }
 }
