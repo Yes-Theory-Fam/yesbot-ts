@@ -4,8 +4,8 @@ import {
   SlashCommandNumberOption,
   SlashCommandStringOption,
   SlashCommandSubcommandBuilder,
+  ApplicationCommandOptionAllowedChannelTypes,
 } from "@discordjs/builders";
-import { ApplicationCommandOptionAllowedChannelTypes } from "@discordjs/builders/dist/interactions/slashCommands/mixins/ApplicationCommandOptionChannelTypesMixin";
 import {
   APIApplicationCommandBasicOption,
   APIApplicationCommandOptionChoice,
