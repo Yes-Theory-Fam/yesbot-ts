@@ -1,5 +1,7 @@
 import {
+  ChannelType,
   Client,
+  ForumChannel,
   GatewayIntentBits,
   GuildMember,
   Interaction,
@@ -9,6 +11,7 @@ import {
   PartialMessageReaction,
   Partials,
   PartialUser,
+  ThreadChannel,
   User,
   VoiceState,
 } from "discord.js";
@@ -133,6 +136,17 @@ bot.on(
     );
   }
 );
+bot.on(
+  "threadCreate",
+  async (channel: ThreadChannel, newlyCreated: boolean) => {
+    await distribution.handleEvent(
+      DiscordEvent.THREAD_CREATE,
+      channel,
+      newlyCreated
+    );
+  }
+);
+
 //! ================= /EVENT HANDLERS ===================
 
 export default bot;

@@ -1,9 +1,16 @@
+import { Timer } from "@prisma/client";
 import {
-  addMessageHandler,
-  extractMessageInfo,
-  MessageEventHandlerOptions,
-  MessageHandlerFunction,
-} from "./message";
+  ButtonInteraction,
+  ChatInputCommandInteraction,
+  Client,
+  Message,
+  MessageReaction,
+  ThreadChannel,
+  User,
+  VoiceState,
+} from "discord.js";
+import Tools from "../../common/tools";
+import { createYesBotLogger } from "../../log";
 import {
   AddEventHandlerFunction,
   BaseOptions,
@@ -11,22 +18,13 @@ import {
   ExtractInfoFunction,
   MessageRelatedOptions,
 } from "../types/base";
-import {
-  addReactionHandler,
-  extractReactionInfo,
-  ReactionEventHandlerOptions,
-  ReactionHandlerFunction,
-} from "./reactions";
 import { StringIndexedHIOCTree } from "../types/hioc";
 import {
-  ButtonInteraction,
-  ChatInputCommandInteraction,
-  Client,
-  Message,
-  MessageReaction,
-  User,
-  VoiceState,
-} from "discord.js";
+  addButtonClickedHandler,
+  ButtonClickedHandlerFunction,
+  ButtonClickedHandlerOptions,
+  extractButtonClickedInfo,
+} from "./button-clicked";
 import {
   addGuildMemberUpdateHandler,
   extractGuildMemberUpdateInfo,
@@ -35,11 +33,12 @@ import {
   GuildMemberUpdateHandlerFunction,
 } from "./guild-member-update";
 import {
-  addReadyHandler,
-  extractReadyInfo,
-  ReadyEventHandlerOptions,
-  ReadyHandlerFunction,
-} from "./ready";
+  addMemberJoinHandler,
+  extractMemberJoinInfo,
+  MemberJoinArgument,
+  MemberJoinEventHandlerOptions,
+  MemberJoinHandlerFunction,
+} from "./member-join";
 import {
   addMemberLeaveHandler,
   extractMemberLeaveInfo,
@@ -48,11 +47,35 @@ import {
   MemberLeaveHandlerFunction,
 } from "./member-leave";
 import {
-  addVoiceStateUpdateHandler,
-  extractVoiceStateUpdateInfo,
-  VoiceStateHandlerFunction,
-  VoiceStateUpdateEventHandlerOptions,
-} from "./voice-state-update";
+  addMessageHandler,
+  extractMessageInfo,
+  MessageEventHandlerOptions,
+  MessageHandlerFunction,
+} from "./message";
+import {
+  addReactionHandler,
+  extractReactionInfo,
+  ReactionEventHandlerOptions,
+  ReactionHandlerFunction,
+} from "./reactions";
+import {
+  addReadyHandler,
+  extractReadyInfo,
+  ReadyEventHandlerOptions,
+  ReadyHandlerFunction,
+} from "./ready";
+import {
+  addSlashCommandHandler,
+  extractSlashCommandInfo,
+  SlashCommandHandlerFunction,
+  SlashCommandHandlerOptions,
+} from "./slash-commands";
+import {
+  addThreadCreateHandler,
+  extractThreadCreateInfo,
+  ThreadCreatedHandlerFunction,
+  ThreadCreateHandlerOptions,
+} from "./thread-create";
 import {
   addTimerHandler,
   extractTimerInfo,
@@ -60,27 +83,11 @@ import {
   TimerHandlerFunction,
 } from "./timer";
 import {
-  addMemberJoinHandler,
-  extractMemberJoinInfo,
-  MemberJoinArgument,
-  MemberJoinEventHandlerOptions,
-  MemberJoinHandlerFunction,
-} from "./member-join";
-import { Timer } from "@prisma/client";
-import { createYesBotLogger } from "../../log";
-import Tools from "../../common/tools";
-import {
-  addButtonClickedHandler,
-  ButtonClickedHandlerFunction,
-  ButtonClickedHandlerOptions,
-  extractButtonClickedInfo,
-} from "./button-clicked";
-import {
-  addSlashCommandHandler,
-  extractSlashCommandInfo,
-  SlashCommandHandlerFunction,
-  SlashCommandHandlerOptions,
-} from "./slash-commands";
+  addVoiceStateUpdateHandler,
+  extractVoiceStateUpdateInfo,
+  VoiceStateHandlerFunction,
+  VoiceStateUpdateEventHandlerOptions,
+} from "./voice-state-update";
 
 export type EventHandlerOptions =
   | ButtonClickedHandlerOptions
@@ -90,6 +97,7 @@ export type EventHandlerOptions =
   | ReadyEventHandlerOptions
   | GuildMemberUpdateEventHandlerOptions
   | SlashCommandHandlerOptions
+  | ThreadCreateHandlerOptions
   | TimerEventHandlerOptions
   | VoiceStateUpdateEventHandlerOptions
   | MemberJoinEventHandlerOptions;
@@ -102,6 +110,7 @@ export type HandlerFunction<T extends DiscordEvent> =
   | ReadyHandlerFunction<T>
   | GuildMemberUpdateHandlerFunction<T>
   | SlashCommandHandlerFunction<T>
+  | ThreadCreatedHandlerFunction<T>
   | TimerHandlerFunction<T>
   | VoiceStateHandlerFunction<T>
   | MemberJoinHandlerFunction<T>;
@@ -173,6 +182,12 @@ export const addEventHandler: AddEventHandlerFunction<EventHandlerOptions> = (
         ioc,
         tree as StringIndexedHIOCTree<DiscordEvent.SLASH_COMMAND>
       );
+    case DiscordEvent.THREAD_CREATE:
+      return addThreadCreateHandler(
+        options,
+        ioc,
+        tree as StringIndexedHIOCTree<DiscordEvent.THREAD_CREATE>
+      );
     case DiscordEvent.TIMER:
       return addTimerHandler(
         options,
@@ -212,6 +227,11 @@ export const extractEventInfo: ExtractInfoFunction<DiscordEvent> = (
         );
       case DiscordEvent.READY:
         return extractReadyInfo(args[0] as Client);
+      case DiscordEvent.THREAD_CREATE:
+        return extractThreadCreateInfo(
+          args[0] as ThreadChannel,
+          args[1] as boolean
+        );
       case DiscordEvent.TIMER:
         return extractTimerInfo(args[0] as Timer);
       case DiscordEvent.SLASH_COMMAND:

@@ -57,6 +57,7 @@ export class EventDistribution {
     [DiscordEvent.GUILD_MEMBER_UPDATE]: {},
     [DiscordEvent.READY]: {},
     [DiscordEvent.SLASH_COMMAND]: {},
+    [DiscordEvent.THREAD_CREATE]: {},
     [DiscordEvent.TIMER]: {},
     [DiscordEvent.VOICE_STATE_UPDATE]: {},
     [DiscordEvent.MEMBER_JOIN]: {},

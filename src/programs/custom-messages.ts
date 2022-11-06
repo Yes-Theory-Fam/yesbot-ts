@@ -10,23 +10,24 @@ class CustomMessageMethods implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
     const messageContent = message.content;
 
-    if (messageContent.match(/^(yesbot).*(\?)$/gi)) randomReply(message);
+    if (messageContent.match(/^(yesbot).*(\?)$/gi)) await randomReply(message);
 
     if (
       messageContent.match(
         /yesbot i love you|yesbot i love u|i love you yesbot/i
       )
-    )
-      sendLove(message);
+    ) {
+      await sendLove(message);
+    }
 
-    if (messageContent.match(/^(F)$/i)) await message.react("🇫");
+    if (messageContent.match(/^F$/i)) await message.react("🇫");
 
     if (messageContent.match(/(abooz|mod abuse)/i)) await message.react("👀");
   }
 }
 
-const randomReply = (message: Message) => {
-  let replies = [
+const randomReply = async (message: Message) => {
+  const replies = [
     "yes.",
     "no",
     "probably.",
@@ -57,10 +58,11 @@ const randomReply = (message: Message) => {
     "I haven’t said no yet, right?",
     "my enthusiastic nodding says it all.",
   ];
-  message.reply(`${replies[Math.floor(Math.random() * replies.length)]}`);
+
+  await message.reply(`${replies[Math.floor(Math.random() * replies.length)]}`);
 };
 
-const sendLove = (message: Message) => {
+const sendLove = async (message: Message) => {
   const loveArr = [
     "I love you too, Cutiepie",
     "I will find you and I will love you.",
@@ -76,18 +78,7 @@ const sendLove = (message: Message) => {
     "I love you too! (Although I'm not entirely sure what love is but this experience I'm feeling is probably some iteration of love.)",
   ];
   const randomLoveReply = loveArr[Math.floor(Math.random() * loveArr.length)];
-  message.reply(randomLoveReply);
-  message.react("😍");
-};
 
-@Command({
-  event: DiscordEvent.MESSAGE,
-  channelNames: ["feature-requests"],
-  description:
-    "This handler is to add the thumbs up and down to a message in feature requests",
-})
-class FeatureRequestTally implements CommandHandler<DiscordEvent.MESSAGE> {
-  async handle(message: Message): Promise<void> {
-    message.react("👍").then(() => message.react("👎"));
-  }
-}
+  await message.reply(randomLoveReply);
+  await message.react("😍");
+};
