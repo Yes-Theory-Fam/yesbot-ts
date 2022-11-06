@@ -1,10 +1,10 @@
-FROM node:16.18-alpine AS builder
+FROM node:19.0-alpine AS builder
 RUN apk add --no-cache libc6-compat
 WORKDIR /usr/src/app
 COPY . .
 RUN yarn install --frozen-lockfile && yarn run tsc
 
-FROM node:16.18-alpine
+FROM node:19.0-alpine
 RUN apk add --no-cache libc6-compat
 # Create app directory
 WORKDIR /usr/src/app
