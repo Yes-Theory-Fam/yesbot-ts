@@ -1,14 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Messages should add data to the tree 1`] = `
-Object {
-  "bot-output": Object {
-    "!test": Object {
-      "": Array [
-        Object {
-          "ioc": Object {},
-          "options": Object {
-            "channelNames": Array [
+{
+  "bot-output": {
+    "!test": {
+      "": [
+        {
+          "ioc": {},
+          "options": {
+            "channelNames": [
               "bot-output",
             ],
             "description": "test",
@@ -19,19 +19,19 @@ Object {
       ],
     },
   },
-  "channel": Object {},
+  "channel": {},
 }
 `;
 
 exports[`Messages should add data to the tree 2`] = `
-Object {
-  "bot-output": Object {
-    "!test": Object {
-      "": Array [
-        Object {
-          "ioc": Object {},
-          "options": Object {
-            "channelNames": Array [
+{
+  "bot-output": {
+    "!test": {
+      "": [
+        {
+          "ioc": {},
+          "options": {
+            "channelNames": [
               "bot-output",
             ],
             "description": "test",
@@ -39,13 +39,13 @@ Object {
             "trigger": "!test",
           },
         },
-        Object {
-          "ioc": Object {},
-          "options": Object {
-            "allowedRoles": Array [
+        {
+          "ioc": {},
+          "options": {
+            "allowedRoles": [
               "Support",
             ],
-            "channelNames": Array [
+            "channelNames": [
               "bot-output",
             ],
             "description": "test",
@@ -56,22 +56,22 @@ Object {
       ],
     },
   },
-  "channel": Object {},
+  "channel": {},
 }
 `;
 
 exports[`Messages should add data to the tree 3`] = `
-Object {
-  "bot-development": Object {
-    "!othertrigger": Object {
-      "": Array [
-        Object {
-          "ioc": Object {},
-          "options": Object {
-            "allowedRoles": Array [
+{
+  "bot-development": {
+    "!othertrigger": {
+      "": [
+        {
+          "ioc": {},
+          "options": {
+            "allowedRoles": [
               "Developer",
             ],
-            "channelNames": Array [
+            "channelNames": [
               "bot-development",
               "bot-test-channel",
             ],
@@ -83,13 +83,13 @@ Object {
       ],
     },
   },
-  "bot-output": Object {
-    "!test": Object {
-      "": Array [
-        Object {
-          "ioc": Object {},
-          "options": Object {
-            "channelNames": Array [
+  "bot-output": {
+    "!test": {
+      "": [
+        {
+          "ioc": {},
+          "options": {
+            "channelNames": [
               "bot-output",
             ],
             "description": "test",
@@ -97,13 +97,13 @@ Object {
             "trigger": "!test",
           },
         },
-        Object {
-          "ioc": Object {},
-          "options": Object {
-            "allowedRoles": Array [
+        {
+          "ioc": {},
+          "options": {
+            "allowedRoles": [
               "Support",
             ],
-            "channelNames": Array [
+            "channelNames": [
               "bot-output",
             ],
             "description": "test",
@@ -114,16 +114,16 @@ Object {
       ],
     },
   },
-  "bot-test-channel": Object {
-    "!othertrigger": Object {
-      "": Array [
-        Object {
-          "ioc": Object {},
-          "options": Object {
-            "allowedRoles": Array [
+  "bot-test-channel": {
+    "!othertrigger": {
+      "": [
+        {
+          "ioc": {},
+          "options": {
+            "allowedRoles": [
               "Developer",
             ],
-            "channelNames": Array [
+            "channelNames": [
               "bot-development",
               "bot-test-channel",
             ],
@@ -135,20 +135,20 @@ Object {
       ],
     },
   },
-  "channel": Object {},
+  "channel": {},
 }
 `;
 
 exports[`Messages should extract messages from direct message 1`] = `
-Array [
-  Object {
-    "handlerKeys": Array [
+[
+  {
+    "handlerKeys": [
       "9007199254740991",
       "this",
       "is",
     ],
     "isDirectMessage": true,
-    "member": Object {
+    "member": {
       "avatar": null,
       "avatarURL": null,
       "communicationDisabledUntilTimestamp": null,
@@ -159,8 +159,8 @@ Array [
       "nickname": "nick",
       "pending": false,
       "premiumSinceTimestamp": null,
-      "roles": Object {
-        "cache": Array [],
+      "roles": {
+        "cache": [],
       },
       "userId": "9007199254740991",
     },
@@ -169,15 +169,15 @@ Array [
 `;
 
 exports[`Messages should extract messages from public channel 1`] = `
-Array [
-  Object {
-    "handlerKeys": Array [
+[
+  {
+    "handlerKeys": [
       "9007199254740991",
       "this",
       "is",
     ],
     "isDirectMessage": false,
-    "member": Object {
+    "member": {
       "avatar": null,
       "avatarURL": null,
       "communicationDisabledUntilTimestamp": null,
@@ -188,8 +188,8 @@ Array [
       "nickname": "nick",
       "pending": false,
       "premiumSinceTimestamp": null,
-      "roles": Object {
-        "cache": Array [],
+      "roles": {
+        "cache": [],
       },
       "userId": "9007199254740991",
     },
