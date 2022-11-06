@@ -1,11 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Member Leave should add data to the tree 1`] = `
-Object {
-  "": Array [
-    Object {
-      "ioc": Object {},
-      "options": Object {
+{
+  "": [
+    {
+      "ioc": {},
+      "options": {
         "event": "MEMBER_LEAVE",
       },
     },
@@ -14,12 +14,12 @@ Object {
 `;
 
 exports[`Member Leave should extract member from leaving member 1`] = `
-Object {
-  "handlerKeys": Array [
+{
+  "handlerKeys": [
     "",
   ],
   "isDirectMessage": false,
-  "member": Object {
+  "member": {
     "avatar": null,
     "avatarURL": null,
     "communicationDisabledUntilTimestamp": null,
@@ -30,8 +30,8 @@ Object {
     "nickname": "nick",
     "pending": false,
     "premiumSinceTimestamp": null,
-    "roles": Object {
-      "cache": Array [],
+    "roles": {
+      "cache": [],
     },
     "userId": "9007199254740991",
   },
