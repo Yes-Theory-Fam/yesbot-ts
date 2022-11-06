@@ -415,6 +415,7 @@ export const voiceOnDemandPermissions = async (
 
   await channel.permissionOverwrites.edit(guild.roles.everyone, {
     Stream: true,
+    UseEmbeddedActivities: true,
     Connect: null,
   });
 
