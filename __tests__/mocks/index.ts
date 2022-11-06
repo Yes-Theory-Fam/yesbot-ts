@@ -133,7 +133,7 @@ export default class MockDiscord {
       approximate_member_count: 42,
       features: [],
       application_id: idString,
-      afk_timeout: 1000,
+      afk_timeout: 900,
       afk_channel_id: idString,
       system_channel_id: idString,
       verification_level: 2,
