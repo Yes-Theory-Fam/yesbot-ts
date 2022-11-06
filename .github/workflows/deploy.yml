@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [ 16.15 ]
+        node-version: [ 16.18 ]
     permissions:
       contents: read
       packages: write
