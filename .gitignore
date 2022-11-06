@@ -1,4 +1,4 @@
-**./*.log
+**/*.log
 .env
 .npmrc
 /.idea
@@ -9,6 +9,5 @@
 src/**/*.js
 db
 /.wakatime-project
-
 # May be used to test decorators and their typings when working on the event distribution system.
 src/programs/decorator-test.ts
