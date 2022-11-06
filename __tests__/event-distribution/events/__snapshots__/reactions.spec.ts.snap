@@ -1,13 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Reactions should add data to the tree 1`] = `
-Object {
-  "bot-output": Object {
-    "♥️": Array [
-      Object {
-        "ioc": Object {},
-        "options": Object {
-          "channelNames": Array [
+{
+  "bot-output": {
+    "♥️": [
+      {
+        "ioc": {},
+        "options": {
+          "channelNames": [
             "bot-output",
           ],
           "emoji": "♥️",
@@ -16,31 +16,31 @@ Object {
       },
     ],
   },
-  "channel": Object {},
+  "channel": {},
 }
 `;
 
 exports[`Reactions should add data to the tree 2`] = `
-Object {
-  "bot-output": Object {
-    "♥️": Array [
-      Object {
-        "ioc": Object {},
-        "options": Object {
-          "channelNames": Array [
+{
+  "bot-output": {
+    "♥️": [
+      {
+        "ioc": {},
+        "options": {
+          "channelNames": [
             "bot-output",
           ],
           "emoji": "♥️",
           "event": "REACTION_ADD",
         },
       },
-      Object {
-        "ioc": Object {},
-        "options": Object {
-          "allowedRoles": Array [
+      {
+        "ioc": {},
+        "options": {
+          "allowedRoles": [
             "Support",
           ],
-          "channelNames": Array [
+          "channelNames": [
             "bot-output",
           ],
           "emoji": "♥️",
@@ -49,21 +49,21 @@ Object {
       },
     ],
   },
-  "channel": Object {},
+  "channel": {},
 }
 `;
 
 exports[`Reactions should add data to the tree 3`] = `
-Object {
-  "bot-development": Object {
-    "😘️": Array [
-      Object {
-        "ioc": Object {},
-        "options": Object {
-          "allowedRoles": Array [
+{
+  "bot-development": {
+    "😘️": [
+      {
+        "ioc": {},
+        "options": {
+          "allowedRoles": [
             "Developer",
           ],
-          "channelNames": Array [
+          "channelNames": [
             "bot-development",
             "bot-test-channel",
           ],
@@ -73,25 +73,25 @@ Object {
       },
     ],
   },
-  "bot-output": Object {
-    "♥️": Array [
-      Object {
-        "ioc": Object {},
-        "options": Object {
-          "channelNames": Array [
+  "bot-output": {
+    "♥️": [
+      {
+        "ioc": {},
+        "options": {
+          "channelNames": [
             "bot-output",
           ],
           "emoji": "♥️",
           "event": "REACTION_ADD",
         },
       },
-      Object {
-        "ioc": Object {},
-        "options": Object {
-          "allowedRoles": Array [
+      {
+        "ioc": {},
+        "options": {
+          "allowedRoles": [
             "Support",
           ],
-          "channelNames": Array [
+          "channelNames": [
             "bot-output",
           ],
           "emoji": "♥️",
@@ -100,15 +100,15 @@ Object {
       },
     ],
   },
-  "bot-test-channel": Object {
-    "😘️": Array [
-      Object {
-        "ioc": Object {},
-        "options": Object {
-          "allowedRoles": Array [
+  "bot-test-channel": {
+    "😘️": [
+      {
+        "ioc": {},
+        "options": {
+          "allowedRoles": [
             "Developer",
           ],
-          "channelNames": Array [
+          "channelNames": [
             "bot-development",
             "bot-test-channel",
           ],
@@ -118,14 +118,14 @@ Object {
       },
     ],
   },
-  "channel": Object {},
+  "channel": {},
 }
 `;
 
 exports[`Reactions should extract reaction from direct message 1`] = `
-Array [
-  Object {
-    "handlerKeys": Array [
+[
+  {
+    "handlerKeys": [
       "9007199254740991",
       "",
     ],
@@ -136,14 +136,14 @@ Array [
 `;
 
 exports[`Reactions should extract reaction from public channel 1`] = `
-Array [
-  Object {
-    "handlerKeys": Array [
+[
+  {
+    "handlerKeys": [
       "9007199254740991",
       "",
     ],
     "isDirectMessage": false,
-    "member": Object {
+    "member": {
       "avatar": null,
       "avatarURL": null,
       "communicationDisabledUntilTimestamp": null,
@@ -154,8 +154,8 @@ Array [
       "nickname": "nick",
       "pending": false,
       "premiumSinceTimestamp": null,
-      "roles": Object {
-        "cache": Array [],
+      "roles": {
+        "cache": [],
       },
       "userId": "9007199254740991",
     },

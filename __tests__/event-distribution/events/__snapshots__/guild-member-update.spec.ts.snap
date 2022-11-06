@@ -1,33 +1,33 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`GuildMemberUpdates should add data to the tree 1`] = `
-Object {
-  "added": Object {
-    "Test": Array [
-      Object {
-        "ioc": Object {},
-        "options": Object {
+{
+  "added": {
+    "Test": [
+      {
+        "ioc": {},
+        "options": {
           "event": "GUILD_MEMBER_UPDATE",
-          "roleNamesAdded": Array [
+          "roleNamesAdded": [
             "Test",
           ],
-          "roleNamesRemoved": Array [
+          "roleNamesRemoved": [
             "Example",
           ],
         },
       },
     ],
   },
-  "removed": Object {
-    "Example": Array [
-      Object {
-        "ioc": Object {},
-        "options": Object {
+  "removed": {
+    "Example": [
+      {
+        "ioc": {},
+        "options": {
           "event": "GUILD_MEMBER_UPDATE",
-          "roleNamesAdded": Array [
+          "roleNamesAdded": [
             "Test",
           ],
-          "roleNamesRemoved": Array [
+          "roleNamesRemoved": [
             "Example",
           ],
         },
@@ -38,43 +38,43 @@ Object {
 `;
 
 exports[`GuildMemberUpdates should add data to the tree 2`] = `
-Object {
-  "": Object {
-    "": Array [
-      Object {
-        "ioc": Object {},
-        "options": Object {
+{
+  "": {
+    "": [
+      {
+        "ioc": {},
+        "options": {
           "event": "GUILD_MEMBER_UPDATE",
         },
       },
     ],
   },
-  "added": Object {
-    "Test": Array [
-      Object {
-        "ioc": Object {},
-        "options": Object {
+  "added": {
+    "Test": [
+      {
+        "ioc": {},
+        "options": {
           "event": "GUILD_MEMBER_UPDATE",
-          "roleNamesAdded": Array [
+          "roleNamesAdded": [
             "Test",
           ],
-          "roleNamesRemoved": Array [
+          "roleNamesRemoved": [
             "Example",
           ],
         },
       },
     ],
   },
-  "removed": Object {
-    "Example": Array [
-      Object {
-        "ioc": Object {},
-        "options": Object {
+  "removed": {
+    "Example": [
+      {
+        "ioc": {},
+        "options": {
           "event": "GUILD_MEMBER_UPDATE",
-          "roleNamesAdded": Array [
+          "roleNamesAdded": [
             "Test",
           ],
-          "roleNamesRemoved": Array [
+          "roleNamesRemoved": [
             "Example",
           ],
         },
@@ -85,52 +85,52 @@ Object {
 `;
 
 exports[`GuildMemberUpdates should add data to the tree 3`] = `
-Object {
-  "": Object {
-    "": Array [
-      Object {
-        "ioc": Object {},
-        "options": Object {
+{
+  "": {
+    "": [
+      {
+        "ioc": {},
+        "options": {
           "event": "GUILD_MEMBER_UPDATE",
         },
       },
     ],
   },
-  "added": Object {
-    "Test": Array [
-      Object {
-        "ioc": Object {},
-        "options": Object {
+  "added": {
+    "Test": [
+      {
+        "ioc": {},
+        "options": {
           "event": "GUILD_MEMBER_UPDATE",
-          "roleNamesAdded": Array [
+          "roleNamesAdded": [
             "Test",
           ],
-          "roleNamesRemoved": Array [
+          "roleNamesRemoved": [
             "Example",
           ],
         },
       },
-      Object {
-        "ioc": Object {},
-        "options": Object {
+      {
+        "ioc": {},
+        "options": {
           "event": "GUILD_MEMBER_UPDATE",
-          "roleNamesAdded": Array [
+          "roleNamesAdded": [
             "Test",
           ],
         },
       },
     ],
   },
-  "removed": Object {
-    "Example": Array [
-      Object {
-        "ioc": Object {},
-        "options": Object {
+  "removed": {
+    "Example": [
+      {
+        "ioc": {},
+        "options": {
           "event": "GUILD_MEMBER_UPDATE",
-          "roleNamesAdded": Array [
+          "roleNamesAdded": [
             "Test",
           ],
-          "roleNamesRemoved": Array [
+          "roleNamesRemoved": [
             "Example",
           ],
         },
