@@ -32,7 +32,8 @@
     {
       "matchPackageNames": [
         "ts-jest",
-        "jest"
+        "jest",
+        "@types/jest"
       ],
       "groupName": "jest packages"
     },
