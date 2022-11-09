@@ -101,11 +101,13 @@ To work on the bot you need the following:
 To allow your bot to run, you have to invite the bot into the server you created:
 
 1. Select your application with the bot token [here](https://discord.com/developers/applications/).
-2. Click OAuth2 in the left menu
-3. In the list of scopes, select `bot`
-4. In the list of bot permissions (shows up after step 3), select `Administrator`
-5. Copy and open the URL created in the scopes section
-6. Select the server created from the template and click Continue, then Authorize (you might also need to complete a
+2. Select Bot in the left menu
+3. Under "Privileged Gateway Intents", make sure all three (Presence, Server Members and Message Content) are enabled.
+4. Click OAuth2 in the left menu
+5. In the list of scopes, select `bot`
+6. In the list of bot permissions (shows up after step 3), select `Administrator`
+7. Copy and open the URL created in the scopes section
+8. Select the server created from the template and click Continue, then Authorize (you might also need to complete a
    Captcha)
 
 Now the bot is on your server and can do things once started. We will get to that next. For the following steps, you
@@ -142,12 +144,14 @@ Ensure that you have Docker running and no other connections on Port 5432 as thi
     yarn install
     ```
 
-2. Create an `.env` in the root directory and copy the `.env.example`. Change the values to match your test server.
+2. Create an `.env` in the root directory and copy the `.env.example`. Change the values to match your test
+   server. `BOT_TOKEN`, `GUILD_ID`, `CLIENT_ID` and `OUTPUT_CHANNEL_ID` have to be set for the bot to successfully start
+   up.
 
 3. Set up the tables in the database
 
     ```bash
-    yarn prisma db push
+    yarn prisma migrate dev
     ```
 
 4. Start the bot
