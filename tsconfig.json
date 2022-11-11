@@ -13,9 +13,6 @@
     "outDir": "build",
     "strict": true,
     "target": "es2020",
-    // Not ideal but required because of https://github.com/discordjs/discord.js/issues/8816
-    // This should be removed once the discord.js internal issues are fixed.
-    "skipLibCheck": true,
   },
   "exclude": [
     "build",
