@@ -1,8 +1,8 @@
 import { graphqlClient } from "../../../graphql-client";
 import {
+  BuddyProjectSignUpPayload,
   BuddyProjectStatusPayload,
   getSdk,
-  MarkGhostedMutation,
   MarkGhostedPayload,
 } from "./buddy-project.generated";
 
@@ -31,5 +31,11 @@ export class BuddyProjectService {
     const response = await this.sdk.unblock({ userId });
 
     return response.unblock;
+  }
+
+  async signUp(userId: string): Promise<BuddyProjectSignUpPayload> {
+    const response = await this.sdk.signUp({ userId });
+
+    return response.signUp;
   }
 }

@@ -22,7 +22,7 @@ class BuddyProjectConfirmDmsUnblocked extends CommandHandler<DiscordEvent.BUTTON
 
     await interaction.deferReply({ ephemeral: true });
     const channel = await guild!.channels.fetch(channelId);
-    if (!channel) return;
+    if (!channel || channel.type !== ChannelType.GuildText) return;
 
     const dmsWork = await this.ensureDmsWork(user.id, client);
 

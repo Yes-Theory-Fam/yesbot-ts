@@ -6,29 +6,22 @@ import {
   Guild,
   TextChannel,
 } from "discord.js";
+import { ChatNames } from "../../../collections/chat-names";
 import {
   ghostedRematchDifferenceHours,
   matchedGhostedDifferenceHours,
 } from "../ghost/constants";
 import { buddyProjectMarkGhostedButtonId } from "../ghost/mark-ghosted";
 
-const ghostChannel = "buddy-project-ghost"; // TODO name to ChannelNames
-
 export const buddyProjectGhostSetup = async (guild: Guild) => {
   const channel = guild.channels.cache.find(
     (c): c is TextChannel =>
-      c.type === ChannelType.GuildText && c.name === ghostChannel
+      c.type === ChannelType.GuildText &&
+      c.name === ChatNames.BUDDY_PROJECT_INFO
   );
   if (!channel) {
     throw new Error(
-      `Failed to resolve channel with name ${ghostChannel} trying to set up Ghosting!`
-    );
-  }
-
-  const messages = await channel.messages.fetch({ limit: 1, cache: true });
-  if (messages.size) {
-    throw new Error(
-      "Refusing to add more messages! Encountered when setting up Ghosting!"
+      `Failed to resolve channel with name ${ChatNames.BUDDY_PROJECT_INFO} trying to set up Ghosting!`
     );
   }
 

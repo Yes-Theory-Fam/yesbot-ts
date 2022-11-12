@@ -22,3 +22,10 @@ query getBuddy($userId: String!) {
 mutation unblock($userId: String!) {
     unblock(userId: $userId)
 }
+
+mutation signUp($userId: String!) {
+    signUp(userId: $userId) @export(exportName: "BuddyProjectSignUpPayload") {
+        success
+        error
+    }
+}

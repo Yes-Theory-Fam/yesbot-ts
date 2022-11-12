@@ -4,6 +4,7 @@ import {
   CommandHandler,
 } from "../../../event-distribution";
 import { ChatInputCommandInteraction } from "discord.js";
+import { buddyProjectInfoSetup } from "./buddy-project-info-setup";
 import { buddyProjectDmsBlockedSetup } from "./dms-blocked-setup";
 import { buddyProjectGhostSetup } from "./ghost-setup";
 
@@ -22,6 +23,7 @@ class BuddyProjectSetup extends CommandHandler<DiscordEvent.SLASH_COMMAND> {
     await interaction.deferReply({ ephemeral: true });
 
     try {
+      await buddyProjectInfoSetup(guild);
       await buddyProjectGhostSetup(guild);
       await buddyProjectDmsBlockedSetup(guild);
 

@@ -1,0 +1,60 @@
+import {
+  TextChannel,
+  Guild,
+  ChannelType,
+  ButtonBuilder,
+  ButtonStyle,
+  ActionRowBuilder,
+} from "discord.js";
+import { ChatNames } from "../../../collections/chat-names";
+import { buddyProjectSignUpButtonId } from "../sign-up/buddy-project-signup";
+
+export const buddyProjectInfoSetup = async (guild: Guild) => {
+  const channel = guild.channels.cache.find(
+    (c): c is TextChannel =>
+      c.type === ChannelType.GuildText &&
+      c.name === ChatNames.BUDDY_PROJECT_INFO
+  );
+
+  if (!channel) {
+    throw new Error(
+      `Could not find channel ${ChatNames.BUDDY_PROJECT_INFO} setting up the info text!`
+    );
+  }
+
+  const messages = await channel.messages.fetch({ limit: 1, cache: true });
+  if (messages.size) {
+    throw new Error(
+      "Refusing to add more messages! Encountered when setting up Ghosting!"
+    );
+  }
+
+  const button = new ButtonBuilder({
+    style: ButtonStyle.Primary,
+    emoji: "🚀",
+    label: "Sign up",
+    custom_id: buddyProjectSignUpButtonId,
+  });
+
+  const components = new ActionRowBuilder<ButtonBuilder>({
+    components: [button],
+  });
+
+  await channel.send({
+    content: `**Welcome to this year's Buddy Project!**
+
+After many, many months we are finally back!
+
+**What is the Buddy Project?** 
+
+The Buddy Project is a “some good quote explaining thing here like a get to know each other project” arranged by the Yes Theory Fam. 
+
+The concept of The Buddy Project is simple, you sign up, get connected with a stranger who also signs up. Each of you will get your own set of 15 questions each, you take turns asking the questions to each other, but both of you will answer them. Now you know each other so well that you have become buddies. 
+
+**How do I sign up for The Buddy Project?** 
+
+It is as simple as it can be. Just press the "Sign up"-Button and you’ll be on your way!
+`,
+    components: [components],
+  });
+};
