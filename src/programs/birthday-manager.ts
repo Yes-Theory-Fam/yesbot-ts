@@ -176,9 +176,9 @@ class BirthdayManager implements CommandHandler<DiscordEvent.MESSAGE> {
       "Hi there! Could someone help me by executing this command? Thank you!"
     );
     await textLog(
-      `\`/override set-birthday target:${
-        birthdayUser.id
-      } date:${formatBirthday(birthdate)}\`
+      `\`/override set-birthday target:${birthdayUser.id} date:${formatBirthday(
+        birthdate
+      )}\`
 \`/override set-timezone target:${birthdayUser.id} zone:${timezone}\``
     );
 
