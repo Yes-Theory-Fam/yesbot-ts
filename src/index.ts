@@ -117,11 +117,11 @@ bot.on(
   }
 );
 bot.on("ready", async () => {
+  await ready(bot).catch((error) =>
+      logger.error("Error in legacy ready handler: ", error)
+  );
   await distribution.handleEvent(DiscordEvent.READY, bot);
   LoadCron.init();
-  await ready(bot).catch((error) =>
-    logger.error("Error in legacy ready handler: ", error)
-  );
 });
 bot.on(
   "voiceStateUpdate",
