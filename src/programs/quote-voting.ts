@@ -1,8 +1,16 @@
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
-import { Message, Snowflake, TextChannel } from "discord.js";
+import {
+  Client,
+  Guild,
+  Message,
+  Snowflake,
+  TextChannel,
+  ThreadAutoArchiveDuration,
+} from "discord.js";
 import { TimerService } from "./timer/timer.service";
 import { Timer } from "@prisma/client";
 import bot from "../index";
+import { ChatNames } from "../collections/chat-names";
 
 const quoteVotingIdentifier = "quotevoting";
 const positiveEmojiName = "haha";
@@ -14,6 +22,25 @@ const pinRatio = 9;
 interface QuoteVotingTimerData {
   channelId: Snowflake;
   messageId: Snowflake;
+}
+
+@Command({
+  event: DiscordEvent.READY,
+  description: "This is a description wow!",
+})
+class CreateThreadIfNonExistent implements CommandHandler<DiscordEvent.READY> {
+  async handle(bot: Client): Promise<void> {
+    const guild = await bot.guilds.resolve(process.env.GUILD_ID);
+    const quoteChannel = guild?.channels.cache.find(
+      (c) => c.name == ChatNames.QUOTES
+    ) as TextChannel;
+    const hasQuoteThread = quoteChannel.threads.cache.find(
+      (t) => t.name == ChatNames.HIGHLIGHTED_QUOTES
+    );
+    if (!hasQuoteThread) {
+      await quoteChannel.threads.create({ name: "Highlighted Quotes" });
+    }
+  }
 }
 
 @Command({
@@ -66,7 +93,29 @@ class QuoteTally implements CommandHandler<DiscordEvent.TIMER> {
     }
 
     if (positiveReactions / negativeReactions >= pinRatio) {
-      await message.pin();
+      const highlightedThread = channel.threads.cache.find(
+        (t) => t.name == ChatNames.HIGHLIGHTED_QUOTES
+      );
+      const messageText = await checkEmojis(message, message.guild);
+      const maybeImage = message.attachments;
+      highlightedThread?.send(
+        `Member: <@${message.author.id}> quote won a place on the wall of fame! He quotes: \n ${messageText}`
+      );
+      maybeImage.forEach((a) => highlightedThread?.send({ files: [a] }));
     }
   }
 }
+
+const checkEmojis = async (message: Message, guild: Guild | null) => {
+  let content = message.content;
+  const emojis = message.content.match(/<:[a-z | 1-99].{0,}>/gi);
+  emojis?.forEach((e) => {
+    const tempE = e.replace(/:/g, "");
+    const maybeEmoji = guild?.emojis.cache.find(
+      (guildEmoji) => guildEmoji.name == tempE
+    );
+    const regex = new RegExp(e, "g");
+    if (!maybeEmoji) content = message.content.replace(regex, "");
+  });
+  return content;
+};
