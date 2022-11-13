@@ -135,10 +135,10 @@ const getShrinkLimit = (channel: VoiceChannel) =>
   Math.max(2, channel.members.size);
 
 const getUpLimit = (channel: VoiceChannel) =>
-  Math.min(maxLimit, channel.members.size + 1);
+  Math.min(maxLimit, channel.userLimit + 1);
 
 const getDownLimit = (channel: VoiceChannel) =>
-  Math.max(2, channel.members.size - 1);
+  Math.max(2, channel.userLimit - 1);
 
 const createOnDemand = async (message: Message, userLimit: number) => {
   const { guild, member } = message;
