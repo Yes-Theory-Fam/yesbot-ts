@@ -38,4 +38,10 @@ export class BuddyProjectService {
 
     return response.signUp;
   }
+
+  async setMatchingEnabled(enabled: boolean): Promise<boolean> {
+    const response = await this.sdk.setMatchingEnabled({ enabled });
+
+    return response.setMatchingEnabled;
+  }
 }

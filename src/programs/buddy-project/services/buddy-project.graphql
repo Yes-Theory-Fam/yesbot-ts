@@ -29,3 +29,7 @@ mutation signUp($userId: String!) {
         error
     }
 }
+
+mutation setMatchingEnabled($enabled: Boolean!) {
+    setMatchingEnabled(enabled: $enabled)
+}
