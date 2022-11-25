@@ -38,7 +38,7 @@ export class CountryRoleFinder {
 
   static getCountriesFromString = (input: string) => {
     const flagEmojiRegex = /[\u{1f1e6}-\u{1f1ff}]{2}/gmu;
-    const flagsInInput = input.match(flagEmojiRegex) ?? [];
+    const flagsInInput: string[] = input.match(flagEmojiRegex) ?? [];
 
     const matchedCountries = countries
       .filter((country: Country) => {
