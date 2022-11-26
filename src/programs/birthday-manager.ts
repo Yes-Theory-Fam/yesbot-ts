@@ -116,6 +116,8 @@ class BirthdayManager implements CommandHandler<DiscordEvent.MESSAGE> {
       });
     } catch (err) {
       // timeout probably
+      await birthdayMessage.delete();
+      await message.react("⏰");
       return;
     }
 
