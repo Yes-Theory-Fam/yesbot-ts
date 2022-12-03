@@ -41,8 +41,8 @@
       "matchPackageNames": [
         "discord.js",
         "discord-api-types",
-        "@discord.js/builders",
-        "@discord.js/rest"
+        "@discordjs/builders",
+        "@discordjs/rest"
       ],
       "groupName": "discord packages"
     },
