@@ -12,7 +12,7 @@ import { BuddyProjectService } from "../services/buddy-project.service";
 @Command({
   event: DiscordEvent.SLASH_COMMAND,
   description: "Allows enabling and disabling matching of the Buddy Project",
-  root: "buddy-project",
+  root: "buddy-project-mod",
   subCommand: "set-enabled",
   options: [
     {

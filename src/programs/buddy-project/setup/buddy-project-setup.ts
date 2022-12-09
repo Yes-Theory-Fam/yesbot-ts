@@ -10,7 +10,7 @@ import { buddyProjectGhostSetup } from "./ghost-setup";
 
 @Command({
   event: DiscordEvent.SLASH_COMMAND,
-  root: "buddy-project",
+  root: "buddy-project-mod",
   subCommand: "bootstrap",
   description: "Sets up messages and interactions for the buddy project",
 })
