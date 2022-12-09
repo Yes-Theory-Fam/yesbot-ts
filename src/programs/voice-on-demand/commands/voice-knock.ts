@@ -77,7 +77,7 @@ class VoiceKnock extends CommandHandler<DiscordEvent.SLASH_COMMAND> {
 
     const newLimit = Math.min(
       maxMembers,
-      Math.max(channel.members.size, channel.userLimit)
+      Math.max(channel.members.size, channel.userLimit) + 1
     );
     await channel.setUserLimit(newLimit);
   }
@@ -114,9 +114,17 @@ class VoiceKnock extends CommandHandler<DiscordEvent.SLASH_COMMAND> {
         filter,
         dispose: true,
       });
-      await reaction.reply({ ephemeral: true, content: "Alright!" });
+
+      await reaction.update({
+        content: "Alright, I made room for them!",
+        components: [],
+      });
       return true;
     } catch {
+      await message.edit({
+        content: `<@${targetUserId}>, <@${requestingUserId}> wanted to join your voice channel. You didn't respond.`,
+        components: [],
+      });
       return false;
     }
   }

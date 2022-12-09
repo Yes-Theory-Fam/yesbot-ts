@@ -7,11 +7,9 @@ import {
   ChannelType,
   ComponentType,
   GuildMember,
-  Snowflake,
   userMention,
   VoiceChannel,
 } from "discord.js";
-import internal from "stream";
 import { hasRole } from "../../../common/moderator";
 import {
   Command,
@@ -62,7 +60,9 @@ export class DetermineNewOwnerTimer extends CommandHandler<DiscordEvent.TIMER> {
       mapping.emoji
     );
 
-    await channel.send(response);
+    if (!selfPickedOwner) {
+      await channel.send(response);
+    }
   }
 
   private async requestNewOwner(
@@ -108,9 +108,12 @@ export class DetermineNewOwnerTimer extends CommandHandler<DiscordEvent.TIMER> {
         dispose: true,
       });
 
-      await claim.update(
-        `${userMention(claim.user.id)} is now the new owner of the room!`
-      );
+      await claim.update({
+        content: `${userMention(
+          claim.user.id
+        )} is now the new owner of the room!`,
+        components: [],
+      });
 
       return claim.member;
     } catch {

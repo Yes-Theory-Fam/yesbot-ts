@@ -114,9 +114,10 @@ export class VoiceCreate extends CommandHandler<DiscordEvent.SLASH_COMMAND> {
 
     await prisma.voiceOnDemandMapping.create({ data: mapping });
 
-    await interaction.reply(
-      `Your room was created with a limit of ${limit}, have fun! Don't forget, this channel will be deleted if there is noone in it. :smile:`
-    );
+    await interaction.reply({
+      content: `Your room was created with a limit of ${limit}, have fun! Don't forget, this channel will be deleted if there is noone in it. :smile:`,
+      ephemeral: true,
+    });
 
     await this.vodService.resetDeleteIfEmptyTimer(createdChannel.id);
   }

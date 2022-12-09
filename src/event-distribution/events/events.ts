@@ -270,6 +270,7 @@ export const rejectWithMessage = async (
     case DiscordEvent.SLASH_COMMAND:
     case DiscordEvent.BUTTON_CLICKED:
       const interactionArg = args[0] as RepliableInteraction;
+
       detailedMessage = ErrorDetailReplacer.replaceErrorDetails(
         message,
         interactionArg.guild

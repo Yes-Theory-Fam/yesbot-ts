@@ -16,6 +16,7 @@ import {
 } from "discord.js";
 import distribution, { DiscordEvent } from "./event-distribution";
 import { guildMemberUpdate, memberLeave, ready } from "./events";
+import { legacyCommandHandler } from "./events/message";
 import { LoadCron } from "./load-cron";
 import { createYesBotLogger } from "./log";
 
@@ -75,6 +76,7 @@ bot.on(
   }
 );
 bot.on("messageCreate", async (msg: Message) => {
+  await legacyCommandHandler(msg);
   await distribution.handleEvent(DiscordEvent.MESSAGE, msg);
 });
 bot.on("interactionCreate", async (interaction: Interaction) => {

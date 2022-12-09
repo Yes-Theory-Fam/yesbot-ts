@@ -82,25 +82,26 @@ class BirthdayManager implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
       return;
     }
 
-    let timezone;
+    let timezoneSelection: SelectMenuInteraction;
     try {
-      timezone = await getUserTimezone(interaction);
+      timezoneSelection = await getUserTimezoneSelection(interaction);
     } catch (err) {
-      await interaction.reply(
+      await interaction.editReply(
         "Hmm, something went wrong. Please contact my engineers if this seems unreasonable. :nerd:"
       );
       return;
     }
 
     const birthdate = new Date(1972, month, day);
+    const timezone = timezoneSelection.values[0];
 
     const userId = interaction.user.id;
-    // TODO update reply
-    await interaction.reply(
-      `Okay, I'll store your birthday as ${formatBirthday(
+    await timezoneSelection.update({
+      content: `Okay, I'll store your birthday as ${formatBirthday(
         birthdate
-      )} in the timezone ${timezone}.`
-    );
+      )} in the timezone ${timezone}.`,
+      components: [],
+    });
     await textLog(
       "Hi there! Could someone help me by executing this command? Thank you!"
     );
@@ -128,9 +129,9 @@ export function createBirthday(
   };
 }
 
-async function getUserTimezone(
+async function getUserTimezoneSelection(
   interaction: ChatInputCommandInteraction
-): Promise<string> {
+): Promise<SelectMenuInteraction> {
   if (!interaction.member) {
     throw new Error("Trying to find timezone for user outside of guild");
   }
@@ -173,20 +174,18 @@ async function getUserTimezone(
   const response = await interaction.reply({
     content: "Pick your timezone:",
     components: [components],
+    ephemeral: true,
   });
 
   const filter = (selectInteraction: SelectMenuInteraction) =>
     selectInteraction.customId === timezoneSelectId &&
     selectInteraction.user.id === interaction.user.id;
-  const selection = await response.awaitMessageComponent({
+
+  return await response.awaitMessageComponent({
     componentType: ComponentType.SelectMenu,
     time: 60_000,
     filter,
   });
-
-  await selection.update({ content: "Alright, let's see" });
-
-  return selection.values[0];
 }
 
 interface CountryWithRegion {

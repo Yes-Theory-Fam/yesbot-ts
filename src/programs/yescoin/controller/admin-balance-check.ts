@@ -1,14 +1,12 @@
 import {
   ApplicationCommandOptionType,
   ChatInputCommandInteraction,
-  Message,
 } from "discord.js";
 import {
   Command,
   CommandHandler,
   DiscordEvent,
 } from "../../../event-distribution";
-import { ChatNames } from "../../../collections/chat-names";
 import { GetBalance } from "../usecase/get-balance";
 
 @Command({

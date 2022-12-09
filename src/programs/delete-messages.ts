@@ -26,5 +26,6 @@ class DeleteMessages implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
     const channel = interaction.channel as TextChannel;
 
     await channel.bulkDelete(amount);
+    await interaction.reply({ content: "Done ✅", ephemeral: true });
   }
 }
