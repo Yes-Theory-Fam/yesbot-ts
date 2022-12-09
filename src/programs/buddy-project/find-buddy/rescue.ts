@@ -45,13 +45,15 @@ class BuddyProjectRescue extends CommandHandler<DiscordEvent.SLASH_COMMAND> {
     // Guarded by command decorator
     if (!member || !guild) return;
 
+    await interaction.deferReply({ ephemeral: true });
+
     const informationText = `Hey ${member}!
 I opened this thread to help find your buddy. Discord sometimes displays a weird mess of numbers which I assume happened in your case.
 
-Pulling your buddy into this thread with you should help solve that problem because they are now displayed in the member list on the side.
+Pulling your buddy into this thread with you should help solve that problem because they are now displayed in the member list on the side and should show up right above this message.
 
 This thread will automatically be closed in an hour because we only have a limited amount of threads available.
-If you want to help us out, please click the checkmark below to prematurely close this thread to make it available for others once you have messaged your buddy.`;
+If you want to help us out, please click the button below to prematurely close this thread to make it available for others once you have messaged your buddy.`;
 
     const memberId = member.user.id;
 
@@ -60,7 +62,7 @@ If you want to help us out, please click the checkmark below to prematurely clos
     await BuddyProjectRescue.ensureNoExistingThread(guild, memberId, buddyId);
     const thread = await BuddyProjectRescue.createRescueThread(guild, memberId);
 
-    await thread?.members.add(buddyId);
+    await thread.members.add(buddyId);
 
     const button = new ButtonBuilder({
       style: ButtonStyle.Success,
@@ -72,11 +74,14 @@ If you want to help us out, please click the checkmark below to prematurely clos
       components: [button],
     });
 
-    const infoMessage = await thread?.send({
+    await thread.send({
       content: informationText,
       components: [components],
     });
-    await infoMessage?.react("✅");
+
+    await interaction.editReply(
+      `You can find your rescue thread here: <#${thread.id}>`
+    );
   }
 
   private static async createRescueThread(guild: Guild, memberId: Snowflake) {
@@ -85,19 +90,15 @@ If you want to help us out, please click the checkmark below to prematurely clos
       (c): c is TextChannel => c.name === ChatNames.BUDDY_PROJECT_INFO
     );
 
-    const hasPrivateThreads =
-      memberInTrouble.guild.features.includes("PRIVATE_THREADS");
-    const threadType = hasPrivateThreads
-      ? ChannelType.GuildPrivateThread
-      : ChannelType.GuildPublicThread;
+    if (!infoChannel) throw new Error("Could not find info channel");
 
-    const thread = await infoChannel?.threads.create({
-      type: threadType,
+    const thread = await infoChannel.threads.create({
+      type: ChannelType.GuildPrivateThread,
       autoArchiveDuration: 60,
       name: BuddyProjectRescue.channelNameForMember(memberInTrouble),
     });
 
-    await thread?.members.add(memberInTrouble);
+    await thread.members.add(memberInTrouble);
 
     return thread;
   }
