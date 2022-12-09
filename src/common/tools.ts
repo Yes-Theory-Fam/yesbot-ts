@@ -11,7 +11,6 @@ import {
   Snowflake,
   TextChannel,
   User,
-  Utils,
 } from "discord.js";
 import fs from "fs";
 import { createYesBotLogger } from "../log";
@@ -85,16 +84,6 @@ class Tools {
         );
         reject(error);
       }
-    });
-  }
-
-  static resolveChannelNamesInString(s: string, guild?: Guild | null): string {
-    if (!guild) return s;
-
-    return s.replace(/#[a-zA-Z\d-]+/g, (match) => {
-      const name = match.substring(1);
-      const channelId = guild.channels.cache.find((c) => c.name === name)?.id;
-      return channelId ? `<#${channelId}>` : match;
     });
   }
 

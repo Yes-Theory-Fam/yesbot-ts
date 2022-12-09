@@ -6,6 +6,7 @@ import {
   SlashCommandBuilder,
   SlashCommandSubcommandBuilder,
   SlashCommandSubcommandGroupBuilder,
+  Snowflake,
 } from "discord.js";
 import { createYesBotLogger } from "../../../log";
 import { addToTree, ensureGuildMemberOrNull } from "../../helper";
@@ -143,9 +144,14 @@ interface RegistrationResponseItem {
   name: string;
 }
 
+interface RegistrationResult {
+  tree: StringIndexedHIOCTree<DiscordEvent.SLASH_COMMAND>;
+  nameIdMap?: Record<string, Snowflake>;
+}
+
 export const registerSlashCommands = async (
   commandTree: StringIndexedHIOCTree<DiscordEvent.SLASH_COMMAND>
-): Promise<StringIndexedHIOCTree<DiscordEvent.SLASH_COMMAND>> => {
+): Promise<RegistrationResult> => {
   const logger = createYesBotLogger(
     "event-distribution",
     "register-slash-commands"
@@ -155,7 +161,7 @@ export const registerSlashCommands = async (
 
   if (allOptions.length === 0) {
     logger.info("No slash commands registered; skipping API call!");
-    return commandTree;
+    return { tree: commandTree };
   }
 
   logger.info(`Registering ${allOptions.length} slash commands`);
@@ -184,17 +190,19 @@ export const registerSlashCommands = async (
 
     const newCommandTree: StringIndexedHIOCTree<DiscordEvent.SLASH_COMMAND> =
       {};
+    const nameIdMap: Record<string, Snowflake> = {};
 
     for (const item of result) {
       newCommandTree[item.id] = commandTree[item.name];
+      nameIdMap[item.name] = item.id;
     }
 
     logger.info(`Finished registering ${allOptions.length} slash commands`);
 
-    return newCommandTree;
+    return { tree: newCommandTree, nameIdMap };
   } catch (e) {
     logger.error("Failed registering slash commands, exception was ", e);
 
-    return commandTree;
+    return { tree: commandTree };
   }
 };

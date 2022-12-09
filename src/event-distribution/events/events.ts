@@ -11,6 +11,7 @@ import {
 } from "discord.js";
 import Tools from "../../common/tools";
 import { createYesBotLogger } from "../../log";
+import { ErrorDetailReplacer } from "../error-detail-replacer";
 import {
   AddEventHandlerFunction,
   BaseOptions,
@@ -255,14 +256,16 @@ export const rejectWithMessage = async (
   event: DiscordEvent,
   ...args: Parameters<HandlerFunction<DiscordEvent>>
 ): Promise<unknown> => {
+  let detailedMessage: string;
+
   switch (event) {
     case DiscordEvent.MESSAGE:
       const messageArg = args[0] as Message;
-      const channelResolvedMessage = Tools.resolveChannelNamesInString(
+      detailedMessage = ErrorDetailReplacer.replaceErrorDetails(
         message,
         messageArg.guild
       );
-      return await Tools.handleUserError(messageArg, channelResolvedMessage);
+      return await Tools.handleUserError(messageArg, detailedMessage);
     case DiscordEvent.REACTION_ADD:
       const userArg = args[1] as User;
       const reaction = args[0] as MessageReaction;
@@ -272,14 +275,24 @@ export const rejectWithMessage = async (
         .then((dm) => dm.send(message));
     case DiscordEvent.SLASH_COMMAND:
       const commandInteractionArg = args[0] as ChatInputCommandInteraction;
+      detailedMessage = ErrorDetailReplacer.replaceErrorDetails(
+        message,
+        commandInteractionArg.guild
+      );
+
       return await commandInteractionArg.reply({
-        content: message,
+        content: detailedMessage,
         ephemeral: true,
       });
     case DiscordEvent.BUTTON_CLICKED:
       const buttonInteractionArg = args[0] as ButtonInteraction;
+      detailedMessage = ErrorDetailReplacer.replaceErrorDetails(
+        message,
+        buttonInteractionArg.guild
+      );
+
       return await buttonInteractionArg.reply({
-        content: message,
+        content: detailedMessage,
         ephemeral: true,
       });
     default:

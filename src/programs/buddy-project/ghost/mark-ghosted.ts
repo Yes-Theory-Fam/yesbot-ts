@@ -30,14 +30,12 @@ export const buddyProjectMarkGhostedButtonId = "buddy-project-mark-ghosted";
     ...commonMessages,
     [MarkGhostedError.AlreadyMarked]:
       "You already let me know you were ghosted! I have reached out to your buddy when you did and if I don't hear back from them in a few days, you will be rematched, no worries!",
-    [MarkGhostedError.BuddyMarkedAlready]: `Heh, that's a funny one! Your buddy let me know *you* ghosted *them*! There should be a message in our DMs up here somewhere about that. If you are having trouble contacting your buddy, have a look at #${ChatNames.BUDDY_PROJECT_INFO} or send \`!rescue\` in #${ChatNames.BUDDY_PROJECT}.`, // TODO fix command reference in error message
+    [MarkGhostedError.BuddyMarkedAlready]: `Heh, that's a funny one! Your buddy let me know *you* ghosted *them*! There should be a message in our DMs up here somewhere about that. If you are having trouble contacting your buddy, have a look at #${ChatNames.BUDDY_PROJECT_INFO} or use |/buddy-project rescue|.`,
     [MarkGhostedError.WaitedTooLittle]: `It's not been ${matchedGhostedDifferenceHours} hours since you got were matched! Give your buddy some time to respond and if they don't, come back here once ${matchedGhostedDifferenceHours} hours have passed since matching!`,
   },
 })
 class MarkGhostedReaction extends CommandHandler<DiscordEvent.BUTTON_CLICKED> {
   async handle(interaction: ButtonInteraction): Promise<void> {
-    console.log("Yeet");
-
     const { user, message } = interaction;
 
     const buddyId = await this.ensureValidEntry(user.id);

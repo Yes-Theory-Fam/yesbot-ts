@@ -1,4 +1,4 @@
-import { AutocompleteInteraction, Interaction } from "discord.js";
+import { AutocompleteInteraction, Interaction, Snowflake } from "discord.js";
 import glob from "glob";
 import path from "path";
 import { createYesBotLogger } from "../log";
@@ -62,6 +62,8 @@ export class EventDistribution {
     [DiscordEvent.VOICE_STATE_UPDATE]: {},
     [DiscordEvent.MEMBER_JOIN]: {},
   };
+
+  private slashCommandNameIdMap: Record<string, Snowflake> = {};
 
   private infoToFilterResults<T extends DiscordEvent>(
     info: HandlerInfo,
@@ -247,9 +249,12 @@ export class EventDistribution {
     });
 
     // Slash Commands and related stuff
-    this.handlers[DiscordEvent.SLASH_COMMAND] = await registerSlashCommands(
+    const { tree, nameIdMap } = await registerSlashCommands(
       this.handlers[DiscordEvent.SLASH_COMMAND]
     );
+
+    this.slashCommandNameIdMap = nameIdMap ?? {};
+    this.handlers[DiscordEvent.SLASH_COMMAND] = tree;
   }
 
   private static isHandlerForLocation<T extends DiscordEvent>(
@@ -366,5 +371,9 @@ export class EventDistribution {
     handlers.push(...this.getHandlers(handlerTree[currentKey], restKeys));
 
     return handlers;
+  }
+
+  public getIdForCommandName(commandName: string): Snowflake {
+    return this.slashCommandNameIdMap[commandName];
   }
 }
