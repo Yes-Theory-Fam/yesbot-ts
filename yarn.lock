@@ -641,9 +641,9 @@
     lodash.uniqwith "^4.5.0"
 
 "@sapphire/snowflake@^3.2.2":
-  version "3.2.2"
-  resolved "https://registry.yarnpkg.com/@sapphire/snowflake/-/snowflake-3.2.2.tgz#faacdc1b5f7c43145a71eddba917de2b707ef780"
-  integrity sha512-ula2O0kpSZtX9rKXNeQMrHwNd7E4jPDJYUXmEGTFdMRfyfMw+FPyh04oKMjAiDuOi64bYgVkOV3MjK+loImFhQ==
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@sapphire/snowflake/-/snowflake-3.3.0.tgz#247413e4d7924a9f508c6a5c8d427e4105ac0fe6"
+  integrity sha512-Hec5N6zEkZuZFLybVKyLFLlcSgYmR6C1/+9NkIhxPwOf6tgX52ndJCSz8ADejmbrNE0VuNCNkpzhRZzenEC9vA==
 
 "@sinclair/typebox@^0.24.1":
   version "0.24.51"
@@ -776,12 +776,7 @@
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-5.1.2.tgz#07508b45797cb81ec3f273011b054cd0755eddca"
   integrity sha512-K0VQKziLUWkVKiRVrx4a40iPaxTUefQmjtkQofBkYRcoaaL/8rhwDWww9qWbrgicNOgnpIsMxyNIUM4+n6dUIA==
 
-"@types/node@*":
-  version "18.11.10"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.11.10.tgz#4c64759f3c2343b7e6c4b9caf761c7a3a05cee34"
-  integrity sha512-juG3RWMBOqcOuXC643OAdSA525V44cVgGV6dUDuiFtss+8Fk5x1hI93Rsld43VeJVIeqlP9I7Fn9/qaVqoEAuQ==
-
-"@types/node@18.11.13":
+"@types/node@*", "@types/node@18.11.13":
   version "18.11.13"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.11.13.tgz#dff34f226ec1ac0432ae3b136ec5552bd3b9c0fe"
   integrity sha512-IASpMGVcWpUsx5xBOrxMj7Bl8lqfuTY7FKAnPmu5cHkfQVWF8GulWS1jbRqA934qZL35xh5xN/+Xe/i26Bod4w==
@@ -819,9 +814,9 @@
   integrity sha512-iO9ZQHkZxHn4mSakYV0vFHAVDyEOIJQrV2uZ06HxEPcx+mt8swXoZHIbaaJ2crJYFfErySgktuTZ3BeLz+XmFA==
 
 "@types/yargs@^17.0.8":
-  version "17.0.15"
-  resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-17.0.15.tgz#5b62c89fb049e2fc8378394a2861a593055f0866"
-  integrity sha512-ZHc4W2dnEQPfhn06TBEdWaiUHEZAocYaiVMfwOipY5jcJt/251wVrKCBWBetGZWO5CF8tdb7L3DmdxVlZ2BOIg==
+  version "17.0.17"
+  resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-17.0.17.tgz#5672e5621f8e0fca13f433a8017aae4b7a2a03e7"
+  integrity sha512-72bWxFKTK6uwWJAVT+3rF6Jo6RTojiJ27FQo8Rf60AL+VZbzoVPnMFhKsUnbjR8A3BTCYQ7Mv3hnl8T0A+CX9g==
   dependencies:
     "@types/yargs-parser" "*"
 
@@ -1054,9 +1049,9 @@ camelcase@^6.2.0:
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
 
 caniuse-lite@^1.0.30001400:
-  version "1.0.30001436"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001436.tgz#22d7cbdbbbb60cdc4ca1030ccd6dea9f5de4848b"
-  integrity sha512-ZmWkKsnC2ifEPoWUvSAIGyOYwT+keAaaWPHiQ9DfMqS1t6tfuyFYoWR78TeZtznkEQ64+vGXH9cZrElwR2Mrxg==
+  version "1.0.30001439"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001439.tgz#ab7371faeb4adff4b74dad1718a6fd122e45d9cb"
+  integrity sha512-1MgUzEkoMO6gKfXflStpYgZDlFM7M/ck/bgfVCACO5vnAf0fXoNVHdWtqGU+MYca+4bL9Z5bpOVmR33cWW9G2A==
 
 chalk@^2.0.0:
   version "2.4.2"
@@ -1199,12 +1194,7 @@ convert-source-map@^2.0.0:
   resolved "https://registry.yarnpkg.com/convert-source-map/-/convert-source-map-2.0.0.tgz#4b560f649fc4e918dd0ab75cf4961e8bc882d82a"
   integrity sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==
 
-countries-and-timezones@*:
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/countries-and-timezones/-/countries-and-timezones-3.3.0.tgz#c2a0c319cf1c6240bda9d69edcbd2d6861a091e6"
-  integrity sha512-HkuEKmiHSAOoRW6FAQsCywd6XI6V0g7a4EfQXc99c7bh4vnCAhnoZ1jHEV0QliJumbFX8lFbCX2nu5d8eUiEJw==
-
-countries-and-timezones@3.4.0:
+countries-and-timezones@*, countries-and-timezones@3.4.0:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/countries-and-timezones/-/countries-and-timezones-3.4.0.tgz#7b3510f8cae9418a225795d9f0f78a3f656e8c6e"
   integrity sha512-E4YrEFSUKM8JWJB2VAIHJGp3tSCQPfG9xX6glKmr+LUObPnosmPwbsFizdNIewl+MGXTqbR2c3BKGL0HNpVGMQ==
@@ -2820,9 +2810,9 @@ typescript@4.9.4:
   integrity sha512-Uz+dTXYzxXXbsFpM86Wh3dKCxrQqUcVMxwU54orwlJjOpO3ao8L7j5lH+dWfTwgCwIuM9GQ2kvVotzYJMXTBZg==
 
 undici@^5.13.0:
-  version "5.13.0"
-  resolved "https://registry.yarnpkg.com/undici/-/undici-5.13.0.tgz#56772fba89d8b25e39bddc8c26a438bd73ea69bb"
-  integrity sha512-UDZKtwb2k7KRsK4SdXWG7ErXiL7yTGgLWvk2AXO1JMjgjh404nFo6tWSCM2xMpJwMPx3J8i/vfqEh1zOqvj82Q==
+  version "5.14.0"
+  resolved "https://registry.yarnpkg.com/undici/-/undici-5.14.0.tgz#1169d0cdee06a4ffdd30810f6228d57998884d00"
+  integrity sha512-yJlHYw6yXPPsuOH0x2Ib1Km61vu4hLiRRQoafs+WUgX1vO64vgnxiCEN9dpIrhZyHFsai3F0AEj4P9zy19enEQ==
   dependencies:
     busboy "^1.6.0"
 
