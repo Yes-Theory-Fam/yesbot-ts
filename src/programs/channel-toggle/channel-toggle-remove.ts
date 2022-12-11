@@ -1,5 +1,8 @@
-import { Message, TextChannel } from "discord.js";
-import Tools from "../../common/tools";
+import {
+  ApplicationCommandOptionType,
+  ChatInputCommandInteraction,
+  TextChannel,
+} from "discord.js";
 import {
   Command,
   CommandHandler,
@@ -11,25 +14,45 @@ import { revokeToggleChannelPermissions } from "./common";
 
 const logger = createYesBotLogger("program", "channelToggleRemove");
 
-@Command({
-  event: DiscordEvent.MESSAGE,
-  trigger: "!channelToggle",
-  subTrigger: "remove",
-  allowedRoles: ["Support"],
-  description: "This handler is to remove a channel toggle reaction",
-})
-class ChannelReactionRemove implements CommandHandler<DiscordEvent.MESSAGE> {
-  async handle(message: Message): Promise<void> {
-    const messageContent = message.content.split(" ");
-    const [, , messageId, emoji] = messageContent;
+enum Errors {
+  MESSAGE_NOT_FOUND = "MESSAGE_NOT_FOUND",
+  TOGGLE_NOT_FOUND = "TOGGLE_NOT_FOUND",
+}
 
-    if (!messageId || !emoji) {
-      await Tools.handleUserError(
-        message,
-        "Invalid syntax, please double check for messageId and emoji and try again."
-      );
-      return;
-    }
+@Command({
+  event: DiscordEvent.SLASH_COMMAND,
+  root: "channel-toggle",
+  subCommand: "remove",
+  description: "Remove an existing channel toggle guarding a channel",
+  options: [
+    {
+      name: "message-id",
+      type: ApplicationCommandOptionType.String,
+      description: "ID of the message the toggle shall be removed from",
+      required: true,
+    },
+    {
+      name: "emoji",
+      type: ApplicationCommandOptionType.String,
+      description: "Emoji of the toggle that shall be removed",
+      required: true,
+    },
+  ],
+  errors: {
+    [Errors.MESSAGE_NOT_FOUND]:
+      "I could not find the requested message. Are you sure the ID is correct?",
+    [Errors.TOGGLE_NOT_FOUND]:
+      "I could not find the requested toggle. Are you sure the emoji is correct?",
+  },
+})
+class ChannelReactionRemove
+  implements CommandHandler<DiscordEvent.SLASH_COMMAND>
+{
+  async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+    await interaction.deferReply();
+
+    const messageId = interaction.options.getString("message-id")!;
+    const emoji = interaction.options.getString("emoji")!;
 
     const reactionMessageObject = await prisma.message.findUnique({
       where: {
@@ -37,21 +60,18 @@ class ChannelReactionRemove implements CommandHandler<DiscordEvent.MESSAGE> {
       },
     });
 
+    if (!reactionMessageObject) throw new Error(Errors.MESSAGE_NOT_FOUND);
+
     const channelToggleObject = await prisma.channelToggle.findFirst({
       where: {
         messageId: messageId,
+        emoji,
       },
     });
 
-    if (!reactionMessageObject || !channelToggleObject) {
-      await Tools.handleUserError(
-        message,
-        "I could not find the requested message, please double check the messageId and try again."
-      );
-      return;
-    }
+    if (!channelToggleObject) throw new Error(Errors.TOGGLE_NOT_FOUND);
 
-    const guild = message.guild;
+    const guild = interaction.guild;
     const toggledMessageChannelId = reactionMessageObject.channel ?? "";
     const channel = guild?.channels.resolve(
       toggledMessageChannelId
@@ -89,9 +109,14 @@ class ChannelReactionRemove implements CommandHandler<DiscordEvent.MESSAGE> {
         "Error while removing all reactions from channelToggle message",
         err
       );
-      await message.react("👎");
+      await interaction.editReply(
+        "Failed to remove the toggle. Bully some developer for this!"
+      );
       return;
     }
-    await message.reply("Succesfully removed channel toggle and reactions.");
+
+    await interaction.editReply(
+      "Successfully removed channel toggle and reactions."
+    );
   }
 }
