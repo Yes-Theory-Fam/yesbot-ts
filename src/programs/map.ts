@@ -47,8 +47,8 @@ class MapAdd implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
     const member = await interaction.guild?.members.fetch(interaction.user.id);
 
     const countries = member?.roles.cache
-      .filter((role) => CountryRoleFinder.isCountryRole(role.name))
-      .map((role) => CountryRoleFinder.getCountryByRole(role.name));
+      .filter((role) => CountryRoleFinder.isCountryRole(role.name, true))
+      .map((role) => CountryRoleFinder.getCountryByRole(role.name, true));
 
     const mapMaintainerDm = await interaction.guild?.members
       .resolve(process.env.MAP_ADD_DM_USER_ID)
