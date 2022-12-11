@@ -21,25 +21,33 @@ enum Errors {
 @Command({
   event: DiscordEvent.SLASH_COMMAND,
   root: "group-mod",
-  subCommand: "delete",
-  description: "Delete a group",
+  subCommand: "change-dead-time",
+  description:
+    "Change a group's dead-time (the time a chat must be dead to allow the group to be pinged)",
   options: [
     {
       name: "group",
       type: ApplicationCommandOptionType.Integer,
       autocomplete: groupAutocomplete,
-      description: "The group to be deleted",
+      description: "The group the dead-time shall be changed of",
+      required: true,
+    },
+    {
+      name: "dead-time",
+      type: ApplicationCommandOptionType.Integer,
+      description: "The new dead-time for the group in seconds",
       required: true,
     },
   ],
   errors: {
-    [Errors.GROUP_NOT_FOUND]: "That group does not exist!",
-    [Errors.UNKNOWN_ERROR]: "Failed to delete group!",
+    [Errors.GROUP_NOT_FOUND]: "That group doesn't exist!",
+    [Errors.UNKNOWN_ERROR]: "Failed to update dead-time!",
   },
 })
-class DeleteGroup implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
+class ChangeDeadTime implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
   async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     const groupId = interaction.options.getInteger("group")!;
+    const deadTime = interaction.options.getInteger("dead-time")!;
 
     const groupService = new GroupService();
     const group = await groupService.getGroupById(groupId);
@@ -49,12 +57,17 @@ class DeleteGroup implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
     }
 
     try {
-      await prisma.userGroup.delete({ where: { id: group.id } });
+      await prisma.userGroup.update({
+        where: { id: group.id },
+        data: { deadtime: deadTime },
+      });
     } catch (error) {
-      logger.error("Failed to delete group, ", error);
+      logger.error("Failed to update database group deadTime, ", error);
       throw new Error(Errors.UNKNOWN_ERROR);
     }
 
-    await interaction.reply(`Successfully deleted group "${group.name}"!`);
+    await interaction.reply(
+      `Successfully set the new dead-time of group "${group.name}" to ${deadTime} seconds!`
+    );
   }
 }

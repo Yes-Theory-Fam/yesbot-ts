@@ -1,4 +1,8 @@
-import { Message } from "discord.js";
+import {
+  ApplicationCommandOptionType,
+  ChatInputCommandInteraction,
+  Message,
+} from "discord.js";
 import {
   Command,
   CommandHandler,
@@ -7,44 +11,58 @@ import {
 import prisma from "../../../prisma";
 import { getRequestedGroup, logger } from "../common";
 
+enum Errors {
+  GROUP_ALREADY_EXISTS = "GROUP_ALREADY_EXISTS",
+  UNKNOWN_ERROR = "UNKNOWN_ERROR",
+}
+
 @Command({
-  event: DiscordEvent.MESSAGE,
-  trigger: "!group",
-  subTrigger: "create",
-  allowedRoles: ["Support"],
-  description:
-    "This handler is to create a group and add description if included",
+  event: DiscordEvent.SLASH_COMMAND,
+  root: "group-mod",
+  subCommand: "create",
+  description: "Create a new group!",
+  options: [
+    {
+      type: ApplicationCommandOptionType.String,
+      name: "name",
+      description: "The name of the newly created group",
+      required: true,
+    },
+    {
+      type: ApplicationCommandOptionType.String,
+      name: "description",
+      description: "The description for the newly created group",
+      required: false,
+    },
+  ],
+  errors: {
+    [Errors.GROUP_ALREADY_EXISTS]: "That group already exists!",
+    [Errors.UNKNOWN_ERROR]: "Failed to create group!",
+  },
 })
-class CreateGroup implements CommandHandler<DiscordEvent.MESSAGE> {
-  async handle(message: Message): Promise<void> {
-    const words = message.content.split(" ").slice(2);
-    const [requestedGroupName, ...rest] = words;
-    const description = rest.join(" ");
+class CreateGroup implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
+  async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+    const name = interaction.options.getString("name")!;
+    const description = interaction.options.getString("description");
 
-    if (!requestedGroupName) {
-      await message.react("👎");
-      return;
-    }
-
-    const group = await getRequestedGroup(requestedGroupName);
+    const group = await getRequestedGroup(name);
 
     if (group) {
-      await message.reply("That group already exists!");
-      return;
+      throw new Error(Errors.GROUP_ALREADY_EXISTS);
     }
 
     try {
       await prisma.userGroup.create({
         data: {
-          name: requestedGroupName,
-          description,
+          name,
+          description: description ?? "",
         },
       });
     } catch (error) {
       logger.error("Failed to create group, ", error);
-      await message.react("👎");
-      return;
+      throw new Error(Errors.UNKNOWN_ERROR);
     }
-    await message.react("👍");
+
+    await interaction.reply(`Successfully created group "${name}"!`);
   }
 }
