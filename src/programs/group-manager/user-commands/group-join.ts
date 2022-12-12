@@ -1,32 +1,66 @@
-import { Message } from "discord.js";
-import { ChatNames } from "../../../collections/chat-names";
+import {
+  ApplicationCommandOptionType,
+  ChatInputCommandInteraction,
+} from "discord.js";
 import {
   Command,
   CommandHandler,
   DiscordEvent,
 } from "../../../event-distribution";
-import { groupInteractionAndReport, tryJoinGroups } from "../common";
+import { groupAutocomplete } from "../group-autocomplete";
+import { GroupService, GroupServiceErrors } from "../group-service";
+
+enum Errors {
+  GROUP_NOT_FOUND = "GROUP_NOT_FOUND",
+  UNKNOWN_ERROR = "UNKNOWN_ERROR",
+}
 
 @Command({
-  event: DiscordEvent.MESSAGE,
-  trigger: "!group",
-  subTrigger: "join",
-  channelNames: [ChatNames.BOT_COMMANDS, ChatNames.PERMANENT_TESTING],
-  description: "This handler is to join a group",
+  event: DiscordEvent.SLASH_COMMAND,
+  root: "group",
+  subCommand: "join",
+  description: "Join a pingable group!",
+  options: [
+    {
+      name: "group",
+      type: ApplicationCommandOptionType.Integer,
+      autocomplete: groupAutocomplete,
+      description: "The group you want to join",
+      required: true,
+    },
+  ],
+  errors: {
+    [Errors.GROUP_NOT_FOUND]: "I couldn't find the group you selected",
+    [Errors.UNKNOWN_ERROR]: "Failed to add you to the group",
+  },
 })
-class JoinGroup implements CommandHandler<DiscordEvent.MESSAGE> {
-  async handle(message: Message): Promise<void> {
-    const words = message.content.split(" ").slice(2);
-    const [requestedGroupNames, ...rest] = words;
-    const member = message.member;
+class JoinGroup implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
+  async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+    const groupId = interaction.options.getInteger("group")!;
 
-    if (!member) return;
+    const groupService = new GroupService();
+    const group = await groupService.getGroupWithMembers(groupId);
 
-    await groupInteractionAndReport(
-      message,
-      [requestedGroupNames, ...rest],
-      member,
-      tryJoinGroups
-    );
+    const user = interaction.user;
+
+    if (!group) {
+      throw new Error(Errors.GROUP_NOT_FOUND);
+    }
+
+    try {
+      await groupService.joinGroup(groupId, user.id);
+    } catch (e) {
+      if (
+        !(e instanceof Error) ||
+        e.message !== GroupServiceErrors.RELATION_ALREADY_EXISTS
+      ) {
+        throw new Error(Errors.UNKNOWN_ERROR);
+      }
+    }
+
+    await interaction.reply({
+      ephemeral: true,
+      content: `Added you to group ${group.name}!`,
+    });
   }
 }

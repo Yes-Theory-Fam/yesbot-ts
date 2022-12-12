@@ -267,13 +267,6 @@ export const rejectWithMessage = async (
         messageArg.guild
       );
       return await Tools.handleUserError(messageArg, detailedMessage);
-    case DiscordEvent.REACTION_ADD:
-      const userArg = args[1] as User;
-      const reaction = args[0] as MessageReaction;
-      return await reaction.users
-        .remove(userArg)
-        .then(() => userArg.createDM())
-        .then((dm) => dm.send(message));
     case DiscordEvent.SLASH_COMMAND:
     case DiscordEvent.BUTTON_CLICKED:
       const interactionArg = args[0] as RepliableInteraction;

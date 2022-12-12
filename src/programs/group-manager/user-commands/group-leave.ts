@@ -1,31 +1,57 @@
-import { Message } from "discord.js";
+import {
+  ApplicationCommandOptionType,
+  ChatInputCommandInteraction,
+} from "discord.js";
 import {
   Command,
   CommandHandler,
   DiscordEvent,
 } from "../../../event-distribution";
-import { groupInteractionAndReport, tryLeaveGroups } from "../common";
+import { groupAutocomplete } from "../group-autocomplete";
+import { GroupService, GroupServiceErrors } from "../group-service";
+
+enum Errors {
+  UNKNOWN_ERROR = "UNKNOWN_ERROR",
+}
 
 @Command({
-  event: DiscordEvent.MESSAGE,
-  trigger: "!group",
-  subTrigger: "leave",
-  channelNames: ["bot-commands", "permanent-testing"],
-  description: "This handler is to leave the group",
+  event: DiscordEvent.SLASH_COMMAND,
+  root: "group",
+  subCommand: "leave",
+  description: "Leave a pingable group!",
+  options: [
+    {
+      name: "group",
+      type: ApplicationCommandOptionType.Integer,
+      description: "The group you want to leave",
+      autocomplete: groupAutocomplete,
+      required: true,
+    },
+  ],
+  errors: {
+    [Errors.UNKNOWN_ERROR]: "Failed to remove you from the selected group",
+  },
 })
-class LeaveGroup implements CommandHandler<DiscordEvent.MESSAGE> {
-  async handle(message: Message): Promise<void> {
-    const words = message.content.split(" ").slice(2);
-    const [requestedGroupNames, ...rest] = words;
-    const member = message.member;
+class LeaveGroup implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
+  async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+    const groupId = interaction.options.getInteger("group")!;
 
-    if (!member) return;
+    const groupService = new GroupService();
 
-    await groupInteractionAndReport(
-      message,
-      [requestedGroupNames, ...rest],
-      member,
-      tryLeaveGroups
-    );
+    try {
+      await groupService.leaveGroup(groupId, interaction.user.id);
+    } catch (e) {
+      if (
+        !(e instanceof Error) ||
+        e.message !== GroupServiceErrors.RELATION_NOT_FOUND
+      ) {
+        throw new Error(Errors.UNKNOWN_ERROR);
+      }
+    }
+
+    await interaction.reply({
+      ephemeral: true,
+      content: "Removed you from the group!",
+    });
   }
 }

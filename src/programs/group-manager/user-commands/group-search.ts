@@ -1,9 +1,12 @@
+import { ButtonStyle, ComponentType } from "discord-api-types/v10";
 import {
-  Message,
+  ActionRowBuilder,
+  ApplicationCommandOptionType,
+  ButtonBuilder,
+  ButtonInteraction,
+  ChatInputCommandInteraction,
   EmbedBuilder,
-  MessageReaction,
-  User,
-  EmbedField,
+  InteractionResponse,
 } from "discord.js";
 import {
   Command,
@@ -15,17 +18,30 @@ import {
   GroupWithMemberRelationList,
 } from "../common";
 
+enum Errors {
+  NO_GROUPS_FOUND = "NO_GROUPS_FOUND",
+}
+
 @Command({
-  event: DiscordEvent.MESSAGE,
-  trigger: "!group",
-  subTrigger: "search",
-  channelNames: ["bot-commands", "permanent-testing"],
-  description: "This handler is to search all groups or the specified group",
+  event: DiscordEvent.SLASH_COMMAND,
+  root: "group",
+  subCommand: "search",
+  description: "List groups!",
+  options: [
+    {
+      name: "name",
+      description: "The name of the group",
+      type: ApplicationCommandOptionType.String,
+      required: false,
+    },
+  ],
+  errors: {
+    [Errors.NO_GROUPS_FOUND]: "No matching groups were found.",
+  },
 })
-class SearchGroup implements CommandHandler<DiscordEvent.MESSAGE> {
-  async handle(message: Message): Promise<void> {
-    const words = message.content.split(" ").slice(2);
-    const requestedGroupName = words[0];
+class SearchGroup implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
+  async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+    const requestedGroupName = interaction.options.getString("name") ?? "";
 
     const groupsPerPage = 4;
     const pages: Array<EmbedBuilder> = [];
@@ -41,13 +57,12 @@ class SearchGroup implements CommandHandler<DiscordEvent.MESSAGE> {
     );
 
     if (copy.length === 0) {
-      await message.reply("No matching groups were found.");
-      return;
+      throw new Error(Errors.NO_GROUPS_FOUND);
     }
 
     const pageAmount = Math.ceil(copy.length / groupsPerPage);
 
-    const yesBotAvatarUrl = message.client.user?.avatarURL({
+    const yesBotAvatarUrl = interaction.client.user?.avatarURL({
       size: 256,
       extension: "png",
     });
@@ -83,56 +98,64 @@ class SearchGroup implements CommandHandler<DiscordEvent.MESSAGE> {
       pages.push(embed);
     }
 
+    const nextId = "group-search-next";
+    const prevId = "group-search-prev";
+
     const flip = async (
       page: number,
-      shownPageMessage: Message,
-      reaction: MessageReaction
+      clickedButton: ButtonInteraction,
+      interactionResponse: InteractionResponse
     ) => {
       if (page < 0) page = 0;
       if (page >= pages.length) page = pages.length - 1;
 
-      await shownPageMessage.edit({
-        content: message.author.toString(),
-        embeds: [pages[page]],
-      });
-      await reaction.users.remove(message.author.id);
-      await setupPaging(page, shownPageMessage);
+      await clickedButton.update({ embeds: [pages[page]] });
+      await setupPaging(page, interactionResponse);
     };
 
-    const setupPaging = async (currentPage: number, pagedMessage: Message) => {
-      const filter = (reaction: MessageReaction, user: User) => {
-        return (
-          ["⬅️", "➡️"].includes(reaction.emoji.name ?? "") &&
-          user.id === message.author.id
-        );
-      };
-
+    const setupPaging = async (
+      currentPage: number,
+      interactionResponse: InteractionResponse
+    ) => {
       try {
-        const reactions = await pagedMessage.awaitReactions({
-          filter,
-          max: 1,
-          time: 60000,
-          errors: ["time"],
+        const clickedButton = await interactionResponse.awaitMessageComponent({
+          componentType: ComponentType.Button,
+          filter: (button) => button.user.id === interaction.user.id,
+          time: 60_000,
+          idle: 60_000,
+          dispose: false,
+          interactionResponse,
         });
-        const first = reactions.first();
-        if (first?.emoji.name === "⬅️") {
-          await flip(currentPage - 1, pagedMessage, first);
-        }
-        if (first?.emoji.name === "➡️") {
-          await flip(currentPage + 1, pagedMessage, first);
+
+        if (clickedButton.customId === prevId) {
+          await flip(currentPage - 1, clickedButton, interactionResponse);
+        } else if (clickedButton.customId === nextId) {
+          await flip(currentPage + 1, clickedButton, interactionResponse);
         }
       } catch (error) {}
     };
 
-    const sentMessagePromise = message.channel.send({ embeds: [pages[0]] });
-    if (pages.length > 1) {
-      sentMessagePromise
-        .then(async (msg) => {
-          await msg.react("⬅️");
-          await msg.react("➡️");
-          return msg;
-        })
-        .then((msg) => setupPaging(0, msg));
-    }
+    const components = new ActionRowBuilder<ButtonBuilder>({
+      components: [
+        new ButtonBuilder({
+          customId: prevId,
+          label: "Previous",
+          style: ButtonStyle.Primary,
+        }),
+        new ButtonBuilder({
+          customId: nextId,
+          label: "Next",
+          style: ButtonStyle.Primary,
+        }),
+      ],
+    });
+
+    const interactionReply = await interaction.reply({
+      ephemeral: true,
+      embeds: [pages[0]],
+      components: pages.length > 1 ? [components] : undefined,
+    });
+
+    await setupPaging(0, interactionReply);
   }
 }
