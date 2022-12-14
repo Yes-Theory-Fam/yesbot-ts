@@ -1,13 +1,9 @@
-import { ButtonStyle, ComponentType } from "discord-api-types/v10";
 import {
-  ActionRowBuilder,
   ApplicationCommandOptionType,
-  ButtonBuilder,
-  ButtonInteraction,
   ChatInputCommandInteraction,
   EmbedBuilder,
-  InteractionResponse,
 } from "discord.js";
+import { Paginator } from "../../../common/paginator";
 import {
   Command,
   CommandHandler,
@@ -98,64 +94,7 @@ class SearchGroup implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
       pages.push(embed);
     }
 
-    const nextId = "group-search-next";
-    const prevId = "group-search-prev";
-
-    const flip = async (
-      page: number,
-      clickedButton: ButtonInteraction,
-      interactionResponse: InteractionResponse
-    ) => {
-      if (page < 0) page = 0;
-      if (page >= pages.length) page = pages.length - 1;
-
-      await clickedButton.update({ embeds: [pages[page]] });
-      await setupPaging(page, interactionResponse);
-    };
-
-    const setupPaging = async (
-      currentPage: number,
-      interactionResponse: InteractionResponse
-    ) => {
-      try {
-        const clickedButton = await interactionResponse.awaitMessageComponent({
-          componentType: ComponentType.Button,
-          filter: (button) => button.user.id === interaction.user.id,
-          time: 60_000,
-          idle: 60_000,
-          dispose: false,
-          interactionResponse,
-        });
-
-        if (clickedButton.customId === prevId) {
-          await flip(currentPage - 1, clickedButton, interactionResponse);
-        } else if (clickedButton.customId === nextId) {
-          await flip(currentPage + 1, clickedButton, interactionResponse);
-        }
-      } catch (error) {}
-    };
-
-    const components = new ActionRowBuilder<ButtonBuilder>({
-      components: [
-        new ButtonBuilder({
-          customId: prevId,
-          label: "Previous",
-          style: ButtonStyle.Primary,
-        }),
-        new ButtonBuilder({
-          customId: nextId,
-          label: "Next",
-          style: ButtonStyle.Primary,
-        }),
-      ],
-    });
-
-    const interactionReply = await interaction.reply({
-      ephemeral: true,
-      embeds: [pages[0]],
-      components: pages.length > 1 ? [components] : undefined,
-    });
-
-    await setupPaging(0, interactionReply);
+    const paginator = new Paginator(pages, interaction, 'group-search');
+    await paginator.paginate();
   }
 }
