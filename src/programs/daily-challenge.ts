@@ -1,13 +1,19 @@
-import Axios from "axios";
-import Discord, { Client, Colors, Message, TextChannel } from "discord.js";
-import { createYesBotLogger } from "../log";
-import { ChatNames } from "../collections/chat-names";
-import prisma from "../prisma";
-import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 import { Timer } from "@prisma/client";
+import Axios from "axios";
+import Discord, {
+  ApplicationCommandOptionType,
+  ChatInputCommandInteraction,
+  Client,
+  Colors,
+  TextChannel,
+} from "discord.js";
 import bot from "..";
-import { TimerService } from "./timer/timer.service";
+import { ChatNames } from "../collections/chat-names";
 import Tools from "../common/tools";
+import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
+import { createYesBotLogger } from "../log";
+import prisma from "../prisma";
+import { TimerService } from "./timer/timer.service";
 
 const dailyChallengeIdentifier = "dailychallenge";
 
@@ -16,14 +22,13 @@ const logger = createYesBotLogger("programs", "dailyChallenge");
 const UTC_HOUR_POSTED = 8;
 
 @Command({
-  event: DiscordEvent.MESSAGE,
-  trigger: "!challenge",
-  channelNames: ["daily-challenge"],
+  event: DiscordEvent.SLASH_COMMAND,
+  root: "challenge",
   description:
-    "This handler is for when a user wants to know the current Daily Challenge.",
+    "Have a look at the current challenge!",
 })
-class DailyChallengeCommand implements CommandHandler<DiscordEvent.MESSAGE> {
-  async handle(message: Message): Promise<void> {
+class DailyChallengeCommand implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
+  async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     const compare = new Date();
     compare.setUTCHours(compare.getUTCHours() - 48 - UTC_HOUR_POSTED);
 
@@ -35,7 +40,7 @@ class DailyChallengeCommand implements CommandHandler<DiscordEvent.MESSAGE> {
       },
     });
 
-    await message.channel.send(
+    await interaction.reply(
       res?.result ?? "We don't have a challenge for today, come back tomorrow!"
     );
   }
@@ -109,58 +114,37 @@ class PostDailyChallenge implements CommandHandler<DiscordEvent.TIMER> {
 }
 
 @Command({
-  event: DiscordEvent.MESSAGE,
-  allowedRoles: ["Support"],
-  trigger: "!addChallenge",
-  description: "This handler is to add challenges to the DB",
+  event: DiscordEvent.SLASH_COMMAND,
+  root: "add-challenges",
+  description: "Add more daily challenges",
+  options: [
+    {
+      name: 'challenges',
+      type: ApplicationCommandOptionType.Attachment,
+      description: 'A file with one challenge per line',
+      required: true,
+    },
+  ],
 })
-class SaveToDB implements CommandHandler<DiscordEvent.MESSAGE> {
-  async handle(message: Message) {
-    const words = message.content.split(/\s+/);
-    const tableName = words[1];
-    const info = words.slice(2).join(" ");
+class SaveToDB implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
+  async handle(interaction: ChatInputCommandInteraction) {
+    const challenges = interaction.options.getAttachment("challenges")!;
 
-    if (tableName === "daily-challenge") {
-      // Check if its an attachment:
-      const attachment = message.attachments?.first();
-      if (attachment) {
-        try {
-          const file = await Axios.get(attachment.url);
-          const bulkChallenges: string[] = file.data.split("\n");
-          const bulkInsert = bulkChallenges.map((challenge) => ({
-            result: challenge.trim(),
-          }));
-          await save(bulkInsert, message);
-        } catch (err) {
-          logger.error("There was an error getting the attached file: ", err);
-          await message.react("👎");
-        }
-      } else {
-        const res = { result: info };
-        await save(res, message);
-        await message.react("👍");
-      }
+    try {
+      const file = await Axios.get(challenges.url);
+      const bulkChallenges: string[] = file.data.split("\n");
+      const bulkInsert = bulkChallenges.map((challenge) => ({
+        result: challenge.trim(),
+      }));
+
+      await prisma.dailyChallenge.createMany({ data: bulkInsert });
+      await interaction.reply(`Added ${bulkInsert.length} new daily challenges!`);
+    } catch (err) {
+      logger.error("There was an error getting the attached file: ", err);
+      await interaction.reply(`Could not add the challenges.`);
     }
   }
 }
-
-type ChallengeInsert = { result: string };
-
-const save = async (
-  res: ChallengeInsert | ChallengeInsert[],
-  message: Message
-) => {
-  try {
-    if (Array.isArray(res)) {
-      await prisma.dailyChallenge.createMany({ data: res });
-    } else {
-      await prisma.dailyChallenge.create({ data: res });
-    }
-  } catch (err) {
-    logger.error("There was an error saving to the DB: ", err);
-    await message.react("👎");
-  }
-};
 
 const startDailyChallengeTimer = async (identifier: string) => {
   const msDay = 24 * 60 * 60 * 1000;

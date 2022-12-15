@@ -5,6 +5,8 @@ import Tools from "../common/tools";
 
 const metaEmojiName = "eeeh";
 
+// TODO make this a message context menu command
+
 @Command({
   event: DiscordEvent.MESSAGE,
   trigger: "!meta",

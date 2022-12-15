@@ -1,16 +1,22 @@
-import { Message } from "discord.js";
+import {ApplicationCommandOptionType, ChatInputCommandInteraction, Message} from "discord.js";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 
 @Command({
-  event: DiscordEvent.MESSAGE,
-  trigger: "!translate",
-  channelNames: ["chat", "chat-too", "4th-chat", "chat-v"],
-  description: "This handler is for the translate command.",
+  event: DiscordEvent.SLASH_COMMAND,
+  root: "translate",
+  description: "Translate something you didn't understand",
+  options: [
+    {
+      name: "message",
+      type: ApplicationCommandOptionType.String,
+      description: "The message you want to translate",
+      required: true,
+    },
+  ],
 })
-class AbuseMeCommand implements CommandHandler<DiscordEvent.MESSAGE> {
-  async handle(message: Message): Promise<void> {
-    const taggedUser = message.mentions.users?.first();
-    let replies = [
+class AbuseMeCommand implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
+  async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+    const replies = [
       'You are as useless as the "ueue" in "Queue".',
       "As an outsider, what do you think of the human race?",
       "Brains aren't everything. In your case they're nothing.",
@@ -35,13 +41,11 @@ class AbuseMeCommand implements CommandHandler<DiscordEvent.MESSAGE> {
       "You sound reasonable. It must be time to up my medication!",
     ];
 
-    const userToTag = taggedUser ? taggedUser.id : message.author.id;
-    const cleanMessage = message.cleanContent.split(/\s+/);
-    cleanMessage.shift();
-    const joinedMsg = cleanMessage.join(" ");
-    const reply = `<@${userToTag}> *\`${joinedMsg}\`* translated to English means *${
-      replies[Math.floor(Math.random() * replies.length)]
-    }*`;
-    message.channel.send(reply);
+    const message = interaction.options.getString("message")!;
+
+    const replyIndex = Math.floor(Math.random() * replies.length);
+    const translation = replies[replyIndex];
+
+    await interaction.reply(`"*${message}"* translated to English means "${translation}".`);
   }
 }
