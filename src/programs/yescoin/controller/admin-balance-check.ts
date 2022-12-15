@@ -1,4 +1,4 @@
-import { Message } from "discord.js";
+import {ApplicationCommandOptionType, ChatInputCommandInteraction, Message} from "discord.js";
 import {
   Command,
   CommandHandler,
@@ -8,23 +8,30 @@ import { ChatNames } from "../../../collections/chat-names";
 import { GetBalance } from "../usecase/get-balance";
 
 @Command({
-  event: DiscordEvent.MESSAGE,
-  allowedRoles: ["Support", "Developer"],
-  channelNames: [ChatNames.BOT_DEVELOPMENT],
-  trigger: "!yescoin-status",
-  description: "This handler return the balance of mentioned users",
+  event: DiscordEvent.SLASH_COMMAND,
+  root: "yescoin",
+  subCommand: "status",
+  description: "Check the YesCoin balance of a user",
+  options: [
+    {
+      name: 'user',
+      type: ApplicationCommandOptionType.User,
+      description: "The user to check the balance of",
+    }
+  ]
 })
-export class AdminBalanceCheck implements CommandHandler<DiscordEvent.MESSAGE> {
-  public async handle(arg: Message): Promise<void> {
-    const member = arg.mentions.users.first() ?? arg.author;
+export class AdminBalanceCheck implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
+  public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+    const user = interaction.options.getUser("user");
+    const userId = user?.id ?? interaction.user.id;
 
     await GetBalance.instance()
-      .handle(member.id)
+      .handle(userId)
       .then((value) => {
-        arg.channel.send(
-          `<@${member.id}> has currently ${value}${arg.client.emojis.cache.find(
+        interaction.reply(
+          `<@${userId}> currently has ${value}${interaction.client.emojis.cache.find(
             (value) => value.name === "yescoin"
-          )}`
+          ) ?? ' YesCoin'}`
         );
       });
   }
