@@ -67,14 +67,15 @@ The bot's main code is contained in the `src` directory which contains several s
 - common - Shared code for various things
 - events - Event handlers for a few events discord.js exposes; the rest of these should eventually be moved to programs
 - event-distribution - Core of YesBot that ties most commands together using a decorator
-- programs - Code containing logic for all the commands and features of the bot. This directory contains an `index.ts`
-  which reexports all exports from all files in this folder, please do so to, when adding your own feature.
+- programs - Code containing logic for all the commands and features of the bot. 
 
-It also contains two single files:
+It also contains a couple single files:
 
-- prisma.ts - Simple setup of the Prisma database connection
 - index.ts - Creates and exports the discord.js Client used in the entire application. This is the entry point for the
   bot.
+- load-cron.ts - Here periodic tasks are created that run in certain intervals
+- log.ts - Defines a simple logger that can be used anywhere in YesBot
+- prisma.ts - Simple setup of the Prisma database connection
 
 ### Requirements
 
