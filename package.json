@@ -43,7 +43,7 @@
     "@types/countries-and-timezones": "3.2.2",
     "@types/glob": "8.0.0",
     "@types/jest": "29.2.4",
-    "@types/node": "18.11.16",
+    "@types/node": "18.11.17",
     "@types/ws": "8.5.3",
     "@yestheoryfam/prettier-config": "1.0.0",
     "env-cmd": "10.1.0",
