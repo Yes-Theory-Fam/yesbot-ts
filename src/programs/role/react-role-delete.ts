@@ -66,7 +66,9 @@ class DeleteReactRoleObjects
     )) ?? [null];
 
     try {
-      await messageWithReaction?.reactions.cache.find(x => x.emoji.name === objectToRemove.reaction)?.remove();
+      await messageWithReaction?.reactions.cache
+        .find((x) => x.emoji.name === objectToRemove.reaction)
+        ?.remove();
     } catch (err) {
       // We don't really care about the error, since the message/channel might have been removed.
       // We log it for good measure.

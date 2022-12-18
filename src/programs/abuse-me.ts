@@ -1,4 +1,8 @@
-import {ApplicationCommandOptionType, ChatInputCommandInteraction, Message} from "discord.js";
+import {
+  ApplicationCommandOptionType,
+  ChatInputCommandInteraction,
+  Message,
+} from "discord.js";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 
 @Command({
@@ -46,6 +50,8 @@ class AbuseMeCommand implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
     const replyIndex = Math.floor(Math.random() * replies.length);
     const translation = replies[replyIndex];
 
-    await interaction.reply(`"*${message}"* translated to English means "${translation}".`);
+    await interaction.reply(
+      `"*${message}"* translated to English means "${translation}".`
+    );
   }
 }

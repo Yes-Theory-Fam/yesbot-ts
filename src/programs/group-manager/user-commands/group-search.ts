@@ -94,7 +94,7 @@ class SearchGroup implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
       pages.push(embed);
     }
 
-    const paginator = new Paginator(pages, interaction, 'group-search');
+    const paginator = new Paginator(pages, interaction, "group-search");
     await paginator.paginate();
   }
 }

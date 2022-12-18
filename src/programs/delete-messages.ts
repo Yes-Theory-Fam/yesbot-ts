@@ -11,8 +11,8 @@ import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
   description: "Delete the last X messages in a channel",
   options: [
     {
-      name: 'amount',
-      description: 'The number of messages to delete',
+      name: "amount",
+      description: "The number of messages to delete",
       type: ApplicationCommandOptionType.Integer,
       max_value: 100,
       min_value: 1,

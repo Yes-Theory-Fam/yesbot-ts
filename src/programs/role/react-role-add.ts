@@ -31,33 +31,34 @@ enum Errors {
   description: "Add a reaction-role",
   options: [
     {
-      name: 'emoji',
+      name: "emoji",
       type: ApplicationCommandOptionType.String,
-      description: 'The emoji for the reaction',
+      description: "The emoji for the reaction",
       required: true,
     },
     {
-      name: 'role',
+      name: "role",
       type: ApplicationCommandOptionType.Role,
-      description: 'The applied role',
+      description: "The applied role",
       required: true,
     },
     {
-      name: 'channel',
+      name: "channel",
       type: ApplicationCommandOptionType.Channel,
       channel_types: [ChannelType.GuildText],
-      description: 'The channel I can find the message in',
+      description: "The channel I can find the message in",
       required: true,
     },
     {
-      name: 'message-id',
+      name: "message-id",
       type: ApplicationCommandOptionType.String,
-      description: 'The ID of the message to add the reaction to',
+      description: "The ID of the message to add the reaction to",
       required: true,
     },
   ],
   errors: {
-    [Errors.MESSAGE_NOT_FOUND]: "I could not find that message. Are you sure the ID is correct?",
+    [Errors.MESSAGE_NOT_FOUND]:
+      "I could not find that message. Are you sure the ID is correct?",
     [Errors.UNKNOWN_ERROR]: "I could not create that reaction-role.",
   },
 })
@@ -112,10 +113,14 @@ const addReactRoleObject = async (
     .setFields([
       { name: "\u200b", value: "\u200b" },
 
-      { name: "Target Message:", value: referencedMessage.cleanContent, inline: true },
+      {
+        name: "Target Message:",
+        value: referencedMessage.cleanContent,
+        inline: true,
+      },
       { name: "Target Channel:", value: channel.toString(), inline: true },
       { name: "Necessary Reaction:", value: emoji, inline: true },
       { name: "Reward Role:", value: role.toString(), inline: true },
     ]);
-  await interaction.reply({ephemeral: true, embeds: [successEmbed]});
+  await interaction.reply({ ephemeral: true, embeds: [successEmbed] });
 };

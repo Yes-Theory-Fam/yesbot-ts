@@ -24,10 +24,11 @@ const UTC_HOUR_POSTED = 8;
 @Command({
   event: DiscordEvent.SLASH_COMMAND,
   root: "challenge",
-  description:
-    "Have a look at the current challenge!",
+  description: "Have a look at the current challenge!",
 })
-class DailyChallengeCommand implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
+class DailyChallengeCommand
+  implements CommandHandler<DiscordEvent.SLASH_COMMAND>
+{
   async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     const compare = new Date();
     compare.setUTCHours(compare.getUTCHours() - 48 - UTC_HOUR_POSTED);
@@ -119,9 +120,9 @@ class PostDailyChallenge implements CommandHandler<DiscordEvent.TIMER> {
   description: "Add more daily challenges",
   options: [
     {
-      name: 'challenges',
+      name: "challenges",
       type: ApplicationCommandOptionType.Attachment,
-      description: 'A file with one challenge per line',
+      description: "A file with one challenge per line",
       required: true,
     },
   ],
@@ -138,7 +139,9 @@ class SaveToDB implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
       }));
 
       await prisma.dailyChallenge.createMany({ data: bulkInsert });
-      await interaction.reply(`Added ${bulkInsert.length} new daily challenges!`);
+      await interaction.reply(
+        `Added ${bulkInsert.length} new daily challenges!`
+      );
     } catch (err) {
       logger.error("There was an error getting the attached file: ", err);
       await interaction.reply(`Could not add the challenges.`);
