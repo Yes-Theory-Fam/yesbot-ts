@@ -43,7 +43,7 @@ jobs:
         with:
           context: .
           build-args: |
-            "YTF_GRAPHQL_ENDPOINT=${{ github.ref == 'refs/heads/master' && 'https://staging.yestheory.family/yesbot' || 'https://yestheory.family/yesbot' }}"
+            "YTF_GRAPHQL_ENDPOINT=${{ github.ref == 'refs/heads/master' && 'https://staging.yestheory.family/_yesbot-schema' || 'https://yestheory.family/_yesbot-schema' }}"
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
