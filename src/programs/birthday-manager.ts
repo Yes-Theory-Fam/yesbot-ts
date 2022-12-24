@@ -73,11 +73,12 @@ class BirthdayManager implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
     const userExistingBirthday = await getUserBirthday(interaction.user.id);
 
     if (userExistingBirthday !== null) {
-      await interaction.reply(
-        `I have already stored your birthday as ${formatBirthday(
+      await interaction.reply({
+        content: `I have already stored your birthday as ${formatBirthday(
           userExistingBirthday
-        )} :tada:`
-      );
+        )} :tada:`,
+        ephemeral: true,
+      });
       return;
     }
 
@@ -94,6 +95,7 @@ class BirthdayManager implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
     const birthdate = new Date(1972, month, day);
 
     const userId = interaction.user.id;
+    // TODO update reply
     await interaction.reply(
       `Okay, I'll store your birthday as ${formatBirthday(
         birthdate
