@@ -5,6 +5,7 @@ import {
   Client,
   Message,
   MessageReaction,
+  RepliableInteraction,
   ThreadChannel,
   User,
   VoiceState,
@@ -274,24 +275,20 @@ export const rejectWithMessage = async (
         .then(() => userArg.createDM())
         .then((dm) => dm.send(message));
     case DiscordEvent.SLASH_COMMAND:
-      const commandInteractionArg = args[0] as ChatInputCommandInteraction;
-      detailedMessage = ErrorDetailReplacer.replaceErrorDetails(
-        message,
-        commandInteractionArg.guild
-      );
-
-      return await commandInteractionArg.reply({
-        content: detailedMessage,
-        ephemeral: true,
-      });
     case DiscordEvent.BUTTON_CLICKED:
-      const buttonInteractionArg = args[0] as ButtonInteraction;
+      const interactionArg = args[0] as RepliableInteraction;
       detailedMessage = ErrorDetailReplacer.replaceErrorDetails(
         message,
-        buttonInteractionArg.guild
+        interactionArg.guild
       );
 
-      return await buttonInteractionArg.reply({
+      if (interactionArg.deferred) {
+        return await interactionArg.editReply({
+          content: detailedMessage,
+        });
+      }
+
+      return await interactionArg.reply({
         content: detailedMessage,
         ephemeral: true,
       });
