@@ -56,6 +56,6 @@
     "typescript": "4.9.4"
   },
   "resolutions": {
-    "discord-api-types": "0.37.23"
+    "discord-api-types": "0.37.24"
   }
 }
