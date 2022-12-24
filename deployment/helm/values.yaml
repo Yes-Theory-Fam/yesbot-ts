@@ -47,6 +47,7 @@ bot:
   map:
     link:
     userId:
+  ytfApiUrl:
 
   secret:
     name: yesbot-secret
@@ -58,4 +59,6 @@ bot:
       - name: GITHUB_TOKEN
         value:
       - name: GOOGLE_API_KEY
+        value:
+      - name: YTF_API_AUTH_TOKEN
         value:

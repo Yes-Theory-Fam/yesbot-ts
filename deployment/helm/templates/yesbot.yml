@@ -43,6 +43,9 @@ spec:
             - name: MAP_ADD_DM_USER_ID
               value: "{{ .Values.bot.map.userId }}"
 
+            - name: YTF_GRAPHQL_ENDPOINT
+              value: "{{ .Values.bot.ytfApiUrl }}"
+
             {{- range .Values.bot.secret.secrets }}
             - name: {{ .name }}
               valueFrom:
