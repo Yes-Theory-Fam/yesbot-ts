@@ -7,6 +7,7 @@ import {
   ActionRowBuilder,
 } from "discord.js";
 import { ChatNames } from "../../../collections/chat-names";
+import eventDistribution from "../../../event-distribution";
 import { buddyProjectSignUpButtonId } from "../sign-up/buddy-project-signup";
 
 export const buddyProjectInfoSetup = async (guild: Guild) => {
@@ -25,7 +26,7 @@ export const buddyProjectInfoSetup = async (guild: Guild) => {
   const messages = await channel.messages.fetch({ limit: 1, cache: true });
   if (messages.size) {
     throw new Error(
-      "Refusing to add more messages! Encountered when setting up Ghosting!"
+      "Refusing to add more messages! Encountered when setting up info!"
     );
   }
 
@@ -47,7 +48,7 @@ After many, many months we are finally back!
 
 **What is the Buddy Project?** 
 
-The Buddy Project is a “some good quote explaining thing here like a get to know each other project” arranged by the Yes Theory Fam. 
+The Buddy Project is a (somewhat) regular event to make new friends arranged by the Yes Theory Fam.
 
 The concept of The Buddy Project is simple, you sign up, get connected with a stranger who also signs up. Each of you will get your own set of 15 questions each, you take turns asking the questions to each other, but both of you will answer them. Now you know each other so well that you have become buddies. 
 
@@ -57,4 +58,9 @@ It is as simple as it can be. Just press the "Sign up"-Button and you’ll be on
 `,
     components: [components],
   });
+
+  const bpCommandId = eventDistribution.getIdForCommandName("buddy-project");
+  await channel.send(`**Who is my buddy?**
+
+When getting matched, YesBot will send you a DM containing a ping to your buddy. Due to some odd Discord quirks this might just show up as a bunch of symbols and numbers. You can try out </buddy-project find-buddy:${bpCommandId}> or </buddy-project rescue:${bpCommandId}> for (hopefully) a better result. You will also find the Discord username and tag at https://yestheory.family/buddyproject.`);
 };
