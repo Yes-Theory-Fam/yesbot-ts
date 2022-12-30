@@ -4,12 +4,7 @@ import {
   DiscordEvent,
   EventLocation,
 } from "../../../event-distribution";
-import {
-  ButtonInteraction,
-  Client,
-  PartialDMChannel,
-  Snowflake,
-} from "discord.js";
+import { ButtonInteraction, Client, Snowflake } from "discord.js";
 import { BuddyProjectService } from "../services/buddy-project.service";
 import { ghostWarningMessageRegex } from "./constants";
 
@@ -24,12 +19,10 @@ export const buddyProjectNotifyNotGhostingButtonId =
 })
 class NotifyNotGhosting extends CommandHandler<DiscordEvent.BUTTON_CLICKED> {
   async handle(interaction: ButtonInteraction): Promise<void> {
-    const { message, user, client } = interaction;
+    const { user, client } = interaction;
 
     const bpService = new BuddyProjectService();
     const entry = await bpService.getBuddy(user.id);
-
-    const dm = message.channel as PartialDMChannel;
 
     await bpService.markAsNotGhosting(user.id);
 
@@ -39,7 +32,7 @@ class NotifyNotGhosting extends CommandHandler<DiscordEvent.BUTTON_CLICKED> {
     }
 
     await this.notifyBuddy(ghostedId, client);
-    await this.notifyGhoster(dm);
+    await this.notifyGhoster(interaction);
   }
 
   async notifyBuddy(buddyId: Snowflake, client: Client) {
@@ -57,9 +50,11 @@ class NotifyNotGhosting extends CommandHandler<DiscordEvent.BUTTON_CLICKED> {
     );
   }
 
-  async notifyGhoster(channel: PartialDMChannel) {
-    await channel.send(
-      "Glad to see you are still with us! Now don't forget to message your buddy ;)"
-    );
+  async notifyGhoster(interaction: ButtonInteraction) {
+    await interaction.update({
+      content:
+        "Glad to see you are still with us! Now don't forget to message your buddy ;)",
+      components: [],
+    });
   }
 }
