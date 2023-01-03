@@ -44,4 +44,10 @@ export class BuddyProjectService {
 
     return response.setMatchingEnabled;
   }
+
+  async signOut(userId: string): Promise<boolean> {
+    const response = await this.sdk.kick({ userId });
+
+    return response.signOut;
+  }
 }

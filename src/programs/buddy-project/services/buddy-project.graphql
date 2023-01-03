@@ -33,3 +33,7 @@ mutation signUp($userId: String!) {
 mutation setMatchingEnabled($enabled: Boolean!) {
     setMatchingEnabled(enabled: $enabled)
 }
+
+mutation kick($userId: String!) {
+    signOut(userId: $userId)
+}
