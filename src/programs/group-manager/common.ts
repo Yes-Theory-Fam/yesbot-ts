@@ -1,5 +1,5 @@
 import { UserGroup, UserGroupMembersGroupMember } from "@prisma/client";
-import { APIInteractionGuildMember, Message } from "discord.js";
+import { APIInteractionGuildMember, TextBasedChannel } from "discord.js";
 import { createYesBotLogger } from "../../log";
 import prisma from "../../prisma";
 
@@ -10,20 +10,18 @@ export type GroupWithMemberRelationList = UserGroup & {
 };
 
 export const timeRemainingForDeadchat = async (
-  message: Message,
+  channel: TextBasedChannel,
   group: UserGroup
 ) => {
-  const lastTwoMessages = (
-    await message.channel.messages.fetch({ limit: 2 })
-  ).values();
+  const lastTwoMessages = (await channel.messages.fetch({ limit: 1 })).values();
   const lastMessages = [...lastTwoMessages];
 
-  if (lastMessages.length < 2) {
+  if (lastMessages.length < 1) {
     return 0;
   }
 
   const timeDifference =
-    (Date.now() - lastMessages[1].createdTimestamp) / 1000 / 60;
+    (Date.now() - lastMessages[0].createdTimestamp) / 1000 / 60;
 
   return group.deadtime - Math.round(timeDifference);
 };

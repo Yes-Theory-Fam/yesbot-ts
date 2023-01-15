@@ -1,112 +1,106 @@
-import { GroupPingSetting, UserGroup } from "@prisma/client";
-import { Message, TextChannel } from "discord.js";
-import { ChatNames } from "../../../collections/chat-names";
+import { GroupPingSetting } from "@prisma/client";
+import {
+  APIInteractionGuildMember,
+  ApplicationCommandOptionType,
+  ChatInputCommandInteraction,
+} from "discord.js";
 import { isAuthorModerator } from "../../../common/moderator";
-import Tools from "../../../common/tools";
 import {
   Command,
   CommandHandler,
   DiscordEvent,
 } from "../../../event-distribution";
-import { findManyRequestedGroups, timeRemainingForDeadchat } from "../common";
+import { ErrorWithParams } from "../../../event-distribution/error-detail-replacer";
+import { timeRemainingForDeadchat } from "../common";
+import { groupAutocomplete } from "../group-autocomplete";
+import { GroupService } from "../group-service";
+
+enum Errors {
+  CHAT_NOT_DEAD = "CHAT_NOT_DEAD",
+  GROUP_NOT_FOUND = "GROUP_NOT_FOUND",
+  GROUP_ON_COOLDOWN = "GROUP_ON_COOLDOWN",
+  NOT_PINGABLE = "NOT_PINGABLE",
+  ONLY_MOD_PINGABLE = "ONLY_MOD_PINGABLE",
+  ONLY_BOT_PINGABLE = "ONLY_BOT_PINGABLE",
+}
+
+enum ErrorDetails {
+  DEADCHAT_TIME_REMAINING = "DEADCHAT_TIME_REMAINING",
+  GROUP_COOLDOWN = "GROUP_COOLDOWN",
+  REMAINING_COOLDOWN = "REMAINING_COOLDOWN",
+}
 
 @Command({
-  event: DiscordEvent.MESSAGE,
-  trigger: "",
-  categoryNames: ["hobbies", "gaming"],
-  channelNames: [
-    ChatNames.CHAT,
-    ChatNames.CHAT_TOO,
-    ChatNames.FOURTH_CHAT,
-    ChatNames.CHAT_FIVE,
-    ChatNames.VOICE_CHAT,
-    ChatNames.VOICE_CHAT_TWO,
-    ChatNames.SELF_DEVELOPMENT,
-    ChatNames.LEARNING_SPANISH,
-    ChatNames.DAILY_CHALLENGE,
-    ChatNames.YESTHEORY_DISCUSSION,
-    ChatNames.PERMANENT_TESTING,
+  event: DiscordEvent.SLASH_COMMAND,
+  root: "group",
+  subCommand: "ping",
+  description: "Ping a group!",
+  options: [
+    {
+      name: "group",
+      type: ApplicationCommandOptionType.Integer,
+      description: "The group you want to ping",
+      required: true,
+      autocomplete: groupAutocomplete,
+    },
   ],
-  description: "This handler is to ping all users in the group",
+  errors: {
+    [Errors.CHAT_NOT_DEAD]: `Chat is not dead! You can ping this group if there have been no messages in the next {${ErrorDetails.DEADCHAT_TIME_REMAINING}} minutes.`,
+    [Errors.GROUP_ON_COOLDOWN]: `Sorry, this group was already pinged within the last {${ErrorDetails.GROUP_COOLDOWN}} minutes; it's about {${ErrorDetails.REMAINING_COOLDOWN}} minutes left until you can ping it again.`,
+    [Errors.GROUP_NOT_FOUND]: "I couldn't find the group you selected",
+    [Errors.NOT_PINGABLE]: "Sorry! This group is not pingable by members.",
+    [Errors.ONLY_MOD_PINGABLE]:
+      "Sorry! This group is only pingable by moderators.",
+    [Errors.ONLY_BOT_PINGABLE]: "Sorry! This group is only pingable by YesBot.",
+  },
 })
-class PingGroup implements CommandHandler<DiscordEvent.MESSAGE> {
-  async handle(message: Message): Promise<void> {
-    const content = message.content.toLowerCase();
-    if (!content.includes("@group")) return;
+class PingGroup implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
+  async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+    const groupId = interaction.options.getInteger("group")!;
+    const groupService = new GroupService();
 
-    const lines = content.split("\n");
-    const unquoted = lines.filter((line) => !line.startsWith(">")).join("\n");
-    const hasUnquotedGroupPing = unquoted.includes("@group");
+    if (!interaction.channel) return;
 
-    if (!hasUnquotedGroupPing) return;
+    const group = await groupService.getGroupById(groupId);
+    if (!group) throw new Error(Errors.GROUP_NOT_FOUND);
 
-    const groupTriggerStart = content.substring(content.indexOf("@group"));
-    const args = <string[]>groupTriggerStart.split(/\s/g);
-
-    args.shift();
-    const [requestName] = args;
-
-    const groups = await findManyRequestedGroups(requestName);
-    const matchingGroups = groups.filter(
-      (group: UserGroup) =>
-        group.name.toLowerCase() == requestName.toLowerCase()
-    );
-
-    if (matchingGroups.length === 0) {
-      await message.reply("I couldn't find that group.");
-      return;
-    }
-
-    const group = matchingGroups[0];
-    const timeDifference = (Date.now() - group.lastUsed.getTime()) / 1000 / 60;
-    const deadChatTimeRemaining = await timeRemainingForDeadchat(
-      message,
-      group
-    );
-
-    const moderator = isAuthorModerator(message);
+    const moderator = isAuthorModerator(interaction);
     const setting = group.groupPingSetting;
 
     if (setting === GroupPingSetting.MODERATOR && !moderator) {
-      await Tools.handleUserError(
-        message,
-        "Sorry! This group is only pingable by moderators."
-      );
-      return;
+      throw new Error(Errors.ONLY_MOD_PINGABLE);
     }
 
-    if (setting === GroupPingSetting.BOT && !message.author.bot) {
-      await Tools.handleUserError(
-        message,
-        "Sorry! This group is only pingable by YesBot."
-      );
-      return;
+    if (setting === GroupPingSetting.BOT && !interaction.user.bot) {
+      throw new Error(Errors.ONLY_BOT_PINGABLE);
     }
 
     if (setting === GroupPingSetting.OFF) {
-      await Tools.handleUserError(
-        message,
-        "Sorry! This group is not pingable by members."
-      );
-      return;
+      throw new Error(Errors.NOT_PINGABLE);
     }
 
+    const deadChatTimeRemaining = await timeRemainingForDeadchat(
+      interaction.channel,
+      group
+    );
     if (deadChatTimeRemaining > 0) {
-      await Tools.handleUserError(
-        message,
-        `Chat is not dead! You can ping this group if there have been no messages in the next ${deadChatTimeRemaining} minutes.`
-      );
-      return;
+      throw new ErrorWithParams(Errors.CHAT_NOT_DEAD, {
+        [ErrorDetails.DEADCHAT_TIME_REMAINING]: deadChatTimeRemaining,
+      });
     }
 
+    const timeDifference = (Date.now() - group.lastUsed.getTime()) / 1000 / 60;
     if (timeDifference < group.cooldown) {
       const remainingCooldown = group.cooldown - Math.round(timeDifference);
-      await Tools.handleUserError(
-        message,
-        `Sorry, this group was already pinged within the last ${group.cooldown} minutes; it's about ${remainingCooldown} minutes left until you can ping it again.`
-      );
-      return;
+
+      throw new ErrorWithParams(Errors.GROUP_ON_COOLDOWN, {
+        [ErrorDetails.GROUP_COOLDOWN]: group.cooldown,
+        [ErrorDetails.REMAINING_COOLDOWN]: remainingCooldown,
+      });
     }
-    await Tools.forcePingGroup(group.name, message.channel as TextChannel);
+
+    await groupService.pingGroup(group, interaction.channel);
+
+    await interaction.reply({ ephemeral: true, content: "Done ✅" });
   }
 }

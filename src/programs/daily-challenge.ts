@@ -13,6 +13,7 @@ import Tools from "../common/tools";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 import { createYesBotLogger } from "../log";
 import prisma from "../prisma";
+import { GroupService } from "./group-manager/group-service";
 import { TimerService } from "./timer/timer.service";
 
 const dailyChallengeIdentifier = "dailychallenge";
@@ -108,7 +109,10 @@ class PostDailyChallenge implements CommandHandler<DiscordEvent.TIMER> {
     }
 
     await dailyChallengeChannel.send({ embeds: [embed] });
-    await Tools.forcePingGroup("dailychallenge", dailyChallengeChannel);
+
+    const groupService = new GroupService();
+    const group = await groupService.getGroupByName("dailychallenge");
+    if (group) await groupService.pingGroup(group, dailyChallengeChannel);
 
     await startDailyChallengeTimer(dailyChallengeIdentifier);
   }

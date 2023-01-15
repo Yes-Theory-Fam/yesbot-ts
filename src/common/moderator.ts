@@ -5,27 +5,38 @@ import {
   EmbedBuilder,
   PartialGuildMember,
   TextChannel,
+  APIInteractionGuildMember,
+  BaseInteraction,
 } from "discord.js";
+import Tools from "./tools";
 
-export const isAuthorModerator = (message: Message): boolean => {
-  if (message.member?.roles.hoist) {
-    return message.member.roles.hoist.name === process.env.MODERATOR_ROLE_NAME;
-  } else {
-    return false;
+export const isAuthorModerator = (interaction: BaseInteraction): boolean => {
+  const member = interaction.member;
+  const guild = interaction.guild;
+
+  if (!member || !guild) return false;
+
+  const modRoleName = process.env.MODERATOR_ROLE_NAME;
+
+  if (Array.isArray(member.roles)) {
+    const modRole = Tools.getRoleByName(modRoleName, interaction.guild)!;
+    return member.roles.includes(modRole.id);
   }
+
+  return member?.roles.hoist?.name === modRoleName;
 };
 
 export const hasRole = (
   member: GuildMember | PartialGuildMember,
   roleName: string
 ): boolean => {
-  return !!member.roles.cache.find((r) => r.name === roleName);
+  return member.roles.cache.some((r) => r.name === roleName);
 };
 
 export const isRegistered = (
   member: GuildMember | PartialGuildMember
 ): boolean => {
-  return !!member.roles.cache.find(
+  return member.roles.cache.some(
     (role) => role.id === process.env.MEMBER_ROLE_ID
   );
 };

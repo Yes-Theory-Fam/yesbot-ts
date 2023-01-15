@@ -20,6 +20,7 @@ const commandMap: Record<string, string> = {
   "!video": "video",
   "!voice": "voice",
   "@someone": "someone",
+  "@group": "group ping",
 };
 
 export const legacyCommandHandler = async (message: Message) => {

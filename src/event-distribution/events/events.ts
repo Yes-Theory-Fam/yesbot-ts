@@ -252,8 +252,8 @@ export const extractEventInfo: ExtractInfoFunction<DiscordEvent> = (
   return Array.isArray(infos) ? infos : [infos];
 };
 
-export const rejectWithMessage = async (
-  message: string,
+export const rejectWithError = async (
+  error: Error,
   event: DiscordEvent,
   ...args: Parameters<HandlerFunction<DiscordEvent>>
 ): Promise<unknown> => {
@@ -263,8 +263,9 @@ export const rejectWithMessage = async (
     case DiscordEvent.MESSAGE:
       const messageArg = args[0] as Message;
       detailedMessage = ErrorDetailReplacer.replaceErrorDetails(
-        message,
-        messageArg.guild
+        error.message,
+        messageArg.guild,
+        error
       );
       return await Tools.handleUserError(messageArg, detailedMessage);
     case DiscordEvent.SLASH_COMMAND:
@@ -272,8 +273,9 @@ export const rejectWithMessage = async (
       const interactionArg = args[0] as RepliableInteraction;
 
       detailedMessage = ErrorDetailReplacer.replaceErrorDetails(
-        message,
-        interactionArg.guild
+        error.message,
+        interactionArg.guild,
+        error
       );
 
       if (interactionArg.deferred) {
@@ -288,7 +290,7 @@ export const rejectWithMessage = async (
       });
     default:
       logger.error(
-        `Tried to reject event ${event} with message: ${message} but rejection isn't implemented for this event.`
+        `Tried to reject event ${event} with message: ${error.message} but rejection isn't implemented for this event.`
       );
   }
 };

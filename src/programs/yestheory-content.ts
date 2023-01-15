@@ -2,6 +2,7 @@ import Discord, { Colors, Message, TextChannel } from "discord.js";
 import { ChatNames } from "../collections/chat-names";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 import Tools from "../common/tools";
+import { GroupService } from "./group-manager/group-service";
 
 @Command({
   event: DiscordEvent.MESSAGE,
@@ -23,6 +24,9 @@ class YesTheoryUploadedPing implements CommandHandler<DiscordEvent.MESSAGE> {
         `Yes Theory posted a new video! Go check it out in ${message.channel.toString()} and talk about it here`
       );
     await channelDiscussion.send({ embeds: [embed] });
-    await Tools.forcePingGroup("YesTheoryUploads", channelDiscussion);
+
+    const groupService = new GroupService();
+    const group = await groupService.getGroupByName("YesTheoryUploads");
+    if (group) await groupService.pingGroup(group, channelDiscussion);
   }
 }

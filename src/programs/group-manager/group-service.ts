@@ -1,4 +1,6 @@
-import { Snowflake } from "discord.js";
+import { UserGroup } from "@prisma/client";
+import { Snowflake, TextBasedChannel, userMention } from "discord.js";
+import Tools from "../../common/tools";
 import prisma from "../../prisma";
 
 export enum GroupServiceErrors {
@@ -8,8 +10,7 @@ export enum GroupServiceErrors {
 
 export class GroupService {
   private async getGroupMembership(groupId: number, userId: Snowflake) {
-    return await prisma.userGroupMembersGroupMember.findUnique({
-      rejectOnNotFound: false,
+    return prisma.userGroupMembersGroupMember.findUnique({
       where: {
         userGroupId_groupMemberId: {
           userGroupId: groupId,
@@ -20,11 +21,17 @@ export class GroupService {
   }
 
   public async getGroupById(id: number) {
-    return await prisma.userGroup.findUnique({ where: { id } });
+    return prisma.userGroup.findUnique({ where: { id } });
+  }
+
+  public async getGroupByName(name: string) {
+    return prisma.userGroup.findFirst({
+      where: { name: { equals: name, mode: "insensitive" } },
+    });
   }
 
   public async getGroupWithMembers(id: number) {
-    return await prisma.userGroup.findUnique({
+    return prisma.userGroup.findUnique({
       where: { id },
       include: { userGroupMembersGroupMembers: true },
     });
@@ -53,6 +60,27 @@ export class GroupService {
           groupMemberId: userId,
         },
       },
+    });
+  }
+
+  async pingGroup(group: UserGroup, channel: TextBasedChannel) {
+    const memberships = await prisma.userGroupMembersGroupMember.findMany({
+      where: { userGroupId: group.id },
+      select: { groupMemberId: true },
+    });
+
+    const userMentions = memberships
+      .map((m) => m.groupMemberId)
+      .map(userMention);
+
+    const message = `**@${group.name}**: ${userMentions.join(", ")}`;
+    const splits = Tools.splitMessage(message, { char: "," });
+
+    for (const split of splits) await channel.send(split);
+
+    await prisma.userGroup.update({
+      data: { lastUsed: new Date() },
+      where: { id: group.id },
     });
   }
 }

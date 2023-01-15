@@ -2,13 +2,14 @@ import { AutocompleteInteraction, Interaction, Snowflake } from "discord.js";
 import glob from "glob";
 import path from "path";
 import { createYesBotLogger } from "../log";
+import { ErrorWithParams } from "./error-detail-replacer";
 import {
   addEventHandler,
   EventHandlerOptions,
   extractEventInfo,
   HandlerFunction,
   isMessageRelated,
-  rejectWithMessage,
+  rejectWithError,
 } from "./events/events";
 import { registerSlashCommands } from "./events/slash-commands";
 import { getIocName } from "./helper";
@@ -177,9 +178,14 @@ export class EventDistribution {
         await instance.handle(...args);
       } catch (e) {
         const reason = e instanceof Error ? e.message : e + "";
+        const hasParams = e instanceof ErrorWithParams;
+
         if (errors && errors[reason]) {
           const text = errors[reason];
-          await rejectWithMessage(text, event, ...args);
+          const error = hasParams
+            ? new ErrorWithParams(text, e.params)
+            : new Error(reason);
+          await rejectWithError(error, event, ...args);
         } else {
           logger.error(`Error running handler ${getIocName(ioc)}: `, e);
         }
@@ -198,7 +204,7 @@ export class EventDistribution {
       if (!errors || !errors[reason]) continue;
 
       const text = errors[reason];
-      await rejectWithMessage(text, event, ...args);
+      await rejectWithError(new Error(text), event, ...args);
 
       completedIocs.push(ioc);
     }
