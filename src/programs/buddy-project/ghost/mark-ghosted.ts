@@ -1,10 +1,4 @@
 import {
-  Command,
-  CommandHandler,
-  DiscordEvent,
-} from "../../../event-distribution";
-import { ChatNames } from "../../../collections/chat-names";
-import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonInteraction,
@@ -12,13 +6,19 @@ import {
   GuildMember,
   Snowflake,
 } from "discord.js";
+import { MarkGhostedError } from "../../../__generated__/types";
+import { ChatNames } from "../../../collections/chat-names";
+import {
+  Command,
+  CommandHandler,
+  DiscordEvent,
+} from "../../../event-distribution";
 import { BuddyProjectError, commonMessages } from "../errors";
 import { BuddyProjectService } from "../services/buddy-project.service";
 import {
   ghostedRematchDifferenceHours,
   matchedGhostedDifferenceHours,
 } from "./constants";
-import { MarkGhostedError } from "../../../__generated__/types";
 import { buddyProjectNotifyNotGhostingButtonId } from "./notify-not-ghosting";
 
 export const buddyProjectMarkGhostedButtonId = "buddy-project-mark-ghosted";
@@ -32,6 +32,7 @@ export const buddyProjectMarkGhostedButtonId = "buddy-project-mark-ghosted";
       "You already let me know you were ghosted! I have reached out to your buddy when you did and if I don't hear back from them in a few days, you will be rematched, no worries!",
     [MarkGhostedError.BuddyMarkedAlready]: `Heh, that's a funny one! Your buddy let me know *you* ghosted *them*! There should be a message in our DMs up here somewhere about that. If you are having trouble contacting your buddy, have a look at #${ChatNames.BUDDY_PROJECT_INFO} or use |/buddy-project rescue|.`,
     [MarkGhostedError.WaitedTooLittle]: `It's not been ${matchedGhostedDifferenceHours} hours since you got were matched! Give your buddy some time to respond and if they don't, come back here once ${matchedGhostedDifferenceHours} hours have passed since matching!`,
+    [MarkGhostedError.MarkedTooOften]: `Hey, it seems like you are having bigger troubles connecting with your buddy. Please contact a Support member for assistance!`,
   },
 })
 class MarkGhostedReaction extends CommandHandler<DiscordEvent.BUTTON_CLICKED> {
@@ -59,19 +60,18 @@ class MarkGhostedReaction extends CommandHandler<DiscordEvent.BUTTON_CLICKED> {
     if (success) return buddyId;
 
     switch (error) {
-      case MarkGhostedError.AlreadyMarked:
-      case MarkGhostedError.BuddyMarkedAlready:
-      case MarkGhostedError.WaitedTooLittle:
-        throw new Error(error);
       case MarkGhostedError.NotMatched:
         throw new Error(BuddyProjectError.NOT_MATCHED);
       case MarkGhostedError.NotSignedUp:
         throw new Error(BuddyProjectError.NOT_SIGNED_UP);
+      default:
+        throw new Error(error ?? undefined);
     }
   }
 
   async contactBuddy(buddyMember: GuildMember, userId: Snowflake) {
     const dm = await buddyMember.createDM();
+
     const button = new ButtonBuilder({
       style: ButtonStyle.Success,
       emoji: "✅",
@@ -86,7 +86,7 @@ class MarkGhostedReaction extends CommandHandler<DiscordEvent.BUTTON_CLICKED> {
     await dm.send({
       content: `**Buddy Project Ghosting**
 
-Hey there, your buddy told me they couldn't reach you through DMs. If you are around on Discord, click the ✅ below to prevent getting removed from the Buddy Project and don't forget to reach out to <@${userId}>`,
+Hey there, your buddy told me they couldn't reach you through DMs. If you are around on Discord, click the button below to prevent getting removed from the Buddy Project and don't forget to reach out to <@${userId}>`,
       components: [components],
     });
   }
