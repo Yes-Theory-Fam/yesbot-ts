@@ -47,6 +47,7 @@ bot:
   map:
     link:
     userId:
+  ytfFrontendUrl:
   ytfApiUrl:
 
   secret:

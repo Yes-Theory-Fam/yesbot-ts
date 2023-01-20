@@ -43,6 +43,8 @@ spec:
             - name: MAP_ADD_DM_USER_ID
               value: "{{ .Values.bot.map.userId }}"
 
+            - name: YTF_FRONTEND_URL
+              value: {{ .Values.bot.ytfApiUrl }}
             - name: YTF_GRAPHQL_ENDPOINT
               value: "{{ .Values.bot.ytfApiUrl }}"
 

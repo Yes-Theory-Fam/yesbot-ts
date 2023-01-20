@@ -62,5 +62,5 @@ It is as simple as it can be. Just press the "Sign up"-Button and you’ll be on
   const bpCommandId = eventDistribution.getIdForCommandName("buddy-project");
   await channel.send(`**Who is my buddy?**
 
-When getting matched, YesBot will send you a DM containing a ping to your buddy. Due to some odd Discord quirks this might just show up as a bunch of symbols and numbers. You can try out </buddy-project find-buddy:${bpCommandId}> or </buddy-project rescue:${bpCommandId}> for (hopefully) a better result. You will also find the Discord username and tag at https://yestheory.family/buddyproject.`);
+When getting matched, YesBot will send you a DM containing a ping to your buddy. Due to some odd Discord quirks this might just show up as a bunch of symbols and numbers. You can try out </buddy-project find-buddy:${bpCommandId}> or </buddy-project rescue:${bpCommandId}> for (hopefully) a better result. You will also find the Discord username and tag at ${process.env.YTF_FRONTEND_URL}/buddyproject.`);
 };
