@@ -31,7 +31,8 @@ export const buddyProjectMarkGhostedButtonId = "buddy-project-mark-ghosted";
     [MarkGhostedError.AlreadyMarked]:
       "You already let me know you were ghosted! I have reached out to your buddy when you did and if I don't hear back from them in a few days, you will be rematched, no worries!",
     [MarkGhostedError.BuddyMarkedAlready]: `Heh, that's a funny one! Your buddy let me know *you* ghosted *them*! There should be a message in our DMs up here somewhere about that. If you are having trouble contacting your buddy, have a look at #${ChatNames.BUDDY_PROJECT_INFO} or use |/buddy-project rescue|.`,
-    [MarkGhostedError.WaitedTooLittle]: `It's not been ${matchedGhostedDifferenceHours} hours since you got were matched! Give your buddy some time to respond and if they don't, come back here once ${matchedGhostedDifferenceHours} hours have passed since matching!`,
+    [MarkGhostedError.WaitedTooLittleAfterMatch]: `It's not been ${matchedGhostedDifferenceHours} hours since you got were matched! Give your buddy some time to respond and if they don't, come back here once ${matchedGhostedDifferenceHours} hours have passed since matching!`,
+    [MarkGhostedError.WaitedTooLittleAfterGhost]: `It's not been ${matchedGhostedDifferenceHours} hours since your buddy confirmed they were not ghosting you! Give your buddy some time to respond and if they don't, come back here once ${matchedGhostedDifferenceHours} hours have passed after I told you your buddy was there!`,
     [MarkGhostedError.MarkedTooOften]: `Hey, it seems like you are having bigger troubles connecting with your buddy. Please contact a Support member for assistance!`,
   },
 })
