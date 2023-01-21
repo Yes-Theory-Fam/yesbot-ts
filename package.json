@@ -34,7 +34,7 @@
     "discord.js": "14.7.1",
     "glob": "8.1.0",
     "graphql": "15.8.0",
-    "graphql-request": "4.3.0",
+    "graphql-request": "5.1.0",
     "node-cron": "3.0.2",
     "path": "0.12.7",
     "reflect-metadata": "0.1.13",
