@@ -888,12 +888,12 @@
     ts-node "^9"
     tslib "^2"
 
-"@graphql-codegen/add@^3.2.0":
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/@graphql-codegen/add/-/add-3.2.0.tgz#10ce9b13290ff34d29826731e735779618cd0fde"
-  integrity sha512-8hyr5XvTDGnpiT4nH2yH8PP4SWtUEIUdkFaZbkpkFkU0Ud9dplvSviOCdxdArffZ1FHy0XYLTMa2it+UJOtszg==
+"@graphql-codegen/add@^3.2.1":
+  version "3.2.3"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/add/-/add-3.2.3.tgz#f1ecee085987e7c21841edc4b1fd48877c663e1a"
+  integrity sha512-sQOnWpMko4JLeykwyjFTxnhqjd/3NOG2OyMuvK76Wnnwh8DRrNf2VEs2kmSvLl7MndMlOj7Kh5U154dVcvhmKQ==
   dependencies:
-    "@graphql-codegen/plugin-helpers" "^2.5.0"
+    "@graphql-codegen/plugin-helpers" "^3.1.1"
     tslib "~2.4.0"
 
 "@graphql-codegen/cli@^2.8.0":
@@ -942,14 +942,14 @@
     "@graphql-tools/utils" "^8.8.0"
     tslib "~2.4.0"
 
-"@graphql-codegen/near-operation-file-preset@^2.3.1":
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/@graphql-codegen/near-operation-file-preset/-/near-operation-file-preset-2.3.1.tgz#fe01cb460b763e92834a92cea1bfeece667232ea"
-  integrity sha512-7XVDA+oxDjV1l6Kpd+fBh5uBR+9K/dfPd+VOZyzfc5CmorJ85NR74+MS5IzFr4ymoMLt1G4kOSAGT1jNO9KfnQ==
+"@graphql-codegen/near-operation-file-preset@^2.5.0":
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/near-operation-file-preset/-/near-operation-file-preset-2.5.0.tgz#987d9bb8d0101e944b9afc406b77d098a4c1e978"
+  integrity sha512-S9PNJP5tTkUWBQ6inbviOsTREzsMxYVqJGrtPcIdMWkKLZAAItAfAb60klB1T64vt6Oru+nUf8IYUNrchJ8MYg==
   dependencies:
-    "@graphql-codegen/add" "^3.2.0"
-    "@graphql-codegen/plugin-helpers" "^2.5.0"
-    "@graphql-codegen/visitor-plugin-common" "2.11.1"
+    "@graphql-codegen/add" "^3.2.1"
+    "@graphql-codegen/plugin-helpers" "^2.7.2"
+    "@graphql-codegen/visitor-plugin-common" "2.13.1"
     "@graphql-tools/utils" "^8.8.0"
     parse-filepath "^1.0.2"
     tslib "~2.4.0"
@@ -973,6 +973,18 @@
   dependencies:
     "@graphql-tools/utils" "^8.8.0"
     change-case-all "1.0.14"
+    common-tags "1.8.2"
+    import-from "4.0.0"
+    lodash "~4.17.0"
+    tslib "~2.4.0"
+
+"@graphql-codegen/plugin-helpers@^3.1.1":
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/plugin-helpers/-/plugin-helpers-3.1.2.tgz#69a2e91178f478ea6849846ade0a59a844d34389"
+  integrity sha512-emOQiHyIliVOIjKVKdsI5MXj312zmRDwmHpyUTZMjfpvxq/UVAHUJIVdVf+lnjjrI+LXBTgMlTWTgHQfmICxjg==
+  dependencies:
+    "@graphql-tools/utils" "^9.0.0"
+    change-case-all "1.0.15"
     common-tags "1.8.2"
     import-from "4.0.0"
     lodash "~4.17.0"
@@ -1284,6 +1296,13 @@
   version "8.8.0"
   resolved "https://registry.yarnpkg.com/@graphql-tools/utils/-/utils-8.8.0.tgz#8332ff80a1da9204ccf514750dd6f5c5cccf17dc"
   integrity sha512-KJrtx05uSM/cPYFdTnGAS1doL5bftJLAiFCDMZ8Vkifztz3BFn3gpFiy/o4wDtM8s39G46mxmt2Km/RmeltfGw==
+  dependencies:
+    tslib "^2.4.0"
+
+"@graphql-tools/utils@^9.0.0":
+  version "9.1.4"
+  resolved "https://registry.yarnpkg.com/@graphql-tools/utils/-/utils-9.1.4.tgz#2c9e0aefc9655dd73247667befe3c850ec014f3f"
+  integrity sha512-hgIeLt95h9nQgQuzbbdhuZmh+8WV7RZ/6GbTj6t3IU4Zd2zs9yYJ2jgW/krO587GMOY8zCwrjNOMzD40u3l7Vg==
   dependencies:
     tslib "^2.4.0"
 
@@ -2252,6 +2271,22 @@ change-case-all@1.0.14:
   version "1.0.14"
   resolved "https://registry.yarnpkg.com/change-case-all/-/change-case-all-1.0.14.tgz#bac04da08ad143278d0ac3dda7eccd39280bfba1"
   integrity sha512-CWVm2uT7dmSHdO/z1CXT/n47mWonyypzBbuCy5tN7uMg22BsfkhwT6oHmFCAk+gL1LOOxhdbB9SZz3J1KTY3gA==
+  dependencies:
+    change-case "^4.1.2"
+    is-lower-case "^2.0.2"
+    is-upper-case "^2.0.2"
+    lower-case "^2.0.2"
+    lower-case-first "^2.0.2"
+    sponge-case "^1.0.1"
+    swap-case "^2.0.2"
+    title-case "^3.0.3"
+    upper-case "^2.0.2"
+    upper-case-first "^2.0.2"
+
+change-case-all@1.0.15:
+  version "1.0.15"
+  resolved "https://registry.yarnpkg.com/change-case-all/-/change-case-all-1.0.15.tgz#de29393167fc101d646cd76b0ef23e27d09756ad"
+  integrity sha512-3+GIFhk3sNuvFAJKU46o26OdzudQlPNBCu1ZQi3cMeMHhty1bhDxu2WrEilVNYaGvqUtR1VSigFcJOiS13dRhQ==
   dependencies:
     change-case "^4.1.2"
     is-lower-case "^2.0.2"
