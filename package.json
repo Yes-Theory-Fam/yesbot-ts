@@ -46,7 +46,7 @@
     "@atmina/local-typescript-operations": "0.6.1",
     "@atmina/only-enum-types": "^0.5.0",
     "@graphql-codegen/cli": "^2.8.0",
-    "@graphql-codegen/near-operation-file-preset": "^2.3.1",
+    "@graphql-codegen/near-operation-file-preset": "^2.5.0",
     "@graphql-codegen/typescript-graphql-request": "^4.5.1",
     "@types/countries-and-timezones": "3.2.2",
     "@types/glob": "8.0.1",
