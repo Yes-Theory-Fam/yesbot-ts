@@ -142,6 +142,7 @@ exports[`Messages should add data to the tree 3`] = `
 exports[`Messages should extract messages from direct message 1`] = `
 [
   {
+    "content": "this is the message content",
     "handlerKeys": [
       "9007199254740991",
       "this",
@@ -171,6 +172,7 @@ exports[`Messages should extract messages from direct message 1`] = `
 exports[`Messages should extract messages from public channel 1`] = `
 [
   {
+    "content": "this is the message content",
     "handlerKeys": [
       "9007199254740991",
       "this",

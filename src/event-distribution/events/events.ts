@@ -5,12 +5,14 @@ import {
   Client,
   Message,
   MessageReaction,
+  RepliableInteraction,
   ThreadChannel,
   User,
   VoiceState,
 } from "discord.js";
 import Tools from "../../common/tools";
 import { createYesBotLogger } from "../../log";
+import { ErrorDetailReplacer } from "../error-detail-replacer";
 import {
   AddEventHandlerFunction,
   BaseOptions,
@@ -255,14 +257,41 @@ export const rejectWithMessage = async (
   event: DiscordEvent,
   ...args: Parameters<HandlerFunction<DiscordEvent>>
 ): Promise<unknown> => {
+  let detailedMessage: string;
+
   switch (event) {
     case DiscordEvent.MESSAGE:
       const messageArg = args[0] as Message;
-      const channelResolvedMessage = Tools.resolveChannelNamesInString(
+      detailedMessage = ErrorDetailReplacer.replaceErrorDetails(
         message,
         messageArg.guild
       );
-      return await Tools.handleUserError(messageArg, channelResolvedMessage);
+      return await Tools.handleUserError(messageArg, detailedMessage);
+    case DiscordEvent.REACTION_ADD:
+      const userArg = args[1] as User;
+      const reaction = args[0] as MessageReaction;
+      return await reaction.users
+        .remove(userArg)
+        .then(() => userArg.createDM())
+        .then((dm) => dm.send(message));
+    case DiscordEvent.SLASH_COMMAND:
+    case DiscordEvent.BUTTON_CLICKED:
+      const interactionArg = args[0] as RepliableInteraction;
+      detailedMessage = ErrorDetailReplacer.replaceErrorDetails(
+        message,
+        interactionArg.guild
+      );
+
+      if (interactionArg.deferred) {
+        return await interactionArg.editReply({
+          content: detailedMessage,
+        });
+      }
+
+      return await interactionArg.reply({
+        content: detailedMessage,
+        ephemeral: true,
+      });
     default:
       logger.error(
         `Tried to reject event ${event} with message: ${message} but rejection isn't implemented for this event.`

@@ -20,7 +20,7 @@ export class CleanupActivity {
     return CleanupActivity.cleanupActivityInstance;
   }
 
-  public async findOldActivities() {
+  public async cleanOldActivities() {
     const olderThen = new Date(Date.now() - this.delay);
     return await prisma.activity
       .findMany({

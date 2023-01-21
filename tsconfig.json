@@ -7,7 +7,8 @@
     "forceConsistentCasingInFileNames": true,
     "lib": [
       "ES2020",
-      "DOM"
+      // More or less required by graphql-request; otherwise typing error missing WebSocket
+      "dom"
     ],
     "module": "commonjs",
     "outDir": "build",
@@ -19,6 +20,7 @@
     "node_modules"
   ],
   "include": [
+    "./environment.d.ts",
     "./index.d.ts",
     "./environment.d.ts",
     "./src",

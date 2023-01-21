@@ -14,8 +14,10 @@ jobs:
     strategy:
       matrix:
         node-version: [ 16.19 ]
+    env:
+      YTF_GRAPHQL_ENDPOINT: https://staging.yestheory.family/_yesbot-schema
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -31,4 +33,5 @@ jobs:
       - name: install and compile
         run: |
           yarn install --frozen-lockfile
+          yarn codegen
           yarn tsc --noEmit

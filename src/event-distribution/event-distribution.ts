@@ -1,4 +1,4 @@
-import { AutocompleteInteraction, Interaction } from "discord.js";
+import { AutocompleteInteraction, Interaction, Snowflake } from "discord.js";
 import glob from "glob";
 import path from "path";
 import { createYesBotLogger } from "../log";
@@ -63,18 +63,25 @@ export class EventDistribution {
     [DiscordEvent.MEMBER_JOIN]: {},
   };
 
+  private slashCommandNameIdMap: Record<string, Snowflake> = {};
+
   private infoToFilterResults<T extends DiscordEvent>(
     info: HandlerInfo,
     event: T
   ): FilterResult<T>[] {
-    const { handlerKeys, isDirectMessage, member } = info;
+    const { handlerKeys, isDirectMessage, member, content = null } = info;
 
     const roleNames = member?.roles.cache.map((r) => r.name) ?? [];
     const eventHandlers = this.getHandlers<T>(
       this.handlers[event] as StringIndexedHIOCTreeNode<T>,
       handlerKeys
     );
-    return this.filterHandlers<T>(eventHandlers, isDirectMessage, roleNames);
+    return this.filterHandlers<T>(
+      eventHandlers,
+      isDirectMessage,
+      roleNames,
+      content
+    );
   }
 
   async handleInteraction(interaction: Interaction) {
@@ -169,12 +176,12 @@ export class EventDistribution {
       try {
         await instance.handle(...args);
       } catch (e) {
-        logger.error(`Error running handler ${getIocName(ioc)}: `, e);
         const reason = e instanceof Error ? e.message : e + "";
-
         if (errors && errors[reason]) {
           const text = errors[reason];
           await rejectWithMessage(text, event, ...args);
+        } else {
+          logger.error(`Error running handler ${getIocName(ioc)}: `, e);
         }
       }
 
@@ -242,9 +249,12 @@ export class EventDistribution {
     });
 
     // Slash Commands and related stuff
-    this.handlers[DiscordEvent.SLASH_COMMAND] = await registerSlashCommands(
+    const { tree, nameIdMap } = await registerSlashCommands(
       this.handlers[DiscordEvent.SLASH_COMMAND]
     );
+
+    this.slashCommandNameIdMap = nameIdMap ?? {};
+    this.handlers[DiscordEvent.SLASH_COMMAND] = tree;
   }
 
   private static isHandlerForLocation<T extends DiscordEvent>(
@@ -279,10 +289,22 @@ export class EventDistribution {
     );
   }
 
+  private static matchesContentRegex<T extends DiscordEvent>(
+    handler: HIOC<T>,
+    content: string | null
+  ): boolean {
+    if (!isMessageRelated(handler.options) || !handler.options.contentRegex)
+      return true;
+    if (content === null) return false;
+
+    return !!content.match(handler.options.contentRegex);
+  }
+
   private filterHandlers<T extends DiscordEvent>(
     handlers: HIOC<T>[],
     isDirectMessage: boolean,
-    roleNames: string[]
+    roleNames: string[],
+    content: string | null
   ): FilterResult<T>[] {
     return handlers
       .map<FilterResult<T>>((eh) => {
@@ -312,6 +334,22 @@ export class EventDistribution {
               accepted: false,
               reason: HandlerRejectedReason.MISSING_ROLE,
             };
+      })
+      .map<FilterResult<T>>((r) => {
+        if (!r.accepted) return r;
+
+        const matchesContentRegex = EventDistribution.matchesContentRegex(
+          r.handler,
+          content
+        );
+
+        return matchesContentRegex
+          ? r
+          : {
+              ...r,
+              accepted: false,
+              reason: HandlerRejectedReason.DOESNT_MATCH_REGEX,
+            };
       });
   }
 
@@ -333,5 +371,9 @@ export class EventDistribution {
     handlers.push(...this.getHandlers(handlerTree[currentKey], restKeys));
 
     return handlers;
+  }
+
+  public getIdForCommandName(commandName: string): Snowflake {
+    return this.slashCommandNameIdMap[commandName];
   }
 }

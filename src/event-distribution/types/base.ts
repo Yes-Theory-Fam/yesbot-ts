@@ -27,6 +27,7 @@ export const enum EventLocation {
 export const enum HandlerRejectedReason {
   MISSING_ROLE = "MISSING_ROLE",
   WRONG_LOCATION = "WRONG_LOCATION",
+  DOESNT_MATCH_REGEX = "DOESNT_MATCH_REGEX",
 }
 
 export interface BaseOptions {
@@ -38,8 +39,9 @@ export interface BaseOptions {
 export interface MessageRelatedOptions extends BaseOptions {
   allowedRoles?: string[];
   channelNames?: string[];
-  categoryNames?: string[];
+  parentNames?: string[];
   location?: EventLocation;
+  contentRegex?: string | RegExp;
 }
 
 type VoidFunctionWithArgs<T> = T extends any[]
@@ -56,6 +58,7 @@ export interface HandlerInfo {
   handlerKeys: string[];
   member?: GuildMember | PartialGuildMember | null;
   isDirectMessage: boolean;
+  content?: string | null;
 }
 
 export type ExtractInfoFunction<T extends DiscordEvent> = (
