@@ -154,19 +154,6 @@ model Release {
   @@map(name: "release")
 }
 
-model TimedOutUsers {
-  userId String @id @map("user_id") @db.VarChar
-
-  @@map(name: "timed_out_users")
-}
-
-model UsersOnBreak {
-  userId  String   @id @map("user_id") @db.VarChar
-  addedAt DateTime @default(now()) @map("created_at")
-
-  @@map(name: "users_on_break")
-}
-
 // The next section is for the curreny system.
 // All following models are core related to this.
 
