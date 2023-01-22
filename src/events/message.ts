@@ -1,24 +1,41 @@
-import { ChannelType, Message, TextChannel } from "discord.js";
-import { VoiceOnDemand } from "../programs";
+import { Message } from "discord.js";
+import Tools from "../common/tools";
+import { ErrorDetailReplacer } from "../event-distribution/error-detail-replacer";
 
-const message = async (msg: Message) => {
-  if (msg.channel.type === ChannelType.DM && !msg.author.bot) {
-    return;
-  } else {
-    await routeMessage(msg);
-  }
+const commandMap: Record<string, string> = {
+  "!channelToggle": "channel-toggle",
+  "!group": "group",
+  "!message": "message",
+  "!role": "role",
+  "!yescoin-status": "yescoin status",
+  "!translate": "translate",
+  "!birthday": "birthday add",
+  "!challenge": "challenge",
+  "!deadchat": "deadchat",
+  "!delete": "delete",
+  "!map": "map view",
+  "!mapadd": "map add",
+  "!profile": "profile",
+  "!resources": "resources",
+  "!video": "video",
+  "!voice": "voice",
+  "@someone": "someone",
+  "@group": "group ping",
 };
 
-const routeMessage = async (message: Message) => {
-  const words = message.content.toLowerCase().split(/\s+/);
-  const channel = <TextChannel>message.channel;
-  const firstWord = words[0];
+export const legacyCommandHandler = async (message: Message) => {
+  const firstWord = message.content.split(" ")[0];
+  const newCommand = commandMap[firstWord];
 
-  switch (channel.name) {
-    case "bot-commands":
-      if (firstWord === "!voice") await VoiceOnDemand(message);
-      break;
-  }
+  if (!newCommand) return;
+
+  const commandReference = ErrorDetailReplacer.replaceErrorDetails(
+    `|/${newCommand}|`,
+    message.guild
+  );
+
+  await Tools.handleUserError(
+    message,
+    `Hey there, it seems you have used one of the commands that have been converted to slash commands. You can use the new command ${commandReference} instead`
+  );
 };
-
-export default message;

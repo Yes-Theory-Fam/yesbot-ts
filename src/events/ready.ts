@@ -1,6 +1,5 @@
 import { Client, Guild, Message, TextChannel } from "discord.js";
 import { createYesBotLogger } from "../log";
-import { VoiceOnDemandTools } from "../programs";
 
 const developerChannelName = "bot-development";
 
@@ -22,8 +21,6 @@ const ready = async (bot: Client) => {
   }
 
   if (process.env.OUTPUT_CHANNEL_ID) {
-    await VoiceOnDemandTools.voiceOnDemandReady(bot);
-
     const messages = await sendOnlineMessage(guild);
 
     await guild.members.fetch({

@@ -104,10 +104,6 @@ class Tools {
     }
   }
 
-  static async getRoleById(roleId: Snowflake, guild: Guild) {
-    return guild.roles.resolve(roleId);
-  }
-
   static getRoleByName(roleName: string, guild: Guild) {
     return guild.roles.cache.find(
       (r) => r.name.toLowerCase() === roleName.toLowerCase()
@@ -424,33 +420,6 @@ class Tools {
     }
 
     return true;
-  }
-
-  static async forcePingGroup(groupName: string, channel: TextChannel) {
-    const requestedGroup = (await findManyRequestedGroups(groupName))[0];
-    const groupPingMessage =
-      `**@${requestedGroup.name}**: ` +
-      requestedGroup.userGroupMembersGroupMembers
-        .map((member) => `<@${member.groupMemberId}>`)
-        .join(", ");
-
-    const pingBatches = Tools.splitMessage(groupPingMessage, { char: "," });
-
-    try {
-      for (const batch of pingBatches) {
-        await channel.send({ content: batch });
-      }
-
-      await prisma.userGroup.update({
-        where: { id: requestedGroup.id },
-        data: { lastUsed: new Date() },
-      });
-    } catch (err) {
-      logger.error(
-        "(forcePing) There was an error force pinging users group: ",
-        err
-      );
-    }
   }
 }
 

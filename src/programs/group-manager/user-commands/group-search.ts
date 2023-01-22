@@ -1,10 +1,9 @@
 import {
-  Message,
+  ApplicationCommandOptionType,
+  ChatInputCommandInteraction,
   EmbedBuilder,
-  MessageReaction,
-  User,
-  EmbedField,
 } from "discord.js";
+import { Paginator } from "../../../common/paginator";
 import {
   Command,
   CommandHandler,
@@ -15,17 +14,30 @@ import {
   GroupWithMemberRelationList,
 } from "../common";
 
+enum Errors {
+  NO_GROUPS_FOUND = "NO_GROUPS_FOUND",
+}
+
 @Command({
-  event: DiscordEvent.MESSAGE,
-  trigger: "!group",
-  subTrigger: "search",
-  channelNames: ["bot-commands", "permanent-testing"],
-  description: "This handler is to search all groups or the specified group",
+  event: DiscordEvent.SLASH_COMMAND,
+  root: "group",
+  subCommand: "search",
+  description: "List groups!",
+  options: [
+    {
+      name: "name",
+      description: "The name of the group",
+      type: ApplicationCommandOptionType.String,
+      required: false,
+    },
+  ],
+  errors: {
+    [Errors.NO_GROUPS_FOUND]: "No matching groups were found.",
+  },
 })
-class SearchGroup implements CommandHandler<DiscordEvent.MESSAGE> {
-  async handle(message: Message): Promise<void> {
-    const words = message.content.split(" ").slice(2);
-    const requestedGroupName = words[0];
+class SearchGroup implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
+  async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+    const requestedGroupName = interaction.options.getString("name") ?? "";
 
     const groupsPerPage = 4;
     const pages: Array<EmbedBuilder> = [];
@@ -41,13 +53,12 @@ class SearchGroup implements CommandHandler<DiscordEvent.MESSAGE> {
     );
 
     if (copy.length === 0) {
-      await message.reply("No matching groups were found.");
-      return;
+      throw new Error(Errors.NO_GROUPS_FOUND);
     }
 
     const pageAmount = Math.ceil(copy.length / groupsPerPage);
 
-    const yesBotAvatarUrl = message.client.user?.avatarURL({
+    const yesBotAvatarUrl = interaction.client.user?.avatarURL({
       size: 256,
       extension: "png",
     });
@@ -83,56 +94,7 @@ class SearchGroup implements CommandHandler<DiscordEvent.MESSAGE> {
       pages.push(embed);
     }
 
-    const flip = async (
-      page: number,
-      shownPageMessage: Message,
-      reaction: MessageReaction
-    ) => {
-      if (page < 0) page = 0;
-      if (page >= pages.length) page = pages.length - 1;
-
-      await shownPageMessage.edit({
-        content: message.author.toString(),
-        embeds: [pages[page]],
-      });
-      await reaction.users.remove(message.author.id);
-      await setupPaging(page, shownPageMessage);
-    };
-
-    const setupPaging = async (currentPage: number, pagedMessage: Message) => {
-      const filter = (reaction: MessageReaction, user: User) => {
-        return (
-          ["⬅️", "➡️"].includes(reaction.emoji.name ?? "") &&
-          user.id === message.author.id
-        );
-      };
-
-      try {
-        const reactions = await pagedMessage.awaitReactions({
-          filter,
-          max: 1,
-          time: 60000,
-          errors: ["time"],
-        });
-        const first = reactions.first();
-        if (first?.emoji.name === "⬅️") {
-          await flip(currentPage - 1, pagedMessage, first);
-        }
-        if (first?.emoji.name === "➡️") {
-          await flip(currentPage + 1, pagedMessage, first);
-        }
-      } catch (error) {}
-    };
-
-    const sentMessagePromise = message.channel.send({ embeds: [pages[0]] });
-    if (pages.length > 1) {
-      sentMessagePromise
-        .then(async (msg) => {
-          await msg.react("⬅️");
-          await msg.react("➡️");
-          return msg;
-        })
-        .then((msg) => setupPaging(0, msg));
-    }
+    const paginator = new Paginator(pages, interaction, "group-search");
+    await paginator.paginate();
   }
 }

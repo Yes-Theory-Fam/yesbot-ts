@@ -1,6 +1,9 @@
-import { Message, TextChannel } from "discord.js";
-import bot from "../..";
-import Tools from "../../common/tools";
+import {
+  ApplicationCommandOptionType,
+  ChannelType,
+  ChatInputCommandInteraction,
+  TextChannel,
+} from "discord.js";
 import {
   Command,
   CommandHandler,
@@ -10,42 +13,62 @@ import { createYesBotLogger } from "../../log";
 
 export const logger = createYesBotLogger("programs", "remote-control");
 
+enum Errors {
+  MESSAGE_NOT_FOUND = "MESSAGE_NOT_FOUND",
+}
+
 @Command({
-  event: DiscordEvent.MESSAGE,
-  trigger: "!message",
-  subTrigger: "reactAdd",
-  allowedRoles: ["Support"],
-  description: "This commands allows you to add reactions to any messages!",
+  event: DiscordEvent.SLASH_COMMAND,
+  root: "remote",
+  subCommand: "add-reaction",
+  description: "Make me react to any message",
+  options: [
+    {
+      name: "emoji",
+      type: ApplicationCommandOptionType.String,
+      description: "The emoji to react with",
+      required: true,
+    },
+    {
+      name: "channel",
+      type: ApplicationCommandOptionType.Channel,
+      channel_types: [ChannelType.GuildText],
+      description: "The channel I can find the message in",
+      required: true,
+    },
+    {
+      name: "message-id",
+      type: ApplicationCommandOptionType.String,
+      description: "The ID of the image you want to me to react to",
+      required: true,
+    },
+  ],
+  errors: {
+    [Errors.MESSAGE_NOT_FOUND]:
+      "I could not find that message. Are you sure the ID is correct?",
+  },
 })
-class AddReactions implements CommandHandler<DiscordEvent.MESSAGE> {
-  async handle(message: Message): Promise<void> {
-    const [, , channelId, messageId, reaction] = message.content.split(" ");
+class AddReactions implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
+  async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+    const emoji = interaction.options.getString("emoji")!;
+    const channel = interaction.options.getChannel("channel")! as TextChannel;
+    const messageId = interaction.options.getString("message-id")!;
 
-    if (!channelId || !messageId || !reaction) {
-      await Tools.handleUserError(
-        message,
-        "Missing channelId or messageId or emoji. Syntax: `!message reactAdd channelId messageId emoji"
-      );
-      return;
-    }
+    const messageRequested = await channel.messages.fetch(messageId);
 
-    const channel = bot.channels.resolve(channelId) as TextChannel;
-    const messageRequested = channel.messages.resolve(messageId);
-
-    if (!channel || !messageRequested) {
-      await Tools.handleUserError(
-        message,
-        "I could not find that channel or message! Please verify the arguments given"
-      );
-      return;
+    if (!messageRequested) {
+      throw new Error(Errors.MESSAGE_NOT_FOUND);
     }
 
     try {
-      await messageRequested.react(reaction);
-      await message.react("👍");
+      await messageRequested.react(emoji);
+      await interaction.reply({ ephemeral: true, content: "Done!" });
     } catch (err) {
       logger.error("Failed to add reaction to message", err);
-      await message.react("👎");
+      await interaction.reply({
+        ephemeral: true,
+        content: "Failed to add the reaction.",
+      });
     }
   }
 }

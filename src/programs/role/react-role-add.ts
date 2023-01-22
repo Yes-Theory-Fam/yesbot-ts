@@ -1,128 +1,126 @@
-import { Channel, Message, EmbedBuilder, TextChannel } from "discord.js";
-import Tools from "../../common/tools";
-import { textLog } from "../../common/moderator";
-import prisma from "../../prisma";
+import {
+  APIRole,
+  ApplicationCommandOptionType,
+  Channel,
+  ChannelType,
+  ChatInputCommandInteraction,
+  EmbedBuilder,
+  Message,
+  Role,
+  TextChannel,
+} from "discord.js";
 import {
   Command,
   CommandHandler,
   DiscordEvent,
 } from "../../event-distribution";
-import bot from "../..";
 import { createYesBotLogger } from "../../log";
+import prisma from "../../prisma";
 
 const logger = createYesBotLogger("programs", "role-add");
 
+enum Errors {
+  UNKNOWN_ERROR = "UNKNOWN_ERROR",
+  MESSAGE_NOT_FOUND = "MESSAGE_NOT_FOUND",
+}
+
 @Command({
-  event: DiscordEvent.MESSAGE,
-  trigger: "!role",
-  subTrigger: "add",
-  allowedRoles: ["Support"],
-  description: "This handler is to add a reaction that can give a role",
+  event: DiscordEvent.SLASH_COMMAND,
+  root: "role",
+  subCommand: "add",
+  description: "Add a reaction-role",
+  options: [
+    {
+      name: "emoji",
+      type: ApplicationCommandOptionType.String,
+      description: "The emoji for the reaction",
+      required: true,
+    },
+    {
+      name: "role",
+      type: ApplicationCommandOptionType.Role,
+      description: "The applied role",
+      required: true,
+    },
+    {
+      name: "channel",
+      type: ApplicationCommandOptionType.Channel,
+      channel_types: [ChannelType.GuildText],
+      description: "The channel I can find the message in",
+      required: true,
+    },
+    {
+      name: "message-id",
+      type: ApplicationCommandOptionType.String,
+      description: "The ID of the message to add the reaction to",
+      required: true,
+    },
+  ],
+  errors: {
+    [Errors.MESSAGE_NOT_FOUND]:
+      "I could not find that message. Are you sure the ID is correct?",
+    [Errors.UNKNOWN_ERROR]: "I could not create that reaction-role.",
+  },
 })
-class AddReactRoleObject implements CommandHandler<DiscordEvent.MESSAGE> {
-  async handle(message: Message): Promise<void> {
-    const [, , reaction, roleId, messageId, channelId] =
-      message.content.split(" ");
+class AddReactRoleObject implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
+  async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+    const emoji = interaction.options.getString("emoji")!;
+    const role = interaction.options.getRole("role")!;
+    const channel = interaction.options.getChannel("channel")! as TextChannel;
+    const messageId = interaction.options.getString("message-id")!;
 
-    if (message.reference?.messageId && reaction && roleId) {
-      const referencedMessageId = message.reference.messageId;
-      const channelId = message.reference.channelId;
-      const channel = bot.channels.resolve(channelId) as TextChannel;
-      const referencedMessage = await channel.messages.fetch(
-        referencedMessageId
-      );
-
-      await addReactRoleObject(
-        message,
-        channel,
-        reaction,
-        roleId,
-        referencedMessage
-      );
-      return;
-    }
-
-    if (!reaction || !roleId || !messageId || !channelId) {
-      await Tools.handleUserError(
-        message,
-        `Incorrect syntax, if using option of replying, please reply to the requested message with only the roleId and reaction, if not replying the messageId and channelId is needed. \`!role add reaction roleId messageId channelId\``
-      );
-      return;
-    }
-
-    if (!message.guild) return;
-
-    const messageDetails = await Tools.getMessageById(
-      messageId,
-      message.guild,
-      channelId
-    );
-
-    if (!messageDetails) return;
-
-    const [requestedMessage, requestedChannel] = messageDetails;
+    const requestedMessage = await channel.messages.fetch(messageId);
+    if (!requestedMessage) throw new Error(Errors.MESSAGE_NOT_FOUND);
 
     await addReactRoleObject(
-      message,
-      requestedChannel,
-      reaction,
-      roleId,
+      interaction,
+      channel,
+      emoji,
+      role,
       requestedMessage
     );
   }
 }
 
 const addReactRoleObject = async (
-  message: Message,
+  interaction: ChatInputCommandInteraction,
   channel: Channel,
-  reaction: string,
-  roleId: string,
+  emoji: string,
+  role: Role | APIRole,
   referencedMessage: Message
 ) => {
-  if (!message.guild) return;
-
-  if (roleId.startsWith("<")) roleId = roleId.substring(3, 21);
-
-  const role = await Tools.getRoleById(roleId, message.guild);
-
-  if (!role) {
-    await Tools.handleUserError(
-      message,
-      `I could not find the requested role please verify all information you put are correct! You can find your message in <#${process.env.OUTPUT_CHANNEL_ID}>.`
-    );
-    await textLog(`<@${message.author.id}>: ${message.toString()}`);
-    return;
-  }
-
   const referencedMessageId = referencedMessage.id;
   const channelId = channel.id;
 
   const reactRoleObject = {
     messageId: referencedMessageId,
     channelId: channelId,
-    roleId: roleId,
-    reaction,
+    roleId: role.id,
+    reaction: emoji,
   };
+
   try {
     await prisma.reactionRole.create({ data: reactRoleObject });
   } catch (err) {
-    await Tools.handleUserError(message, "Failed to create react object");
     logger.error("Failed to create role object: ", err);
-    return;
+    throw new Error(Errors.UNKNOWN_ERROR);
   }
 
-  await referencedMessage.react(reaction);
+  await referencedMessage.react(emoji);
   const successEmbed = new EmbedBuilder()
     .setColor("#ff6063")
     .setTitle("Reaction role successfully added.")
     .setFields([
       { name: "\u200b", value: "\u200b" },
 
-      { name: "Target Message:", value: message.cleanContent, inline: true },
+      {
+        name: "Target Message:",
+        value: referencedMessage.cleanContent,
+        inline: true,
+      },
       { name: "Target Channel:", value: channel.toString(), inline: true },
-      { name: "Necessary Reaction:", value: reaction, inline: true },
+      { name: "Necessary Reaction:", value: emoji, inline: true },
       { name: "Reward Role:", value: role.toString(), inline: true },
     ]);
-  await textLog(successEmbed);
-  await message.delete();
+  await interaction.reply({ ephemeral: true, embeds: [successEmbed] });
 };

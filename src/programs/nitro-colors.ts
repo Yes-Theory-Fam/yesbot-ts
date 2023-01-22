@@ -138,8 +138,8 @@ class NitroColorSelector implements CommandHandler<DiscordEvent.REACTION_ADD> {
     }
   }
 }
-//These will stay exported until the old event handler for reaction-add.ts is no longer used.
-export const memberHasNitroColor = (member: GuildMember) =>
+
+const memberHasNitroColor = (member: GuildMember) =>
   member.roles.cache.some((role) =>
     nitroRolesCache.some((r) => r.id === role.id)
   );

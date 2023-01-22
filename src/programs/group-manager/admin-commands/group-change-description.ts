@@ -1,5 +1,4 @@
 import {
-  APIInteractionGuildMember,
   ApplicationCommandOptionType,
   ChatInputCommandInteraction,
 } from "discord.js";
@@ -21,25 +20,34 @@ enum Errors {
 @Command({
   event: DiscordEvent.SLASH_COMMAND,
   root: "group-mod",
-  subCommand: "delete",
-  description: "Delete a group",
+  subCommand: "change-description",
+  description: "Change a group's description",
   options: [
     {
       name: "group",
       type: ApplicationCommandOptionType.Integer,
       autocomplete: groupAutocomplete,
-      description: "The group to be deleted",
+      description: "The group the description shall be changed of",
+      required: true,
+    },
+    {
+      name: "description",
+      type: ApplicationCommandOptionType.String,
+      description: "The new description for the group",
       required: true,
     },
   ],
   errors: {
-    [Errors.GROUP_NOT_FOUND]: "That group does not exist!",
-    [Errors.UNKNOWN_ERROR]: "Failed to delete group!",
+    [Errors.GROUP_NOT_FOUND]: "That group doesn't exist!",
+    [Errors.UNKNOWN_ERROR]: "Failed to update description!",
   },
 })
-class DeleteGroup implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
+class GroupChangeDescription
+  implements CommandHandler<DiscordEvent.SLASH_COMMAND>
+{
   async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     const groupId = interaction.options.getInteger("group")!;
+    const description = interaction.options.getString("description")!;
 
     const groupService = new GroupService();
     const group = await groupService.getGroupById(groupId);
@@ -48,13 +56,20 @@ class DeleteGroup implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
       throw new Error(Errors.GROUP_NOT_FOUND);
     }
 
+    const previousDescription = group.description;
+
     try {
-      await prisma.userGroup.delete({ where: { id: group.id } });
+      await prisma.userGroup.update({
+        where: { id: group.id },
+        data: { description },
+      });
     } catch (error) {
-      logger.error("Failed to delete group, ", error);
+      logger.error("Failed to update group description, ", error);
       throw new Error(Errors.UNKNOWN_ERROR);
     }
 
-    await interaction.reply(`Successfully deleted group "${group.name}"!`);
+    await interaction.reply(
+      `Successfully updated group description from \n> ${previousDescription} \nto \n> ${description}`
+    );
   }
 }

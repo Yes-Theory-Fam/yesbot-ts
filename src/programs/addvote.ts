@@ -5,6 +5,8 @@ import { createYesBotLogger } from "../log";
 
 const logger = createYesBotLogger("programs", "AddVote");
 
+// TODO make this a message context menu command
+
 @Command({
   event: DiscordEvent.MESSAGE,
   trigger: "!addvote",

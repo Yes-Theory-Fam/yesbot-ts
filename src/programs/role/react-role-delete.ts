@@ -1,4 +1,7 @@
-import { Message } from "discord.js";
+import {
+  ApplicationCommandOptionType,
+  ChatInputCommandInteraction,
+} from "discord.js";
 import Tools from "../../common/tools";
 import prisma from "../../prisma";
 import {
@@ -7,52 +10,65 @@ import {
   DiscordEvent,
 } from "../../event-distribution";
 import { createYesBotLogger } from "../../log";
+import { reactRoleAutocomplete } from "./react-role-autocomplete";
 
 const logger = createYesBotLogger("programs", "role-delete");
 
-@Command({
-  event: DiscordEvent.MESSAGE,
-  trigger: "!role",
-  subTrigger: "delete",
-  allowedRoles: ["Support"],
-  description: "This",
-})
-class DeleteReactRoleObjects implements CommandHandler<DiscordEvent.MESSAGE> {
-  async handle(message: Message): Promise<void> {
-    const index = Number(message.content.split(" ")[2]);
+enum Errors {
+  UNKNOWN_ERROR = "UNKNOWN_ERROR",
+  ENTRY_NOT_FOUND = "ENTRY_NOT_FOUND",
+}
 
-    if (isNaN(index) || !index) {
-      await Tools.handleUserError(message, "You must input an index number");
-      return;
-    }
+@Command({
+  event: DiscordEvent.SLASH_COMMAND,
+  root: "role",
+  subCommand: "delete",
+  description: "Delete a reaction-role",
+  options: [
+    {
+      name: "reaction-role",
+      type: ApplicationCommandOptionType.Integer,
+      required: true,
+      autocomplete: reactRoleAutocomplete,
+      description: "The reaction-role to delete",
+    },
+  ],
+  errors: {
+    [Errors.UNKNOWN_ERROR]: "Failed to delete reaction-role",
+    [Errors.ENTRY_NOT_FOUND]: "Could not find that reaction-role",
+  },
+})
+class DeleteReactRoleObjects
+  implements CommandHandler<DiscordEvent.SLASH_COMMAND>
+{
+  async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+    const reactionRoleId = interaction.options.getInteger("reaction-role")!;
 
     const objectToRemove = await prisma.reactionRole.findUnique({
-      where: { id: index },
+      where: { id: reactionRoleId },
     });
 
     if (!objectToRemove) {
-      await message.reply("I cannot find a role with that ID.");
-      return;
+      throw new Error(Errors.ENTRY_NOT_FOUND);
     }
 
-    if (!message.guild) return;
-
     try {
-      await prisma.reactionRole.delete({ where: { id: index } });
+      await prisma.reactionRole.delete({ where: { id: reactionRoleId } });
     } catch (err) {
-      await message.channel.send(`Failed to delete reaction role.`);
       logger.error("Failed to delete reaction role: ", err);
-      return;
+      throw new Error(Errors.UNKNOWN_ERROR);
     }
 
     const [messageWithReaction] = (await Tools.getMessageById(
       objectToRemove.messageId,
-      message.guild,
+      interaction.guild!,
       objectToRemove.channelId
     )) ?? [null];
 
     try {
-      await messageWithReaction?.reactions.removeAll();
+      await messageWithReaction?.reactions.cache
+        .find((x) => x.emoji.name === objectToRemove.reaction)
+        ?.remove();
     } catch (err) {
       // We don't really care about the error, since the message/channel might have been removed.
       // We log it for good measure.
@@ -61,6 +77,7 @@ class DeleteReactRoleObjects implements CommandHandler<DiscordEvent.MESSAGE> {
         err
       );
     }
-    await message.channel.send("Successfully removed reaction role.");
+
+    await interaction.reply("Successfully removed reaction role.");
   }
 }

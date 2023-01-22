@@ -1,6 +1,9 @@
-import { Message, TextChannel } from "discord.js";
-import bot from "../..";
-import Tools from "../../common/tools";
+import {
+  ApplicationCommandOptionType,
+  ChannelType,
+  ChatInputCommandInteraction,
+  TextChannel,
+} from "discord.js";
 import {
   Command,
   CommandHandler,
@@ -8,60 +11,71 @@ import {
 } from "../../event-distribution";
 import { logger } from "./add-reaction";
 
+enum Errors {
+  MESSAGE_NOT_FOUND = "MESSAGE_NOT_FOUND",
+  NOT_YESBOT_MESSAGE = "NOT_YESBOT_MESSAGE",
+}
+
 @Command({
-  event: DiscordEvent.MESSAGE,
-  trigger: "!message",
-  subTrigger: "edit",
-  allowedRoles: ["Support"],
-  description: "This command lets you edit messages send by Yesbot",
+  event: DiscordEvent.SLASH_COMMAND,
+  root: "remote",
+  subCommand: "edit",
+  description: "Edit one of my previous messages",
+  options: [
+    {
+      name: "channel",
+      channel_types: [ChannelType.GuildText],
+      description: "The channel I can find the message in",
+      type: ApplicationCommandOptionType.Channel,
+      required: true,
+    },
+    {
+      name: "message-id",
+      description: "The ID of the message I shall edit",
+      type: ApplicationCommandOptionType.String,
+      required: true,
+    },
+    {
+      name: "content",
+      description: "The new content of the message",
+      type: ApplicationCommandOptionType.String,
+      max_length: 2000,
+      required: true,
+    },
+  ],
+  errors: {
+    [Errors.MESSAGE_NOT_FOUND]:
+      "I could not find that message. Are you sure the ID is correct?",
+    [Errors.MESSAGE_NOT_FOUND]:
+      "That does not appear to be one of my messages so I cannot edit it.",
+  },
 })
-class EditMessage implements CommandHandler<DiscordEvent.MESSAGE> {
-  async handle(message: Message): Promise<void> {
-    const [, , channelId, messageId] = message.content.split(" ");
+class EditMessage implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
+  async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+    const channel = interaction.options.getChannel("channel")! as TextChannel;
+    const messageId = interaction.options.getString("message-id")!;
+    const content = interaction.options.getString("content")!;
 
-    if (!channelId || !messageId) {
-      await Tools.handleUserError(
-        message,
-        "Missing channelId or messageId. Syntax: `!message edit channelId messageId"
-      );
-      return;
-    }
-
-    const channel = bot.channels.resolve(channelId) as TextChannel;
     const messageToEdit = await channel.messages.fetch(messageId);
 
-    if (!channel || !messageToEdit) {
-      await Tools.handleUserError(
-        message,
-        "I could not find that channel or message! Please verify the arguments given"
-      );
-      return;
+    if (!messageToEdit) {
+      throw new Error(Errors.MESSAGE_NOT_FOUND);
     }
 
-    const emoji =
-      message.guild?.emojis.cache.find((emoji) => emoji.name === "yesbot") ??
-      "🦥";
-    const requestMessage = await message.channel.send({
-      content: `Okay, now all you need to do is copy the original message and edit it and send it here and I will take care of the rest! ${emoji}`,
-    });
+    if (messageToEdit.author.id !== interaction.client.user.id) {
+      throw new Error(Errors.NOT_YESBOT_MESSAGE);
+    }
+
+    await messageToEdit.edit(content);
 
     try {
-      const editMessage = await message.channel.awaitMessages({
-        filter: (m) => !m.author.bot && m.author == message.author,
-        time: 60000,
-        max: 1,
-      });
-
-      const requestedEdit = editMessage.first()?.content;
-      if (requestedEdit) {
-        await messageToEdit.edit(requestedEdit);
-      }
-      await editMessage.first()?.delete();
-      await requestMessage.delete();
-      await message.react("👍");
+      await interaction.reply({ ephemeral: true, content: "Done!" });
     } catch (err) {
       logger.error("Failed to edit yesbot message", err);
-      await message.react("👎");
+      await interaction.reply({
+        ephemeral: true,
+        content: "Failed to edit the message!",
+      });
     }
   }
 }

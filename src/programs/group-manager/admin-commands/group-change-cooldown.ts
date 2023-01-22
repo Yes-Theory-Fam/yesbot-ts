@@ -1,5 +1,4 @@
 import {
-  APIInteractionGuildMember,
   ApplicationCommandOptionType,
   ChatInputCommandInteraction,
 } from "discord.js";
@@ -21,40 +20,52 @@ enum Errors {
 @Command({
   event: DiscordEvent.SLASH_COMMAND,
   root: "group-mod",
-  subCommand: "delete",
-  description: "Delete a group",
+  subCommand: "change-cooldown",
+  description: "Change a group's cooldown",
   options: [
     {
       name: "group",
       type: ApplicationCommandOptionType.Integer,
       autocomplete: groupAutocomplete,
-      description: "The group to be deleted",
+      description: "The group to edit",
+      required: true,
+    },
+    {
+      name: "cooldown",
+      type: ApplicationCommandOptionType.Integer,
+      description: "The new cooldown in seconds",
       required: true,
     },
   ],
   errors: {
-    [Errors.GROUP_NOT_FOUND]: "That group does not exist!",
-    [Errors.UNKNOWN_ERROR]: "Failed to delete group!",
+    [Errors.GROUP_NOT_FOUND]: "Could not find the specified group",
+    [Errors.UNKNOWN_ERROR]: "Failed to update cooldown!",
   },
 })
-class DeleteGroup implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
+class ChangeCooldown implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
   async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+    await interaction.deferReply();
+
     const groupId = interaction.options.getInteger("group")!;
+    const cooldown = interaction.options.getInteger("cooldown")!;
 
     const groupService = new GroupService();
     const group = await groupService.getGroupById(groupId);
 
-    if (!group) {
-      throw new Error(Errors.GROUP_NOT_FOUND);
-    }
+    if (!group) throw new Error(Errors.GROUP_NOT_FOUND);
 
     try {
-      await prisma.userGroup.delete({ where: { id: group.id } });
+      await prisma.userGroup.update({
+        where: { id: group.id },
+        data: { cooldown: cooldown },
+      });
     } catch (error) {
-      logger.error("Failed to delete group, ", error);
+      logger.error("Failed to update database cooldown, ", error);
       throw new Error(Errors.UNKNOWN_ERROR);
     }
 
-    await interaction.reply(`Successfully deleted group "${group.name}"!`);
+    await interaction.editReply(
+      `Updated cooldown of group "${group.name}" to ${cooldown} seconds!`
+    );
   }
 }

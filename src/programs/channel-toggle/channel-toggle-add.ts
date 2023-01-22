@@ -1,5 +1,7 @@
-import { Message } from "discord.js";
-import Tools from "../../common/tools";
+import {
+  ApplicationCommandOptionType,
+  ChatInputCommandInteraction,
+} from "discord.js";
 import {
   Command,
   CommandHandler,
@@ -12,43 +14,45 @@ import { backfillReactions, getOrCreateMessage } from "./common";
 const logger = createYesBotLogger("program", "channelToggleRemove");
 
 @Command({
-  event: DiscordEvent.MESSAGE,
-  trigger: "!channelToggle",
-  subTrigger: "add",
-  allowedRoles: ["Support"],
-  description: "This handler is to add a channel toggle reaction",
+  event: DiscordEvent.SLASH_COMMAND,
+  root: "channel-toggle",
+  subCommand: "add",
+  description: "Add a reaction to guard a channel from being accessed",
+  options: [
+    {
+      name: "message-id",
+      type: ApplicationCommandOptionType.String,
+      description: "ID of the message to add the reaction to",
+      required: true,
+    },
+    {
+      name: "emoji",
+      type: ApplicationCommandOptionType.String,
+      description: "Emoji to use as the reaction",
+      required: true,
+    },
+    {
+      name: "channel",
+      type: ApplicationCommandOptionType.Channel,
+      description: "The channel in which to find the message",
+      required: true,
+    },
+  ],
 })
-class ChannelReactionAdd implements CommandHandler<DiscordEvent.MESSAGE> {
-  async handle(message: Message): Promise<void> {
-    const messageContent = message.content.split(" ");
-    const [, , messageId, emoji, channelName] = messageContent;
+class ChannelReactionAdd implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
+  async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+    await interaction.deferReply();
 
-    if (!messageId && emoji && channelName) {
-      await Tools.handleUserError(
-        message,
-        "Invalid syntax, please double check for messageId, emoji, channelName and try again."
-      );
-      return;
-    }
-
-    const existingChannel = message.guild?.channels.cache.find(
-      (c) => c.name === channelName.toLocaleLowerCase()
-    );
-
-    if (!existingChannel) {
-      await Tools.handleUserError(message, "That channel doesn't exist here.");
-      return;
-    }
+    const messageId = interaction.options.getString("message-id")!;
+    const emoji = interaction.options.getString("emoji")!;
+    const channel = interaction.options.getChannel("channel")!;
 
     const reactionMessage = await getOrCreateMessage(messageId);
 
+    let needsReaction = false;
+
     if (reactionMessage.channel === null) {
-      await message.reply(
-        "Since this is the first time I've heard of this message I need your help. " +
-          `Can you put one ${emoji} emoji on the message for me please?\n` +
-          "After you've done that, I'll make sure to put up all the emojis on it. :grin:\n" +
-          "You can keep adding emojis here and add one on the original message when you're done, and I'll add them all!"
-      );
+      needsReaction = true;
     }
 
     try {
@@ -61,24 +65,37 @@ class ChannelReactionAdd implements CommandHandler<DiscordEvent.MESSAGE> {
               create: reactionMessage,
             },
           },
-          channel: existingChannel.id,
+          channel: channel.id,
         },
       });
-      await message.react("👍");
+
+      const backfillRequestText =
+        "Since this is the first time I've heard of this message I need your help. " +
+        `Can you put one ${emoji} emoji on the message for me please?\n` +
+        "After you've done that, I'll make sure to put up all the emojis on it. 😁\n" +
+        "You can keep adding emojis here and add one on the original message when you're done, and I'll add them all!";
+
+      const reply = `Added channel toggle!${
+        needsReaction ? "\n\n" + backfillRequestText : ""
+      }`;
+
+      await interaction.editReply(reply);
     } catch (err) {
       logger.error("Failed to create toggle", err);
-      await message.react("👎");
+      await interaction.editReply(
+        "Failed to create toggle. Bully some developer for this!"
+      );
       return;
     }
 
-    if (reactionMessage.channel !== null && message.guild) {
+    if (reactionMessage.channel !== null && interaction.guild) {
       await backfillReactions(
         reactionMessage.id,
         reactionMessage.channel,
-        message.guild
+        interaction.guild
       );
       logger.debug(
-        `backfilling reactions for message ${messageId} in ${reactionMessage.channel}`
+        `Backfilling reactions for message ${messageId} in ${reactionMessage.channel}`
       );
     }
   }

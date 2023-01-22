@@ -1,7 +1,6 @@
 import {
   ChannelType,
   Client,
-  ForumChannel,
   GatewayIntentBits,
   GuildMember,
   Interaction,
@@ -16,13 +15,8 @@ import {
   VoiceState,
 } from "discord.js";
 import distribution, { DiscordEvent } from "./event-distribution";
-import {
-  guildMemberUpdate,
-  memberLeave,
-  messageManager,
-  ready,
-  voiceStateUpdate,
-} from "./events";
+import { guildMemberUpdate, memberLeave, ready } from "./events";
+import { legacyCommandHandler } from "./events/message";
 import { LoadCron } from "./load-cron";
 import { createYesBotLogger } from "./log";
 
@@ -82,9 +76,7 @@ bot.on(
   }
 );
 bot.on("messageCreate", async (msg: Message) => {
-  await messageManager(msg).catch((error) =>
-    logger.error("Error in legacy messageManager handler: ", error)
-  );
+  await legacyCommandHandler(msg);
   await distribution.handleEvent(DiscordEvent.MESSAGE, msg);
 });
 bot.on("interactionCreate", async (interaction: Interaction) => {
@@ -130,9 +122,6 @@ bot.on(
       DiscordEvent.VOICE_STATE_UPDATE,
       oldState,
       newState
-    );
-    await voiceStateUpdate(oldState, newState).catch((error) =>
-      logger.error("Error in legacy voiceStateUpdate handler: ", error)
     );
   }
 );
