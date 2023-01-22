@@ -8,7 +8,7 @@
     "build:docker": "docker build --force-rm --label yesbot -t yesbot --build-arg=YTF_GRAPHQL_ENDPOINT=http://host.docker.internal:5001/graphql .",
     "build:prepare": "NODE_ENV=production && rm -rf node_modules && yarn install && yarn run tsc",
     "build:run": "docker run --link yesbot-ts_postgres_1 .",
-    "codegen": "graphql-codegen --config codegen.yml",
+    "codegen": "graphql-codegen",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate",
     "lint": "prettier --check \"src/**/*.(js|ts|json)\" \"__tests__/**/*.(js|ts|json)\"",
