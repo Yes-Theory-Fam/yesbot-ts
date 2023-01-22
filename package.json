@@ -52,7 +52,7 @@
     "@types/glob": "8.0.1",
     "@types/jest": "29.2.6",
     "@types/node": "18.11.18",
-    "@types/node-cron": "3.0.0",
+    "@types/node-cron": "3.0.7",
     "@types/ws": "8.5.4",
     "@yestheoryfam/prettier-config": "1.0.0",
     "env-cmd": "10.1.0",
