@@ -154,12 +154,17 @@ Ensure that you have Docker running and no other connections on Port 5432 as thi
     ```bash
     yarn prisma migrate dev
     ```
+   
+4. Generate GraphQL files (even if you are not working on the website, this is required for the code to compile)
+    ```bash
+    yarn codegen
+    ```
 
-4. Start the bot
+5. Start the bot
 
-```bash
-yarn run start
-```
+    ```bash
+    yarn run start
+    ```
 
 The bot should now start up, connect to the database and send a ready message in the channel you specified in
 the `.env` file.
