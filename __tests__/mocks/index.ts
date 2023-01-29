@@ -208,6 +208,7 @@ export default class MockDiscord {
       joined_at: new Date("2020-01-01").getTime().toString(),
       user: this.apiUser(),
       roles: [],
+      flags: 0,
     };
   }
 
