@@ -184,7 +184,7 @@ export class EventDistribution {
           const text = errors[reason];
           const error = hasParams
             ? new ErrorWithParams(text, e.params)
-            : new Error(reason);
+            : new Error(text);
           await rejectWithError(error, event, ...args);
         } else {
           logger.error(`Error running handler ${getIocName(ioc)}: `, e);
