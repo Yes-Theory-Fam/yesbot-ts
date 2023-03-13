@@ -151,6 +151,7 @@ exports[`Reactions should extract reaction from public channel 1`] = `
       "communicationDisabledUntilTimestamp": null,
       "displayAvatarURL": "https://cdn.discordapp.com/avatars/9007199254740991/user%20avatar%20url.webp",
       "displayName": "nick",
+      "flags": 0,
       "guildId": "9007199254740991",
       "joinedTimestamp": NaN,
       "nickname": "nick",
