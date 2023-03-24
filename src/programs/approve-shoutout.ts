@@ -2,6 +2,8 @@ import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 import {
   ChannelType,
   ChatInputCommandInteraction,
+  OverwriteType,
+  PermissionOverwrites,
   TextChannel,
 } from "discord.js";
 import { ApplicationCommandOptionType } from "discord.js";
@@ -10,7 +12,7 @@ import { ApplicationCommandOptionType } from "discord.js";
   event: DiscordEvent.SLASH_COMMAND,
   root: "shoutout-perms",
   description: "Manage who can post in the #shoutout channel!",
-  subCommand: "allow",
+  subCommand: "toggle",
   options: [
     {
       name: "user",
@@ -20,7 +22,7 @@ import { ApplicationCommandOptionType } from "discord.js";
     },
   ],
 })
-class ApproveShoutoutCommand
+class ShoutoutPermsToggleCommand
   implements CommandHandler<DiscordEvent.SLASH_COMMAND>
 {
   async handle(interaction: ChatInputCommandInteraction): Promise<void> {
@@ -51,35 +53,27 @@ class ApproveShoutoutCommand
       return;
     }
 
-    // Give the user the permission to send messages and notify sender
+    const permOverwrite = shoutouts.permissionOverwrites.cache.filter(
+      c => c.type === OverwriteType.Member && c.id === user.id).first();
+
+    // If there is an existing perm overwrite, remove it
+    if (permOverwrite) {
+      await permOverwrite.delete();
+      await interaction.reply({
+        content: "Removed the permission!",
+        ephemeral: true,
+      });
+
+      return;
+    }
+
+    // Otherwise, add it
     await shoutouts.permissionOverwrites.edit(user.id, {
-      SendMessages: true,
+      SendMessages: true
     });
     await interaction.reply({
       content: "Successfully gave the permission!",
       ephemeral: true,
     });
-  }
-}
-
-@Command({
-  event: DiscordEvent.SLASH_COMMAND,
-  root: "shoutout-perms",
-  description: "Manage who can post in the #shoutout channel!",
-  subCommand: "remove",
-  options: [
-    {
-      name: "user",
-      type: ApplicationCommandOptionType.User,
-      description: "The user to remove shoutout permissions from",
-      required: true,
-    },
-  ],
-})
-class RemoveShoutoutCommand
-  implements CommandHandler<DiscordEvent.SLASH_COMMAND>
-{
-  async handle(interaction: ChatInputCommandInteraction): Promise<void> {
-    // TODO: Finish this
   }
 }
