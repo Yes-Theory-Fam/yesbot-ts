@@ -3,7 +3,6 @@ import {
   ChannelType,
   ChatInputCommandInteraction,
   OverwriteType,
-  PermissionOverwrites,
   TextChannel,
 } from "discord.js";
 import { ApplicationCommandOptionType } from "discord.js";
