@@ -26,13 +26,24 @@ class ShoutoutPermsToggleCommand
 {
   async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     if (!interaction.guild) return;
+    const channel = interaction.channel;
+
+    if (channel?.type !== ChannelType.GuildText) return;
+    if (!channel.name.startsWith("shoutout-")) {
+      await interaction.reply({
+        content: "Can not send this here!",
+        ephemeral: true,
+      });
+      return;
+    }
+
     const channelName = "shoutouts";
 
     // Get handle of the user
     const user = interaction.options.getUser("user");
     if (user === null) {
       await interaction.reply({
-        content: "Couldn't find member!",
+        content: "Couldn't find the member!",
         ephemeral: true,
       });
       return;
@@ -46,7 +57,7 @@ class ShoutoutPermsToggleCommand
     // there must be a way to type this in a more typescript-ish way
     if (shoutouts === null || shoutouts?.type !== ChannelType.GuildText) {
       await interaction.reply({
-        content: "Couldn't find the #shoutouts channel!",
+        content: `Couldn't find the <#${channelName}> channel!`,
         ephemeral: true,
       });
       return;
@@ -62,7 +73,6 @@ class ShoutoutPermsToggleCommand
         content: "Removed the permission!",
         ephemeral: true,
       });
-
       return;
     }
 
@@ -74,5 +84,6 @@ class ShoutoutPermsToggleCommand
       content: "Successfully gave the permission!",
       ephemeral: true,
     });
+    await channel.send({content: `Hey <@${user.id}>, feel free to send a message on the <#${shoutouts.id}> channel!`});
   }
 }
