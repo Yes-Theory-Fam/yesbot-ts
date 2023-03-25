@@ -4,8 +4,9 @@ import {
   ChatInputCommandInteraction,
   OverwriteType,
   TextChannel,
+  ApplicationCommandOptionType,
 } from "discord.js";
-import { ApplicationCommandOptionType } from "discord.js";
+import { ChatNames } from "../collections/chat-names";
 
 @Command({
   event: DiscordEvent.SLASH_COMMAND,
@@ -37,8 +38,6 @@ class ShoutoutPermsToggleCommand
       return;
     }
 
-    const channelName = "shoutouts";
-
     // Get handle of the user
     const user = interaction.options.getUser("user");
     if (user === null) {
@@ -51,13 +50,13 @@ class ShoutoutPermsToggleCommand
 
     // Get the shoutouts channel
     const shoutouts = interaction.guild.channels.cache
-      .filter((c) => c.isTextBased() && (c as TextChannel).name === channelName)
+      .filter((c) => c.isTextBased() && (c as TextChannel).name === ChatNames.SHOUTOUTS)
       .first();
 
     // there must be a way to type this in a more typescript-ish way
     if (shoutouts === null || shoutouts?.type !== ChannelType.GuildText) {
       await interaction.reply({
-        content: `Couldn't find the <#${channelName}> channel!`,
+        content: `Couldn't find the <#${ChatNames.SHOUTOUTS}> channel!`,
         ephemeral: true,
       });
       return;

@@ -23,4 +23,5 @@ export const enum ChatNames {
   PERMANENT_TESTING = "permanent-testing",
   BOT_COMMANDS = "bot-commands",
   STRANGERS_TO_FRIENDS = "from-strangers-to-friends",
+  SHOUTOUTS = "shoutouts",
 }
