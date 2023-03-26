@@ -96,7 +96,7 @@ class ShoutoutPermsToggleCommand
     // Check whether there's an instance.
     // If there is an existing perm overwrite, remove it
     const sendPerms = getSendPerms(shoutouts, user);
-    if (sendPerms && getSendPerms(shoutouts, user)) {
+    if (sendPerms) {
       deletePerms(user.id, sendPerms);
 
       await interaction.reply({
