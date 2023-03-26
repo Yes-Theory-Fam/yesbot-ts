@@ -1,13 +1,11 @@
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 import {
   ChannelType,
-  Client,
   ChatInputCommandInteraction,
   Guild,
   Snowflake,
   OverwriteType,
   TextChannel,
-  ApplicationCommandOptionType,
   PermissionOverwrites,
   Message,
   User,
