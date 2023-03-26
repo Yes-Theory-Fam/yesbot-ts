@@ -55,14 +55,6 @@ const deletePerms = async (
   root: "shoutout-perms",
   description: "Manage who can post in the #shoutout channel!",
   subCommand: "toggle",
-  options: [
-    {
-      name: "user",
-      type: ApplicationCommandOptionType.User,
-      description: "The user to give permissions to",
-      required: true,
-    },
-  ],
 })
 class ShoutoutPermsToggleCommand
   implements CommandHandler<DiscordEvent.SLASH_COMMAND>
@@ -81,7 +73,7 @@ class ShoutoutPermsToggleCommand
     }
 
     // Get handle of the user
-    const user = interaction.options.getUser("user");
+    const user = interaction.client.users.resolve(channel.name.split("-")[1]);
     if (user === null) {
       await interaction.reply({
         content: "Couldn't find the member!",
