@@ -50,6 +50,7 @@ const deletePerms = async (
   delete shoutoutTimers[userId];
   if (timerId !== null) TimerService.cancelTimer(timerId);
 };
+
 @Command({
   event: DiscordEvent.SLASH_COMMAND,
   root: "shoutout-perms",
@@ -85,7 +86,7 @@ class ShoutoutPermsToggleCommand
     // Get the shoutouts channel
     const shoutouts = getShoutoutsChannel(interaction.guild);
 
-    // there must be a way to type this in a more typescript-ish way
+    // TODO: there must be a way to type this in a more typescript-ish way
     if (shoutouts === null || shoutouts?.type !== ChannelType.GuildText) {
       await interaction.reply({
         content: `Couldn't find the <#${ChatNames.SHOUTOUTS}> channel!`,
@@ -94,13 +95,12 @@ class ShoutoutPermsToggleCommand
       return;
     }
 
-    // Check whether there's an instance
+    // Check whether there's an instance.
     // If there is an existing perm overwrite, remove it
     const sendPerms = getSendPerms(shoutouts, user);
     if (sendPerms && getSendPerms(shoutouts, user)) {
       deletePerms(user.id, sendPerms);
 
-      // TODO: Make this message a bit nicer!
       await interaction.reply({
         content: "Removed the permission!",
         ephemeral: true,
@@ -108,7 +108,7 @@ class ShoutoutPermsToggleCommand
       return;
     }
 
-    // Otherwise, add it
+    // Otherwise, create a new one
     await shoutouts.permissionOverwrites.edit(user.id, {
       SendMessages: true,
     });
