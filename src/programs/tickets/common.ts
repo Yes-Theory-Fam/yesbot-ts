@@ -91,9 +91,7 @@ const hasTicket = async (message: Message, channelName: string) => {
 };
 
 export const getChannelName = (user: User, ticketType: TicketType) => {
-  let channelName = `${ticketType.toLowerCase()}-${(
-    user.id
-  ).toLowerCase()}`;
+  let channelName = `${ticketType.toLowerCase()}-${user.id.toLowerCase()}`;
   channelName = channelName.replace(/\s+/g, "-").toLowerCase();
   return channelName.replace(/[^\dA-Z\s+-]/gi, "");
 };
