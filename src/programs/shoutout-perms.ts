@@ -7,6 +7,7 @@ import {
   OverwriteType,
   TextChannel,
   PermissionOverwrites,
+  PermissionsBitField,
   Message,
   User,
 } from "discord.js";
@@ -22,13 +23,6 @@ interface ShoutoutPermsData {
 }
 
 const shoutoutPermsIdentifier = "shoutoutPermsRemove";
-const shoutoutTimers: Record<Snowflake, string> = {};
-
-const getSendPerms = (channel: TextChannel, user: User) => {
-  return channel.permissionOverwrites.cache
-    .filter((c) => c.type === OverwriteType.Member && c.id === user.id)
-    .first();
-};
 
 const getShoutoutsChannel = (guild: Guild) => {
   return guild.channels.cache
@@ -36,17 +30,6 @@ const getShoutoutsChannel = (guild: Guild) => {
       (c) => c.isTextBased() && (c as TextChannel).name === ChatNames.SHOUTOUTS
     )
     .first();
-};
-
-const deletePerms = async (
-  userId: Snowflake,
-  sendPerms: PermissionOverwrites
-) => {
-  const timerId = shoutoutTimers[userId];
-  await sendPerms.delete();
-
-  delete shoutoutTimers[userId];
-  if (timerId !== null) TimerService.cancelTimer(timerId);
 };
 
 @Command({
@@ -65,7 +48,7 @@ class ShoutoutPermsToggleCommand
     if (channel?.type !== ChannelType.GuildText) return;
     if (!channel.name.startsWith("shoutout-")) {
       await interaction.reply({
-        content: "Can not send this here!",
+        content: "This command must be used in a shoutout ticket's channel!",
         ephemeral: true,
       });
       return;
@@ -83,9 +66,7 @@ class ShoutoutPermsToggleCommand
 
     // Get the shoutouts channel
     const shoutouts = getShoutoutsChannel(interaction.guild);
-
-    // TODO: there must be a way to type this in a more typescript-ish way
-    if (shoutouts === null || shoutouts?.type !== ChannelType.GuildText) {
+    if (shoutouts?.type !== ChannelType.GuildText) {
       await interaction.reply({
         content: `Couldn't find the <#${ChatNames.SHOUTOUTS}> channel!`,
         ephemeral: true,
@@ -95,9 +76,11 @@ class ShoutoutPermsToggleCommand
 
     // Check whether there's an instance.
     // If there is an existing perm overwrite, remove it
-    const sendPerms = getSendPerms(shoutouts, user);
-    if (sendPerms) {
-      deletePerms(user.id, sendPerms);
+    const perms = await shoutouts.permissionsFor(user);
+    const hasSendPerms = perms?.has(PermissionsBitField.Flags.SendMessages, false) ?? false;
+
+    if (hasSendPerms) {
+      await channel.permissionOverwrites.delete(user);
 
       await interaction.reply({
         content: "Removed the permission!",
@@ -126,7 +109,6 @@ class ShoutoutPermsToggleCommand
         userId: user.id,
       }
     );
-    shoutoutTimers[user.id] = timerId;
 
     await channel.send({
       content: `Hey <@${user.id}>, feel free to send a message on the <#${shoutouts.id}> channel!`,
@@ -151,9 +133,7 @@ class ShoutoutMessageHandlerCommand
     if (sender.id === bot.user?.id) return;
     if (channel.type !== ChannelType.GuildText) return;
 
-    const sendPerms = getSendPerms(channel, sender);
-
-    if (sendPerms) await deletePerms(sender.id, sendPerms);
+    await channel.permissionOverwrites.delete(sender);
   }
 }
 
@@ -167,11 +147,8 @@ class ShoutoutTimer extends CommandHandler<DiscordEvent.TIMER> {
     const channel = bot.channels.resolve(data.channelId) as TextChannel;
     const user = bot.users.resolve(data.userId);
 
-    if (user === null || channel === null) return;
-    const sendPerms = getSendPerms(channel, user);
+    if (!user || !channel) return;
 
-    if (sendPerms) await deletePerms(user.id, sendPerms);
+    await channel.permissionOverwrites.delete(user);
   }
 }
-
-const logger = createYesBotLogger("shoutouts", ShoutoutTimer.name);
