@@ -77,7 +77,8 @@ class ShoutoutPermsToggleCommand
     // Check whether there's an instance.
     // If there is an existing perm overwrite, remove it
     const perms = await shoutouts.permissionsFor(user);
-    const hasSendPerms = perms?.has(PermissionsBitField.Flags.SendMessages, false) ?? false;
+    const hasSendPerms =
+      perms?.has(PermissionsBitField.Flags.SendMessages, false) ?? false;
 
     if (hasSendPerms) {
       await channel.permissionOverwrites.delete(user);
