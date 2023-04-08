@@ -95,6 +95,7 @@ export const getChannelName = (user: User, ticketType: TicketType) => {
     user.username + user.discriminator
   ).toLowerCase()}`;
   channelName = channelName.replace(/\s+/g, "-").toLowerCase();
+  channelName = channelName.replace(/-+/g, "-");
   return channelName.replace(/[^\dA-Z\s+-]/gi, "");
 };
 
