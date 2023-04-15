@@ -81,7 +81,7 @@ class ShoutoutPermsToggleCommand
       perms?.has(PermissionsBitField.Flags.SendMessages, false) ?? false;
 
     if (hasSendPerms) {
-      await channel.permissionOverwrites.delete(user);
+      await shoutouts.permissionOverwrites.delete(user);
 
       await interaction.reply({
         content: "Removed the permission!",
