@@ -88,7 +88,7 @@ To work on the bot you need the following:
       launch one in one command
     - [Download](https://www.postgresql.org/download/) and install PostgreSQL on your host system, then create and
       configure a database following the requirements above
-- A Discord server created from [this template](https://discord.com/template/TEFgdaFHR9xR)
+- A Discord server created from [this template](https://discord.new/zqEbKE5aCmjW)
 - A Discord application with a bot token (get started
   at [https://discord.com/developers](https://discord.com/developers))
     - After creating a Discord application click on (Bot → Add Bot).
