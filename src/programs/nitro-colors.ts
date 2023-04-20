@@ -145,10 +145,8 @@ export class RoleResetCron {
     const MONTHLY_CRON = "0 0 1 * *";
     const TEST_CRON = "*/1 * * * *"; // Every 1 minute, for testing purposes
 
-    logger.debug("initialize cron task runner");
     // Schedule a cron task every month
     cron.schedule(TEST_CRON, async () => {
-      logger.debug("starting cron task!");
       // Remove color roles from each user
       nitroRolesCache.forEach((role) => {
         role.members.forEach(async (member) => {
@@ -186,7 +184,10 @@ export class RoleResetCron {
         });
       });
 
+      logger.debug("Executed cleanup");
     });
+
+    logger.debug("Initialized!");
   }
 }
 const memberHasNitroColor = (member: GuildMember) =>
