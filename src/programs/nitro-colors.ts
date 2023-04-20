@@ -146,7 +146,7 @@ export class RoleResetCron {
     const TEST_CRON = "*/1 * * * *"; // Every 1 minute, for testing purposes
 
     // Schedule a cron task every month
-    cron.schedule(TEST_CRON, async () => {
+    cron.schedule(MONTHLY_CRON, async () => {
       // Remove color roles from each user
       nitroRolesCache.forEach((role) => {
         role.members.forEach(async (member) => {
