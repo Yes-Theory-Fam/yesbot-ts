@@ -162,27 +162,31 @@ export class RoleResetCron {
         ) as TextChannel;
 
       // Remove all messages sent by the bot
-      channel.messages.fetch({ limit: 5 }).then((messages) => {
-        messages.forEach(async (message) => {
+      channel.messages
+        .fetch({ limit: 5 })
+        .then((messages) => {
+          messages.forEach(async (message) => {
             if (message.id !== colorSelectionMessage.id) {
               await message.delete();
             } else {
               colorSelectionMessage.reactions.cache.forEach((reaction) => {
-                reaction.users.fetch().then(r => {
-                  r.filter((user, id) => user.id !== bot.user?.id)
-                    .forEach(async (user, id) => await reaction.users.remove(user));
-                })
+                reaction.users.fetch().then((r) => {
+                  r.filter((user, id) => user.id !== bot.user?.id).forEach(
+                    async (user, id) => await reaction.users.remove(user)
+                  );
+                });
               });
             }
           });
-      }).then(async () => {
-        // TODO: Make this message a bit nicer!
-        // Let Nitro boosters know about the new month's change!
-        await channel.send({
-          content:
-            "@Nitro Booster It is time to pick a new color for the new month!",
+        })
+        .then(async () => {
+          // TODO: Make this message a bit nicer!
+          // Let Nitro boosters know about the new month's change!
+          await channel.send({
+            content:
+              "@Nitro Booster It is time to pick a new color for the new month!",
+          });
         });
-      });
 
       logger.debug("Executed cleanup");
     });
