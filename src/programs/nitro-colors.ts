@@ -143,7 +143,7 @@ class NitroColorSelector implements CommandHandler<DiscordEvent.REACTION_ADD> {
 export class RoleResetCron {
   static init() {
     const MONTHLY_CRON = "0 0 1 * *";
-    const TEST_CRON = "*/1 * * * *"; // Every 1 minutes
+    const TEST_CRON = "*/1 * * * *"; // Every 1 minute, for testing purposes
 
     logger.debug("initialize cron task runner");
     // Schedule a cron task every month
