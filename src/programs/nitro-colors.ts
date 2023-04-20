@@ -13,6 +13,7 @@ import {
 } from "discord.js";
 import { createYesBotLogger } from "../log";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
+import cron from "node-cron";
 import prisma from "../prisma";
 
 const logger = createYesBotLogger("programs", "NitroColors");
@@ -139,6 +140,55 @@ class NitroColorSelector implements CommandHandler<DiscordEvent.REACTION_ADD> {
   }
 }
 
+export class RoleResetCron {
+  static init() {
+    const MONTHLY_CRON = "0 0 1 * *";
+    const TEST_CRON = "*/1 * * * *"; // Every 1 minutes
+
+    logger.debug("initialize cron task runner");
+    // Schedule a cron task every month
+    cron.schedule(TEST_CRON, async () => {
+      logger.debug("starting cron task!");
+      // Remove color roles from each user
+      nitroRolesCache.forEach((role) => {
+        role.members.forEach(async (member) => {
+          await member.roles.remove(role);
+        });
+      });
+
+      // Clean up pick-your-color messages
+      const channel = bot.guilds
+        .resolve(process.env.GUILD_ID)
+        ?.channels.cache.find(
+          (c) => c.name === "pick-your-color"
+        ) as TextChannel;
+
+      // Remove all messages sent by the bot
+      channel.messages.fetch({ limit: 5 }).then((messages) => {
+        messages.forEach(async (message) => {
+            if (message.id !== colorSelectionMessage.id) {
+              await message.delete();
+            } else {
+              colorSelectionMessage.reactions.cache.forEach((reaction) => {
+                reaction.users.fetch().then(r => {
+                  r.filter((user, id) => user.id !== bot.user?.id)
+                    .forEach(async (user, id) => await reaction.users.remove(user));
+                })
+              });
+            }
+          });
+      }).then(async () => {
+        // TODO: Make this message a bit nicer!
+        // Let Nitro boosters know about the new month's change!
+        await channel.send({
+          content:
+            "@Nitro Booster It is time to pick a new color for the new month!",
+        });
+      });
+
+    });
+  }
+}
 const memberHasNitroColor = (member: GuildMember) =>
   member.roles.cache.some((role) =>
     nitroRolesCache.some((r) => r.id === role.id)
