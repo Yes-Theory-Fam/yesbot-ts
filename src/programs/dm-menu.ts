@@ -100,44 +100,43 @@ const proposeNameChange = async (name: string, botMessage: Message) => {
   const message = `Username: ${botMessage.author.toString()} would like to rename to "${name}". Allow?`;
   try {
     const sentMessage = await textLog(message);
-    sentMessage.react("✅").then(() => sentMessage.react("🚫"));
-    sentMessage
-      .awaitReactions({
-        filter: (_, user: User) => {
-          return !user.bot;
-        },
-        max: 1,
-        time: 6000000,
-        errors: ["time"],
-      })
-      .then(async (collected) => {
-        const reaction = collected.first();
-        switch (reaction?.emoji.toString()) {
-          case "✅":
-            const member = getMember(botMessage.author.id);
-            member
-              ?.setNickname(name)
-              .catch((error) =>
-                textLog(
-                  `Could not rename ${botMessage.author.toString()} due to this error: ${error}`
-                )
-              );
-            await sentMessage.delete();
-            await textLog(
-              `${botMessage.author.toString()} was renamed to ${name}.`
-            );
-            break;
-          case "🚫":
-            await sentMessage.delete();
-            await textLog(
-              `${botMessage.author.toString()} was *not* renamed to ${name}.`
-            );
-            break;
+    await sentMessage.react("✅");
+    await sentMessage.react("🚫");
 
-          default:
-            break;
-        }
-      });
+    const collected = await sentMessage.awaitReactions({
+      filter: (_, user: User) => {
+        return !user.bot;
+      },
+      max: 1,
+      time: 6000000,
+      errors: ["time"],
+    });
+    const reaction = collected.first();
+    switch (reaction?.emoji.toString()) {
+      case "✅":
+        const member = getMember(botMessage.author.id);
+        member
+          ?.setNickname(name)
+          .catch((error) =>
+            textLog(
+              `Could not rename ${botMessage.author.toString()} due to this error: ${error}`
+            )
+          );
+        await sentMessage.delete();
+        await textLog(
+          `${botMessage.author.toString()} was renamed to ${name}.`
+        );
+        break;
+      case "🚫":
+        await sentMessage.delete();
+        await textLog(
+          `${botMessage.author.toString()} was *not* renamed to ${name}.`
+        );
+        break;
+
+      default:
+        break;
+    }
   } catch (err) {
     logger.error("(proposeNameChange) Error changing name: ", err);
   }
