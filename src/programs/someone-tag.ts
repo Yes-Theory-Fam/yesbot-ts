@@ -60,6 +60,11 @@ class SomeoneTag implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
         interaction.channel as TextChannel
       );
 
+      await prisma.someoneUser.upsert({
+        where: { id: member.user.id },
+        update: { time: new Date() },
+        create: { id: member.user.id, time: new Date() },
+      });
       await interaction.reply({ content: "Done!", ephemeral: true });
     }
   }
