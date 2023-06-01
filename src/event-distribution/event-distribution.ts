@@ -142,12 +142,17 @@ export class EventDistribution {
       return;
     }
 
-    const response = await maybeAutocompleteOption.autocomplete(
-      focusedOption.value,
-      interaction
-    );
+    try {
+      const response = await maybeAutocompleteOption.autocomplete(
+        focusedOption.value,
+        interaction
+      );
 
-    await interaction.respond(response);
+      await interaction.respond(response);
+    } catch (e) {
+      logger.error("Failed to retrieve autocomplete information:", e);
+      await interaction.respond([]);
+    }
   }
 
   async handleEvent<T extends DiscordEvent>(

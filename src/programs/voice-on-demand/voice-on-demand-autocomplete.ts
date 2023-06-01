@@ -24,5 +24,7 @@ export const voiceOnDemandAutocomplete: AutocompleteHandler<string> = async (
 
   matchingMembers.sort((a, b) => a.displayName.localeCompare(b.displayName));
 
-  return matchingMembers.map((m) => ({ name: m.displayName, value: m.id }));
+  return matchingMembers
+    .map((m) => ({ name: m.displayName, value: m.id }))
+    .slice(0, 25);
 };

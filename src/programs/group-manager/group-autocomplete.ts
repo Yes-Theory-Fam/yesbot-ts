@@ -15,5 +15,5 @@ export const groupAutocomplete: AutocompleteHandler<number> = async (
     },
   });
 
-  return groups.map((g) => ({ name: g.name, value: g.id }));
+  return groups.map((g) => ({ name: g.name, value: g.id })).slice(0, 25);
 };
