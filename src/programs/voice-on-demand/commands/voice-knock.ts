@@ -75,11 +75,13 @@ class VoiceKnock extends CommandHandler<DiscordEvent.SLASH_COMMAND> {
         : `Sorry, but the room owner didn't respond.`
     );
 
-    const newLimit = Math.min(
-      maxMembers,
-      Math.max(channel.members.size, channel.userLimit) + 1
-    );
-    await channel.setUserLimit(newLimit);
+    if (gotAccess) {
+      const newLimit = Math.min(
+        maxMembers,
+        Math.max(channel.members.size, channel.userLimit) + 1
+      );
+      await channel.setUserLimit(newLimit);
+    }
   }
 
   private async requestAccess(
