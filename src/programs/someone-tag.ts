@@ -76,8 +76,10 @@ const sendMessage = async (
   question: string,
   channel: TextChannel
 ) => {
+  const authorMember = await channel.guild.members.fetch(author);
+
   const webhook = await channel.createWebhook({
-    name: author.username,
+    name: authorMember.displayName,
     avatar: author.avatarURL({ extension: "png" }),
   });
   await webhook.send(`<@${target.id}> ${question}`);
