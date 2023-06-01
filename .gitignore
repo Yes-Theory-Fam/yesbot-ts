@@ -17,3 +17,6 @@ src/programs/decorator-test.ts
 schema.graphql
 src/__generated__/
 src/**/*.generated.ts
+
+# One off scripts that are not relevant to the repository.
+src/scripts/

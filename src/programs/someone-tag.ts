@@ -1,11 +1,9 @@
 import {
-  GuildMember,
   APIInteractionGuildMember,
   TextChannel,
   User,
   ChatInputCommandInteraction,
   ApplicationCommandOptionType,
-  Guild,
 } from "discord.js";
 import Tools from "../common/tools";
 import { addHours, isAfter } from "date-fns";
@@ -24,7 +22,7 @@ const QUESTION_SHEET_ID: string =
       type: ApplicationCommandOptionType.Boolean,
       name: "online",
       description: "If true, ensures the pinged member is online.",
-      required: true,
+      required: false,
     },
   ],
 })
@@ -44,7 +42,7 @@ class SomeoneTag implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
     if (!member) return;
 
     const target = await getTarget(
-      interaction.options.getBoolean("online"),
+      interaction.options.getBoolean("online") ?? false,
       interaction
     );
     const question = await getQuestion();
