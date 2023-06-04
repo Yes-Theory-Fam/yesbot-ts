@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [ 16.19 ]
+        node-version: [ 16.20 ]
     steps:
       - uses: actions/checkout@v3
       - name: Get yarn cache directory path
