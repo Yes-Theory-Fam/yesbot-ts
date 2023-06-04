@@ -51,7 +51,7 @@
     "@types/countries-and-timezones": "3.2.3",
     "@types/glob": "8.1.0",
     "@types/jest": "29.5.2",
-    "@types/node": "18.15.0",
+    "@types/node": "18.16.16",
     "@types/node-cron": "3.0.7",
     "@types/ws": "8.5.4",
     "@yestheoryfam/prettier-config": "1.0.0",
