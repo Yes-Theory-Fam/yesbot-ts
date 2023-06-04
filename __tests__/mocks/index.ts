@@ -186,6 +186,7 @@ export default class MockDiscord {
         last_pin_timestamp: new Date("2019-01-01").getTime().toString(),
         rate_limit_per_user: 0,
       },
+      this.client,
     ]);
   }
 
