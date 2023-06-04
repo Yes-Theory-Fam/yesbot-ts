@@ -1,5 +1,5 @@
 import { AutocompleteInteraction, Interaction, Snowflake } from "discord.js";
-import glob from "glob";
+import glob from "fast-glob";
 import path from "path";
 import { createYesBotLogger } from "../log";
 import { ErrorWithParams } from "./error-detail-replacer";
@@ -225,39 +225,29 @@ export class EventDistribution {
   }
 
   async initialize(): Promise<void> {
-    await new Promise<void>((res, rej) => {
-      const isProduction = process.env.NODE_ENV === "production";
-      const extension = isProduction ? ".js" : ".ts";
-      const directory = isProduction ? "build/src" : "src";
+    const isProduction = process.env.NODE_ENV === "production";
+    const extension = isProduction ? ".js" : ".ts";
+    const directory = isProduction ? "build/src" : "src";
 
-      glob(`${directory}/programs/**/*${extension}`, async (e, matches) => {
-        if (e) {
-          logger.error("Error loading commands: ", e);
-          rej(e);
-          return;
-        }
+    const matches = await glob(`${directory}/programs/**/*${extension}`);
 
-        const loaders = matches
-          .filter((p) => !p.endsWith(`.spec${extension}`))
-          .map((p) => {
-            const split = p.split(".");
-            split.unshift();
-            const modulePath = path.join(process.cwd(), split.join("."));
+    const loaders = matches
+      .filter((p) => !p.endsWith(`.spec${extension}`))
+      .map((p) => {
+        const split = p.split(".");
+        split.unshift();
+        const modulePath = path.join(process.cwd(), split.join("."));
 
-            return import(modulePath);
-          });
-
-        try {
-          await Promise.all(loaders);
-        } catch (e) {
-          logger.error("Error loading commands: ", e);
-          rej(e);
-          return;
-        }
-        logger.debug("Loading complete!");
-        res();
+        return import(modulePath);
       });
-    });
+
+    try {
+      await Promise.all(loaders);
+    } catch (e) {
+      logger.error("Error loading commands: ", e);
+      throw e;
+    }
+    logger.debug("Loading complete!");
 
     // Slash Commands and related stuff
     const { tree, nameIdMap } = await registerSlashCommands(

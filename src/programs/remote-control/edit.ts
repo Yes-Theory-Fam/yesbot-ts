@@ -46,8 +46,6 @@ enum Errors {
   errors: {
     [Errors.MESSAGE_NOT_FOUND]:
       "I could not find that message. Are you sure the ID is correct?",
-    [Errors.MESSAGE_NOT_FOUND]:
-      "That does not appear to be one of my messages so I cannot edit it.",
   },
 })
 class EditMessage implements CommandHandler<DiscordEvent.SLASH_COMMAND> {

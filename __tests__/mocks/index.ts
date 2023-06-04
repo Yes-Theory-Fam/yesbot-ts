@@ -137,8 +137,8 @@ export default class MockDiscord {
       afk_channel_id: idString,
       system_channel_id: idString,
       verification_level: 2,
-      explicit_content_filter: 3,
-      mfa_level: 8,
+      explicit_content_filter: 2,
+      mfa_level: 1,
       owner_id: idString,
       roles: [],
       emojis: [],
@@ -186,6 +186,7 @@ export default class MockDiscord {
         last_pin_timestamp: new Date("2019-01-01").getTime().toString(),
         rate_limit_per_user: 0,
       },
+      this.client,
     ]);
   }
 
@@ -208,7 +209,7 @@ export default class MockDiscord {
       joined_at: new Date("2020-01-01").getTime().toString(),
       user: this.apiUser(),
       roles: [],
-      flags: 0,
+      flags: 1,
     };
   }
 
