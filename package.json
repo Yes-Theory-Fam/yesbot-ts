@@ -53,7 +53,7 @@
     "@types/jest": "29.5.2",
     "@types/node": "18.16.16",
     "@types/node-cron": "3.0.7",
-    "@types/ws": "8.5.4",
+    "@types/ws": "8.5.5",
     "@yestheoryfam/prettier-config": "1.0.0",
     "env-cmd": "10.1.0",
     "jest": "29.5.0",
