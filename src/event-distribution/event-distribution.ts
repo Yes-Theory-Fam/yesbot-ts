@@ -27,6 +27,7 @@ import {
   StringIndexedHIOCTree,
   StringIndexedHIOCTreeNode,
 } from "./types/hioc";
+import * as Sentry from "@sentry/node";
 
 const logger = createYesBotLogger("event-distribution", "event-distribution");
 
@@ -192,6 +193,9 @@ export class EventDistribution {
             : new Error(text);
           await rejectWithError(error, event, ...args);
         } else {
+          Sentry.captureException(e, {
+            extra: { event, args: JSON.stringify(args, null, 4) },
+          });
           logger.error(`Error running handler ${getIocName(ioc)}: `, e);
         }
       }
