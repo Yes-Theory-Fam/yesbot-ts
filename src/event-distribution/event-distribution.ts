@@ -194,7 +194,7 @@ export class EventDistribution {
           await rejectWithError(error, event, ...args);
         } else {
           Sentry.captureException(e, {
-            extra: { event, args: JSON.stringify(args, null, 4) },
+            extra: { event, args: JSON.stringify(args, null, 2) },
           });
           logger.error(`Error running handler ${getIocName(ioc)}: `, e);
         }

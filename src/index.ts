@@ -62,7 +62,10 @@ bot.on(
     await distribution.handleEvent(DiscordEvent.MEMBER_LEAVE, member);
     await memberLeave(member).catch((error) => {
       Sentry.captureException(error, {
-        extra: { event: DiscordEvent.MEMBER_LEAVE, args: [member] },
+        extra: {
+          event: DiscordEvent.MEMBER_LEAVE,
+          args: JSON.stringify([member], null, 2),
+        },
       });
       logger.error("Error in legacy memberLeave handler: ", error);
     });
@@ -81,7 +84,7 @@ bot.on(
       Sentry.captureException(error, {
         extra: {
           event: DiscordEvent.GUILD_MEMBER_UPDATE,
-          args: [oldMember, newMember],
+          args: JSON.stringify([oldMember, newMember], null, 2),
         },
       });
       logger.error("Error in legacy guildMemberUpdate handler: ", error);
