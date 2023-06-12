@@ -86,9 +86,11 @@ class BirthdayManager implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
     try {
       timezoneSelection = await getUserTimezoneSelection(interaction);
     } catch (err) {
-      await interaction.editReply(
-        "Hmm, something went wrong. Please contact my engineers if this seems unreasonable. :nerd:"
-      );
+      await interaction.editReply({
+        content:
+          "Hmm, something went wrong. Please contact my engineers if this seems unreasonable. :nerd:",
+        components: [],
+      });
       return;
     }
 
