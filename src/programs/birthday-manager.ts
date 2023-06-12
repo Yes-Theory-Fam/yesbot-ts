@@ -11,7 +11,7 @@ import {
   ChatInputCommandInteraction,
   ComponentType,
   GuildMemberRoleManager,
-  SelectMenuBuilder,
+  StringSelectMenuBuilder,
   SelectMenuInteraction,
 } from "discord.js";
 import { CountryRoleFinder } from "../common/country-role-finder";
@@ -86,9 +86,11 @@ class BirthdayManager implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
     try {
       timezoneSelection = await getUserTimezoneSelection(interaction);
     } catch (err) {
-      await interaction.editReply(
-        "Hmm, something went wrong. Please contact my engineers if this seems unreasonable. :nerd:"
-      );
+      await interaction.editReply({
+        content:
+          "Hmm, something went wrong. Please contact my engineers if this seems unreasonable. :nerd:",
+        components: [],
+      });
       return;
     }
 
@@ -162,13 +164,13 @@ async function getUserTimezoneSelection(
 
     return { value: tz, label: tz, description: currentTimeString };
   });
-  const textSelect = new SelectMenuBuilder({
+  const textSelect = new StringSelectMenuBuilder({
     placeholder: "Pick your timezone",
     customId: timezoneSelectId,
     options,
   });
 
-  const components = new ActionRowBuilder<SelectMenuBuilder>({
+  const components = new ActionRowBuilder<StringSelectMenuBuilder>({
     components: [textSelect],
   });
   const response = await interaction.reply({

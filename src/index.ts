@@ -160,6 +160,10 @@ bot.on(
 
 //! ================= /EVENT HANDLERS ===================
 
+BigInt.prototype.toJSON = function () {
+  return this.toString();
+};
+
 process.on("uncaughtException", (error, origin) => {
   Sentry.captureException(error, { level: "fatal" });
 });

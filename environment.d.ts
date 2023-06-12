@@ -23,3 +23,7 @@ declare namespace NodeJS {
     YTF_API_AUTH_TOKEN: string;
   }
 }
+
+interface BigInt {
+  toJSON: () => string;
+}
