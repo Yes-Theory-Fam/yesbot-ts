@@ -43,8 +43,13 @@ export class GroupService {
 
     await prisma.userGroupMembersGroupMember.create({
       data: {
-        userGroupId: groupId,
-        groupMemberId: userId,
+        userGroup: { connect: { id: groupId } },
+        groupMember: {
+          connectOrCreate: {
+            where: { id: userId },
+            create: { id: userId },
+          },
+        },
       },
     });
   }
