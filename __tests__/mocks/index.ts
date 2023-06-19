@@ -198,6 +198,7 @@ export default class MockDiscord {
     return {
       ...this.user,
       flags: undefined,
+      global_name: "user",
     };
   }
 
