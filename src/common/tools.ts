@@ -120,9 +120,10 @@ class Tools {
   static async addPerUserPermissions(
     reactionName: string,
     messageId: string,
-    guild: Guild,
     user: GuildMember | PartialGuildMember
   ) {
+    const guild = user.guild;
+
     try {
       const toggle = await prisma.channelToggle.findFirst({
         where: { emoji: reactionName, messageId },

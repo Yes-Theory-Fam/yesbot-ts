@@ -62,8 +62,8 @@ class HandleChannelToggleReactionAdd
       }
     }
 
-    if (guild && member) {
-      await Tools.addPerUserPermissions(emoji, messageId, guild, member);
+    if (member?.guild) {
+      await Tools.addPerUserPermissions(emoji, messageId, member);
     }
   }
 }
