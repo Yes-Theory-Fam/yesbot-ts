@@ -15,7 +15,7 @@ import {
   VoiceState,
 } from "discord.js";
 import distribution, { DiscordEvent } from "./event-distribution";
-import { guildMemberUpdate, memberLeave, ready } from "./events";
+import { memberLeave, ready } from "./events";
 import { legacyCommandHandler } from "./events/message";
 import { LoadCron } from "./load-cron";
 import { createYesBotLogger } from "./log";
@@ -80,15 +80,6 @@ bot.on(
     oldMember: GuildMember | PartialGuildMember,
     newMember: GuildMember | PartialGuildMember
   ) => {
-    await guildMemberUpdate(oldMember, newMember).catch((error) => {
-      Sentry.captureException(error, {
-        extra: {
-          event: DiscordEvent.GUILD_MEMBER_UPDATE,
-          args: JSON.stringify([oldMember, newMember], null, 2),
-        },
-      });
-      logger.error("Error in legacy guildMemberUpdate handler: ", error);
-    });
     await distribution.handleEvent(
       DiscordEvent.GUILD_MEMBER_UPDATE,
       oldMember,
@@ -164,7 +155,7 @@ BigInt.prototype.toJSON = function () {
   return this.toString();
 };
 
-process.on("uncaughtException", (error, origin) => {
+process.on("uncaughtException", (error) => {
   Sentry.captureException(error, { level: "fatal" });
 });
 
