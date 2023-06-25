@@ -38,6 +38,8 @@ class SomeoneTag implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
       return;
     }
 
+    await interaction.deferReply({ ephemeral: true });
+
     const { member } = interaction;
     if (!member) return;
 
@@ -47,10 +49,9 @@ class SomeoneTag implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
     );
     const question = await getQuestion();
     if (!target) {
-      await interaction.reply({
+      await interaction.editReply({
         content:
           "There were no available users to ping! This is embarrassing. How could this have happened? There's so many people on here that statistically this message should never even show up. Oh well. Congratulations, I guess.",
-        ephemeral: true,
       });
     } else {
       await sendMessage(
@@ -65,7 +66,7 @@ class SomeoneTag implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
         update: { time: new Date() },
         create: { id: member.user.id, time: new Date() },
       });
-      await interaction.reply({ content: "Done!", ephemeral: true });
+      await interaction.editReply({ content: "Done!" });
     }
   }
 }

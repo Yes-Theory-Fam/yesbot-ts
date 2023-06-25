@@ -1,6 +1,10 @@
-import { Message } from "discord.js";
+import { Guild, Message } from "discord.js";
 import Tools from "../common/tools";
-import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
+import eventDistribution, {
+  Command,
+  CommandHandler,
+  DiscordEvent,
+} from "../event-distribution";
 import { createYesBotLogger } from "../log";
 
 const logger = createYesBotLogger("programs", "AddVote");
@@ -22,7 +26,7 @@ class AddVote implements CommandHandler<DiscordEvent.MESSAGE> {
       const messageToVote = await botMessage.channel.messages.resolve(
         messageId
       );
-      if (!messageToVote) botMessage.react("👎");
+      if (!messageToVote) await botMessage.react("👎");
       else
         botMessage
           .delete()

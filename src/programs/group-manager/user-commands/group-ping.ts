@@ -56,6 +56,8 @@ enum ErrorDetails {
 })
 class PingGroup implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
   async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+    await interaction.deferReply({ ephemeral: true });
+
     const groupId = interaction.options.getInteger("group")!;
     const groupService = new GroupService();
 
@@ -101,6 +103,6 @@ class PingGroup implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
 
     await groupService.pingGroup(group, interaction.channel);
 
-    await interaction.reply({ ephemeral: true, content: "Done ✅" });
+    await interaction.editReply({ content: "Done ✅" });
   }
 }
