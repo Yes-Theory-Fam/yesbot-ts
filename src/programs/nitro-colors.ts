@@ -142,8 +142,8 @@ class NitroColorSelector implements CommandHandler<DiscordEvent.REACTION_ADD> {
 
 export class RoleResetCron {
   static init() {
-    const CRON = process.env.NODE_ENV === "development"
-      ? "*/1 * * * *" : "0 0 1 * *";
+    const CRON =
+      process.env.NODE_ENV === "development" ? "* * * * *" : "0 0 1 * *";
 
     // Schedule a cron task every month
     cron.schedule(CRON, async () => {
@@ -162,31 +162,33 @@ export class RoleResetCron {
         ) as TextChannel;
 
       // Remove all messages sent by the bot
-      channel.messages
-        .fetch({ limit: 5 })
-        .then((messages) => {
-          messages.forEach(async (message) => {
-            if (message.id !== colorSelectionMessage.id) {
-              await message.delete();
-            } else {
-              colorSelectionMessage.reactions.cache.forEach((reaction) => {
-                reaction.users.fetch().then((r) => {
-                  r.filter((user, id) => user.id !== bot.user?.id).forEach(
-                    async (user, id) => await reaction.users.remove(user)
-                  );
-                });
-              });
-            }
-          });
-        })
-        .then(async () => {
-          // TODO: Make this message a bit nicer!
-          // Let Nitro boosters know about the new month's change!
-          await channel.send({
-            content:
-              "@Nitro Booster It is time to pick a new color for the new month!",
-          });
-        });
+      const messages = await channel.messages.fetch({ limit: 5 });
+      for (const message of messages.values()) {
+        if (message.id !== colorSelectionMessage.id) {
+          await message.delete();
+          continue;
+        }
+
+        // Remove all reactions from the reactions message
+        const reactionsCache = colorSelectionMessage.reactions.cache;
+        for (const reaction of reactionsCache.values()) {
+          const reactionUsers = await reaction.users.fetch();
+          const usersToRemove = reactionUsers.filter(
+            (user) => user.id !== bot.user?.id
+          );
+
+          for (const [userId] of usersToRemove) {
+            await reaction.users.remove(userId);
+          }
+        }
+      }
+
+      // TODO: Make this message a bit nicer!
+      // Let Nitro boosters know about the new month's change!
+      await channel.send({
+        content:
+          "@Nitro Booster It is time to pick a new color for the new month!",
+      });
 
       logger.debug("Executed cleanup");
     });
