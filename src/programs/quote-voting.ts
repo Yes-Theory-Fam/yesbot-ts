@@ -1,8 +1,9 @@
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
-import { Message, Snowflake, TextChannel } from "discord.js";
+import { DiscordAPIError, Message, Snowflake, TextChannel } from "discord.js";
 import { TimerService } from "./timer/timer.service";
 import { Timer } from "@prisma/client";
 import bot from "../index";
+import { RESTJSONErrorCodes } from "discord-api-types/v10";
 
 const quoteVotingIdentifier = "quotevoting";
 const positiveEmojiName = "haha";
@@ -53,7 +54,21 @@ class QuoteTally implements CommandHandler<DiscordEvent.TIMER> {
   async handle(timer: Timer): Promise<void> {
     const data = timer.data as unknown as QuoteVotingTimerData;
     const channel = bot.channels.resolve(data.channelId) as TextChannel;
-    const message = await channel.messages.fetch(data.messageId);
+
+    let message: Message<true>;
+
+    try {
+      message = await channel.messages.fetch(data.messageId);
+    } catch (e) {
+      if (
+        e instanceof DiscordAPIError &&
+        e.code === RESTJSONErrorCodes.UnknownMessage
+      ) {
+        return;
+      }
+
+      throw e;
+    }
 
     const countByEmoji = (name: string) =>
       message.reactions.cache.find((reaction) => reaction.emoji.name === name)
