@@ -1,13 +1,13 @@
 import { Timer } from "@prisma/client";
-import { ChannelType } from "discord.js";
+import { ChannelType, DiscordAPIError, GuildBasedChannel } from "discord.js";
 import {
   Command,
   CommandHandler,
   DiscordEvent,
 } from "../../../event-distribution";
 import bot from "../../../index";
-import prisma from "../../../prisma";
 import { VoiceOnDemandService } from "../voice-on-demand-service";
+import { RESTJSONErrorCodes } from "discord-api-types/v10";
 
 /*
 TODO have a look at this scenario
@@ -29,7 +29,20 @@ export class DeleteIfEmptyTimer extends CommandHandler<DiscordEvent.TIMER> {
     const { channelId } = timer.data as { channelId: string };
     const guild = bot.guilds.resolve(process.env.GUILD_ID)!;
 
-    const channel = await guild.channels.fetch(channelId);
+    let channel: GuildBasedChannel | null;
+
+    try {
+      channel = await guild.channels.fetch(channelId);
+    } catch (e) {
+      if (
+        e instanceof DiscordAPIError &&
+        e.code === RESTJSONErrorCodes.UnknownChannel
+      ) {
+        return;
+      }
+
+      throw e;
+    }
 
     if (!channel || channel.type !== ChannelType.GuildVoice) return;
 
