@@ -149,11 +149,11 @@ export class RoleResetCron {
     // Schedule a cron task every month
     cron.schedule(CRON, async () => {
       // Remove color roles from each user
-      nitroRolesCache.forEach((role) => {
-        role.members.forEach(async (member) => {
+      for (const role of nitroRolesCache.values()) {
+        for (const member of role.members.values()) {
           await member.roles.remove(role);
-        });
-      });
+        }
+      }
 
       // Clean up pick-your-color messages
       const channel = bot.guilds
