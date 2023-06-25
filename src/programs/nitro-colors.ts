@@ -15,6 +15,7 @@ import { createYesBotLogger } from "../log";
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 import cron from "node-cron";
 import prisma from "../prisma";
+import Tools from "../common/tools";
 
 const logger = createYesBotLogger("programs", "NitroColors");
 
@@ -160,6 +161,12 @@ export class RoleResetCron {
         ?.channels.cache.find(
           (c) => c.name === "pick-your-color"
         ) as TextChannel;
+      const nitroBoosterRole = Tools.getRoleByName("Nitro Booster", channel.guild);
+
+      if (!nitroBoosterRole) {
+        logger.error('Could not find Nitro Booster role!');
+        return;
+      }
 
       // Remove all messages sent by the bot
       const messages = await channel.messages.fetch({ limit: 5 });
@@ -183,11 +190,10 @@ export class RoleResetCron {
         }
       }
 
-      // TODO: Make this message a bit nicer!
       // Let Nitro boosters know about the new month's change!
       await channel.send({
         content:
-          "@Nitro Booster It is time to pick a new color for the new month!",
+          `${nitroBoosterRole} It is time to pick a new color for the new month!`,
       });
 
       logger.debug("Executed cleanup");
