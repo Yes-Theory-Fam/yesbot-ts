@@ -6,12 +6,19 @@ import {
   DiscordEvent,
 } from "../../../event-distribution";
 import { BuddyProjectService } from "../services/buddy-project.service";
+import Tools from "../../../common/tools";
 
 @Command({
   event: DiscordEvent.MEMBER_LEAVE,
 })
 class BuddyProjectLeave extends CommandHandler<DiscordEvent.MEMBER_LEAVE> {
   async handle(member: GuildMember): Promise<void> {
+    const isBpEnabled = await Tools.isCommandEnabled(
+      "buddy-project",
+      member.guild
+    );
+    if (!isBpEnabled) return;
+
     const buddyProjectService = new BuddyProjectService();
     const status = await buddyProjectService.getBuddy(member.id);
 

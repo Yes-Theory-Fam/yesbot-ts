@@ -17,6 +17,7 @@ import { createYesBotLogger } from "../log";
 import prisma from "../prisma";
 import { findManyRequestedGroups } from "../programs/group-manager/common";
 import { textLog } from "./moderator";
+import eventDistribution from "../event-distribution";
 
 export const unicodeEmojiRegex =
   /^(\p{RI}\p{RI}|\p{Emoji}(\p{Emoji_Modifier_Base}|\uFE0F\u20E3?|[\u{E0020}-\u{E007E}]+\u{E007F})?(\u{200D}\p{Emoji}(\p{Emoji_Modifier_Base}|\uFE0F\u20E3?|[\u{E0020}-\u{E007E}]+\u{E007F})?)*)/gu;
@@ -163,6 +164,16 @@ class Tools {
     const rows = data.values;
 
     return rows.flatMap((row: string[]) => row);
+  }
+
+  static async isCommandEnabled(name: string, guild: Guild) {
+    const commandId = eventDistribution.getIdForCommandName(name);
+
+    const permissions = await guild.commands.permissions.fetch({});
+    const appliedPermissions =
+      permissions.get(commandId) ?? permissions.get(guild.client.user.id) ?? [];
+
+    return appliedPermissions.some((p) => p.type === 1 && p.permission);
   }
 
   /**
