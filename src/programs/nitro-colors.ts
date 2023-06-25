@@ -161,10 +161,13 @@ export class RoleResetCron {
         ?.channels.cache.find(
           (c) => c.name === "pick-your-color"
         ) as TextChannel;
-      const nitroBoosterRole = Tools.getRoleByName("Nitro Booster", channel.guild);
+      const nitroBoosterRole = Tools.getRoleByName(
+        "Nitro Booster",
+        channel.guild
+      );
 
       if (!nitroBoosterRole) {
-        logger.error('Could not find Nitro Booster role!');
+        logger.error("Could not find Nitro Booster role!");
         return;
       }
 
@@ -192,8 +195,7 @@ export class RoleResetCron {
 
       // Let Nitro boosters know about the new month's change!
       await channel.send({
-        content:
-          `${nitroBoosterRole} It is time to pick a new color for the new month!`,
+        content: `${nitroBoosterRole} It is time to pick a new color for the new month!`,
       });
 
       logger.debug("Executed cleanup");
