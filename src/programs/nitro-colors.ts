@@ -142,11 +142,11 @@ class NitroColorSelector implements CommandHandler<DiscordEvent.REACTION_ADD> {
 
 export class RoleResetCron {
   static init() {
-    const MONTHLY_CRON = "0 0 1 * *";
-    const TEST_CRON = "*/1 * * * *"; // Every 1 minute, for testing purposes
+    const CRON = process.env.NODE_ENV === "development"
+      ? "*/1 * * * *" : "0 0 1 * *";
 
     // Schedule a cron task every month
-    cron.schedule(MONTHLY_CRON, async () => {
+    cron.schedule(CRON, async () => {
       // Remove color roles from each user
       nitroRolesCache.forEach((role) => {
         role.members.forEach(async (member) => {
