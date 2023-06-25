@@ -1,4 +1,5 @@
 import {
+  DiscordAPIError,
   Guild,
   GuildMember,
   Message,
@@ -10,6 +11,7 @@ import {
 import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
 import { isRegistered, textLog } from "../common/moderator";
 import { CountryRoleFinder } from "../common/country-role-finder";
+import { RESTJSONErrorCodes } from "discord-api-types/v10";
 
 const regionCountries = ["USA"];
 
@@ -142,9 +144,19 @@ class WhereAreYouFrom implements CommandHandler<DiscordEvent.MESSAGE> {
         if (!isCountryWithRegionRole) {
           await welcomeMember(message.member.user, message.member.guild);
         }
-        await memberDm.send(
-          `Hey! My name is YesBot, I'm so happy to see you've made it into our world, we really hope you stick around!\n\nIn the meantime, you should checkout ${rules?.toString()} and ${generalInfo?.toString()} , they contain a lot of good-to-knows about our server and what cool stuff you can do.\nIf you'd like me to change your name on the server for you, just message me \`!menu\` and I will help you out! Then I can introduce you to our family :grin:\n\nI know Discord can be a lot to take in at first, trust me, but it's really quite a wonderful place.`
-        );
+
+        try {
+          await memberDm.send(
+            `Hey! My name is YesBot, I'm so happy to see you've made it into our world, we really hope you stick around!\n\nIn the meantime, you should checkout ${rules?.toString()} and ${generalInfo?.toString()} , they contain a lot of good-to-knows about our server and what cool stuff you can do.\nIf you'd like me to change your name on the server for you, just message me \`!menu\` and I will help you out! Then I can introduce you to our family :grin:\n\nI know Discord can be a lot to take in at first, trust me, but it's really quite a wonderful place.`
+          );
+        } catch (e) {
+          if (
+            !(e instanceof DiscordAPIError) ||
+            e.code !== RESTJSONErrorCodes.CannotSendMessagesToThisUser
+          ) {
+            throw e;
+          }
+        }
 
         if (isCountryWithRegionRole) {
           const lowerCaseCountry = CountryRoleFinder.getCountryByRole(
