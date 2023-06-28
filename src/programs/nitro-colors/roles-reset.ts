@@ -3,7 +3,12 @@ import cron from "node-cron";
 import { nitroRolesCache, colorSelectionMessage, logger } from ".";
 import Tools from "../../common/tools";
 import { ColorResolvable, Colors, Role, TextChannel } from "discord.js";
-import { NitroRole, getCurrentSeason, isNewSeason } from "./commons";
+import {
+  NitroRole,
+  buildAnnouncementsMessage,
+  getCurrentSeason,
+  isNewSeason,
+} from "./commons";
 
 export class RoleResetCron {
   static init() {
@@ -72,12 +77,14 @@ export class RoleResetCron {
             });
           }
         }
-      }
 
-      // Let Nitro boosters know about the new month's change!
-      await channel.send({
-        content: `${nitroBoosterRole} It is time to pick a new color for the new month!`,
-      });
+        // Let Nitro boosters know about the new month's change!
+        await channel.send({
+          content: `${nitroBoosterRole} ${buildAnnouncementsMessage()} ${
+            season?.emoji
+          }`,
+        });
+      }
 
       logger.debug("Executed cleanup");
     });
