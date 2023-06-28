@@ -2,7 +2,8 @@ import bot from "../../index";
 import cron from "node-cron";
 import { nitroRolesCache, colorSelectionMessage, logger } from ".";
 import Tools from "../../common/tools";
-import { TextChannel } from "discord.js";
+import { ColorResolvable, Colors, Role, TextChannel } from "discord.js";
+import { NitroRole, getCurrentSeason, isNewSeason } from "./commons";
 
 export class RoleResetCron {
   static init() {
@@ -52,6 +53,23 @@ export class RoleResetCron {
 
           for (const [userId] of usersToRemove) {
             await reaction.users.remove(userId);
+          }
+        }
+      }
+
+      // Update the server with the new roles if it's the new season
+      const season = getCurrentSeason();
+      if (season && isNewSeason()) {
+        const seasonRolesCopy = [...season.roles];
+
+        for (const cacheRole of nitroRolesCache.values()) {
+          const seasonRole = seasonRolesCopy.shift();
+
+          if (seasonRole) {
+            await cacheRole.edit({
+              name: seasonRole.name,
+              color: seasonRole.color as ColorResolvable,
+            });
           }
         }
       }
