@@ -8,7 +8,7 @@ import {
   buildAnnouncementsMessage,
   getCurrentSeason,
   isNewSeason,
-} from "./commons";
+} from "./common";
 
 export class RoleResetCron {
   static init() {

@@ -1,7 +1,7 @@
 import {
   getCurrentSeason,
   isNewSeason,
-} from "../../src/programs/nitro-colors/commons";
+} from "../../src/programs/nitro-colors/common";
 
 describe("NitroRoles", () => {
   it("should output the proper seasons", () => {
