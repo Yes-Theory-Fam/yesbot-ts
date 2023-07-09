@@ -12,6 +12,7 @@ import {
   rejectWithError,
 } from "./events/events";
 import { registerSlashCommands } from "./events/slash-commands";
+import { registerContextMenuCommands } from "./events/context-menu";
 import { getIocName } from "./helper";
 import {
   DiscordEvent,
@@ -52,6 +53,8 @@ const isRejection = <T extends DiscordEvent>(
 export class EventDistribution {
   handlers: EventDistributionHandlers = {
     [DiscordEvent.BUTTON_CLICKED]: {},
+    [DiscordEvent.CONTEXT_MENU_MESSAGE]: {},
+    [DiscordEvent.CONTEXT_MENU_USER]: {},
     [DiscordEvent.MEMBER_LEAVE]: {},
     [DiscordEvent.MESSAGE]: {},
     [DiscordEvent.REACTION_ADD]: {},
@@ -66,6 +69,7 @@ export class EventDistribution {
   };
 
   private slashCommandNameIdMap: Record<string, Snowflake> = {};
+  private contextMenuNameIdMap: Record<string, Snowflake> = {};
 
   private infoToFilterResults<T extends DiscordEvent>(
     info: HandlerInfo,
@@ -91,6 +95,16 @@ export class EventDistribution {
       return await this.handleEvent(DiscordEvent.BUTTON_CLICKED, interaction);
     } else if (interaction.isChatInputCommand()) {
       return await this.handleEvent(DiscordEvent.SLASH_COMMAND, interaction);
+    } else if (interaction.isMessageContextMenuCommand()) {
+      return await this.handleEvent(
+        DiscordEvent.CONTEXT_MENU_MESSAGE,
+        interaction
+      );
+    } else if (interaction.isUserContextMenuCommand()) {
+      return await this.handleEvent(
+        DiscordEvent.CONTEXT_MENU_USER,
+        interaction
+      );
     } else if (interaction.isAutocomplete()) {
       return await this.handleAutocomplete(interaction);
     }
@@ -260,6 +274,19 @@ export class EventDistribution {
 
     this.slashCommandNameIdMap = nameIdMap ?? {};
     this.handlers[DiscordEvent.SLASH_COMMAND] = tree;
+
+    const {
+      userTree,
+      messageTree,
+      nameIdMap: contextNameIdMap,
+    } = await registerContextMenuCommands(
+      this.handlers[DiscordEvent.CONTEXT_MENU_MESSAGE],
+      this.handlers[DiscordEvent.CONTEXT_MENU_USER]
+    );
+
+    this.contextMenuNameIdMap = contextNameIdMap ?? {};
+    this.handlers[DiscordEvent.CONTEXT_MENU_MESSAGE] = messageTree;
+    this.handlers[DiscordEvent.CONTEXT_MENU_USER] = userTree;
   }
 
   private static isHandlerForLocation<T extends DiscordEvent>(

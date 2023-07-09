@@ -9,19 +9,10 @@ export type InstanceOrConstructor<T> =
       prototype: any;
     };
 
-type FilterEventHandlerOptionsByEvent<
-  Options extends EventHandlerOptions,
-  Event extends DiscordEvent,
-> = Options extends any
-  ? Options["event"] extends Event
-    ? Options
-    : never
-  : never;
-
 // Handler Instance Or Constructor
 export type HIOC<T extends DiscordEvent> = {
   ioc: InstanceOrConstructor<CommandHandler<T>>;
-  options: FilterEventHandlerOptionsByEvent<EventHandlerOptions, T>;
+  options: Extract<EventHandlerOptions, { event: T }>;
 };
 
 export type StringIndexedHIOCTreeNode<T extends DiscordEvent> =

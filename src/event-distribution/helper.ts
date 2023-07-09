@@ -20,6 +20,8 @@ import {
   TextBasedChannel,
 } from "discord.js";
 import { APIGuildMember } from "discord-api-types/v10";
+import { SlashCommandHandlerOptions } from "./events/slash-commands";
+import { EventHandlerOptions } from "./events/events";
 
 export const getIdFromParentName = (name: string) => `c_${name.toLowerCase()}`;
 
@@ -121,4 +123,22 @@ export const ensureGuildMemberOrNull = (
   }
 
   return Reflect.construct(GuildMember, [client, member, guild]) as GuildMember;
+};
+
+export const getAllOptions = <T extends DiscordEvent>(
+  tree: StringIndexedHIOCTree<T>
+): Extract<EventHandlerOptions, { event: T }>[] => {
+  type ResultOptions = Extract<EventHandlerOptions, { event: T }>;
+
+  let result: ResultOptions[] = [];
+
+  for (const key in tree) {
+    const node = tree[key];
+    const toPush = Array.isArray(node)
+      ? node.map<ResultOptions>((l) => l.options)
+      : getAllOptions(node);
+    result = [...result, ...toPush];
+  }
+
+  return result;
 };
