@@ -1,4 +1,4 @@
-import bot from "../index";
+import bot from "../../index";
 import {
   Client,
   Collection,
@@ -11,14 +11,18 @@ import {
   TextChannel,
   User,
 } from "discord.js";
-import { createYesBotLogger } from "../log";
-import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
-import prisma from "../prisma";
+import { createYesBotLogger } from "../../log";
+import {
+  Command,
+  CommandHandler,
+  DiscordEvent,
+} from "../../event-distribution";
+import prisma from "../../prisma";
 
-const logger = createYesBotLogger("programs", "NitroColors");
+export const logger = createYesBotLogger("programs", "NitroColors");
 
-let nitroRolesCache: Collection<Snowflake, Role>;
-let colorSelectionMessage: Message;
+export let nitroRolesCache: Collection<Snowflake, Role>;
+export let colorSelectionMessage: Message;
 
 @Command({
   event: DiscordEvent.READY,

@@ -1,12 +1,14 @@
 import { ActivityCleanCron } from "./programs/activity/controller/activity-clean.cron";
 import { Client } from "discord.js";
 import { RescueForceClose } from "./programs/buddy-project/find-buddy/rescue-force-close";
+import { RoleResetCron } from "./programs/nitro-colors/roles-reset";
 
 export class LoadCron {
   private static loadCronInstance: LoadCron;
 
   private constructor(private bot: Client) {
     LoadCron.initActivityCron();
+    this.initNitroRolesCron();
     this.initBuddyProjectCrons();
   }
 
@@ -22,5 +24,9 @@ export class LoadCron {
 
   private initBuddyProjectCrons() {
     RescueForceClose.init(this.bot);
+  }
+
+  private initNitroRolesCron() {
+    RoleResetCron.init();
   }
 }
