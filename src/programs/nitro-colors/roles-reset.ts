@@ -95,10 +95,10 @@ export class RoleResetCron {
           (c) => c.name === "pick-your-color"
         ) as TextChannel;
 
-      removeUserColors();
-      cleanupChannelMessages(channel);
-      updateRoles();
-      announce(channel);
+      await removeUserColors();
+      await cleanupChannelMessages(channel);
+      await updateRoles();
+      await announce(channel);
 
       logger.debug("Executed cleanup");
     });
