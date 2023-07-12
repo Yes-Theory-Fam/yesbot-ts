@@ -77,15 +77,14 @@ export class RoleResetCron {
             });
           }
         }
-
-        // Let Nitro boosters know about the new month's change!
-        await channel.send({
-          content: `${nitroBoosterRole} ${buildAnnouncementsMessage()} ${
-            season?.emoji
-          }`,
-        });
       }
 
+      // Let Nitro boosters know about the new month's change!
+      await channel.send({
+        content: `${nitroBoosterRole} ${buildAnnouncementsMessage()} ${
+          season?.emoji
+        }`,
+      });
       logger.debug("Executed cleanup");
     });
 
