@@ -45,7 +45,7 @@ type ChoiceType =
 
 type ChoiceOption<
   T extends string | number,
-  TType extends ChoiceType
+  TType extends ChoiceType,
 > = T extends string
   ? SlashCommandStringOption
   : (SlashCommandIntegerOption | SlashCommandNumberOption) & { type: TType };
@@ -73,7 +73,7 @@ const addChoices = <T extends string | number, TType extends ChoiceType>(
 const addMinMax = <
   T extends
     | ApplicationCommandOptionType.Number
-    | ApplicationCommandOptionType.Integer
+    | ApplicationCommandOptionType.Integer,
 >(
   option: ChoiceOption<number, T>,
   data: { min_value?: number; max_value?: number }

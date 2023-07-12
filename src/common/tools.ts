@@ -173,10 +173,8 @@ class Tools {
     const appliedPermissions =
       permissions.get(commandId) ?? permissions.get(guild.client.user.id) ?? [];
 
-    const supportId = this.getRoleByName(
-      process.env.MODERATOR_ROLE_NAME,
-      guild
-    )?.id;
+    const supportId = this.getRoleByName(process.env.MODERATOR_ROLE_NAME, guild)
+      ?.id;
 
     return appliedPermissions.some(
       (p) => p.type === 1 && p.permission && p.id !== supportId
