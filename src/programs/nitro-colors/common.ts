@@ -113,22 +113,22 @@ export function getCurrentSeason(month?: number): SeasonGroup | null {
 }
 
 export function isNewSeason(month?: number): boolean {
-  let season = getCurrentSeason(month);
-  let currentMonth = month ?? new Date().getMonth() + 1;
+  const season = getCurrentSeason(month);
+  const currentMonth = month ?? new Date().getMonth() + 1;
 
   return season?.availability.startMonth == currentMonth;
 }
 
 export function isSeasonEnding(month?: number): boolean {
-  let season = getCurrentSeason(month);
-  let currentMonth = month ?? new Date().getMonth() + 1;
+  const season = getCurrentSeason(month);
+  const currentMonth = month ?? new Date().getMonth() + 1;
 
   return season?.availability.endMonth == currentMonth;
 }
 
 export function buildAnnouncementsMessage(month?: number): string {
-  let announcement: string[] = [];
-  let randomStr = (arr: string[]): string => arr[randomInt(arr.length)];
+  const announcement: string[] = [];
+  const randomStr = (arr: string[]): string => arr[randomInt(arr.length)];
 
   if (isNewSeason(month)) announcement.push(randomStr(announcements.newSeason));
   else announcement.push(randomStr(announcements.normal));
