@@ -49,9 +49,3 @@ export const extractContextMenuMessageInfo: ExtractInfoForEventFunction<
     handlerKeys: [command.commandId],
   };
 };
-
-const yeet = () => {
-  new ContextMenuCommandBuilder()
-    .setType(ApplicationCommandType.Message)
-    .setName("");
-};
