@@ -81,9 +81,7 @@ export class RoleResetCron {
       }
 
       await channel.send({
-        content: `${nitroBoosterRole} ${buildAnnouncementsMessage()} ${
-          season?.emoji
-        }`,
+        content: `${nitroBoosterRole} ${buildAnnouncementsMessage()} ${season?.emoji}`,
       });
     };
 

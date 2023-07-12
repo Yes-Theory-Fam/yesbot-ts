@@ -33,10 +33,11 @@ class BreakRoleAdded extends CommandHandler<DiscordEvent.GUILD_MEMBER_UPDATE> {
       .map((id) => guild.channels.resolve(id))
       .filter((x) => x); // This filter is mainly to help in development because bots might have channels of multiple servers in their db
 
-    const deletePromises = targetChannels.map((channel) =>
-      (channel as GuildChannel).permissionOverwrites
-        .resolve(member.id)
-        ?.delete()
+    const deletePromises = targetChannels.map(
+      (channel) =>
+        (channel as GuildChannel).permissionOverwrites
+          .resolve(member.id)
+          ?.delete()
     );
 
     await Promise.all(deletePromises);
