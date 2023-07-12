@@ -4,7 +4,7 @@ import { format } from "prettier";
 
 const formatFile = async (path: string) => {
   const content = await readFile(path, "utf-8");
-  const formatted = format(content, { parser: "typescript" });
+  const formatted = await format(content, { parser: "typescript" });
   await writeFile(path, formatted, "utf-8");
 };
 
