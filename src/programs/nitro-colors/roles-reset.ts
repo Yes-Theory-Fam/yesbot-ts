@@ -15,32 +15,17 @@ export class RoleResetCron {
     const CRON =
       process.env.NODE_ENV === "development" ? "* * * * *" : "0 0 1 * *";
 
-    // Schedule a cron task every month
-    cron.schedule(CRON, async () => {
-      // Remove color roles from each user
+    // Remove color roles from each user
+    const removeUserColors = async () => {
       for (const role of nitroRolesCache.values()) {
         for (const member of role.members.values()) {
           await member.roles.remove(role);
         }
       }
+    };
 
-      // Clean up pick-your-color messages
-      const channel = bot.guilds
-        .resolve(process.env.GUILD_ID)
-        ?.channels.cache.find(
-          (c) => c.name === "pick-your-color"
-        ) as TextChannel;
-      const nitroBoosterRole = Tools.getRoleByName(
-        "Nitro Booster",
-        channel.guild
-      );
-
-      if (!nitroBoosterRole) {
-        logger.error("Could not find Nitro Booster role!");
-        return;
-      }
-
-      // Remove all messages sent by the bot
+    // Clean up pick-your-color messages
+    const cleanupChannelMessages = async (channel: TextChannel) => {
       const messages = await channel.messages.fetch({ limit: 5 });
       for (const message of messages.values()) {
         if (message.id !== colorSelectionMessage.id) {
@@ -61,8 +46,10 @@ export class RoleResetCron {
           }
         }
       }
+    };
 
-      // Update the server with the new roles if it's the new season
+    // Update the server with the new roles if it's the new season
+    const updateRoles = async () => {
       const season = getCurrentSeason();
       if (season && isNewSeason()) {
         const seasonRolesCopy = [...season.roles];
@@ -78,13 +65,41 @@ export class RoleResetCron {
           }
         }
       }
+    }
 
-      // Let Nitro boosters know about the new month's change!
+    // Let Nitro boosters know about the new month's change!
+    const announce = async (channel: TextChannel) => {
+      const season = getCurrentSeason();
+      const nitroBoosterRole = Tools.getRoleByName(
+        "Nitro Booster",
+        channel.guild
+      );
+
+      if (!nitroBoosterRole) {
+        logger.error("Could not find Nitro Booster role!");
+        return;
+      }
+
       await channel.send({
         content: `${nitroBoosterRole} ${buildAnnouncementsMessage()} ${
           season?.emoji
         }`,
       });
+    };
+
+    // Schedule the cron task every month
+    cron.schedule(CRON, async () => {
+      const channel = bot.guilds
+        .resolve(process.env.GUILD_ID)
+        ?.channels.cache.find(
+          (c) => c.name === "pick-your-color"
+        ) as TextChannel;
+
+      removeUserColors();
+      cleanupChannelMessages(channel);
+      updateRoles();
+      announce(channel);
+
       logger.debug("Executed cleanup");
     });
 
