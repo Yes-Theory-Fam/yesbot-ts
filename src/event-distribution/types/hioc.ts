@@ -11,7 +11,7 @@ export type InstanceOrConstructor<T> =
 
 type FilterEventHandlerOptionsByEvent<
   Options extends EventHandlerOptions,
-  Event extends DiscordEvent,
+  Event extends DiscordEvent
 > = Options extends any
   ? Options["event"] extends Event
     ? Options

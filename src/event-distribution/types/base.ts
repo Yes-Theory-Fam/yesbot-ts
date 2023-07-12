@@ -51,7 +51,7 @@ type VoidFunctionWithArgs<T> = T extends any[]
 export type HandlerFunctionFor<
   Event extends DiscordEvent,
   TargetEvent extends DiscordEvent,
-  VoidFunctionArgs,
+  VoidFunctionArgs
 > = Event extends TargetEvent ? VoidFunctionWithArgs<VoidFunctionArgs> : never;
 
 export interface HandlerInfo {
