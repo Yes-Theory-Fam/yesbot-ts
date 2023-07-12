@@ -65,7 +65,7 @@ export class RoleResetCron {
           }
         }
       }
-    }
+    };
 
     // Let Nitro boosters know about the new month's change!
     const announce = async (channel: TextChannel) => {
