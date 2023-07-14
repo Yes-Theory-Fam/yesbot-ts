@@ -29,7 +29,10 @@ export const legacyCommandHandler = async (message: Message) => {
   const firstWord = message.content.split(" ")[0].toLowerCase();
 
   if (oldContextMenuCommands.includes(firstWord)) {
-    await Tools.handleUserError(message, "Hey there, it seems you have used one of the commands that have been converted to context menu commands. You can select the message now and go to Apps to make use of the command instead");
+    await Tools.handleUserError(
+      message,
+      "Hey there, it seems you have used one of the commands that have been converted to context menu commands. You can select the message now and go to Apps to make use of the command instead"
+    );
     return;
   }
 
