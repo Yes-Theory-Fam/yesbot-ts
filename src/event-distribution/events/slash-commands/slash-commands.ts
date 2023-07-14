@@ -9,7 +9,11 @@ import {
   Snowflake,
 } from "discord.js";
 import { createYesBotLogger } from "../../../log";
-import { addToTree, ensureGuildMemberOrNull } from "../../helper";
+import {
+  addToTree,
+  ensureGuildMemberOrNull,
+  getAllOptions,
+} from "../../helper";
 import {
   AddEventHandlerFunction,
   BaseOptions,
@@ -77,22 +81,6 @@ export const extractSlashCommandInfo: ExtractInfoForEventFunction<
     handlerKeys,
     isDirectMessage: command.channel?.type === ChannelType.DM ?? false,
   };
-};
-
-const getAllOptions = (
-  tree: StringIndexedHIOCTree<DiscordEvent.SLASH_COMMAND>
-): SlashCommandHandlerOptions[] => {
-  let result: SlashCommandHandlerOptions[] = [];
-
-  for (const key in tree) {
-    const node = tree[key];
-    const toPush = Array.isArray(node)
-      ? node.map((l) => l.options)
-      : getAllOptions(node);
-    result = [...result, ...toPush];
-  }
-
-  return result;
 };
 
 const buildCommand = (

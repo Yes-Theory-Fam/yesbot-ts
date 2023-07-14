@@ -4,10 +4,12 @@ import {
   ChatInputCommandInteraction,
   Client,
   Message,
+  MessageContextMenuCommandInteraction,
   MessageReaction,
   RepliableInteraction,
   ThreadChannel,
   User,
+  UserContextMenuCommandInteraction,
   VoiceState,
 } from "discord.js";
 import Tools from "../../common/tools";
@@ -90,9 +92,21 @@ import {
   VoiceStateHandlerFunction,
   VoiceStateUpdateEventHandlerOptions,
 } from "./voice-state-update";
+import {
+  addContextMenuMessageHandler,
+  addContextMenuUserHandler,
+  ContextMenuMessageHandlerFunction,
+  ContextMenuMessageHandlerOptions,
+  ContextMenuUserHandlerFunction,
+  ContextMenuUserHandlerOptions,
+  extractContextMenuMessageInfo,
+  extractContextMenuUserInfo,
+} from "./context-menu";
 
 export type EventHandlerOptions =
   | ButtonClickedHandlerOptions
+  | ContextMenuMessageHandlerOptions
+  | ContextMenuUserHandlerOptions
   | MemberLeaveEventHandlerOptions
   | MessageEventHandlerOptions
   | ReactionEventHandlerOptions
@@ -106,6 +120,8 @@ export type EventHandlerOptions =
 
 export type HandlerFunction<T extends DiscordEvent> =
   | ButtonClickedHandlerFunction<T>
+  | ContextMenuMessageHandlerFunction<T>
+  | ContextMenuUserHandlerFunction<T>
   | MemberLeaveHandlerFunction<T>
   | MessageHandlerFunction<T>
   | ReactionHandlerFunction<T>
@@ -138,6 +154,18 @@ export const addEventHandler: AddEventHandlerFunction<EventHandlerOptions> = (
         options,
         ioc,
         tree as StringIndexedHIOCTree<DiscordEvent.BUTTON_CLICKED>
+      );
+    case DiscordEvent.CONTEXT_MENU_MESSAGE:
+      return addContextMenuMessageHandler(
+        options,
+        ioc,
+        tree as StringIndexedHIOCTree<DiscordEvent.CONTEXT_MENU_MESSAGE>
+      );
+    case DiscordEvent.CONTEXT_MENU_USER:
+      return addContextMenuUserHandler(
+        options,
+        ioc,
+        tree as StringIndexedHIOCTree<DiscordEvent.CONTEXT_MENU_USER>
       );
     case DiscordEvent.MEMBER_LEAVE:
       return addMemberLeaveHandler(
@@ -213,6 +241,14 @@ export const extractEventInfo: ExtractInfoFunction<DiscordEvent> = (
     switch (event) {
       case DiscordEvent.BUTTON_CLICKED:
         return extractButtonClickedInfo(args[0] as ButtonInteraction);
+      case DiscordEvent.CONTEXT_MENU_MESSAGE:
+        return extractContextMenuMessageInfo(
+          args[0] as MessageContextMenuCommandInteraction
+        );
+      case DiscordEvent.CONTEXT_MENU_USER:
+        return extractContextMenuUserInfo(
+          args[0] as UserContextMenuCommandInteraction
+        );
       case DiscordEvent.MEMBER_LEAVE:
         return extractMemberLeaveInfo(args[0] as MemberLeaveArgument);
       case DiscordEvent.MEMBER_JOIN:
@@ -270,6 +306,8 @@ export const rejectWithError = async (
       return await Tools.handleUserError(messageArg, detailedMessage);
     case DiscordEvent.SLASH_COMMAND:
     case DiscordEvent.BUTTON_CLICKED:
+    case DiscordEvent.CONTEXT_MENU_MESSAGE:
+    case DiscordEvent.CONTEXT_MENU_USER:
       const interactionArg = args[0] as RepliableInteraction;
 
       detailedMessage = ErrorDetailReplacer.replaceErrorDetails(
