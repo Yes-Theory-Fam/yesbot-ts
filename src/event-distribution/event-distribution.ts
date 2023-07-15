@@ -11,8 +11,6 @@ import {
   isMessageRelated,
   rejectWithError,
 } from "./events/events";
-import { registerSlashCommands } from "./events/slash-commands";
-import { registerContextMenuCommands } from "./events/context-menu";
 import { getIocName } from "./helper";
 import {
   DiscordEvent,
@@ -29,6 +27,7 @@ import {
   StringIndexedHIOCTreeNode,
 } from "./types/hioc";
 import * as Sentry from "@sentry/node";
+import { registerApplicationCommands } from "./register-commands";
 
 const logger = createYesBotLogger("event-distribution", "event-distribution");
 
@@ -68,8 +67,7 @@ export class EventDistribution {
     [DiscordEvent.MEMBER_JOIN]: {},
   };
 
-  private slashCommandNameIdMap: Record<string, Snowflake> = {};
-  private contextMenuNameIdMap: Record<string, Snowflake> = {};
+  private nameIdMap: Record<string, Snowflake> = {};
 
   private infoToFilterResults<T extends DiscordEvent>(
     info: HandlerInfo,
@@ -268,23 +266,16 @@ export class EventDistribution {
     logger.debug("Loading complete!");
 
     // Slash Commands and related stuff
-    const { tree, nameIdMap } = await registerSlashCommands(
-      this.handlers[DiscordEvent.SLASH_COMMAND]
-    );
 
-    this.slashCommandNameIdMap = nameIdMap ?? {};
-    this.handlers[DiscordEvent.SLASH_COMMAND] = tree;
+    const { userTree, messageTree, slashCommandTree, nameIdMap } =
+      await registerApplicationCommands(
+        this.handlers[DiscordEvent.SLASH_COMMAND],
+        this.handlers[DiscordEvent.CONTEXT_MENU_MESSAGE],
+        this.handlers[DiscordEvent.CONTEXT_MENU_USER]
+      );
 
-    const {
-      userTree,
-      messageTree,
-      nameIdMap: contextNameIdMap,
-    } = await registerContextMenuCommands(
-      this.handlers[DiscordEvent.CONTEXT_MENU_MESSAGE],
-      this.handlers[DiscordEvent.CONTEXT_MENU_USER]
-    );
-
-    this.contextMenuNameIdMap = contextNameIdMap ?? {};
+    this.nameIdMap = nameIdMap ?? {};
+    this.handlers[DiscordEvent.SLASH_COMMAND] = slashCommandTree;
     this.handlers[DiscordEvent.CONTEXT_MENU_MESSAGE] = messageTree;
     this.handlers[DiscordEvent.CONTEXT_MENU_USER] = userTree;
   }
@@ -406,6 +397,6 @@ export class EventDistribution {
   }
 
   public getIdForCommandName(commandName: string): Snowflake {
-    return this.slashCommandNameIdMap[commandName];
+    return this.nameIdMap[commandName];
   }
 }
