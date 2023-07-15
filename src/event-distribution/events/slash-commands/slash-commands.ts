@@ -1,19 +1,11 @@
-import { REST } from "@discordjs/rest";
-import { Routes } from "discord-api-types/rest";
 import {
   ChannelType,
   ChatInputCommandInteraction,
   SlashCommandBuilder,
   SlashCommandSubcommandBuilder,
   SlashCommandSubcommandGroupBuilder,
-  Snowflake,
 } from "discord.js";
-import { createYesBotLogger } from "../../../log";
-import {
-  addToTree,
-  ensureGuildMemberOrNull,
-  getAllOptions,
-} from "../../helper";
+import { addToTree, ensureGuildMemberOrNull } from "../../helper";
 import {
   AddEventHandlerFunction,
   BaseOptions,
@@ -21,7 +13,6 @@ import {
   ExtractInfoForEventFunction,
   HandlerFunctionFor,
 } from "../../types/base";
-import { StringIndexedHIOCTree } from "../../types/hioc";
 import {
   addOptions,
   APIApplicationCommandBasicOptionWithAutoCompleteHandler,
@@ -83,7 +74,7 @@ export const extractSlashCommandInfo: ExtractInfoForEventFunction<
   };
 };
 
-const buildCommand = (
+export const buildSlashCommand = (
   options: SlashCommandHandlerOptions,
   builderCache: Record<string, SlashCommandBuilder>,
   groupBuilderCache: Record<string, SlashCommandSubcommandGroupBuilder>
@@ -125,72 +116,4 @@ const buildCommand = (
   }
 
   builderCache[options.root] ??= builder;
-};
-
-interface RegistrationResponseItem {
-  id: string;
-  name: string;
-}
-
-interface RegistrationResult {
-  tree: StringIndexedHIOCTree<DiscordEvent.SLASH_COMMAND>;
-  nameIdMap?: Record<string, Snowflake>;
-}
-
-export const registerSlashCommands = async (
-  commandTree: StringIndexedHIOCTree<DiscordEvent.SLASH_COMMAND>
-): Promise<RegistrationResult> => {
-  const logger = createYesBotLogger(
-    "event-distribution",
-    "register-slash-commands"
-  );
-
-  const allOptions = getAllOptions(commandTree);
-
-  if (allOptions.length === 0) {
-    logger.info("No slash commands registered; skipping API call!");
-    return { tree: commandTree };
-  }
-
-  logger.info(`Registering ${allOptions.length} slash commands`);
-
-  const builderCache: Record<string, SlashCommandBuilder> = {};
-  const groupBuilderCache: Record<string, SlashCommandSubcommandGroupBuilder> =
-    {};
-
-  allOptions.forEach((option) =>
-    buildCommand(option, builderCache, groupBuilderCache)
-  );
-  const commands = Object.values(builderCache).map((builder) =>
-    builder.toJSON()
-  );
-
-  const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN);
-
-  try {
-    const result = (await rest.put(
-      Routes.applicationGuildCommands(
-        process.env.CLIENT_ID,
-        process.env.GUILD_ID
-      ),
-      { body: commands }
-    )) as RegistrationResponseItem[];
-
-    const newCommandTree: StringIndexedHIOCTree<DiscordEvent.SLASH_COMMAND> =
-      {};
-    const nameIdMap: Record<string, Snowflake> = {};
-
-    for (const item of result) {
-      newCommandTree[item.id] = commandTree[item.name];
-      nameIdMap[item.name] = item.id;
-    }
-
-    logger.info(`Finished registering ${allOptions.length} slash commands`);
-
-    return { tree: newCommandTree, nameIdMap };
-  } catch (e) {
-    logger.error("Failed registering slash commands, exception was ", e);
-
-    return { tree: commandTree };
-  }
 };
