@@ -1,5 +1,4 @@
 import { VoiceOnDemandMapping } from "@prisma/client";
-import { channel } from "diagnostics_channel";
 import {
   ChatInputCommandInteraction,
   GuildMember,
@@ -18,18 +17,16 @@ export class VoiceOnDemandService {
   async mappingByUserId(
     userId: Snowflake
   ): Promise<VoiceOnDemandMapping | null> {
-    return await prisma.voiceOnDemandMapping.findUnique({
+    return prisma.voiceOnDemandMapping.findUnique({
       where: { userId },
-      rejectOnNotFound: false,
     });
   }
 
   async mappingByChannelId(
     channelId: Snowflake
   ): Promise<VoiceOnDemandMapping | null> {
-    return await prisma.voiceOnDemandMapping.findUnique({
+    return prisma.voiceOnDemandMapping.findUnique({
       where: { channelId },
-      rejectOnNotFound: false,
     });
   }
 
