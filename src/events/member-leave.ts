@@ -2,7 +2,7 @@ import { GuildMember, PartialGuildMember } from "discord.js";
 import { textLog } from "../common/moderator";
 import prisma from "../prisma";
 import { createYesBotLogger } from "../log";
-import { PrismaClientKnownRequestError } from "prisma/prisma-client/runtime";
+import { Prisma } from "@prisma/client";
 
 const logger = createYesBotLogger("events", "memberLeave");
 
@@ -19,7 +19,7 @@ const removeFromBirthdays = async (userId: string) => {
     await prisma.birthday.delete({ where: { userId } });
   } catch (e) {
     if (
-      e instanceof PrismaClientKnownRequestError &&
+      e instanceof Prisma.PrismaClientKnownRequestError &&
       e.code !== recordNotFoundCode
     ) {
       logger.error("Removing from birthday DB failed: ", e);
@@ -38,7 +38,7 @@ const removeFromGroups = async (memberId: string) => {
     await prisma.groupMember.delete({ where: { id: memberId } });
   } catch (e) {
     if (
-      e instanceof PrismaClientKnownRequestError &&
+      e instanceof Prisma.PrismaClientKnownRequestError &&
       e.code !== recordNotFoundCode
     ) {
       logger.error("Removing from groups DB failed: ", e);
