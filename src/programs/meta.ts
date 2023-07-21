@@ -35,9 +35,8 @@ class MetaCommand implements CommandHandler<DiscordEvent.CONTEXT_MENU_MESSAGE> {
     }
 
     await message.reply({
-      files: [
+      content:
         "https://user-images.githubusercontent.com/17064122/122255708-ae6e9680-cece-11eb-8c01-6f29a3995680.png",
-      ],
     });
     await message.react(metaEmoji ?? "🦥");
 
