@@ -83,7 +83,7 @@ const _promptAndSendForApproval = async (
   const activities = await getString(
     channel,
     userId,
-    "Lastly, what are you planning to do there?",
+    "Lastly, what are you planning to do there? **Be sure to include what you are looking for from the community here!**",
     ct
   );
 
