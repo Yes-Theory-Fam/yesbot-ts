@@ -76,7 +76,7 @@ const _promptAndSendForApproval = async (
   const dates = await getString(
     channel,
     userId,
-    "Sweet! When will you be there?",
+    "Sweet! When will you be there? **Please include a timespan (not just arrival dates). If you are traveling to multiple places, specify timespans for each location!**",
     ct
   );
   const needsHost = await getBool(channel, userId, "Do you need a host?", ct);
