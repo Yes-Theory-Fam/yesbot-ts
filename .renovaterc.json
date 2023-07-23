@@ -2,6 +2,9 @@
   "schedule": [
     "every weekend"
   ],
+  "automerge": true,
+  "automergeStrategy": "rebase",
+  "automergeType": "pr",
   "extends": [
     "config:base"
   ],
