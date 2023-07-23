@@ -1,4 +1,3 @@
-import { inspect } from "util";
 import winston, { createLogger, format, transports } from "winston";
 
 const USE_COLORS = process.stdout.isTTY;
