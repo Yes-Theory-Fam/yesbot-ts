@@ -74,7 +74,7 @@ class VoiceKnock extends CommandHandler<DiscordEvent.SLASH_COMMAND> {
 
     await interaction.followUp({
       content: gotAccess
-        ? `<@${userId}> you were let in the voice chat!`
+        ? `<@${userId}> you were let in the room!`
         : `Sorry, but the room owner didn't respond.`,
       ephemeral: true,
     });
