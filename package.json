@@ -32,7 +32,7 @@
     "country-code-emoji": "2.3.0",
     "date-fns": "2.30.0",
     "date-fns-tz": "2.0.0",
-    "discord.js": "14.11.0",
+    "discord.js": "14.12.1",
     "fast-glob": "3.3.1",
     "graphql": "15.8.0",
     "graphql-request": "6.1.0",
