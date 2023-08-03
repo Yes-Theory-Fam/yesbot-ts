@@ -136,7 +136,7 @@ export class TripDetailsAggregator {
               label: "When are you visiting?",
               required: true,
               placeholder:
-                "Be sure to include a timespan and if traveling to multiple places, dates for each place!",
+                "Be sure to include a timespan and if traveling to multiple places, dates for each place! If you want to make us happy, specify dates as DD.MM.(YYYY)!",
               style: TextInputStyle.Paragraph,
               value: defaultValues?.dates,
             }),
