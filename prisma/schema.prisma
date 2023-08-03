@@ -136,10 +136,9 @@ model Valentine {
 
 model VoiceOnDemandMapping {
   userId    String @id @map("user_id") @db.VarChar
-  channelId String @map("channel_id") @db.VarChar
+  channelId String @unique @map("channel_id") @db.VarChar
   emoji     String @db.VarChar
 
-  @@unique([channelId], name: "IDX_VoiceOnDemandMapping_Unique_Channel")
   @@map(name: "voice_on_demand_mapping")
 }
 
