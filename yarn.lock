@@ -50,10 +50,10 @@
     "@graphql-codegen/typescript-operations" "^2.5.0"
     auto-bind "^4.0.0"
 
-"@atmina/only-enum-types@0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@atmina/only-enum-types/-/only-enum-types-0.5.0.tgz#daa0c1ccb402bd808a133c2496564eaa1f575478"
-  integrity sha512-QHjJBjHW8eFtgajcQQ+Nwm+tgR9AWFq+sPB6BF61RFVU/Br60uTUaAZnDkS+VdtGSuh8se2g0OVVfBCP3esA/Q==
+"@atmina/only-enum-types@0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@atmina/only-enum-types/-/only-enum-types-0.5.1.tgz#d55af5f08265b3ea0bee05a0bd68a1443c50ce4e"
+  integrity sha512-J12hynD3E9doyCBnpLuSymRK6P0S+qndnoVz5ohOTrpg1gTIhHTwFuGJJEFlVWE1jrffgjjihf1Uzuk96Pt+3A==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^2.0.0"
     "@graphql-codegen/typescript" "^2.0.0"
