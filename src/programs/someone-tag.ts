@@ -133,9 +133,8 @@ async function getTarget(
 }
 
 async function getQuestion() {
-  const questions = await Tools.getFirstColumnFromGoogleSheet(
-    QUESTION_SHEET_ID
-  );
+  const questions =
+    await Tools.getFirstColumnFromGoogleSheet(QUESTION_SHEET_ID);
   const randomIndex = Math.floor(Math.random() * questions.length);
   return questions[randomIndex];
 }

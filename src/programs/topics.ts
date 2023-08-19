@@ -32,9 +32,8 @@ class Topics implements CommandHandler<DiscordEvent.MESSAGE> {
 
     switch (channel.name) {
       case "philosophy":
-        const questions = await Tools.getFirstColumnFromGoogleSheet(
-          QUESTION_SHEET_ID
-        );
+        const questions =
+          await Tools.getFirstColumnFromGoogleSheet(QUESTION_SHEET_ID);
 
         const date = new Date().getDate() - 1;
         const question = questions[date];

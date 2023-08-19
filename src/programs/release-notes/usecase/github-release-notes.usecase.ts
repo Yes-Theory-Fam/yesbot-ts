@@ -34,9 +34,8 @@ export class GithubReleaseNotesUsecase {
         releaseNotes: "",
       };
     }
-    const lastRelease = await GithubReleaseNotesUsecase.findLastRelease(
-      oldRelease
-    );
+    const lastRelease =
+      await GithubReleaseNotesUsecase.findLastRelease(oldRelease);
     const releaseNotes = await this.getCommitMessages(
       lastRelease,
       newRelease.node.tagName
