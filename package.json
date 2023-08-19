@@ -24,7 +24,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@discordjs/rest": "2.0.0",
+    "@discordjs/rest": "2.0.1",
     "@prisma/client": "5.1.1",
     "@sentry/node": "7.63.0",
     "axios": "1.4.0",
@@ -32,7 +32,7 @@
     "country-code-emoji": "2.3.0",
     "date-fns": "2.30.0",
     "date-fns-tz": "2.0.0",
-    "discord.js": "14.12.1",
+    "discord.js": "14.13.0",
     "fast-glob": "3.3.1",
     "graphql": "15.8.0",
     "graphql-request": "6.1.0",
