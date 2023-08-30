@@ -14,7 +14,7 @@ const fmt = format.printf(({ level, message, timestamp, ...meta }) => {
 
   // Add a json-kinda dict with metadata if present
   if (Object.keys(fields).length > 0) {
-    return `${out}${level} [${kind}] [${program}]: ${message} ${JSON.stringify(
+    return `${out}${level} [${kind}] [${program}]: ${message} ${inspect(
       fields
     )}`;
   }
