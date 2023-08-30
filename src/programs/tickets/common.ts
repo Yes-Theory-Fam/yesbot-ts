@@ -84,9 +84,13 @@ const hasTicket = async (message: Message, channelName: string) => {
 
   const dm = await message.author.createDM();
 
-  await dm.send(
-    "You already have a ticket open, please close that one first before opening another."
-  );
+  try {
+    await dm.send(
+      "You already have a ticket open, please close that one first before opening another."
+    );
+  } catch (e) {
+    /* Locked down DMs */
+  }
   return true;
 };
 
