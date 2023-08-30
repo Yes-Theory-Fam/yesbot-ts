@@ -82,11 +82,11 @@ const hasTicket = async (message: Message, channelName: string) => {
   );
   if (!channel) return false;
 
-  message.author.createDM().then((channel) => {
-    channel.send(
-      "You already have a ticket open, please close that one first before opening another."
-    );
-  });
+  const dm = await message.author.createDM();
+
+  await dm.send(
+    "You already have a ticket open, please close that one first before opening another."
+  );
   return true;
 };
 
