@@ -65,14 +65,26 @@ export class TripDetailsAggregator {
 
   async selectTraveledCountries(
     interaction: MessageComponentInteraction,
-    wasError = false
+    retryCount = 0
   ): Promise<{
     countries: (Role | APIRole)[];
     interaction: RoleSelectMenuInteraction;
   }> {
+    const errorMessages = [
+      "Select between one and three country roles you want to ping for your trip!",
+      "Not quite yet! Pick one to three *country* roles, all the others won't get you there.",
+      "Nope. Still not. Pick *countries* like Germany, Austria or Guam!",
+    ];
+    const errorIndex = (retryCount - 1) % errorMessages.length;
+    const error = errorMessages[errorIndex];
+
+    const messageContent = `${
+      retryCount ? `**${error}**\n\n` : ""
+    }Select the countries you want to ping (everything but country roles will be ignored). If you are headed to the US, please select one or more specific regions (see the map below for guidance). For a larger trip, split up countries in batches of 3 and make a ticket for them separately :)\n\nhttps://cdn.discordapp.com/attachments/603399775173476403/613072439500341291/unknown.png`;
+
     const userId = interaction.user.id;
     const message = await interaction.update({
-      content: "TODO with wasError and US regions",
+      content: messageContent,
       components: [
         new ActionRowBuilder<RoleSelectMenuBuilder>({
           components: [
@@ -101,7 +113,7 @@ export class TripDetailsAggregator {
       return { countries: countryRoles, interaction: selection };
     }
 
-    return await this.selectTraveledCountries(interaction, true);
+    return await this.selectTraveledCountries(selection, retryCount + 1);
   }
 
   async getTripInformation(
@@ -136,9 +148,10 @@ export class TripDetailsAggregator {
               label: "When are you visiting?",
               required: true,
               placeholder:
-                "Be sure to include a timespan and if traveling to multiple places, dates for each place! If you want to make us happy, specify dates as DD.MM.(YYYY)!",
+                "Be sure to include a timespan for each place traveled to! Ideally as DD.MM.YYYY.",
               style: TextInputStyle.Paragraph,
               value: defaultValues?.dates,
+              maxLength: 250,
             }),
           ],
         }),
@@ -153,6 +166,7 @@ export class TripDetailsAggregator {
               required: true,
               style: TextInputStyle.Paragraph,
               value: defaultValues?.activities,
+              maxLength: 1300,
             }),
           ],
         }),

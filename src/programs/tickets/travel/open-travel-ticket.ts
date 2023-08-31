@@ -5,38 +5,33 @@ import {
   HandlerRejectedReason,
 } from "../../../event-distribution";
 import {
-  ActionRowBuilder,
-  ButtonBuilder,
   ButtonStyle,
   ChatInputCommandInteraction,
   ComponentType,
-  Guild,
   RepliableInteraction,
   StringSelectMenuInteraction,
-  TextChannel,
 } from "discord.js";
-import { ChatNames } from "../../../collections/chat-names";
-import {
-  TravelDataMessageConverter,
-  TripDetails,
-} from "./travel-data-message-converter";
+import { TripDetails } from "./travel-data-message-converter";
 import { TripDetailsAggregator } from "./trip-details-aggregator";
 import { TravelEditing } from "./travel-editing";
 
 const enum Errors {
   NOT_IN_TWO_MONTHS = "NOT_IN_TWO_MONTHS",
+  IS_A_MOVE = "IS_A_MOVE",
 }
 
-// TODO guard for Seek Discomfort role
 @Command({
   event: DiscordEvent.SLASH_COMMAND,
   root: "travel",
-  description: "This handler is to create a travel ticket.",
+  description:
+    "Create a posts for a trip you are making to involve the community!",
   stateful: false,
   errors: {
     [HandlerRejectedReason.MISSING_ROLE]: `Before meeting up with people, it's probably best to let others know who you are! This command requires the 'Seek Discomfort' role which you can get by introducing yourself in #introductions!\n\nIf you already posted your introduction, make sure it's longer than just two or three sentences and give the support team some time to check it :)`,
     [Errors.NOT_IN_TWO_MONTHS]:
       "Unfortunately we only accept trips that occur within the next two months. Feel free to submit your trip once it's a bit closer in time!",
+    [Errors.IS_A_MOVE]:
+      "For moving to a new place, please contact a Support member for a role change. The travel command is reserved for short(-ish) trips.",
   },
 })
 class OpenTravelTicket implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
@@ -46,14 +41,26 @@ class OpenTravelTicket implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
     const guild = interaction.guild;
     if (!guild) return;
 
+    const roles = interaction.member?.roles ?? [];
+    const roleNames = Array.isArray(roles)
+      ? roles
+      : roles.cache.map((r) => r.name);
+    if (!roleNames.includes("Seek Discomfort")) {
+      throw new Error(HandlerRejectedReason.MISSING_ROLE);
+    }
+
     await interaction.deferReply({ ephemeral: true });
 
-    const confirmInteraction = await this.confirmTwoMonthRequirement(
-      interaction
+    const confirmTwoMonthsInteraction =
+      await this.confirmTwoMonthRequirement(interaction);
+    const confirmNotAMoveInteraction = await this.confirmNotAMoveRequirement(
+      confirmTwoMonthsInteraction
     );
 
     const { countries, interaction: countrySelectInteraction } =
-      await this.detailsAggregator.selectTraveledCountries(confirmInteraction);
+      await this.detailsAggregator.selectTraveledCountries(
+        confirmNotAMoveInteraction
+      );
     const {
       places,
       dates,
@@ -101,6 +108,22 @@ class OpenTravelTicket implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
       );
 
     if (!result) throw new Error(Errors.NOT_IN_TWO_MONTHS);
+
+    return confirmInteraction;
+  }
+
+  async confirmNotAMoveRequirement(
+    interaction: RepliableInteraction
+  ): Promise<StringSelectMenuInteraction> {
+    const userId = interaction.user.id;
+    const { result, interaction: confirmInteraction } =
+      await this.detailsAggregator.getBoolean(
+        interaction,
+        "Is this a short(-ish) duration trip and *not* you moving (Erasmus counts as moving)?",
+        "travel-" + userId + "-confirm-not-a-move"
+      );
+
+    if (!result) throw new Error(Errors.IS_A_MOVE);
 
     return confirmInteraction;
   }

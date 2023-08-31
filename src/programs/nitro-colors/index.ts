@@ -22,7 +22,7 @@ import prisma from "../../prisma";
 export const logger = createYesBotLogger("programs", "NitroColors");
 
 export let nitroRolesCache: Collection<Snowflake, Role>;
-export let colorSelectionMessage: Message;
+export let colorSelectionMessage: Message | undefined;
 
 @Command({
   event: DiscordEvent.READY,
@@ -78,7 +78,7 @@ class RemoveNitroColorIfNotAllowed
 
     if (!nitroColor) return;
 
-    colorSelectionMessage.reactions.cache.find(
+    colorSelectionMessage?.reactions.cache.find(
       (reactions) => !!reactions.users.remove(member)
     );
     await member.roles.remove(nitroColor);
@@ -149,4 +149,4 @@ const memberHasNitroColor = (member: GuildMember) =>
   );
 
 export const isColorSelectionMessage = (messageId: Snowflake) =>
-  colorSelectionMessage.id === messageId;
+  colorSelectionMessage?.id === messageId;
