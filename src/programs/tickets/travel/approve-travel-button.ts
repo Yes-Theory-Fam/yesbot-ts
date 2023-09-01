@@ -26,11 +26,7 @@ class ApproveTravelButton extends CommandHandler<DiscordEvent.BUTTON_CLICKED> {
     if (!member) throw new Error("Could not resolve approving member!");
 
     const approver = member.displayName;
-    const newContent =
-      message.content +
-      `
-
-Approved by ${approver}`;
+    const newContent = message.content + `\n\nApproved by ${approver}`;
     // Remove buttons as early as possible before someone else votes as well
     await message.edit({ content: newContent, components: [] });
 

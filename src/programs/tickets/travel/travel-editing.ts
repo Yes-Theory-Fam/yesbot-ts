@@ -6,7 +6,6 @@ import {
   Guild,
   MessageComponentInteraction,
   ModalMessageModalSubmitInteraction,
-  RepliableInteraction,
   SelectMenuComponentOptionData,
   StringSelectMenuBuilder,
   StringSelectMenuInteraction,
@@ -16,14 +15,11 @@ import {
   TravelDataMessageConverter,
   TripDetails,
 } from "./travel-data-message-converter";
-import { TripDetailsAggregator } from "./trip-details-aggregator";
+import {
+  ModalRepliableInteraction,
+  TripDetailsAggregator,
+} from "./trip-details-aggregator";
 import { ChatNames } from "../../../collections/chat-names";
-
-// TODO clean up duplicated types from trip-details-aggregator
-type ModalRepliableInteraction = Extract<
-  RepliableInteraction,
-  { showModal: any }
->;
 
 type EditResult = {
   details: TripDetails;
@@ -184,7 +180,6 @@ export class TravelEditing {
     interaction: MessageComponentInteraction
   ): Promise<EditResult> {
     const { needsHost, interaction: needsHostInteration } =
-      // TODO type
       await this.detailsAggregator.getNeedsHost(interaction);
 
     return {

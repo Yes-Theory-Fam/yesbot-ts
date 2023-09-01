@@ -17,7 +17,7 @@ import {
 import { CountryRoleFinder } from "../../../common/country-role-finder";
 import { TripDetails } from "./travel-data-message-converter";
 
-type ModalRepliableInteraction = Extract<
+export type ModalRepliableInteraction = Extract<
   RepliableInteraction,
   { showModal: any }
 >;

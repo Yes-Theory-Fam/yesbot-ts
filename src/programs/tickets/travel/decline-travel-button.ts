@@ -33,10 +33,7 @@ class DeclineTravelButton extends CommandHandler<DiscordEvent.BUTTON_CLICKED> {
 
     const decliner = member.displayName;
     const newContent =
-      message.content +
-      `
-
-${decliner} is currently declining...`;
+      message.content + `\n\n${decliner} is currently declining...`;
     await message.edit({ content: newContent });
 
     const { userId } = details;
@@ -84,14 +81,13 @@ ${decliner} is currently declining...`;
     const decliner = member.displayName;
 
     if (!reason) {
-      await submission.update({
-        content: originalMessage,
-      });
+      await submission.update({ content: originalMessage });
       return;
     }
 
     await submission.update({
-      content: originalMessage + `\nDeclined by ` + `\nReason: ${reason}`,
+      content:
+        originalMessage + `\n\nDeclined by ${decliner}\nReason: ${reason}`,
       components: [],
     });
 
