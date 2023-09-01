@@ -2,10 +2,10 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../../event-distribution";
-import { ChatNames } from "../../../collections/chat-names";
+} from "../../../../event-distribution";
+import { ChatNames } from "../../../../collections/chat-names";
 import { MessageReaction, TextChannel, User } from "discord.js";
-import { getChannelName, TicketType } from "../common";
+import { getChannelName, TicketType } from "../../common";
 import { parseOriginMember } from "./common";
 
 @Command({

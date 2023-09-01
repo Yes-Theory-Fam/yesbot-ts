@@ -316,9 +316,10 @@ export const rejectWithError = async (
         error
       );
 
-      if (interactionArg.deferred) {
+      if (interactionArg.deferred || interactionArg.replied) {
         return await interactionArg.editReply({
           content: detailedMessage,
+          components: [],
         });
       }
 

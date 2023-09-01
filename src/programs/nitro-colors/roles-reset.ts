@@ -2,9 +2,8 @@ import bot from "../../index";
 import cron from "node-cron";
 import { nitroRolesCache, colorSelectionMessage, logger } from ".";
 import Tools from "../../common/tools";
-import { ColorResolvable, Colors, Role, TextChannel } from "discord.js";
+import { ColorResolvable, TextChannel } from "discord.js";
 import {
-  NitroRole,
   buildAnnouncementsMessage,
   getCurrentSeason,
   isNewSeason,
@@ -28,7 +27,7 @@ export class RoleResetCron {
     const cleanupChannelMessages = async (channel: TextChannel) => {
       const messages = await channel.messages.fetch({ limit: 5 });
       for (const message of messages.values()) {
-        if (message.id !== colorSelectionMessage.id) {
+        if (message.id !== colorSelectionMessage?.id) {
           await message.delete();
           continue;
         }

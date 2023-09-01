@@ -7,9 +7,9 @@ import {
   TextChannel,
   User,
 } from "discord.js";
-import { CountryRoleFinder } from "../../../common/country-role-finder";
-import { ChatNames } from "../../../collections/chat-names";
-import { createYesBotLogger } from "../../../log";
+import { CountryRoleFinder } from "../../../../common/country-role-finder";
+import { ChatNames } from "../../../../collections/chat-names";
+import { createYesBotLogger } from "../../../../log";
 
 const fiveMinutes = 5 * 60 * 1000;
 type CancellationToken = { cancelled: boolean };

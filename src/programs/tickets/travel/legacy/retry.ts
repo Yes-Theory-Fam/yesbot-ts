@@ -3,10 +3,10 @@ import {
   CommandHandler,
   DiscordEvent,
   EventLocation,
-} from "../../../event-distribution";
+} from "../../../../event-distribution";
 import { Message, TextChannel } from "discord.js";
-import { getChannelName, TicketType } from "../common";
-import Tools from "../../../common/tools";
+import { getChannelName, TicketType } from "../../common";
+import Tools from "../../../../common/tools";
 import { promptAndSendForApproval } from "./common";
 
 @Command({
