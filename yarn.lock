@@ -40,10 +40,10 @@
   dependencies:
     node-fetch "^2.6.1"
 
-"@atmina/local-typescript-operations@0.7.0":
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/@atmina/local-typescript-operations/-/local-typescript-operations-0.7.0.tgz#0d5cfa9171e2f09235b94412ad896a6858650c28"
-  integrity sha512-/ahi+PYnFgSbYgsJmyOhacYwGNNiqKDT1xpKolS70sDbl6gVtfu3UdSrboPy2t3VIMxDEq4FXSYCcVgvdKdoLg==
+"@atmina/local-typescript-operations@0.7.1":
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/@atmina/local-typescript-operations/-/local-typescript-operations-0.7.1.tgz#d3335ee5ccc9c5efde492164ccd99bbb924d1074"
+  integrity sha512-+LUD23W4Usof9NgjrnQQtlSJuyzYp4/l6SZ/Jfr6VF2qKNSNiVi0dhViVUULLMryQdp1BcQSVsn0erb+NX9MFw==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^5.0.0"
     "@graphql-codegen/typescript" "^4.0.0"
