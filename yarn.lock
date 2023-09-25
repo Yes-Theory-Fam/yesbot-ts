@@ -40,14 +40,15 @@
   dependencies:
     node-fetch "^2.6.1"
 
-"@atmina/local-typescript-operations@0.7.1":
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/@atmina/local-typescript-operations/-/local-typescript-operations-0.7.1.tgz#d3335ee5ccc9c5efde492164ccd99bbb924d1074"
-  integrity sha512-+LUD23W4Usof9NgjrnQQtlSJuyzYp4/l6SZ/Jfr6VF2qKNSNiVi0dhViVUULLMryQdp1BcQSVsn0erb+NX9MFw==
+"@atmina/local-typescript-operations@0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@atmina/local-typescript-operations/-/local-typescript-operations-0.8.0.tgz#927640f31976a80753dd1543a48180312103cb7e"
+  integrity sha512-jfc0huz176kT1IokDux9rgcxHZPscxa7SzySBRTqRB0I+3DRCLgBSxVDu0/pRvM6yKZc1YwwZZq3c6tnLmapyg==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^5.0.0"
     "@graphql-codegen/typescript" "^4.0.0"
     "@graphql-codegen/typescript-operations" "^4.0.0"
+    "@graphql-codegen/visitor-plugin-common" "^4.0.1"
     auto-bind "^4.0.0"
 
 "@atmina/only-enum-types@0.5.1":
@@ -890,7 +891,7 @@
     parse-filepath "^1.0.2"
     tslib "~2.4.0"
 
-"@graphql-codegen/visitor-plugin-common@4.0.1":
+"@graphql-codegen/visitor-plugin-common@4.0.1", "@graphql-codegen/visitor-plugin-common@^4.0.1":
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@graphql-codegen/visitor-plugin-common/-/visitor-plugin-common-4.0.1.tgz#64e293728b3c186f6767141e41fcdb310e50d367"
   integrity sha512-Bi/1z0nHg4QMsAqAJhds+ForyLtk7A3HQOlkrZNm3xEkY7lcBzPtiOTLBtvziwopBsXUxqeSwVjOOFPLS5Yw1Q==
