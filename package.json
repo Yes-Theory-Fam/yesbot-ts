@@ -41,7 +41,7 @@
     "reflect-metadata": "0.1.13",
     "ts-node": "10.9.1",
     "uuid": "9.0.1",
-    "winston": "3.10.0"
+    "winston": "3.11.0"
   },
   "devDependencies": {
     "@atmina/local-typescript-operations": "0.8.0",
