@@ -50,7 +50,7 @@
     "@graphql-codegen/near-operation-file-preset": "3.0.0",
     "@graphql-codegen/typescript-graphql-request": "6.0.0",
     "@types/glob": "8.1.0",
-    "@types/jest": "29.5.5",
+    "@types/jest": "29.5.6",
     "@types/node": "18.18.5",
     "@types/node-cron": "3.0.9",
     "@types/ws": "8.5.7",
