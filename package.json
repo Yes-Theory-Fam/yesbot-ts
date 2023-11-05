@@ -28,7 +28,7 @@
     "@prisma/client": "5.5.2",
     "@sentry/node": "7.77.0",
     "axios": "1.6.0",
-    "countries-and-timezones": "3.5.1",
+    "countries-and-timezones": "3.5.2",
     "country-code-emoji": "2.3.0",
     "date-fns": "2.30.0",
     "date-fns-tz": "2.0.0",
