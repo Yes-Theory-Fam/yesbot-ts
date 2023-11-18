@@ -24,7 +24,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@discordjs/rest": "2.1.0",
+    "@discordjs/rest": "2.2.0",
     "@prisma/client": "5.5.2",
     "@sentry/node": "7.80.1",
     "axios": "1.6.1",
