@@ -57,8 +57,6 @@ bot:
         value:
       - name: PRISMA_DATABASE_URL
         value:
-      - name: GITHUB_TOKEN
-        value:
       - name: GOOGLE_API_KEY
         value:
       - name: YTF_API_AUTH_TOKEN
