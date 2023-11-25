@@ -33,8 +33,6 @@ spec:
               value: "{{ .Values.bot.memberRoleId }}"
             - name: NODE_ENV
               value: "production"
-            - name: GITHUB_GRAPHQL_ENDPOINT
-              value: "https://api.github.com/graphql"
             - name: ACTIVITY_TIME_DELAY
               value: "5"
 
