@@ -82,14 +82,14 @@ export const registerApplicationCommands = async (
         item.type === ApplicationCommandType.User
           ? newUserCommandTree
           : item.type === ApplicationCommandType.ChatInput
-          ? newSlashCommandTree
-          : newMessageCommandTree;
+            ? newSlashCommandTree
+            : newMessageCommandTree;
       const sourceTree =
         item.type === ApplicationCommandType.User
           ? userTree
           : item.type === ApplicationCommandType.ChatInput
-          ? slashCommandTree
-          : messageTree;
+            ? slashCommandTree
+            : messageTree;
 
       targetTree[item.id] = sourceTree[item.name];
       nameIdMap[item.name] = item.id;
