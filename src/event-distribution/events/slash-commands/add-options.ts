@@ -28,12 +28,12 @@ type AutocompleteToCommandHandler<T> = T extends {
 }
   ? Omit<T, "autocomplete" | "choices"> & AutocompleteOrChoice<string>
   : T extends {
-      type:
-        | ApplicationCommandOptionType.Number
-        | ApplicationCommandOptionType.Integer;
-    }
-  ? Omit<T, "autocomplete" | "choices"> & AutocompleteOrChoice<number>
-  : T;
+        type:
+          | ApplicationCommandOptionType.Number
+          | ApplicationCommandOptionType.Integer;
+      }
+    ? Omit<T, "autocomplete" | "choices"> & AutocompleteOrChoice<number>
+    : T;
 
 export type APIApplicationCommandBasicOptionWithAutoCompleteHandler =
   AutocompleteToCommandHandler<APIApplicationCommandBasicOption>;
