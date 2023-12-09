@@ -46,7 +46,7 @@ export class TravelDataMessageConverter {
     const hostMatch = /\*\*Looking for a host\*\*: (Yes|No)/gm.exec(content);
     const needsHost = hostMatch?.at(1) === "Yes";
 
-    const activitiesMatch = /\*\*Activities\*\*:((?:.|\n).*)/gm.exec(content);
+    const activitiesMatch = /\*\*Activities\*\*:((?:.|\n)*)/gm.exec(content);
     const activities = activitiesMatch?.at(1) ?? "";
 
     return {
