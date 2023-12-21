@@ -9,7 +9,7 @@ const formatFile = async (path: string) => {
 };
 
 const endpoint =
-  process.env.YTF_GRAPHQL_ENDPOINT ??
+  process.env.YTF_GRAPHQL_SCHEMA_ENDPOINT ??
   "https://staging.yestheory.family/_yesbot-schema";
 
 const config: CodegenConfig = {

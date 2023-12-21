@@ -184,7 +184,7 @@ async function getUserTimezoneSelection(
     selectInteraction.user.id === interaction.user.id;
 
   return await response.awaitMessageComponent({
-    componentType: ComponentType.SelectMenu,
+    componentType: ComponentType.StringSelect,
     time: 60_000,
     filter,
   });
