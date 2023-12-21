@@ -26,11 +26,12 @@ class PayloadAccessRequestApprovalButton extends CommandHandler<DiscordEvent.BUT
       throw new Error(Errors.MISSING_TARGET_USER);
     }
 
+    const newContent = interaction.message.content + "\n\n Declined ❌";
+    await interaction.update({ components: [], content: newContent });
+
     await interaction.client.users.send(
       targetUser,
       "Your request for access to the YTF CMS has been declined. If you believe this was a mistake, please reach out to Support staff of the Yes Fam server!"
     );
-
-    await interaction.update({ components: [] });
   }
 }
