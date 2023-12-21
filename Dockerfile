@@ -13,7 +13,7 @@ WORKDIR /usr/src/app
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY . .
 
-ARG YTF_GRAPHQL_ENDPOINT
+ARG YTF_GRAPHQL_SCHEMA_ENDPOINT
 
 RUN yarn prisma generate && yarn codegen && yarn run tsc
 
