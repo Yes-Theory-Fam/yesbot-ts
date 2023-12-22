@@ -15,7 +15,7 @@ COPY . .
 
 ARG YTF_GRAPHQL_SCHEMA_ENDPOINT
 
-RUN yarn prisma generate && yarn codegen && yarn run tsc
+RUN yarn prisma generate && yarn graphql-codegen && yarn run tsc
 
 FROM node:21.5.0-alpine
 RUN apk add --no-cache libc6-compat

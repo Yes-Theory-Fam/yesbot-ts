@@ -35,5 +35,5 @@ jobs:
       - name: install and compile
         run: |
           yarn install --frozen-lockfile
-          yarn codegen
+          yarn graphql-codegen
           yarn tsc --noEmit
