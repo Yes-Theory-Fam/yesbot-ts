@@ -1,0 +1,7 @@
+query MayCreateGroupchat($userId: String!) {
+    mayOperate(collection: "groupchats", operation: "create", userId: $userId)
+}
+
+mutation CreateGroupchat($userId: String!, $data: JSON!) {
+    mimicUserOperation(userId: $userId, collection: "groupchats", operation: "create", data: $data)
+}
