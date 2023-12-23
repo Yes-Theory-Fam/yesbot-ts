@@ -12,6 +12,8 @@ import {
 } from "discord.js";
 import { PayloadService } from "../services/payload-service";
 import { User_Roles_MutationInput } from "../../../__generated__/types";
+import { approvalResponses } from "./approval-responses";
+import { ErrorDetailReplacer } from "../../../event-distribution/error-detail-replacer";
 
 const enum Errors {
   MISSING_TARGET_USER = "MISSING_TARGET_USER",
@@ -43,7 +45,7 @@ class PayloadAccessRequestApprovalButton extends CommandHandler<DiscordEvent.BUT
     });
 
     const selectId = `${targetUser}-payload-roles`;
-    const groupSelection = new StringSelectMenuBuilder({
+    const roleSelection = new StringSelectMenuBuilder({
       customId: selectId,
       minValues: 1,
       maxValues: 3,
@@ -51,19 +53,20 @@ class PayloadAccessRequestApprovalButton extends CommandHandler<DiscordEvent.BUT
       options: availableRoles,
     });
     const components = new ActionRowBuilder<StringSelectMenuBuilder>({
-      components: [groupSelection],
+      components: [roleSelection],
     });
     const interactionResponse = await interaction.update({
       components: [components],
     });
 
-    const selectInteraction = await interactionResponse.awaitMessageComponent({
-      componentType: ComponentType.StringSelect,
-      filter: (c) => c.customId === selectId,
-    });
+    const roleSelectInteraction =
+      await interactionResponse.awaitMessageComponent({
+        componentType: ComponentType.StringSelect,
+        filter: (c) => c.customId === selectId,
+      });
 
-    const roles = selectInteraction.values as User_Roles_MutationInput[];
-    await selectInteraction.deferUpdate();
+    const roles = roleSelectInteraction.values as User_Roles_MutationInput[];
+    await roleSelectInteraction.deferUpdate();
 
     const service = new PayloadService();
     const result = await service.createUser(targetUser.id, roles);
@@ -78,13 +81,56 @@ class PayloadAccessRequestApprovalButton extends CommandHandler<DiscordEvent.BUT
       (success
         ? "Created user ✅"
         : `Failed to create user with roles ${roles.join(", ")}`);
-    await selectInteraction.editReply({ components: [], content: newContent });
 
-    if (success) {
-      await interaction.client.users.send(
-        targetUser,
-        `Your access to the YTF CMS has been approved. Open ${process.env.YTF_CMS_URL} to look around!`
-      );
+    if (!success) {
+      await roleSelectInteraction.editReply({
+        components: [],
+        content: newContent,
+      });
+
+      return;
     }
+
+    const addedInfoOptions = Object.entries(approvalResponses).map(
+      ([k, v]) => ({ label: v.label, value: k })
+    );
+    const addedInfoSelectionId = `added-info-select-${targetUser.id}`;
+    const addedInfoSelectionComponents =
+      new ActionRowBuilder<StringSelectMenuBuilder>({
+        components: [
+          new StringSelectMenuBuilder({
+            customId: addedInfoSelectionId,
+            options: addedInfoOptions,
+          }),
+        ],
+      });
+
+    const message = await roleSelectInteraction.editReply({
+      components: [addedInfoSelectionComponents],
+      content: newContent + "\nAny additional Info you want to send?",
+    });
+    const additionalInfoSelection = await message.awaitMessageComponent({
+      componentType: ComponentType.StringSelect,
+      filter: (c) => c.customId === addedInfoSelectionId,
+    });
+    const infoKey = additionalInfoSelection
+      .values[0] as keyof typeof approvalResponses;
+    const additionalInfo = approvalResponses[infoKey].content;
+    const replacedAdditionalInfo =
+      ErrorDetailReplacer.replaceErrorDetails(additionalInfo);
+
+    await interaction.client.users.send(
+      targetUser,
+      `Your access to the YTF CMS has been approved. Open ${
+        process.env.YTF_CMS_URL
+      } to look around!${
+        replacedAdditionalInfo ? "\n\n" + replacedAdditionalInfo : ""
+      }`
+    );
+
+    await additionalInfoSelection.update({
+      components: [],
+      content: newContent,
+    });
   }
 }
