@@ -42,9 +42,11 @@ spec:
               value: "{{ .Values.bot.map.userId }}"
 
             - name: YTF_FRONTEND_URL
-              value: {{ .Values.bot.ytfApiUrl }}
+              value: https://{{ .Values.bot.ytfFrontendHost }}
+            - name: YTF_CMS_URL
+              value: https://admin.{{ .Values.bot.ytfFrontendHost }}
             - name: YTF_GRAPHQL_ENDPOINT
-              value: "{{ .Values.bot.ytfApiUrl }}"
+              value: "http://ytf-backend-yesbot-service:5001/graphql"
 
             {{- range .Values.bot.secret.secrets }}
             - name: {{ .name }}

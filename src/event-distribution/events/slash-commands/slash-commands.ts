@@ -25,6 +25,9 @@ export interface SlashCommandHandlerOptions extends BaseOptions {
   subCommand?: string;
   subCommandGroup?: string;
 
+  global?: boolean;
+  allowDms?: boolean;
+
   description: string;
   options?: APIApplicationCommandBasicOptionWithAutoCompleteHandler[];
 }
@@ -82,6 +85,7 @@ export const buildSlashCommand = (
   const builder =
     builderCache[options.root] ??
     new SlashCommandBuilder()
+      .setDMPermission(options.global && (options.allowDms ?? false))
       .setName(options.root)
       .setDescription(options.description);
 
