@@ -37,12 +37,7 @@ class PayloadAccessRequestApprovalButton extends CommandHandler<DiscordEvent.BUT
 
     const availableRoles = Object.entries(
       User_Roles_MutationInput
-    ).map<SelectMenuComponentOptionData>(([k, v]) => {
-      return {
-        label: k,
-        value: v,
-      };
-    });
+    ).map<SelectMenuComponentOptionData>(([k, v]) => ({ label: k, value: v }));
 
     const selectId = `${targetUser}-payload-roles`;
     const roleSelection = new StringSelectMenuBuilder({
