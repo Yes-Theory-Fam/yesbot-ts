@@ -19,11 +19,14 @@ import { Groupchat_Platform_Input } from "../../__generated__/types";
   root: "groupchat",
   subCommand: "add",
   description: "Add a groupchat to yestheory.family",
+  global: true,
+  allowDms: true,
   options: [],
 })
 class GroupchatAdd extends CommandHandler<DiscordEvent.SLASH_COMMAND> {
   public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
-    await interaction.deferReply();
+    const isInGuild = interaction.inGuild();
+    await interaction.deferReply({ ephemeral: isInGuild });
 
     const userId = interaction.user.id;
 
@@ -105,7 +108,7 @@ class GroupchatAdd extends CommandHandler<DiscordEvent.SLASH_COMMAND> {
         time: 60 * 60 * 1000,
       });
 
-    await modalInteraction.deferReply();
+    await modalInteraction.deferReply({ ephemeral: isInGuild });
 
     const name = modalInteraction.fields.getTextInputValue("groupchat-name");
     const url = modalInteraction.fields.getTextInputValue("groupchat-url");
@@ -125,9 +128,11 @@ class GroupchatAdd extends CommandHandler<DiscordEvent.SLASH_COMMAND> {
       groupchatData
     );
 
+    await interaction.deleteReply();
+
     if (createdId) {
       await modalInteraction.editReply(
-        `Groupchat created successfully! You can edit it under ${process.env.YTF_CMS_URL}/admin/collections/groupchats/${createdId}`
+        `Groupchat "${name}" created successfully! You can edit it under ${process.env.YTF_CMS_URL}/admin/collections/groupchats/${createdId}`
       );
     } else {
       await modalInteraction.editReply("Failed to create groupchat.");

@@ -40,14 +40,23 @@ export const registerApplicationCommands = async (
   const userCommands = getAllOptions(userTree);
 
   const builderCache: Record<string, SlashCommandBuilder> = {};
+  const globalBuilderCache: Record<string, SlashCommandBuilder> = {};
   const groupBuilderCache: Record<string, SlashCommandSubcommandGroupBuilder> =
     {};
 
   slashCommands.forEach((option) =>
-    buildSlashCommand(option, builderCache, groupBuilderCache)
+    buildSlashCommand(
+      option,
+      option.global ? globalBuilderCache : builderCache,
+      groupBuilderCache
+    )
   );
+
   const builtSlashCommands = Object.values(builderCache).map((builder) =>
     builder.toJSON()
+  );
+  const builtGlobalSlashCommands = Object.values(globalBuilderCache).map((b) =>
+    b.toJSON()
   );
 
   const builtContextCommands = [...messageCommands, ...userCommands]
@@ -57,7 +66,9 @@ export const registerApplicationCommands = async (
 
   const jsonCommands = [...builtContextCommands, ...builtSlashCommands];
 
-  logger.info(`Registering ${jsonCommands.length} application commands`);
+  const commandCountString = `${jsonCommands.length} guild application commands and ${builtGlobalSlashCommands.length} global commands.`;
+
+  logger.info(`Registering ${commandCountString}`);
 
   const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN);
   try {
@@ -69,6 +80,13 @@ export const registerApplicationCommands = async (
       { body: jsonCommands }
     )) as RegistrationResponseItem[];
 
+    const globalResult = (await rest.put(
+      Routes.applicationCommands(process.env.CLIENT_ID),
+      { body: builtGlobalSlashCommands }
+    )) as RegistrationResponseItem[];
+
+    const results = [...result, ...globalResult];
+
     const newMessageCommandTree: StringIndexedHIOCTree<DiscordEvent.CONTEXT_MENU_MESSAGE> =
       {};
     const newUserCommandTree: StringIndexedHIOCTree<DiscordEvent.CONTEXT_MENU_USER> =
@@ -77,7 +95,7 @@ export const registerApplicationCommands = async (
       {};
     const nameIdMap: Record<string, Snowflake> = {};
 
-    for (const item of result) {
+    for (const item of results) {
       const targetTree =
         item.type === ApplicationCommandType.User
           ? newUserCommandTree
@@ -95,9 +113,7 @@ export const registerApplicationCommands = async (
       nameIdMap[item.name] = item.id;
     }
 
-    logger.info(
-      `Finished registering ${jsonCommands.length} application commands`
-    );
+    logger.info(`Finished registering ${commandCountString}`);
 
     return {
       messageTree: newMessageCommandTree,
