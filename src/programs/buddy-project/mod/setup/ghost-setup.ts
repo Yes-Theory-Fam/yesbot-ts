@@ -36,7 +36,9 @@ export const buddyProjectGhostSetup = async (guild: Guild) => {
     components: [button],
   });
   await channel.send({
-    content: `Your buddy isn't responding to you? First of all: Rude! Second of all: Fear not, you can ~~publicly shame~~ report them.
+    content: `**What if my buddy doesn't respond?**
+    
+Your buddy isn't responding to you? First of all: Rude! Second of all: Fear not, you can ~~publicly shame~~ report them.
 
 If you didn't get a message from your buddy ${matchedGhostedDifferenceHours} hours after you got matched, just click the button below. I will try to poke them a bit and if I don't get anything either for ${ghostedRematchDifferenceHours} more hours, you will get another shot in the buddy lottery 🦥`,
     components: [components],
