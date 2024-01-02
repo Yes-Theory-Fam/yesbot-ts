@@ -1,7 +1,7 @@
 import { Guild, Role } from "discord.js";
 
 const roleName = `Buddy Project ${new Date().getFullYear()}`;
-const roleColor = `#007fff`;
+const roleColor = `#2041e6`;
 
 export const createBuddyProjectRole = async (guild: Guild): Promise<Role> => {
   const existing = guild.roles.cache.find((r) => r.name === roleName);
