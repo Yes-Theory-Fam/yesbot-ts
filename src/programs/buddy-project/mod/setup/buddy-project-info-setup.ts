@@ -6,9 +6,9 @@ import {
   ButtonStyle,
   ActionRowBuilder,
 } from "discord.js";
-import { ChatNames } from "../../../collections/chat-names";
-import eventDistribution from "../../../event-distribution";
-import { buddyProjectSignUpButtonId } from "../sign-up/buddy-project-signup";
+import { ChatNames } from "../../../../collections/chat-names";
+import eventDistribution from "../../../../event-distribution";
+import { buddyProjectSignUpButtonId } from "../../sign-up/buddy-project-signup";
 
 export const buddyProjectInfoSetup = async (guild: Guild) => {
   const channel = guild.channels.cache.find(
