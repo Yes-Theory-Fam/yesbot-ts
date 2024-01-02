@@ -6,8 +6,8 @@ import {
   Guild,
   TextChannel,
 } from "discord.js";
-import { ChatNames } from "../../../collections/chat-names";
-import { buddyProjectConfirmsDmsUnblockedButtonId } from "../matching/confirm-dms-unblocked";
+import { ChatNames } from "../../../../collections/chat-names";
+import { buddyProjectConfirmsDmsUnblockedButtonId } from "../../matching/confirm-dms-unblocked";
 
 export const buddyProjectDmsBlockedSetup = async (guild: Guild) => {
   const channel = guild.channels.cache.find(

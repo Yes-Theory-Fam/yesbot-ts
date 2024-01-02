@@ -18,7 +18,7 @@ import {
   CommandHandler,
   DiscordEvent,
 } from "../../../event-distribution";
-import { BuddyProjectError, commonMessages } from "../errors";
+import { BuddyProjectError, commonMessages } from "../constants";
 import { BuddyProjectService } from "../services/buddy-project.service";
 import { rescueCloseButtonId } from "./rescue-close";
 

@@ -2,11 +2,13 @@ import {
   Command,
   DiscordEvent,
   CommandHandler,
-} from "../../../event-distribution";
+} from "../../../../event-distribution";
 import { ChatInputCommandInteraction } from "discord.js";
 import { buddyProjectInfoSetup } from "./buddy-project-info-setup";
 import { buddyProjectDmsBlockedSetup } from "./dms-blocked-setup";
 import { buddyProjectGhostSetup } from "./ghost-setup";
+import { createBuddyProjectChannels } from "./create-buddy-project-channels";
+import { createBuddyProjectRole } from "./create-buddy-project-role";
 
 @Command({
   event: DiscordEvent.SLASH_COMMAND,
@@ -14,7 +16,7 @@ import { buddyProjectGhostSetup } from "./ghost-setup";
   subCommand: "bootstrap",
   description: "Sets up messages and interactions for the buddy project",
 })
-class BuddyProjectSetup extends CommandHandler<DiscordEvent.SLASH_COMMAND> {
+class BuddyProjectBootstrap extends CommandHandler<DiscordEvent.SLASH_COMMAND> {
   async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     const { guild } = interaction;
 
@@ -22,17 +24,32 @@ class BuddyProjectSetup extends CommandHandler<DiscordEvent.SLASH_COMMAND> {
 
     await interaction.deferReply({ ephemeral: true });
 
+    const createdChannels = await createBuddyProjectChannels(guild);
+    await interaction.editReply(
+      `Ensured channels ${createdChannels.join(", ")} exist`
+    );
+
+    const createdRole = await createBuddyProjectRole(guild);
+    await interaction.followUp({
+      ephemeral: true,
+      content: `Ensured role ${createdRole} exists`,
+    });
+
     try {
       await buddyProjectInfoSetup(guild);
       await buddyProjectGhostSetup(guild);
       await buddyProjectDmsBlockedSetup(guild);
 
-      await interaction.editReply("Completed bootstrapping the Buddy Project!");
+      await interaction.followUp({
+        content: "Completed bootstrapping the Buddy Project!",
+        ephemeral: true,
+      });
     } catch (e) {
       const message = e instanceof Error ? e.message : e + "";
-      await interaction.editReply(
-        `Failed to bootstrap the Buddy Project:\n\n${message}`
-      );
+      await interaction.followUp({
+        content: `Failed to bootstrap the Buddy Project:\n\n${message}`,
+        ephemeral: true,
+      });
     }
   }
 }

@@ -6,9 +6,9 @@ import {
   ButtonStyle,
   ActionRowBuilder,
 } from "discord.js";
-import { ChatNames } from "../../../collections/chat-names";
-import eventDistribution from "../../../event-distribution";
-import { buddyProjectSignUpButtonId } from "../sign-up/buddy-project-signup";
+import { ChatNames } from "../../../../collections/chat-names";
+import eventDistribution from "../../../../event-distribution";
+import { buddyProjectSignUpButtonId } from "../../sign-up/buddy-project-signup";
 
 export const buddyProjectInfoSetup = async (guild: Guild) => {
   const channel = guild.channels.cache.find(
@@ -42,9 +42,9 @@ export const buddyProjectInfoSetup = async (guild: Guild) => {
   });
 
   await channel.send({
-    content: `**Welcome to this year's Buddy Project!**
+    content: `# Welcome to this year's Buddy Project!
 
-After many, many months we are finally back!
+After many, many months we are finally back! This channel aims to address your most pressing questions:
 
 **What is the Buddy Project?** 
 
@@ -60,7 +60,12 @@ It is as simple as it can be. Just press the "Sign up"-Button and you’ll be on
   });
 
   const bpCommandId = eventDistribution.getIdForCommandName("buddy-project");
-  await channel.send(`**Who is my buddy?**
+  await channel.send(`
+**When will I get matched?**
 
-When getting matched, YesBot will send you a DM containing a ping to your buddy. Due to some odd Discord quirks this might just show up as a bunch of symbols and numbers. You can try out </buddy-project find-buddy:${bpCommandId}> or </buddy-project rescue:${bpCommandId}> for (hopefully) a better result. You will also find the Discord username and tag at ${process.env.YTF_FRONTEND_URL}/buddyproject.`);
+After an initial sign-up phase of about a week, matching will start. Due to some limitations, not all people will be matched immediately so you might have to wait for a couple hours. You should not have to wait for more than two days (*significantly* less depending on the number of people who signed up). 
+  
+**Who is my buddy?**
+
+When getting matched, YesBot will send you a DM containing a ping to your buddy. Due to some odd Discord quirks this might just show up as a bunch of symbols and numbers. You can try out </buddy-project find-buddy:${bpCommandId}> or </buddy-project rescue:${bpCommandId}> for (hopefully) a better result. You will also find the Discord username and tag at [our website](${process.env.YTF_FRONTEND_URL}/buddyproject).`);
 };
