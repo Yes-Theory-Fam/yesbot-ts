@@ -53,6 +53,6 @@ class UnlockBuddyProject extends CommandHandler<DiscordEvent.SLASH_COMMAND> {
       ViewChannel: true,
     });
 
-    await interaction.editReply("Chaos unleashed");
+    await interaction.editReply("Updated permissions, all channels unlocked");
   }
 }
