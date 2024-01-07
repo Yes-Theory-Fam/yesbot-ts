@@ -29,4 +29,6 @@ COPY --from=builder /usr/src/app/yarn.lock ./yarn.lock
 COPY --from=builder /usr/src/app/build ./build
 COPY /deployment/docker-entrypoint.sh ./docker-entrypoint.sh
 
+ENV NODE_ENV=production
+
 ENTRYPOINT ["./docker-entrypoint.sh"]
