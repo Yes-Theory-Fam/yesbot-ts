@@ -47,7 +47,6 @@ const randomReply = async (message: Message) => {
     "flip a coin: Head is yes, Tails is no",
     "never in a million years",
     "claro que si", // yes of course
-    "just do it (not sponsored by nike)",
     "hahahahahhaha... no.",
     "yes, I totally agree",
     "as long as I’m alive.",
