@@ -1,4 +1,4 @@
-FROM node:21.5.0-alpine AS deps
+FROM node:21.6.0-alpine AS deps
 RUN apk add --no-cache libc6-compat
 
 WORKDIR /usr/src/app
@@ -6,7 +6,7 @@ COPY package.json yarn.lock ./
 
 RUN yarn install --frozen-lockfile
 
-FROM node:21.5.0-alpine AS builder
+FROM node:21.6.0-alpine AS builder
 RUN apk add --no-cache libc6-compat
 WORKDIR /usr/src/app
 
@@ -17,7 +17,7 @@ ARG YTF_GRAPHQL_SCHEMA_ENDPOINT
 
 RUN yarn prisma generate && yarn graphql-codegen && yarn run tsc
 
-FROM node:21.5.0-alpine
+FROM node:21.6.0-alpine
 RUN apk add --no-cache libc6-compat
 # Create app directory
 WORKDIR /usr/src/app
