@@ -44,7 +44,7 @@
     "winston": "3.11.0"
   },
   "devDependencies": {
-    "@atmina/local-typescript-operations": "0.8.0",
+    "@atmina/local-typescript-operations": "0.8.1",
     "@atmina/only-enum-types": "0.7.0",
     "@graphql-codegen/cli": "5.0.2",
     "@graphql-codegen/near-operation-file-preset": "3.0.0",
