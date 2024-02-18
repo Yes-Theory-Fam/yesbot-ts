@@ -33,9 +33,13 @@ const enum Errors {
 })
 class LockChannel extends CommandHandler<DiscordEvent.SLASH_COMMAND> {
   async handle(interaction: ChatInputCommandInteraction): Promise<void> {
-    // TODO use the channel
+    const channelOption = interaction.options.getChannel("channel");
+    const optionChannel =
+      interaction.guild && channelOption
+        ? await interaction.guild.channels.fetch(channelOption.id)
+        : undefined;
 
-    const channel = interaction.channel;
+    const channel = optionChannel ?? interaction.channel;
     if (channel?.type !== ChannelType.GuildText) {
       throw new Error(Errors.NOT_IN_GUILD);
     }
@@ -58,7 +62,7 @@ class LockChannel extends CommandHandler<DiscordEvent.SLASH_COMMAND> {
 
     await interaction.editReply({
       content:
-        "The channel has been locked. Go to its permissions and allow 'Send Messages' for the Member or everyone role to unlock it!",
+        "The channel has been locked. Go to its permissions and set 'Send Messages' for the Member or everyone role **TO NEUTRAL** unlock it!",
     });
   }
 }
