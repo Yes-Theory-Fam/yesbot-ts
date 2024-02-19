@@ -23,7 +23,7 @@ class VoiceAcceptAllUsers extends CommandHandler<DiscordEvent.VOICE_STATE_UPDATE
 
     const userId = after.id;
 
-    const mapping = this.vodService.mappingByUserId(userId);
+    const mapping = await this.vodService.mappingByUserId(userId);
     if (!mapping) return;
 
     const everyone = newChannel.guild.roles.everyone;
