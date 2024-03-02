@@ -51,14 +51,14 @@
     "@graphql-codegen/visitor-plugin-common" "4.1.2"
     auto-bind "^4.0.0"
 
-"@atmina/only-enum-types@0.7.0":
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/@atmina/only-enum-types/-/only-enum-types-0.7.0.tgz#ba67a8333ffdee5469c9895e7d6a8d0536058012"
-  integrity sha512-ApRYn13xpovmZMhmshuas7Go/DOWUHkcuUmP8kitneef3NmYB8Cx7+iRm88bXkinvmvNQKfJdSBZhZfmNmvm+w==
+"@atmina/only-enum-types@0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@atmina/only-enum-types/-/only-enum-types-0.8.0.tgz#92435337d99fa7b6fb789194a9687c0eed34237a"
+  integrity sha512-V8y8a6CL+vktRt7/m1BTcfOvtQGdGeU7GlLcJ8MZBsKsabpsCl0BUevUAQ+vgs6BSEY/R2nlxmtJh9uCBGMqUA==
   dependencies:
-    "@graphql-codegen/plugin-helpers" "^5.0.0"
-    "@graphql-codegen/typescript" "^4.0.0"
-    "@graphql-codegen/typescript-operations" "^4.0.0"
+    "@graphql-codegen/plugin-helpers" "5.0.3"
+    "@graphql-codegen/typescript" "4.0.4"
+    "@graphql-codegen/typescript-operations" "4.1.2"
     auto-bind "^4.0.0"
 
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.12.13", "@babel/code-frame@^7.23.5":
@@ -800,7 +800,7 @@
     parse-filepath "^1.0.2"
     tslib "~2.6.0"
 
-"@graphql-codegen/plugin-helpers@5.0.3", "@graphql-codegen/plugin-helpers@^5.0.0", "@graphql-codegen/plugin-helpers@^5.0.3":
+"@graphql-codegen/plugin-helpers@5.0.3", "@graphql-codegen/plugin-helpers@^5.0.3":
   version "5.0.3"
   resolved "https://registry.yarnpkg.com/@graphql-codegen/plugin-helpers/-/plugin-helpers-5.0.3.tgz#7027b9d911d7cb594663590fcf5d63e9cf7ec2ff"
   integrity sha512-yZ1rpULIWKBZqCDlvGIJRSyj1B2utkEdGmXZTBT/GVayP4hyRYlkd36AJV/LfEsVD8dnsKL5rLz2VTYmRNlJ5Q==
@@ -877,7 +877,7 @@
     auto-bind "~4.0.0"
     tslib "~2.6.0"
 
-"@graphql-codegen/typescript-operations@^4.0.0", "@graphql-codegen/typescript-operations@^4.2.0":
+"@graphql-codegen/typescript-operations@^4.2.0":
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/@graphql-codegen/typescript-operations/-/typescript-operations-4.2.0.tgz#0c6bbaf41cb325809b7e9e2b9d85ab01f11d142f"
   integrity sha512-lmuwYb03XC7LNRS8oo9M4/vlOrq/wOKmTLBHlltK2YJ1BO/4K/Q9Jdv/jDmJpNydHVR1fmeF4wAfsIp1f9JibA==
@@ -899,7 +899,7 @@
     auto-bind "~4.0.0"
     tslib "~2.6.0"
 
-"@graphql-codegen/typescript@^4.0.0", "@graphql-codegen/typescript@^4.0.4", "@graphql-codegen/typescript@^4.0.6":
+"@graphql-codegen/typescript@^4.0.4", "@graphql-codegen/typescript@^4.0.6":
   version "4.0.6"
   resolved "https://registry.yarnpkg.com/@graphql-codegen/typescript/-/typescript-4.0.6.tgz#2c9b70dc1eafda912de5e31c119c757b1aa5fca1"
   integrity sha512-IBG4N+Blv7KAL27bseruIoLTjORFCT3r+QYyMC3g11uY3/9TPpaUyjSdF70yBe5GIQ6dAgDU+ENUC1v7EPi0rw==
