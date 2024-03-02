@@ -45,7 +45,7 @@
   },
   "devDependencies": {
     "@atmina/local-typescript-operations": "0.9.0",
-    "@atmina/only-enum-types": "0.7.0",
+    "@atmina/only-enum-types": "0.8.0",
     "@graphql-codegen/cli": "5.0.2",
     "@graphql-codegen/near-operation-file-preset": "3.0.0",
     "@graphql-codegen/typescript-graphql-request": "6.2.0",
