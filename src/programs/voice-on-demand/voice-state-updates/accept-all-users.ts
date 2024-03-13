@@ -24,7 +24,7 @@ class VoiceAcceptAllUsers extends CommandHandler<DiscordEvent.VOICE_STATE_UPDATE
     const userId = after.id;
 
     const mapping = await this.vodService.mappingByUserId(userId);
-    if (!mapping) return;
+    if (!mapping || mapping.channelId !== after.channelId) return;
 
     const everyone = newChannel.guild.roles.everyone;
     await newChannel.permissionOverwrites.edit(everyone, {
