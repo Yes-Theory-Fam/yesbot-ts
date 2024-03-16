@@ -23,8 +23,25 @@ export class TravelDataMessageConverter {
 **Activities**: ${details.activities}`;
   }
 
+  private static sanitizeMessageContent(messageContent: string): string {
+    const boundary = "---\n";
+    const declinedMessageBoundaryStart = messageContent.indexOf(boundary);
+    const declinedMessageBoundaryEnd = messageContent.lastIndexOf(boundary);
+
+    if (declinedMessageBoundaryStart === -1) return messageContent;
+
+    return messageContent
+      .substring(
+        declinedMessageBoundaryStart + boundary.length,
+        declinedMessageBoundaryEnd === -1
+          ? messageContent.length
+          : declinedMessageBoundaryEnd
+      )
+      .trim();
+  }
+
   static fromMessage(message: Message, guild: Guild): TripDetails {
-    const content = message.content;
+    const content = this.sanitizeMessageContent(message.content);
 
     const countryNameMatch = /Hey (.*)!$/gm.exec(content);
     const countryNames = countryNameMatch?.at(1)?.split(/\s*,\s*/) ?? [];

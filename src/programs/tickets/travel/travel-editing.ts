@@ -39,7 +39,8 @@ export class TravelEditing {
     details: TripDetails,
     interaction:
       | MessageComponentInteraction
-      | ModalMessageModalSubmitInteraction
+      | ModalMessageModalSubmitInteraction,
+    countriesEnabled = true
   ): Promise<EditResult> {
     const userId = interaction.user.id;
 
@@ -73,7 +74,11 @@ export class TravelEditing {
 
     switch (buttonInteraction.customId) {
       case editId:
-        return await this.doEditing(details, buttonInteraction);
+        return await this.doEditing(
+          details,
+          buttonInteraction,
+          countriesEnabled
+        );
       case doneId:
         return { details, interaction: buttonInteraction };
       default:
@@ -128,7 +133,11 @@ export class TravelEditing {
     const { details: newDetails, interaction: newDetailsInteraction } =
       await this.getNewDetails(details, selectionInteraction);
 
-    return await this.offerEditing(newDetails, newDetailsInteraction);
+    return await this.offerEditing(
+      newDetails,
+      newDetailsInteraction,
+      countriesEnabled
+    );
   }
 
   private async getNewDetails(
