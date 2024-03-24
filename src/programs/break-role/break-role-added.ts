@@ -11,15 +11,21 @@ import {
 } from "discord.js";
 import prisma from "../../prisma";
 import { getRoleAccessedChannels } from "./common";
+import Tools from "../../common/tools";
 
 @Command({
   event: DiscordEvent.GUILD_MEMBER_UPDATE,
   roleNamesAdded: ["Break"],
 })
 class BreakRoleAdded extends CommandHandler<DiscordEvent.GUILD_MEMBER_UPDATE> {
-  async handle(oldMember: GuildMember, newMember: GuildMember): Promise<void> {
+  async handle(_: GuildMember, newMember: GuildMember): Promise<void> {
     await this.revokePerUserPermissions(newMember);
     await this.lockRoleChannels(newMember);
+
+    const memberRole = Tools.getRoleByName("Member", newMember.guild);
+    if (memberRole) {
+      await newMember.roles.remove(memberRole);
+    }
   }
 
   private async revokePerUserPermissions(member: GuildMember) {

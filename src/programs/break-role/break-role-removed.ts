@@ -16,6 +16,11 @@ class BreakRoleRemoved extends CommandHandler<DiscordEvent.GUILD_MEMBER_UPDATE> 
   async handle(oldMember: GuildMember, newMember: GuildMember): Promise<void> {
     await this.resolvePerUserPermissions(newMember);
     await this.unlockRoleChannels(newMember);
+
+    const memberRole = Tools.getRoleByName("Member", newMember.guild);
+    if (memberRole) {
+      await newMember.roles.add(memberRole);
+    }
   }
 
   private async resolvePerUserPermissions(member: GuildMember) {
