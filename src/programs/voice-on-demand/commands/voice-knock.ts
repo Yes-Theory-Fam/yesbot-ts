@@ -66,14 +66,18 @@ class VoiceKnock extends CommandHandler<DiscordEvent.SLASH_COMMAND> {
 
     if (channel.members.size === maxMembers) throw new Error(Errors.IS_AT_MAX);
 
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.reply({
+      ephemeral: true,
+      content: `I sent <@${targetUserId}> a request!`,
+    });
     const gotAccess = await this.requestAccess(targetUserId, channel, userId);
 
-    await interaction.editReply(
-      gotAccess
-        ? "You were let in!"
-        : `Sorry, but the room owner didn't respond.`
-    );
+    await interaction.followUp({
+      content: gotAccess
+        ? `<@${userId}> you were let in the room!`
+        : `Sorry, but the room owner didn't respond.`,
+      ephemeral: true,
+    });
 
     if (gotAccess) {
       const newLimit = Math.min(
