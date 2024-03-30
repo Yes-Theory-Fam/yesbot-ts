@@ -52,7 +52,7 @@
     "@parcel/watcher": "2.4.1",
     "@types/glob": "8.1.0",
     "@types/jest": "29.5.12",
-    "@types/node": "20.12.1",
+    "@types/node": "20.12.2",
     "@types/node-cron": "3.0.11",
     "@types/ws": "8.5.10",
     "@yestheoryfam/prettier-config": "1.0.0",
