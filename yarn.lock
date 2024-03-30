@@ -1902,10 +1902,10 @@
   dependencies:
     undici-types "~5.26.4"
 
-"@types/node@20.12.1":
-  version "20.12.1"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.12.1.tgz#e44ebbcef002836b5bacb57147cd331906264548"
-  integrity sha512-5lcxgB72hlSF7ZS9ZzX1RCLc9+BovxjL17T00xSmj3c0ygZFjPdNnN0RchfGpot/yniVMkWnyO6aR9Dr1q9qrg==
+"@types/node@20.12.2":
+  version "20.12.2"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.12.2.tgz#9facdd11102f38b21b4ebedd9d7999663343d72e"
+  integrity sha512-zQ0NYO87hyN6Xrclcqp7f8ZbXNbRfoGWNcMvHTPQp9UUrwI0mI7XBz+cu7/W6/VClYo2g63B0cjull/srU7LgQ==
   dependencies:
     undici-types "~5.26.4"
 
