@@ -4,7 +4,7 @@ import {
   getCountry,
   TimezoneName,
 } from "countries-and-timezones";
-import { utcToZonedTime, zonedTimeToUtc } from "date-fns-tz";
+import { toZonedTime, fromZonedTime } from "date-fns-tz";
 import {
   ActionRowBuilder,
   ApplicationCommandOptionType,
@@ -126,7 +126,7 @@ export function createBirthday(
 ): Birthday {
   return {
     userId: id,
-    birthdate: zonedTimeToUtc(birthdate, timezone),
+    birthdate: fromZonedTime(birthdate, timezone),
     timezone,
   };
 }
@@ -348,7 +348,7 @@ export async function getUserBirthday(userId: string): Promise<Date | null> {
 
   return userExistingBirthday
     ? userExistingBirthday.timezone
-      ? utcToZonedTime(
+      ? toZonedTime(
           userExistingBirthday.birthdate,
           userExistingBirthday.timezone
         )
