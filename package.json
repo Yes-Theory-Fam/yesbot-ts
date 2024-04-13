@@ -30,7 +30,7 @@
     "axios": "1.6.8",
     "countries-and-timezones": "3.6.0",
     "country-code-emoji": "2.3.0",
-    "date-fns": "2.30.0",
+    "date-fns": "3.6.0",
     "date-fns-tz": "3.0.1",
     "discord.js": "14.14.1",
     "fast-glob": "3.3.2",
