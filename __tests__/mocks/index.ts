@@ -261,6 +261,8 @@ export default class MockDiscord {
           animated: false,
           name: null,
         },
+        message_id: this.message.id,
+        user_id: this.user.id,
         channel_id: this.channel.id,
       },
       this.message
