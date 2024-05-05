@@ -622,10 +622,10 @@
     enabled "2.0.x"
     kuler "^2.0.0"
 
-"@discordjs/builders@^1.8.0":
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/@discordjs/builders/-/builders-1.8.0.tgz#8b1bcb42ab61ffe14c2ad15f597eb814b6e4dda9"
-  integrity sha512-NHj5LucA0Td8g0RMbMP6wfvra4QRyvKp7bE/PEMACGcfsaZkqCi4zPZ83vvkaiqRKVhyoFgRWx9f6ZWtaeM/ww==
+"@discordjs/builders@^1.8.1":
+  version "1.8.1"
+  resolved "https://registry.yarnpkg.com/@discordjs/builders/-/builders-1.8.1.tgz#5bca6e50a012492ecc03480ced53cbc7a1aac054"
+  integrity sha512-GkF+HM01FHy+NSoTaUPR8z44otfQgJ1AIsRxclYGUZDyUbdZEFyD/5QVv2Y1Flx6M+B0bQLzg2M9CJv5lGTqpA==
   dependencies:
     "@discordjs/formatters" "^0.4.0"
     "@discordjs/util" "^1.1.0"
@@ -2761,12 +2761,12 @@ discord-api-types@0.37.83:
   resolved "https://registry.yarnpkg.com/discord-api-types/-/discord-api-types-0.37.83.tgz#a22a799729ceded8176ea747157837ddf4708b1f"
   integrity sha512-urGGYeWtWNYMKnYlZnOnDHm8fVRffQs3U0SpE8RHeiuLKb/u92APS8HoQnPTFbnXmY1vVnXjXO4dOxcAn3J+DA==
 
-discord.js@14.15.1:
-  version "14.15.1"
-  resolved "https://registry.yarnpkg.com/discord.js/-/discord.js-14.15.1.tgz#7932f5244ee9dd984d86889c5360b39be54064fc"
-  integrity sha512-Md87FiS2y5cMoikV6csH+5SF72Vt2sSVmgV6hfQKiWyT4cxrGWhOk64r99dwzMjB1VFATM98ExGe0WY4H981UA==
+discord.js@14.15.2:
+  version "14.15.2"
+  resolved "https://registry.yarnpkg.com/discord.js/-/discord.js-14.15.2.tgz#ea2cacad02aff1faedf69ccea012149e06ab4277"
+  integrity sha512-wGD37YCaTUNprtpqMIRuNiswwsvSWXrHykBSm2SAosoTYut0VUDj9yo9t4iLtMKvuhI49zYkvKc2TNdzdvpJhg==
   dependencies:
-    "@discordjs/builders" "^1.8.0"
+    "@discordjs/builders" "^1.8.1"
     "@discordjs/collection" "1.5.3"
     "@discordjs/formatters" "^0.4.0"
     "@discordjs/rest" "^2.3.0"
