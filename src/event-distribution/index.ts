@@ -1,10 +1,10 @@
-import { EventDistribution } from "./event-distribution";
+import { EventDistribution } from "./event-distribution.js";
 
 const distribution = new EventDistribution();
 export default distribution;
 
-export * from "./types/handler";
-export * from "./types/base";
-export * from "./command-decorator";
+export * from "./types/handler.js";
+export * from "./types/base.js";
+export * from "./command-decorator.js";
 
-export { DiscordEvent } from "./types/base";
+export { DiscordEvent } from "./types/base.js";

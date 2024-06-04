@@ -1,16 +1,19 @@
-import MockDiscord from "../../mocks";
+import MockDiscord from "../../mocks/index.js";
 import {
   addVoiceStateUpdateHandler,
   extractVoiceStateUpdateInfo,
   VoiceStateChange,
   VoiceStateUpdateEventHandlerOptions,
-} from "../../../src/event-distribution/events/voice-state-update";
+} from "../../../src/event-distribution/events/voice-state-update.js";
 import { VoiceChannel } from "discord.js";
 import {
   InstanceOrConstructor,
   StringIndexedHIOCTree,
-} from "../../../src/event-distribution/types/hioc";
-import { CommandHandler, DiscordEvent } from "../../../src/event-distribution";
+} from "../../../src/event-distribution/types/hioc.js";
+import {
+  CommandHandler,
+  DiscordEvent,
+} from "../../../src/event-distribution/index.js";
 
 describe("Voice State Update", () => {
   let mockDiscord: MockDiscord;

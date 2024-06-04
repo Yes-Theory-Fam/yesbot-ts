@@ -2,10 +2,10 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../../event-distribution";
+} from "../../../event-distribution/index.js";
 import { ButtonInteraction } from "discord.js";
-import { TravelEditing } from "./travel-editing";
-import { TravelDataMessageConverter } from "./travel-data-message-converter";
+import { TravelEditing } from "./travel-editing.js";
+import { TravelDataMessageConverter } from "./travel-data-message-converter.js";
 
 @Command({
   event: DiscordEvent.BUTTON_CLICKED,

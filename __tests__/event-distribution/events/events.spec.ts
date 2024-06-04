@@ -6,7 +6,10 @@ import {
   addMessageHandler,
   extractMessageInfo,
 } from "../../../src/event-distribution/events/message";
-import { CommandHandler, DiscordEvent } from "../../../src/event-distribution";
+import {
+  CommandHandler,
+  DiscordEvent,
+} from "../../../src/event-distribution/index.js";
 import {
   addReactionHandler,
   extractReactionInfo,

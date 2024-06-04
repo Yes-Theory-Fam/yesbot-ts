@@ -3,13 +3,13 @@ import {
   EmbedBuilder,
   TextChannel,
 } from "discord.js";
-import { Paginator } from "../../common/paginator";
-import prisma from "../../prisma";
+import { Paginator } from "../../common/paginator.js";
+import prisma from "../../prisma.js";
 import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../event-distribution";
+} from "../../event-distribution/index.js";
 
 @Command({
   event: DiscordEvent.SLASH_COMMAND,

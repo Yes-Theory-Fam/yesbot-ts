@@ -1,21 +1,22 @@
-import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
+import {
+  Command,
+  CommandHandler,
+  DiscordEvent,
+} from "../event-distribution/index.js";
 import {
   ChannelType,
   ChatInputCommandInteraction,
   Guild,
-  Snowflake,
-  OverwriteType,
-  TextChannel,
-  PermissionOverwrites,
-  PermissionsBitField,
   Message,
-  User,
+  OverwriteType,
+  PermissionsBitField,
+  Snowflake,
+  TextChannel,
 } from "discord.js";
-import bot from "..";
-import { ChatNames } from "../collections/chat-names";
-import { createYesBotLogger } from "../log";
+import bot from "../index.js";
+import { ChatNames } from "../collections/chat-names.js";
 import { Timer } from "@prisma/client";
-import { TimerService } from "./timer/timer.service";
+import { TimerService } from "./timer/timer.service.js";
 
 interface ShoutoutPermsData {
   channelId: Snowflake;

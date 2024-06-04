@@ -1,7 +1,11 @@
 import { Message } from "discord.js";
-import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
-import { hasRole, textLog } from "../common/moderator";
-import Tools from "../common/tools";
+import {
+  Command,
+  CommandHandler,
+  DiscordEvent,
+} from "../event-distribution/index.js";
+import { hasRole, textLog } from "../common/moderator.js";
+import Tools from "../common/tools.js";
 
 @Command({
   event: DiscordEvent.MESSAGE,

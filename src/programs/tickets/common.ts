@@ -7,7 +7,7 @@ import {
   TextChannel,
   User,
 } from "discord.js";
-import Tools from "../../common/tools";
+import Tools from "../../common/tools.js";
 
 export const closeTicket = async (
   channel: TextChannel,

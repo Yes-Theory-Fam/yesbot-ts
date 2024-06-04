@@ -1,4 +1,4 @@
-export * from "./context-menu-message";
-export * from "./context-menu-user";
+export * from "./context-menu-message.js";
+export * from "./context-menu-user.js";
 
-export { buildContextMenuCommand } from "./build-context-menu-commands";
+export { buildContextMenuCommand } from "./build-context-menu-commands.js";

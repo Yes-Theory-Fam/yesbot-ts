@@ -3,7 +3,7 @@ import {
   CommandHandler,
   DiscordEvent,
   HandlerRejectedReason,
-} from "../../../event-distribution";
+} from "../../../event-distribution/index.js";
 import {
   ButtonStyle,
   ChatInputCommandInteraction,
@@ -11,9 +11,9 @@ import {
   RepliableInteraction,
   StringSelectMenuInteraction,
 } from "discord.js";
-import { TripDetails } from "./travel-data-message-converter";
-import { TripDetailsAggregator } from "./trip-details-aggregator";
-import { TravelEditing } from "./travel-editing";
+import { TripDetails } from "./travel-data-message-converter.js";
+import { TripDetailsAggregator } from "./trip-details-aggregator.js";
+import { TravelEditing } from "./travel-editing.js";
 
 const enum Errors {
   NOT_IN_TWO_MONTHS = "NOT_IN_TWO_MONTHS",

@@ -13,11 +13,10 @@ import {
   User,
 } from "discord.js";
 import fs from "fs";
-import { createYesBotLogger } from "../log";
-import prisma from "../prisma";
-import { findManyRequestedGroups } from "../programs/group-manager/common";
-import { textLog } from "./moderator";
-import eventDistribution from "../event-distribution";
+import { createYesBotLogger } from "../log.js";
+import prisma from "../prisma.js";
+import { textLog } from "./moderator.js";
+import eventDistribution from "../event-distribution/index.js";
 
 export const unicodeEmojiRegex =
   /^(\p{RI}\p{RI}|\p{Emoji}(\p{Emoji_Modifier_Base}|\uFE0F\u20E3?|[\u{E0020}-\u{E007E}]+\u{E007F})?(\u{200D}\p{Emoji}(\p{Emoji_Modifier_Base}|\uFE0F\u20E3?|[\u{E0020}-\u{E007E}]+\u{E007F})?)*)/gu;

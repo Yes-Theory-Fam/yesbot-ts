@@ -1,7 +1,7 @@
 import { ReactionRole } from "@prisma/client";
 import { Guild } from "discord.js";
-import { AutocompleteHandler } from "../../event-distribution/events/slash-commands/autocomplete";
-import prisma from "../../prisma";
+import { AutocompleteHandler } from "../../event-distribution/events/slash-commands/autocomplete.js";
+import prisma from "../../prisma.js";
 
 export const reactRoleAutocomplete: AutocompleteHandler<number> = async (
   currentInput,

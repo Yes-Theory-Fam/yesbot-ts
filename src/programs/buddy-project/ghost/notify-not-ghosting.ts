@@ -3,10 +3,10 @@ import {
   CommandHandler,
   DiscordEvent,
   EventLocation,
-} from "../../../event-distribution";
+} from "../../../event-distribution/index.js";
 import { ButtonInteraction, Client, Snowflake } from "discord.js";
-import { BuddyProjectService } from "../services/buddy-project.service";
-import { ghostWarningMessageRegex } from "./constants";
+import { BuddyProjectService } from "../services/buddy-project.service.js";
+import { ghostWarningMessageRegex } from "./constants.js";
 
 export const buddyProjectNotifyNotGhostingButtonId =
   "buddy-project-not-ghosting";

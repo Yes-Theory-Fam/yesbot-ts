@@ -5,8 +5,8 @@ import {
   OverwriteResolvable,
   PermissionsBitField,
 } from "discord.js";
-import { ChatNames } from "../../../../collections/chat-names";
-import Tools from "../../../../common/tools";
+import { ChatNames } from "../../../../collections/chat-names.js";
+import Tools from "../../../../common/tools.js";
 
 const getEventCategory = (guild: Guild) => {
   const found = guild.channels.cache.find(

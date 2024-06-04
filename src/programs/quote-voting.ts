@@ -1,8 +1,12 @@
-import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
+import {
+  Command,
+  CommandHandler,
+  DiscordEvent,
+} from "../event-distribution/index.js";
 import { DiscordAPIError, Message, Snowflake, TextChannel } from "discord.js";
-import { TimerService } from "./timer/timer.service";
+import { TimerService } from "./timer/timer.service.js";
 import { Timer } from "@prisma/client";
-import bot from "../index";
+import bot from "../index.js";
 import { RESTJSONErrorCodes } from "discord-api-types/v10";
 
 const quoteVotingIdentifier = "quotevoting";

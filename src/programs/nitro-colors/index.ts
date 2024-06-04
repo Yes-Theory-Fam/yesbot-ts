@@ -1,4 +1,4 @@
-import bot from "../../index";
+import bot from "../../index.js";
 import {
   Client,
   Collection,
@@ -11,13 +11,13 @@ import {
   TextChannel,
   User,
 } from "discord.js";
-import { createYesBotLogger } from "../../log";
+import { createYesBotLogger } from "../../log.js";
 import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../event-distribution";
-import prisma from "../../prisma";
+} from "../../event-distribution/index.js";
+import prisma from "../../prisma.js";
 
 export const logger = createYesBotLogger("programs", "NitroColors");
 

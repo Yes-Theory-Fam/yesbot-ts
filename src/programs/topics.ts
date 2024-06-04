@@ -1,8 +1,12 @@
 import { Message, AttachmentBuilder, TextChannel } from "discord.js";
-import Tools from "../common/tools";
-import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
-import { createYesBotLogger } from "../log";
-import prisma from "../prisma";
+import Tools from "../common/tools.js";
+import {
+  Command,
+  CommandHandler,
+  DiscordEvent,
+} from "../event-distribution/index.js";
+import { createYesBotLogger } from "../log.js";
+import prisma from "../prisma.js";
 
 const logger = createYesBotLogger("programs", "topics");
 

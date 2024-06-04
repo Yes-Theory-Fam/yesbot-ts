@@ -3,9 +3,9 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../../event-distribution";
-import { UpdateActivity } from "../usecase/update-activity";
-import { ChatNames } from "../../../collections/chat-names";
+} from "../../../event-distribution/index.js";
+import { UpdateActivity } from "../usecase/update-activity.js";
+import { ChatNames } from "../../../collections/chat-names.js";
 
 @Command({
   event: DiscordEvent.MESSAGE,

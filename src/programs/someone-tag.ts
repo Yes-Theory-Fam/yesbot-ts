@@ -1,14 +1,17 @@
 import {
-  APIInteractionGuildMember,
   TextChannel,
   User,
   ChatInputCommandInteraction,
   ApplicationCommandOptionType,
 } from "discord.js";
-import Tools from "../common/tools";
+import Tools from "../common/tools.js";
 import { addHours, isAfter } from "date-fns";
-import prisma from "../prisma";
-import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
+import prisma from "../prisma.js";
+import {
+  Command,
+  CommandHandler,
+  DiscordEvent,
+} from "../event-distribution/index.js";
 
 const QUESTION_SHEET_ID: string =
   "1eve4McRxECmH4dLWLJvHLr9fErBWcCGiH94ihBNzK_s";

@@ -1,5 +1,5 @@
 import { Client, Guild, GuildMember, Snowflake } from "discord.js";
-import { RawGuildData } from "discord.js/typings/rawDataTypes";
+import type { RawGuildData } from "discord.js/typings/rawDataTypes";
 
 export interface GuildMock extends Guild {
   addMember(member: GuildMember): void;

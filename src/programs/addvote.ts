@@ -1,15 +1,9 @@
+import { MessageContextMenuCommandInteraction } from "discord.js";
 import {
-  Guild,
-  Message,
-  MessageContextMenuCommandInteraction,
-} from "discord.js";
-import Tools from "../common/tools";
-import eventDistribution, {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../event-distribution";
-import { createYesBotLogger } from "../log";
+} from "../event-distribution/index.js";
 
 @Command({
   event: DiscordEvent.CONTEXT_MENU_MESSAGE,

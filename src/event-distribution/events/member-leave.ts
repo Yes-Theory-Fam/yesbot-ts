@@ -4,9 +4,9 @@ import {
   DiscordEvent,
   ExtractInfoForEventFunction,
   HandlerFunctionFor,
-} from "../types/base";
+} from "../types/base.js";
 import { GuildMember, PartialGuildMember } from "discord.js";
-import { addToTree } from "../helper";
+import { addToTree } from "../helper.js";
 
 export interface MemberLeaveEventHandlerOptions extends BaseOptions {
   event: DiscordEvent.MEMBER_LEAVE;

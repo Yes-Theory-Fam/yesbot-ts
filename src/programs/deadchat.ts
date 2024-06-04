@@ -1,6 +1,10 @@
-import prisma from "../prisma";
+import prisma from "../prisma.js";
 
-import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
+import {
+  Command,
+  CommandHandler,
+  DiscordEvent,
+} from "../event-distribution/index.js";
 import { ChatInputCommandInteraction, TextChannel } from "discord.js";
 
 const thirtyMinutes = 30 * 60 * 1000;

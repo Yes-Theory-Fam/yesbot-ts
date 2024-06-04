@@ -14,12 +14,16 @@ import {
   StringSelectMenuBuilder,
   SelectMenuInteraction,
 } from "discord.js";
-import { CountryRoleFinder } from "../common/country-role-finder";
-import { textLog } from "../common/moderator";
+import { CountryRoleFinder } from "../common/country-role-finder.js";
+import { textLog } from "../common/moderator.js";
 
-import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
-import { createYesBotLogger } from "../log";
-import prisma from "../prisma";
+import {
+  Command,
+  CommandHandler,
+  DiscordEvent,
+} from "../event-distribution/index.js";
+import { createYesBotLogger } from "../log.js";
+import prisma from "../prisma.js";
 
 const logger = createYesBotLogger("programs", "BirthdayManager");
 

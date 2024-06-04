@@ -10,10 +10,11 @@
       // More or less required by graphql-request; otherwise typing error missing WebSocket
       "dom"
     ],
-    "module": "commonjs",
+    "module": "Node16",
+    "moduleResolution": "Node16",
     "outDir": "build",
     "strict": true,
-    "target": "es2020",
+    "target": "es2020"
   },
   "exclude": [
     "build",

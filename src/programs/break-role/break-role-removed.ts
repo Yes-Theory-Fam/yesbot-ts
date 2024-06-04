@@ -2,11 +2,11 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../event-distribution";
+} from "../../event-distribution/index.js";
 import { GuildMember, TextChannel } from "discord.js";
-import { getRoleAccessedChannels } from "./common";
-import prisma from "../../prisma";
-import Tools from "../../common/tools";
+import { getRoleAccessedChannels } from "./common.js";
+import prisma from "../../prisma.js";
+import Tools from "../../common/tools.js";
 
 @Command({
   event: DiscordEvent.GUILD_MEMBER_UPDATE,

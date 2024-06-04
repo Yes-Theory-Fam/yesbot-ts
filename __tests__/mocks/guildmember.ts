@@ -1,5 +1,5 @@
 import { Client, Collection, Guild, GuildMember } from "discord.js";
-import { RawGuildMemberData } from "discord.js/typings/rawDataTypes";
+import { RawGuildMemberData } from "discord.js/typings/rawDataTypes.js";
 
 export class MockGuildMember {
   static new(

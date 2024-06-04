@@ -1,8 +1,11 @@
-import Discord, { Colors, Message, TextChannel } from "discord.js";
-import { ChatNames } from "../collections/chat-names";
-import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
-import Tools from "../common/tools";
-import { GroupService } from "./group-manager/group-service";
+import { Colors, EmbedBuilder, Message, TextChannel } from "discord.js";
+import { ChatNames } from "../collections/chat-names.js";
+import {
+  Command,
+  CommandHandler,
+  DiscordEvent,
+} from "../event-distribution/index.js";
+import { GroupService } from "./group-manager/group-service.js";
 
 @Command({
   event: DiscordEvent.MESSAGE,
@@ -17,7 +20,7 @@ class YesTheoryUploadedPing implements CommandHandler<DiscordEvent.MESSAGE> {
     const channelDiscussion = message.guild?.channels.cache.find(
       (channel) => channel.name === ChatNames.YESTHEORY_DISCUSSION.toString()
     ) as TextChannel;
-    const embed = new Discord.EmbedBuilder()
+    const embed = new EmbedBuilder()
       .setColor(Colors.Blue)
       .setTitle("YesTheory Uploaded!")
       .setDescription(

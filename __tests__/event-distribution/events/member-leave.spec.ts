@@ -3,7 +3,10 @@ import {
   InstanceOrConstructor,
   StringIndexedHIOCTree,
 } from "../../../src/event-distribution/types/hioc";
-import { CommandHandler, DiscordEvent } from "../../../src/event-distribution";
+import {
+  CommandHandler,
+  DiscordEvent,
+} from "../../../src/event-distribution/index.js";
 import {
   addMemberLeaveHandler,
   extractMemberLeaveInfo,

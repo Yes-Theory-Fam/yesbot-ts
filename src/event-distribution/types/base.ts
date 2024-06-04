@@ -1,7 +1,7 @@
-import { EventHandlerOptions, HandlerFunction } from "../events/events";
+import { EventHandlerOptions, HandlerFunction } from "../events/events.js";
 import { GuildMember, PartialGuildMember } from "discord.js";
-import { CommandHandler } from "./handler";
-import { InstanceOrConstructor, StringIndexedHIOCTree } from "./hioc";
+import { CommandHandler } from "./handler.js";
+import { InstanceOrConstructor, StringIndexedHIOCTree } from "./hioc.js";
 
 export const enum DiscordEvent {
   BUTTON_CLICKED = "BUTTON_CLICKED",

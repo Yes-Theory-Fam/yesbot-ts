@@ -1,17 +1,12 @@
 import {
   AddEventHandlerFunction,
-  BaseOptions,
   DiscordEvent,
   ExtractInfoForEventFunction,
   HandlerFunctionFor,
-} from "../../types/base";
-import { addToTree, ensureGuildMemberOrNull } from "../../helper";
-import {
-  ContextMenuCommandBuilder,
-  UserContextMenuCommandInteraction,
-} from "discord.js";
-import { ApplicationCommandType } from "discord-api-types/v10";
-import { ContextMenuOptions } from "./common";
+} from "../../types/base.js";
+import { addToTree, ensureGuildMemberOrNull } from "../../helper.js";
+import { UserContextMenuCommandInteraction } from "discord.js";
+import { ContextMenuOptions } from "./common.js";
 
 export interface ContextMenuUserHandlerOptions extends ContextMenuOptions {
   event: DiscordEvent.CONTEXT_MENU_USER;

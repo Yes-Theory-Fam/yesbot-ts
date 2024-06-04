@@ -8,9 +8,13 @@ import {
   TextChannel,
   User,
 } from "discord.js";
-import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
-import { isRegistered, textLog } from "../common/moderator";
-import { CountryRoleFinder } from "../common/country-role-finder";
+import {
+  Command,
+  CommandHandler,
+  DiscordEvent,
+} from "../event-distribution/index.js";
+import { isRegistered, textLog } from "../common/moderator.js";
+import { CountryRoleFinder } from "../common/country-role-finder.js";
 import { RESTJSONErrorCodes } from "discord-api-types/v10";
 
 const regionCountries = ["USA"];

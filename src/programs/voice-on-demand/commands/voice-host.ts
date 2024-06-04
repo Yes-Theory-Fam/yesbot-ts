@@ -3,19 +3,19 @@ import {
   ChatInputCommandInteraction,
   VoiceChannel,
 } from "discord.js";
-import { hasRole } from "../../../common/moderator";
+import { hasRole } from "../../../common/moderator.js";
 import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../../event-distribution";
+} from "../../../event-distribution/index.js";
 import {
   editErrors,
   ensureHasYesTheory,
   permissionErrors,
   VoiceOnDemandErrors,
-} from "../common";
-import { VoiceOnDemandService } from "../voice-on-demand-service";
+} from "../common.js";
+import { VoiceOnDemandService } from "../voice-on-demand-service.js";
 
 enum Errors {
   OWNER_IS_YOURSELF = "OWNER_IS_YOURSELF",

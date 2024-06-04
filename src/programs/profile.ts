@@ -4,10 +4,14 @@ import {
   EmbedBuilder,
   ChatInputCommandInteraction,
 } from "discord.js";
-import { formatBirthday, getUserBirthday } from "./birthday-manager";
-import prisma from "../prisma";
-import { CountryRoleFinder } from "../common/country-role-finder";
-import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
+import { formatBirthday, getUserBirthday } from "./birthday-manager.js";
+import prisma from "../prisma.js";
+import { CountryRoleFinder } from "../common/country-role-finder.js";
+import {
+  Command,
+  CommandHandler,
+  DiscordEvent,
+} from "../event-distribution/index.js";
 
 @Command({
   event: DiscordEvent.SLASH_COMMAND,

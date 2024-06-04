@@ -1,5 +1,5 @@
-import { AutocompleteHandler } from "../../event-distribution/events/slash-commands/autocomplete";
-import prisma from "../../prisma";
+import { AutocompleteHandler } from "../../event-distribution/events/slash-commands/autocomplete.js";
+import prisma from "../../prisma.js";
 
 export const voiceOnDemandAutocomplete: AutocompleteHandler<string> = async (
   currentInput,

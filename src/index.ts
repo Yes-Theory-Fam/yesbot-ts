@@ -1,5 +1,4 @@
 import {
-  ChannelType,
   Client,
   GatewayIntentBits,
   GuildMember,
@@ -14,11 +13,11 @@ import {
   User,
   VoiceState,
 } from "discord.js";
-import distribution, { DiscordEvent } from "./event-distribution";
-import { memberLeave, ready } from "./events";
-import { legacyCommandHandler } from "./events/message";
-import { LoadCron } from "./load-cron";
-import { createYesBotLogger } from "./log";
+import distribution, { DiscordEvent } from "./event-distribution/index.js";
+import { memberLeave, ready } from "./events/index.js";
+import { legacyCommandHandler } from "./events/message.js";
+import { LoadCron } from "./load-cron.js";
+import { createYesBotLogger } from "./log.js";
 
 import * as Sentry from "@sentry/node";
 

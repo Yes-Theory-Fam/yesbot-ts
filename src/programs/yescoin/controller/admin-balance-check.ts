@@ -6,8 +6,8 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../../event-distribution";
-import { GetBalance } from "../usecase/get-balance";
+} from "../../../event-distribution/index.js";
+import { GetBalance } from "../usecase/get-balance.js";
 
 @Command({
   event: DiscordEvent.SLASH_COMMAND,

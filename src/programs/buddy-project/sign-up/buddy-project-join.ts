@@ -1,12 +1,12 @@
 import { GuildMember } from "discord.js";
-import { BuddyProjectStatus } from "../../../__generated__/types";
-import Tools from "../../../common/tools";
+import { BuddyProjectStatus } from "../../../__generated__/types.js";
+import Tools from "../../../common/tools.js";
 import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../../event-distribution";
-import { BuddyProjectService } from "../services/buddy-project.service";
+} from "../../../event-distribution/index.js";
+import { BuddyProjectService } from "../services/buddy-project.service.js";
 
 @Command({
   event: DiscordEvent.MEMBER_JOIN,

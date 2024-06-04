@@ -1,6 +1,6 @@
-import { graphqlClient } from "../../../graphql-client";
-import { getSdk } from "./payload.generated";
-import { User_Roles_MutationInput } from "../../../__generated__/types";
+import { graphqlClient } from "../../../graphql-client.js";
+import { getSdk } from "./payload.generated.js";
+import { User_Roles_MutationInput } from "../../../__generated__/types.js";
 
 export class PayloadService {
   private sdk = getSdk(graphqlClient);

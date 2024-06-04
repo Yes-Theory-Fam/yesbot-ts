@@ -14,12 +14,12 @@ import {
 import {
   TravelDataMessageConverter,
   TripDetails,
-} from "./travel-data-message-converter";
+} from "./travel-data-message-converter.js";
 import {
   ModalRepliableInteraction,
   TripDetailsAggregator,
-} from "./trip-details-aggregator";
-import { ChatNames } from "../../../collections/chat-names";
+} from "./trip-details-aggregator.js";
+import { ChatNames } from "../../../collections/chat-names.js";
 
 type EditResult = {
   details: TripDetails;

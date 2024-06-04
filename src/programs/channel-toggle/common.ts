@@ -1,7 +1,7 @@
 import { Guild, Snowflake, TextChannel, User } from "discord.js";
 import { Message as MessageEntity } from "@prisma/client";
-import prisma from "../../prisma";
-import bot from "../..";
+import prisma from "../../prisma.js";
+import bot from "../../index.js";
 
 export const getOrCreateMessage = async (
   messageId: Snowflake

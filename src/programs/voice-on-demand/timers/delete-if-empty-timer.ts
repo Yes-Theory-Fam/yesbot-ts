@@ -4,9 +4,9 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../../event-distribution";
-import bot from "../../../index";
-import { VoiceOnDemandService } from "../voice-on-demand-service";
+} from "../../../event-distribution/index.js";
+import bot from "../../../index.js";
+import { VoiceOnDemandService } from "../voice-on-demand-service.js";
 import { RESTJSONErrorCodes } from "discord-api-types/v10";
 
 /*

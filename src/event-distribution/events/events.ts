@@ -12,86 +12,86 @@ import {
   UserContextMenuCommandInteraction,
   VoiceState,
 } from "discord.js";
-import Tools from "../../common/tools";
-import { createYesBotLogger } from "../../log";
-import { ErrorDetailReplacer } from "../error-detail-replacer";
+import Tools from "../../common/tools.js";
+import { createYesBotLogger } from "../../log.js";
+import { ErrorDetailReplacer } from "../error-detail-replacer.js";
 import {
   AddEventHandlerFunction,
   BaseOptions,
   DiscordEvent,
   ExtractInfoFunction,
   MessageRelatedOptions,
-} from "../types/base";
-import { StringIndexedHIOCTree } from "../types/hioc";
+} from "../types/base.js";
+import { StringIndexedHIOCTree } from "../types/hioc.js";
 import {
   addButtonClickedHandler,
   ButtonClickedHandlerFunction,
   ButtonClickedHandlerOptions,
   extractButtonClickedInfo,
-} from "./button-clicked";
+} from "./button-clicked.js";
 import {
   addGuildMemberUpdateHandler,
   extractGuildMemberUpdateInfo,
   GuildMemberUpdateArgument,
   GuildMemberUpdateEventHandlerOptions,
   GuildMemberUpdateHandlerFunction,
-} from "./guild-member-update";
+} from "./guild-member-update.js";
 import {
   addMemberJoinHandler,
   extractMemberJoinInfo,
   MemberJoinArgument,
   MemberJoinEventHandlerOptions,
   MemberJoinHandlerFunction,
-} from "./member-join";
+} from "./member-join.js";
 import {
   addMemberLeaveHandler,
   extractMemberLeaveInfo,
   MemberLeaveArgument,
   MemberLeaveEventHandlerOptions,
   MemberLeaveHandlerFunction,
-} from "./member-leave";
+} from "./member-leave.js";
 import {
   addMessageHandler,
   extractMessageInfo,
   MessageEventHandlerOptions,
   MessageHandlerFunction,
-} from "./message";
+} from "./message.js";
 import {
   addReactionHandler,
   extractReactionInfo,
   ReactionEventHandlerOptions,
   ReactionHandlerFunction,
-} from "./reactions";
+} from "./reactions.js";
 import {
   addReadyHandler,
   extractReadyInfo,
   ReadyEventHandlerOptions,
   ReadyHandlerFunction,
-} from "./ready";
+} from "./ready.js";
 import {
   addSlashCommandHandler,
   extractSlashCommandInfo,
   SlashCommandHandlerFunction,
   SlashCommandHandlerOptions,
-} from "./slash-commands";
+} from "./slash-commands/index.js";
 import {
   addThreadCreateHandler,
   extractThreadCreateInfo,
   ThreadCreatedHandlerFunction,
   ThreadCreateHandlerOptions,
-} from "./thread-create";
+} from "./thread-create.js";
 import {
   addTimerHandler,
   extractTimerInfo,
   TimerEventHandlerOptions,
   TimerHandlerFunction,
-} from "./timer";
+} from "./timer.js";
 import {
   addVoiceStateUpdateHandler,
   extractVoiceStateUpdateInfo,
   VoiceStateHandlerFunction,
   VoiceStateUpdateEventHandlerOptions,
-} from "./voice-state-update";
+} from "./voice-state-update.js";
 import {
   addContextMenuMessageHandler,
   addContextMenuUserHandler,
@@ -101,7 +101,7 @@ import {
   ContextMenuUserHandlerOptions,
   extractContextMenuMessageInfo,
   extractContextMenuUserInfo,
-} from "./context-menu";
+} from "./context-menu/index.js";
 
 export type EventHandlerOptions =
   | ButtonClickedHandlerOptions

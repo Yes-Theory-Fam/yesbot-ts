@@ -1,19 +1,18 @@
 import { GroupPingSetting } from "@prisma/client";
 import {
-  APIInteractionGuildMember,
   ApplicationCommandOptionType,
   ChatInputCommandInteraction,
 } from "discord.js";
-import { isAuthorModerator } from "../../../common/moderator";
+import { isAuthorModerator } from "../../../common/moderator.js";
 import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../../event-distribution";
-import { ErrorWithParams } from "../../../event-distribution/error-detail-replacer";
-import { timeRemainingForDeadchat } from "../common";
-import { groupAutocomplete } from "../group-autocomplete";
-import { GroupService } from "../group-service";
+} from "../../../event-distribution/index.js";
+import { ErrorWithParams } from "../../../event-distribution/error-detail-replacer.js";
+import { timeRemainingForDeadchat } from "../common.js";
+import { groupAutocomplete } from "../group-autocomplete.js";
+import { GroupService } from "../group-service.js";
 
 enum Errors {
   CHAT_NOT_DEAD = "CHAT_NOT_DEAD",

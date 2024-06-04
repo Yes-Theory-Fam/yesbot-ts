@@ -1,18 +1,18 @@
-import { StringIndexedHIOCTree } from "./types/hioc";
-import { DiscordEvent } from "./types/base";
+import { StringIndexedHIOCTree } from "./types/hioc.js";
+import { DiscordEvent } from "./types/base.js";
 import {
   ContextMenuCommandBuilder,
   SlashCommandBuilder,
   SlashCommandSubcommandGroupBuilder,
   Snowflake,
 } from "discord.js";
-import { createYesBotLogger } from "../log";
-import { getAllOptions } from "./helper";
+import { createYesBotLogger } from "../log.js";
+import { getAllOptions } from "./helper.js";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/rest";
-import { buildSlashCommand } from "./events/slash-commands";
+import { buildSlashCommand } from "./events/slash-commands/index.js";
 import { ApplicationCommandType } from "discord-api-types/v10";
-import { buildContextMenuCommand } from "./events/context-menu";
+import { buildContextMenuCommand } from "./events/context-menu/index.js";
 
 interface RegistrationResponseItem {
   id: string;
@@ -33,7 +33,10 @@ export const registerApplicationCommands = async (
   messageTree: StringIndexedHIOCTree<DiscordEvent.CONTEXT_MENU_MESSAGE>,
   userTree: StringIndexedHIOCTree<DiscordEvent.CONTEXT_MENU_USER>
 ): Promise<RegistrationResult> => {
-  const logger = createYesBotLogger("event-distribution", "register-commands");
+  const logger = createYesBotLogger(
+    "event-distribution/index.js",
+    "register-commands"
+  );
 
   const slashCommands = getAllOptions(slashCommandTree);
   const messageCommands = getAllOptions(messageTree);

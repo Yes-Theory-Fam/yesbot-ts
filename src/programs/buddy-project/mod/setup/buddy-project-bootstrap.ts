@@ -2,13 +2,13 @@ import {
   Command,
   DiscordEvent,
   CommandHandler,
-} from "../../../../event-distribution";
+} from "../../../../event-distribution/index.js";
 import { ChatInputCommandInteraction } from "discord.js";
-import { buddyProjectInfoSetup } from "./buddy-project-info-setup";
-import { buddyProjectDmsBlockedSetup } from "./dms-blocked-setup";
-import { buddyProjectGhostSetup } from "./ghost-setup";
-import { createBuddyProjectChannels } from "./create-buddy-project-channels";
-import { createBuddyProjectRole } from "./create-buddy-project-role";
+import { buddyProjectInfoSetup } from "./buddy-project-info-setup.js";
+import { buddyProjectDmsBlockedSetup } from "./dms-blocked-setup.js";
+import { buddyProjectGhostSetup } from "./ghost-setup.js";
+import { createBuddyProjectChannels } from "./create-buddy-project-channels.js";
+import { createBuddyProjectRole } from "./create-buddy-project-role.js";
 
 @Command({
   event: DiscordEvent.SLASH_COMMAND,

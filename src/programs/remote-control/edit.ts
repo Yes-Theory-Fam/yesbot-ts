@@ -8,8 +8,8 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../event-distribution";
-import { logger } from "./add-reaction";
+} from "../../event-distribution/index.js";
+import { logger } from "./add-reaction.js";
 
 enum Errors {
   MESSAGE_NOT_FOUND = "MESSAGE_NOT_FOUND",

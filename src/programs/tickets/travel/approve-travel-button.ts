@@ -2,14 +2,14 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../../event-distribution";
+} from "../../../event-distribution/index.js";
 import {
   ThreadAutoArchiveDuration,
   ButtonInteraction,
   TextChannel,
 } from "discord.js";
-import { ChatNames } from "../../../collections/chat-names";
-import { TravelDataMessageConverter } from "./travel-data-message-converter";
+import { ChatNames } from "../../../collections/chat-names.js";
+import { TravelDataMessageConverter } from "./travel-data-message-converter.js";
 
 @Command({
   event: DiscordEvent.BUTTON_CLICKED,

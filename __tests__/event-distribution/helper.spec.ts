@@ -1,9 +1,9 @@
-import { addToTree } from "../../src/event-distribution/helper";
+import { addToTree } from "../../src/event-distribution/helper.js";
 import {
   HIOC,
   StringIndexedHIOCTree,
-} from "../../src/event-distribution/types/hioc";
-import { DiscordEvent } from "../../src/event-distribution";
+} from "../../src/event-distribution/types/hioc.js";
+import { DiscordEvent } from "../../src/event-distribution/index.js";
 
 describe("Event Distribution helper", () => {
   it("Adds a single key event to the tree", () => {

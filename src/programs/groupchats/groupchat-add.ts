@@ -2,7 +2,7 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../event-distribution";
+} from "../../event-distribution/index.js";
 import {
   ActionRowBuilder,
   ChatInputCommandInteraction,
@@ -11,8 +11,8 @@ import {
   TextInputBuilder,
   TextInputStyle,
 } from "discord.js";
-import { GroupchatService } from "./services/groupchat-service";
-import { Groupchat_Platform_Input } from "../../__generated__/types";
+import { GroupchatService } from "./services/groupchat-service.js";
+import { Groupchat_Platform_Input } from "../../__generated__/types.js";
 
 @Command({
   event: DiscordEvent.SLASH_COMMAND,

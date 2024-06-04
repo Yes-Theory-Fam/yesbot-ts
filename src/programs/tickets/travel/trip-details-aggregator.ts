@@ -14,8 +14,8 @@ import {
   TextInputBuilder,
   TextInputStyle,
 } from "discord.js";
-import { CountryRoleFinder } from "../../../common/country-role-finder";
-import { TripDetails } from "./travel-data-message-converter";
+import { CountryRoleFinder } from "../../../common/country-role-finder.js";
+import { TripDetails } from "./travel-data-message-converter.js";
 
 export type ModalRepliableInteraction = Extract<
   RepliableInteraction,

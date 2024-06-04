@@ -1,5 +1,5 @@
 import { Client, Guild, Message, TextChannel } from "discord.js";
-import { createYesBotLogger } from "../log";
+import { createYesBotLogger } from "../log.js";
 
 const developerChannelName = "bot-development";
 

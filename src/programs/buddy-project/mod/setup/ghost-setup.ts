@@ -6,12 +6,12 @@ import {
   Guild,
   TextChannel,
 } from "discord.js";
-import { ChatNames } from "../../../../collections/chat-names";
+import { ChatNames } from "../../../../collections/chat-names.js";
 import {
   ghostedRematchDifferenceHours,
   matchedGhostedDifferenceHours,
-} from "../../ghost/constants";
-import { buddyProjectMarkGhostedButtonId } from "../../ghost/mark-ghosted";
+} from "../../ghost/constants.js";
+import { buddyProjectMarkGhostedButtonId } from "../../ghost/mark-ghosted.js";
 
 export const buddyProjectGhostSetup = async (guild: Guild) => {
   const channel = guild.channels.cache.find(

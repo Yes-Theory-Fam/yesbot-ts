@@ -1,5 +1,5 @@
 import { Guild } from "discord.js";
-import eventDistribution from "./index";
+import eventDistribution from "./index.js";
 
 export class ErrorWithParams extends Error {
   constructor(

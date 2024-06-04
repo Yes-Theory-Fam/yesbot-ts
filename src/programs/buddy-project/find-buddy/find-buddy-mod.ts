@@ -2,14 +2,14 @@ import {
   ApplicationCommandOptionType,
   ChatInputCommandInteraction,
 } from "discord.js";
-import { BuddyProjectStatus } from "../../../__generated__/types";
+import { BuddyProjectStatus } from "../../../__generated__/types.js";
 import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../../event-distribution";
-import { BuddyProjectStatusPayload } from "../services/buddy-project.generated";
-import { BuddyProjectService } from "../services/buddy-project.service";
+} from "../../../event-distribution/index.js";
+import { BuddyProjectStatusPayload } from "../services/buddy-project.generated.js";
+import { BuddyProjectService } from "../services/buddy-project.service.js";
 
 @Command({
   event: DiscordEvent.SLASH_COMMAND,

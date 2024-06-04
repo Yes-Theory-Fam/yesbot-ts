@@ -1,7 +1,7 @@
 import { UserGroup } from "@prisma/client";
 import { Snowflake, TextBasedChannel, userMention } from "discord.js";
-import Tools from "../../common/tools";
-import prisma from "../../prisma";
+import Tools from "../../common/tools.js";
+import prisma from "../../prisma.js";
 
 export enum GroupServiceErrors {
   RELATION_ALREADY_EXISTS = "RELATION_ALREADY_EXISTS",

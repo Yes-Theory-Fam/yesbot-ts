@@ -3,7 +3,7 @@ import {
   CommandHandler,
   DiscordEvent,
   EventLocation,
-} from "../../../event-distribution";
+} from "../../../event-distribution/index.js";
 import { ButtonInteraction } from "discord.js";
 
 @Command({

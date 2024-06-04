@@ -1,5 +1,9 @@
 import { GuildMember, PartialGuildMember } from "discord.js";
-import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
+import {
+  Command,
+  CommandHandler,
+  DiscordEvent,
+} from "../event-distribution/index.js";
 
 const separatorStart = "\u2063";
 

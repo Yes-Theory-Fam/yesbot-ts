@@ -2,11 +2,11 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../../event-distribution";
+} from "../../../event-distribution/index.js";
 import { ChatInputCommandInteraction, TextChannel } from "discord.js";
-import { ChatNames } from "../../../collections/chat-names";
-import Tools from "../../../common/tools";
-import { buddyProjectRoleName } from "../constants";
+import { ChatNames } from "../../../collections/chat-names.js";
+import Tools from "../../../common/tools.js";
+import { buddyProjectRoleName } from "../constants.js";
 
 @Command({
   event: DiscordEvent.SLASH_COMMAND,

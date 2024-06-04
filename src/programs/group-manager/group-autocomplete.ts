@@ -1,5 +1,5 @@
-import { AutocompleteHandler } from "../../event-distribution/events/slash-commands/autocomplete";
-import prisma from "../../prisma";
+import { AutocompleteHandler } from "../../event-distribution/events/slash-commands/autocomplete.js";
+import prisma from "../../prisma.js";
 
 // TODO expand autocomplete to accommodate for stuff like "All groups a certain user is not in" or "All groups a certain user IS in"
 

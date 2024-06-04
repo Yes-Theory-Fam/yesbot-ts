@@ -2,15 +2,15 @@ import {
   ApplicationCommandOptionType,
   ChatInputCommandInteraction,
 } from "discord.js";
-import Tools from "../../common/tools";
-import prisma from "../../prisma";
+import Tools from "../../common/tools.js";
+import prisma from "../../prisma.js";
 import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../event-distribution";
-import { createYesBotLogger } from "../../log";
-import { reactRoleAutocomplete } from "./react-role-autocomplete";
+} from "../../event-distribution/index.js";
+import { createYesBotLogger } from "../../log.js";
+import { reactRoleAutocomplete } from "./react-role-autocomplete.js";
 
 const logger = createYesBotLogger("programs", "role-delete");
 

@@ -1,5 +1,5 @@
-import { getSdk } from "./groupchat.generated";
-import { graphqlClient } from "../../../graphql-client";
+import { getSdk } from "./groupchat.generated.js";
+import { graphqlClient } from "../../../graphql-client.js";
 
 export class GroupchatService {
   private readonly sdk = getSdk(graphqlClient);

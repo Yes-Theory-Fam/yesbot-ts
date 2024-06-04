@@ -1,11 +1,11 @@
-import Tools from "../../common/tools";
+import Tools from "../../common/tools.js";
 import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../event-distribution";
+} from "../../event-distribution/index.js";
 import { ChannelType, Message, TextChannel, User } from "discord.js";
-import { createOutput, closeTicket } from "./common";
+import { createOutput, closeTicket } from "./common.js";
 
 @Command({
   event: DiscordEvent.MESSAGE,

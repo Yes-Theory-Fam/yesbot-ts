@@ -3,15 +3,15 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../../event-distribution";
+} from "../../../event-distribution/index.js";
 import {
   editErrors,
   ensureHasYesTheory,
   maxMembers,
   minMembers,
   permissionErrors,
-} from "../common";
-import { VoiceOnDemandService } from "../voice-on-demand-service";
+} from "../common.js";
+import { VoiceOnDemandService } from "../voice-on-demand-service.js";
 
 @Command({
   event: DiscordEvent.SLASH_COMMAND,

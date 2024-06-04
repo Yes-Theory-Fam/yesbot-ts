@@ -2,10 +2,10 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../../event-distribution";
-import { ChatNames } from "../../../collections/chat-names";
+} from "../../../event-distribution/index.js";
+import { ChatNames } from "../../../collections/chat-names.js";
 import { ButtonInteraction, ChannelType, Client, Snowflake } from "discord.js";
-import { BuddyProjectService } from "../services/buddy-project.service";
+import { BuddyProjectService } from "../services/buddy-project.service.js";
 
 export const buddyProjectConfirmsDmsUnblockedButtonId =
   "buddy-project-dms-unblocked";

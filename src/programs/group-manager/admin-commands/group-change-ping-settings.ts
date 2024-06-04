@@ -7,11 +7,11 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../../event-distribution";
-import prisma from "../../../prisma";
-import { logger } from "../common";
-import { groupAutocomplete } from "../group-autocomplete";
-import { GroupService } from "../group-service";
+} from "../../../event-distribution/index.js";
+import prisma from "../../../prisma.js";
+import { logger } from "../common.js";
+import { groupAutocomplete } from "../group-autocomplete.js";
+import { GroupService } from "../group-service.js";
 
 const pingSettingToLabel: Record<GroupPingSetting, string> = {
   [GroupPingSetting.OFF]: "Disabled",

@@ -11,7 +11,7 @@ with `@Command` will be registered as event handler in the instance.
 The basic structure of an event handler is basically set in stone:
 
 ```ts
-import {Command, CommandHandler, DiscordEvent} from "../event-distribution";
+import {Command, CommandHandler, DiscordEvent} from "../event-distribution/index.js";
 
 @Command({ /* options */})
 export class SomeEventHandler extends CommandHandler</* DiscordEvent.EVENT_NAME */> {

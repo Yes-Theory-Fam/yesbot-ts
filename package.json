@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "prettier": "@yestheoryfam/prettier-config",
+  "type": "module",
   "scripts": {
     "build:docker": "docker build --force-rm --label yesbot -t yesbot --build-arg=YTF_GRAPHQL_SCHEMA_ENDPOINT=http://host.docker.internal:5001/graphql .",
     "build:prepare": "NODE_ENV=production && rm -rf node_modules && yarn install && yarn run tsc",

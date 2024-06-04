@@ -1,7 +1,11 @@
-import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
+import {
+  Command,
+  CommandHandler,
+  DiscordEvent,
+} from "../event-distribution/index.js";
 import { Message } from "discord.js";
-import { ChatNames } from "../collections/chat-names";
-import Tools from "../common/tools";
+import { ChatNames } from "../collections/chat-names.js";
+import Tools from "../common/tools.js";
 
 @Command({
   event: DiscordEvent.MESSAGE,

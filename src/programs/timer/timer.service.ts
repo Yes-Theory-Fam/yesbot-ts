@@ -1,7 +1,7 @@
-import distribution, { DiscordEvent } from "../../event-distribution";
+import distribution, { DiscordEvent } from "../../event-distribution/index.js";
 import { Timer, Prisma } from "@prisma/client";
-import prisma from "../../prisma";
-import { createYesBotLogger } from "../../log";
+import prisma from "../../prisma.js";
+import { createYesBotLogger } from "../../log.js";
 
 export class TimerService {
   private static async handleTimer(timer: Timer) {

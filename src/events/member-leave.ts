@@ -1,7 +1,7 @@
 import { GuildMember, PartialGuildMember } from "discord.js";
-import { textLog } from "../common/moderator";
-import prisma from "../prisma";
-import { createYesBotLogger } from "../log";
+import { textLog } from "../common/moderator.js";
+import prisma from "../prisma.js";
+import { createYesBotLogger } from "../log.js";
 import { Prisma } from "@prisma/client";
 
 const logger = createYesBotLogger("events", "memberLeave");
