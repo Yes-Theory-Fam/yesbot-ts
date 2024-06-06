@@ -21,9 +21,7 @@ const config: CodegenConfig = {
       await Promise.all(filePaths.map(formatFile));
     },
   },
-  config: {
-    emitLegacyCommonJSImports: false,
-  },
+  emitLegacyCommonJSImports: false,
   generates: {
     "src/__generated__/types.ts": {
       plugins: ["@atmina/only-enum-types"],
