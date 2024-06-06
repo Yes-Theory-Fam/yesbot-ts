@@ -3,14 +3,14 @@ import {
   addToTree,
   collectChannelDefinitions,
   withMessageRelatedInfo,
-} from "../helper";
+} from "../helper.js";
 import {
   AddEventHandlerFunction,
   DiscordEvent,
   ExtractInfoForEventFunction,
   HandlerFunctionFor,
   MessageRelatedOptions,
-} from "../types/base";
+} from "../types/base.js";
 
 export interface MessageEventHandlerOptions extends MessageRelatedOptions {
   event: DiscordEvent.MESSAGE;

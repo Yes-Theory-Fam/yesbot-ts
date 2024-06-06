@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
-import Tools from "../common/tools";
-import { ErrorDetailReplacer } from "../event-distribution/error-detail-replacer";
+import Tools from "../common/tools.js";
+import { ErrorDetailReplacer } from "../event-distribution/error-detail-replacer.js";
 
 const commandMap: Record<string, string> = {
   "!channelToggle": "channel-toggle",

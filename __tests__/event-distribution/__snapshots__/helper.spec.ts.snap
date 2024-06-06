@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Event Distribution helper Adds a three key event to the tree 1`] = `
+exports[`Event Distribution helper > Adds a three key event to the tree 1`] = `
 {
   "channel": {
     "trigger": {
@@ -12,7 +12,7 @@ exports[`Event Distribution helper Adds a three key event to the tree 1`] = `
 }
 `;
 
-exports[`Event Distribution helper Adds a two key event to the tree 1`] = `
+exports[`Event Distribution helper > Adds a two key event to the tree 1`] = `
 {
   "first": {
     "second": [
@@ -22,7 +22,7 @@ exports[`Event Distribution helper Adds a two key event to the tree 1`] = `
 }
 `;
 
-exports[`Event Distribution helper Works with a bunch of combinations 1`] = `
+exports[`Event Distribution helper > Works with a bunch of combinations 1`] = `
 {
   "first": {
     "": [

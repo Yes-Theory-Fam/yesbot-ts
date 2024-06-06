@@ -3,8 +3,8 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../../event-distribution";
-import { BuddyProjectService } from "../services/buddy-project.service";
+} from "../../../event-distribution/index.js";
+import { BuddyProjectService } from "../services/buddy-project.service.js";
 
 export const buddyProjectSignUpButtonId = "buddy-project-signup";
 

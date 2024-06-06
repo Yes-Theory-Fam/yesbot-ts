@@ -1,7 +1,7 @@
-import { ActivityCleanCron } from "./programs/activity/controller/activity-clean.cron";
+import { ActivityCleanCron } from "./programs/activity/controller/activity-clean.cron.js";
 import { Client } from "discord.js";
-import { RescueForceClose } from "./programs/buddy-project/find-buddy/rescue-force-close";
-import { RoleResetCron } from "./programs/nitro-colors/roles-reset";
+import { RescueForceClose } from "./programs/buddy-project/find-buddy/rescue-force-close.js";
+import { RoleResetCron } from "./programs/nitro-colors/roles-reset.js";
 
 export class LoadCron {
   private static loadCronInstance: LoadCron;

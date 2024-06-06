@@ -1,4 +1,4 @@
-import ready from "./ready";
-import memberLeave from "./member-leave";
+import ready from "./ready.js";
+import memberLeave from "./member-leave.js";
 
 export { memberLeave, ready };

@@ -1,49 +1,53 @@
 import {
   addEventHandler,
   extractEventInfo,
-} from "../../../src/event-distribution/events/events";
+} from "../../../src/event-distribution/events/events.js";
 import {
   addMessageHandler,
   extractMessageInfo,
-} from "../../../src/event-distribution/events/message";
-import { CommandHandler, DiscordEvent } from "../../../src/event-distribution";
+} from "../../../src/event-distribution/events/message.js";
+import {
+  CommandHandler,
+  DiscordEvent,
+} from "../../../src/event-distribution/index.js";
 import {
   addReactionHandler,
   extractReactionInfo,
-} from "../../../src/event-distribution/events/reactions";
-import { mocked } from "jest-mock";
-import MockDiscord from "../../mocks";
+} from "../../../src/event-distribution/events/reactions.js";
+import MockDiscord from "../../mocks/index.js";
 import {
   addReadyHandler,
   extractReadyInfo,
-} from "../../../src/event-distribution/events/ready";
+} from "../../../src/event-distribution/events/ready.js";
 import {
   addGuildMemberUpdateHandler,
   extractGuildMemberUpdateInfo,
-} from "../../../src/event-distribution/events/guild-member-update";
+} from "../../../src/event-distribution/events/guild-member-update.js";
 import {
   addMemberLeaveHandler,
   extractMemberLeaveInfo,
-} from "../../../src/event-distribution/events/member-leave";
+} from "../../../src/event-distribution/events/member-leave.js";
 import {
   addVoiceStateUpdateHandler,
   extractVoiceStateUpdateInfo,
   VoiceStateChange,
-} from "../../../src/event-distribution/events/voice-state-update";
+} from "../../../src/event-distribution/events/voice-state-update.js";
 
-jest.mock("../../../src/event-distribution/events/guild-member-update");
-jest.mock("../../../src/event-distribution/events/member-leave");
-jest.mock("../../../src/event-distribution/events/message");
-jest.mock("../../../src/event-distribution/events/reactions");
-jest.mock("../../../src/event-distribution/events/ready");
-jest.mock("../../../src/event-distribution/events/voice-state-update");
+import { beforeEach, vi } from "vitest";
+
+vi.mock("../../../src/event-distribution/events/guild-member-update");
+vi.mock("../../../src/event-distribution/events/member-leave");
+vi.mock("../../../src/event-distribution/events/message");
+vi.mock("../../../src/event-distribution/events/reactions");
+vi.mock("../../../src/event-distribution/events/ready");
+vi.mock("../../../src/event-distribution/events/voice-state-update");
 
 describe("EventDistribution events", () => {
-  const mockedAddMessageHandler = mocked(addMessageHandler, { shallow: false });
-  const mockedAddReactionHandler = mocked(addReactionHandler, {
-    shallow: false,
-  });
   const mockedDiscord = new MockDiscord();
+
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
 
   it("should call addMemberLeaveHandler on DiscordEvent.MEMBER_LEAVE", () => {
     addEventHandler(
@@ -54,11 +58,9 @@ describe("EventDistribution events", () => {
       {}
     );
 
-    const mockedAddMemberLeaveHandler = mocked(addMemberLeaveHandler, {
-      shallow: false,
-    });
-    expect(mockedAddMemberLeaveHandler).toHaveBeenCalled();
+    expect(addMemberLeaveHandler).toHaveBeenCalled();
   });
+
   it("should call addMessageHandler on DiscordEvent.MESSAGE", () => {
     addEventHandler(
       {
@@ -70,8 +72,8 @@ describe("EventDistribution events", () => {
       {}
     );
 
-    expect(mockedAddMessageHandler).toHaveBeenCalled();
-    expect(mockedAddReactionHandler).not.toHaveBeenCalled();
+    expect(addMessageHandler).toHaveBeenCalled();
+    expect(addReactionHandler).not.toHaveBeenCalled();
   });
 
   it("should call addReactionHandler on DiscordEvent.REACTION_REMOVE", () => {
@@ -84,8 +86,8 @@ describe("EventDistribution events", () => {
       {}
     );
 
-    expect(mockedAddMessageHandler).not.toHaveBeenCalled();
-    expect(mockedAddReactionHandler).toHaveBeenCalled();
+    expect(addMessageHandler).not.toHaveBeenCalled();
+    expect(addReactionHandler).toHaveBeenCalled();
   });
 
   it("should call addReactionHandler on DiscordEvent.REACTION_ADD", () => {
@@ -97,8 +99,8 @@ describe("EventDistribution events", () => {
       {} as CommandHandler<DiscordEvent>,
       {}
     );
-    expect(mockedAddMessageHandler).not.toHaveBeenCalled();
-    expect(mockedAddReactionHandler).toHaveBeenCalled();
+    expect(addMessageHandler).not.toHaveBeenCalled();
+    expect(addReactionHandler).toHaveBeenCalled();
   });
 
   it("should call addGuildMemberUpdateHandler on DiscordEvent.GUILD_MEMBER_UPDATE", () => {
@@ -110,11 +112,7 @@ describe("EventDistribution events", () => {
       {}
     );
 
-    const mockedAddGuildMemberUpdateHandler = mocked(
-      addGuildMemberUpdateHandler,
-      { shallow: false }
-    );
-    expect(mockedAddGuildMemberUpdateHandler).toHaveBeenCalled();
+    expect(addGuildMemberUpdateHandler).toHaveBeenCalled();
   });
 
   it("should call addReadyHandler on DiscordEvent.READY", () => {
@@ -124,8 +122,7 @@ describe("EventDistribution events", () => {
       {}
     );
 
-    const mockedAddReadyHandler = mocked(addReadyHandler, { shallow: false });
-    expect(mockedAddReadyHandler).toHaveBeenCalled();
+    expect(addReadyHandler).toHaveBeenCalled();
   });
 
   it("should call addVoiceStateUpdateHandler on DiscordEvent.READY", () => {
@@ -138,86 +135,59 @@ describe("EventDistribution events", () => {
       {}
     );
 
-    const mockedAddVoiceStateUpdateHandler = mocked(
-      addVoiceStateUpdateHandler,
-      { shallow: false }
-    );
-    expect(mockedAddVoiceStateUpdateHandler).toHaveBeenCalled();
+    expect(addVoiceStateUpdateHandler).toHaveBeenCalled();
   });
 
   it("should call extractMessageInfo from message", () => {
-    const mockedExtractMessageInfoMock = mocked(extractMessageInfo, {
-      shallow: false,
-    });
     const message = mockedDiscord.getMessage();
     extractEventInfo(DiscordEvent.MESSAGE, message);
-    expect(mockedExtractMessageInfoMock).toHaveBeenCalledWith(message);
+    expect(extractMessageInfo).toHaveBeenCalledWith(message);
   });
 
   it("should call extractReactionInfo from reaction add", () => {
-    const mockedExtractReactionInfo = mocked(extractReactionInfo, {
-      shallow: false,
-    });
     const messageReaction = mockedDiscord.getMessageReaction();
     const user = mockedDiscord.getUser();
     extractEventInfo(DiscordEvent.REACTION_ADD, messageReaction, user);
-    expect(mockedExtractReactionInfo).toHaveBeenCalledWith(
-      messageReaction,
-      user
-    );
+    expect(extractReactionInfo).toHaveBeenCalledWith(messageReaction, user);
   });
 
   it("should call extractReactionInfo from reaction remove", () => {
-    const mockedExtractReactionInfo = mocked(extractReactionInfo, {
-      shallow: false,
-    });
     const messageReaction = mockedDiscord.getMessageReaction();
     const user = mockedDiscord.getUser();
     extractEventInfo(DiscordEvent.REACTION_REMOVE, messageReaction, user);
-    expect(mockedExtractReactionInfo).toHaveBeenCalledWith(
-      messageReaction,
-      user
-    );
+    expect(extractReactionInfo).toHaveBeenCalledWith(messageReaction, user);
   });
 
   it("should call extractGuildMemberUpdateInfo from guild member update", () => {
-    const mockedExtractGuildMemberUpdateInfo = mocked(
-      extractGuildMemberUpdateInfo,
-      { shallow: false }
-    );
     const oldMember = mockedDiscord.getGuildMember();
     const newMember = mockedDiscord.getGuildMember();
     extractEventInfo(DiscordEvent.GUILD_MEMBER_UPDATE, oldMember, newMember);
-    expect(mockedExtractGuildMemberUpdateInfo).toHaveBeenCalledWith(
+    expect(extractGuildMemberUpdateInfo).toHaveBeenCalledWith(
       oldMember,
       newMember
     );
   });
 
   it("should call extractReadyInfo from ready", () => {
-    const mockedExtractReadyInfo = mocked(extractReadyInfo, { shallow: false });
     const client = mockedDiscord.getClient();
     extractEventInfo(DiscordEvent.READY, client);
-    expect(mockedExtractReadyInfo).toHaveBeenCalledWith(client);
+    expect(extractReadyInfo).toHaveBeenCalledWith(client);
   });
 
   it("should call extractMemberLeaveInfo from member leave", () => {
-    const mockedExtractMemberLeaveInfo = mocked(extractMemberLeaveInfo, {
-      shallow: false,
-    });
     const member = mockedDiscord.getGuildMember();
     extractEventInfo(DiscordEvent.MEMBER_LEAVE, member);
-    expect(mockedExtractMemberLeaveInfo).toHaveBeenCalledWith(member);
+    expect(extractMemberLeaveInfo).toHaveBeenCalledWith(member);
   });
 
   it("should call extractVoiceStateUpdateInfo from voice state update", () => {
-    const mockedVoiceStateUpdateInfo = mocked(extractVoiceStateUpdateInfo, {
-      shallow: false,
-    });
     const oldState = mockedDiscord.getVoiceState();
     const newState = mockedDiscord.getVoiceState();
     extractEventInfo(DiscordEvent.VOICE_STATE_UPDATE, oldState, newState);
-    expect(mockedVoiceStateUpdateInfo).toHaveBeenCalledWith(oldState, newState);
+    expect(extractVoiceStateUpdateInfo).toHaveBeenCalledWith(
+      oldState,
+      newState
+    );
   });
 
   it("should throw an error no event is provided", () => {

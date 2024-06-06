@@ -5,11 +5,11 @@ import {
   Snowflake,
   VoiceChannel,
 } from "discord.js";
-import prisma from "../../prisma";
-import { TimerService } from "../timer/timer.service";
-import { DeleteIfEmptyTimer } from "./timers/delete-if-empty-timer";
-import { VoiceOnDemandErrors } from "./common";
-import { DetermineNewOwnerTimer } from "./timers/determine-new-owner-timer";
+import prisma from "../../prisma.js";
+import { TimerService } from "../timer/timer.service.js";
+import { DeleteIfEmptyTimer } from "./timers/delete-if-empty-timer.js";
+import { VoiceOnDemandErrors } from "./common.js";
+import { DetermineNewOwnerTimer } from "./timers/determine-new-owner-timer.js";
 
 const timeout = (ms: number) => new Promise<void>((res) => setTimeout(res, ms));
 

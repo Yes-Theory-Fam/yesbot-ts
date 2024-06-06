@@ -8,8 +8,8 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../event-distribution";
-import { createYesBotLogger } from "../../log";
+} from "../../event-distribution/index.js";
+import { createYesBotLogger } from "../../log.js";
 
 export const logger = createYesBotLogger("programs", "remote-control");
 

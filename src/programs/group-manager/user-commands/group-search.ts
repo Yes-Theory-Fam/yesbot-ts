@@ -3,16 +3,16 @@ import {
   ChatInputCommandInteraction,
   EmbedBuilder,
 } from "discord.js";
-import { Paginator } from "../../../common/paginator";
+import { Paginator } from "../../../common/paginator.js";
 import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../../event-distribution";
+} from "../../../event-distribution/index.js";
 import {
   findManyRequestedGroups,
   GroupWithMemberRelationList,
-} from "../common";
+} from "../common.js";
 
 enum Errors {
   NO_GROUPS_FOUND = "NO_GROUPS_FOUND",

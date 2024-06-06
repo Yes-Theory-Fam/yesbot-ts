@@ -1,6 +1,6 @@
-import { ContextMenuMessageHandlerOptions } from "./context-menu-message";
-import { ContextMenuUserHandlerOptions } from "./context-menu-user";
-import { DiscordEvent } from "../../types/base";
+import { ContextMenuMessageHandlerOptions } from "./context-menu-message.js";
+import { ContextMenuUserHandlerOptions } from "./context-menu-user.js";
+import { DiscordEvent } from "../../types/base.js";
 import { ContextMenuCommandBuilder } from "discord.js";
 import { ApplicationCommandType } from "discord-api-types/v10";
 

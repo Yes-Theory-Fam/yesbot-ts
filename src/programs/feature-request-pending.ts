@@ -1,5 +1,9 @@
-import { ChatNames } from "../collections/chat-names";
-import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
+import { ChatNames } from "../collections/chat-names.js";
+import {
+  Command,
+  CommandHandler,
+  DiscordEvent,
+} from "../event-distribution/index.js";
 import { ChannelType, ThreadChannel } from "discord.js";
 
 @Command({

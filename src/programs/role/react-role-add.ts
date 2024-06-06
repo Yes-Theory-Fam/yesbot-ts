@@ -13,9 +13,9 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../event-distribution";
-import { createYesBotLogger } from "../../log";
-import prisma from "../../prisma";
+} from "../../event-distribution/index.js";
+import { createYesBotLogger } from "../../log.js";
+import prisma from "../../prisma.js";
 
 const logger = createYesBotLogger("programs", "role-add");
 

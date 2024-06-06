@@ -3,13 +3,16 @@ import {
   addMessageHandler,
   extractMessageInfo,
   MessageEventHandlerOptions,
-} from "../../../src/event-distribution/events/message";
-import MockDiscord from "../../mocks";
+} from "../../../src/event-distribution/events/message.js";
+import MockDiscord from "../../mocks/index.js";
 import {
   InstanceOrConstructor,
   StringIndexedHIOCTree,
-} from "../../../src/event-distribution/types/hioc";
-import { CommandHandler, DiscordEvent } from "../../../src/event-distribution";
+} from "../../../src/event-distribution/types/hioc.js";
+import {
+  CommandHandler,
+  DiscordEvent,
+} from "../../../src/event-distribution/index.js";
 
 describe("Messages", () => {
   let mockDiscord: MockDiscord;

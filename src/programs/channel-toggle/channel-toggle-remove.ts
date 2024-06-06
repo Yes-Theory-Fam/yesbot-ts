@@ -7,10 +7,10 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../event-distribution";
-import { createYesBotLogger } from "../../log";
-import prisma from "../../prisma";
-import { revokeToggleChannelPermissions } from "./common";
+} from "../../event-distribution/index.js";
+import { createYesBotLogger } from "../../log.js";
+import prisma from "../../prisma.js";
+import { revokeToggleChannelPermissions } from "./common.js";
 
 const logger = createYesBotLogger("program", "channelToggleRemove");
 

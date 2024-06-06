@@ -1,13 +1,13 @@
-import bot from "../../index";
+import bot from "../../index.js";
 import cron from "node-cron";
-import { nitroRolesCache, colorSelectionMessage, logger } from ".";
-import Tools from "../../common/tools";
+import { nitroRolesCache, colorSelectionMessage, logger } from "./index.js";
+import Tools from "../../common/tools.js";
 import { ColorResolvable, TextChannel } from "discord.js";
 import {
   buildAnnouncementsMessage,
   getCurrentSeason,
   isNewSeason,
-} from "./common";
+} from "./common.js";
 
 export class RoleResetCron {
   static init() {

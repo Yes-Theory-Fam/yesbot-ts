@@ -13,10 +13,10 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../../event-distribution";
-import { maxMembers, VoiceOnDemandErrors } from "../common";
-import { voiceOnDemandAutocomplete } from "../voice-on-demand-autocomplete";
-import { VoiceOnDemandService } from "../voice-on-demand-service";
+} from "../../../event-distribution/index.js";
+import { maxMembers, VoiceOnDemandErrors } from "../common.js";
+import { voiceOnDemandAutocomplete } from "../voice-on-demand-autocomplete.js";
+import { VoiceOnDemandService } from "../voice-on-demand-service.js";
 
 enum Errors {
   ALREADY_IN_ROOM = "ALREADY_IN_ROOM",

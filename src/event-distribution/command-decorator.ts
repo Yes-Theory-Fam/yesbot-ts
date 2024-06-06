@@ -1,13 +1,13 @@
-import { EventHandlerOptions, isMessageRelated } from "./events/events";
-import { SlashCommandHandlerOptions } from "./events/slash-commands";
+import { EventHandlerOptions, isMessageRelated } from "./events/events.js";
+import { SlashCommandHandlerOptions } from "./events/slash-commands/index.js";
 import {
   DiscordEvent,
   EventLocation,
   MessageRelatedOptions,
-} from "./types/base";
-import { HandlerClass } from "./types/handler";
-import distribution from "./index";
-import { createYesBotLogger } from "../log";
+} from "./types/base.js";
+import { HandlerClass } from "./types/handler.js";
+import distribution from "./index.js";
+import { createYesBotLogger } from "../log.js";
 
 const logger = createYesBotLogger("event-distribution", "Command");
 const explanation =

@@ -1,7 +1,7 @@
 import cron from "node-cron";
 import { Client, TextChannel, ThreadChannel } from "discord.js";
-import { ChatNames } from "../../../collections/chat-names";
-import { createYesBotLogger } from "../../../log";
+import { ChatNames } from "../../../collections/chat-names.js";
+import { createYesBotLogger } from "../../../log.js";
 
 interface OldThreads {
   toWarn: ThreadChannel[];

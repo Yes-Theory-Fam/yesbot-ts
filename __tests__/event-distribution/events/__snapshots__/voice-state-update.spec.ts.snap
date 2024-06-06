@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Voice State Update should add data to the tree 1`] = `
+exports[`Voice State Update > should add data to the tree 1`] = `
 {
   "MUTED": [
     {
@@ -16,7 +16,7 @@ exports[`Voice State Update should add data to the tree 1`] = `
 }
 `;
 
-exports[`Voice State Update should add data to the tree 2`] = `
+exports[`Voice State Update > should add data to the tree 2`] = `
 {
   "JOINED": [
     {
@@ -54,7 +54,7 @@ exports[`Voice State Update should add data to the tree 2`] = `
 }
 `;
 
-exports[`Voice State Update should extract information from multiple events 1`] = `
+exports[`Voice State Update > should extract information from multiple events 1`] = `
 [
   {
     "handlerKeys": [
@@ -71,7 +71,7 @@ exports[`Voice State Update should extract information from multiple events 1`] 
 ]
 `;
 
-exports[`Voice State Update should extract information from mute events 1`] = `
+exports[`Voice State Update > should extract information from mute events 1`] = `
 [
   {
     "handlerKeys": [

@@ -2,7 +2,7 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../../event-distribution";
+} from "../../../event-distribution/index.js";
 import {
   ActionRowBuilder,
   ButtonInteraction,
@@ -10,10 +10,10 @@ import {
   SelectMenuComponentOptionData,
   StringSelectMenuBuilder,
 } from "discord.js";
-import { PayloadService } from "../services/payload-service";
-import { User_Roles_MutationInput } from "../../../__generated__/types";
-import { approvalResponses } from "./approval-responses";
-import { ErrorDetailReplacer } from "../../../event-distribution/error-detail-replacer";
+import { PayloadService } from "../services/payload-service.js";
+import { User_Roles_MutationInput } from "../../../__generated__/types.js";
+import { approvalResponses } from "./approval-responses.js";
+import { ErrorDetailReplacer } from "../../../event-distribution/error-detail-replacer.js";
 
 const enum Errors {
   MISSING_TARGET_USER = "MISSING_TARGET_USER",

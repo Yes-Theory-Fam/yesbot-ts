@@ -4,10 +4,10 @@ import {
   DiscordEvent,
   ExtractInfoForEventFunction,
   HandlerFunctionFor,
-} from "..";
-import { createYesBotLogger } from "../../log";
+} from "../index.js";
+import { createYesBotLogger } from "../../log.js";
 import { Timer } from "@prisma/client";
-import { addToTree } from "../helper";
+import { addToTree } from "../helper.js";
 
 export interface TimerEventHandlerOptions extends BaseOptions {
   event: DiscordEvent.TIMER;

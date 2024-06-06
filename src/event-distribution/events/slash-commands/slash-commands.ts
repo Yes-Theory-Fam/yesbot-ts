@@ -5,18 +5,18 @@ import {
   SlashCommandSubcommandBuilder,
   SlashCommandSubcommandGroupBuilder,
 } from "discord.js";
-import { addToTree, ensureGuildMemberOrNull } from "../../helper";
+import { addToTree, ensureGuildMemberOrNull } from "../../helper.js";
 import {
   AddEventHandlerFunction,
   BaseOptions,
   DiscordEvent,
   ExtractInfoForEventFunction,
   HandlerFunctionFor,
-} from "../../types/base";
+} from "../../types/base.js";
 import {
   addOptions,
   APIApplicationCommandBasicOptionWithAutoCompleteHandler,
-} from "./add-options";
+} from "./add-options.js";
 
 export interface SlashCommandHandlerOptions extends BaseOptions {
   event: DiscordEvent.SLASH_COMMAND;

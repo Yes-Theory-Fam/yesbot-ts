@@ -1,5 +1,5 @@
-import { HandlerFunction } from "../events/events";
-import { DiscordEvent } from "./base";
+import { HandlerFunction } from "../events/events.js";
+import { DiscordEvent } from "./base.js";
 
 export type HandlerClass<T extends DiscordEvent> = {
   new (...args: any[]): CommandHandler<T>;

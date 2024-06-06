@@ -1,14 +1,14 @@
 import { ChatInputCommandInteraction } from "discord.js";
-import { BuddyProjectStatus } from "../../../__generated__/types";
-import { ChatNames } from "../../../collections/chat-names";
+import { BuddyProjectStatus } from "../../../__generated__/types.js";
+import { ChatNames } from "../../../collections/chat-names.js";
 import {
   Command,
   CommandHandler,
   DiscordEvent,
   HandlerRejectedReason,
-} from "../../../event-distribution";
-import { BuddyProjectError, commonMessages } from "../constants";
-import { BuddyProjectService } from "../services/buddy-project.service";
+} from "../../../event-distribution/index.js";
+import { BuddyProjectError, commonMessages } from "../constants.js";
+import { BuddyProjectService } from "../services/buddy-project.service.js";
 
 @Command({
   event: DiscordEvent.SLASH_COMMAND,

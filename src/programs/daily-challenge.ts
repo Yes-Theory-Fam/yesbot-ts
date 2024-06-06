@@ -1,20 +1,24 @@
 import { Timer } from "@prisma/client";
 import Axios from "axios";
-import Discord, {
+import {
   ApplicationCommandOptionType,
   ChatInputCommandInteraction,
   Client,
   Colors,
+  EmbedBuilder,
   TextChannel,
 } from "discord.js";
-import bot from "..";
-import { ChatNames } from "../collections/chat-names";
-import Tools from "../common/tools";
-import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
-import { createYesBotLogger } from "../log";
-import prisma from "../prisma";
-import { GroupService } from "./group-manager/group-service";
-import { TimerService } from "./timer/timer.service";
+import bot from "../index.js";
+import { ChatNames } from "../collections/chat-names.js";
+import {
+  Command,
+  CommandHandler,
+  DiscordEvent,
+} from "../event-distribution/index.js";
+import { createYesBotLogger } from "../log.js";
+import prisma from "../prisma.js";
+import { GroupService } from "./group-manager/group-service.js";
+import { TimerService } from "./timer/timer.service.js";
 
 const dailyChallengeIdentifier = "dailychallenge";
 
@@ -88,7 +92,7 @@ class PostDailyChallenge implements CommandHandler<DiscordEvent.TIMER> {
 
     if (!res) return;
 
-    const embed = new Discord.EmbedBuilder()
+    const embed = new EmbedBuilder()
       .setColor(Colors.Blue)
       .setTitle("YesFam Daily Challenge!")
       .setDescription(res.result);

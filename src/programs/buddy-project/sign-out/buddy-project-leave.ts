@@ -1,12 +1,12 @@
 import { GuildMember } from "discord.js";
-import { BuddyProjectStatus } from "../../../__generated__/types";
+import { BuddyProjectStatus } from "../../../__generated__/types.js";
 import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../../event-distribution";
-import { BuddyProjectService } from "../services/buddy-project.service";
-import Tools from "../../../common/tools";
+} from "../../../event-distribution/index.js";
+import { BuddyProjectService } from "../services/buddy-project.service.js";
+import Tools from "../../../common/tools.js";
 
 @Command({
   event: DiscordEvent.MEMBER_LEAVE,

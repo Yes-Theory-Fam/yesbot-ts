@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Member Leave should add data to the tree 1`] = `
+exports[`Member Leave > should add data to the tree 1`] = `
 {
   "": [
     {
@@ -13,7 +13,7 @@ exports[`Member Leave should add data to the tree 1`] = `
 }
 `;
 
-exports[`Member Leave should extract member from leaving member 1`] = `
+exports[`Member Leave > should extract member from leaving member 1`] = `
 {
   "handlerKeys": [
     "",

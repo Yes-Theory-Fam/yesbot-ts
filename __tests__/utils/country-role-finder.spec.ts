@@ -1,7 +1,7 @@
-import { CountryRoleFinder } from "../../src/common/country-role-finder";
-import MockDiscord from "../mocks";
+import { CountryRoleFinder } from "../../src/common/country-role-finder.js";
+import MockDiscord from "../mocks/index.js";
 import { Collection, Role, RoleManager } from "discord.js";
-import { countries } from "../../src/collections/flagEmojis";
+import { countries } from "../../src/collections/flagEmojis.js";
 
 describe("CountryRoleFinder", () => {
   it("should find as country-role", () => {

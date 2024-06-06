@@ -5,10 +5,9 @@ import {
   EmbedBuilder,
   PartialGuildMember,
   TextChannel,
-  APIInteractionGuildMember,
   BaseInteraction,
 } from "discord.js";
-import Tools from "./tools";
+import Tools from "./tools.js";
 
 export const isAuthorModerator = (interaction: BaseInteraction): boolean => {
   const member = interaction.member;

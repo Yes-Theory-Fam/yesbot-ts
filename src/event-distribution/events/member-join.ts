@@ -4,9 +4,9 @@ import {
   DiscordEvent,
   ExtractInfoForEventFunction,
   HandlerFunctionFor,
-} from "../types/base";
+} from "../types/base.js";
 import { GuildMember, PartialGuildMember } from "discord.js";
-import { HIOC } from "../types/hioc";
+import { HIOC } from "../types/hioc.js";
 
 export interface MemberJoinEventHandlerOptions extends BaseOptions {
   event: DiscordEvent.MEMBER_JOIN;

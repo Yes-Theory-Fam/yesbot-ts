@@ -2,13 +2,13 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../event-distribution";
+} from "../../event-distribution/index.js";
 import {
   ApplicationCommandOptionType,
   ChannelType,
   ChatInputCommandInteraction,
 } from "discord.js";
-import Tools from "../../common/tools";
+import Tools from "../../common/tools.js";
 
 const enum Errors {
   NOT_IN_GUILD = "NOT_IN_GUILD",

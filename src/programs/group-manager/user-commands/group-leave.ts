@@ -6,9 +6,9 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../../event-distribution";
-import { groupAutocomplete } from "../group-autocomplete";
-import { GroupService, GroupServiceErrors } from "../group-service";
+} from "../../../event-distribution/index.js";
+import { groupAutocomplete } from "../group-autocomplete.js";
+import { GroupService, GroupServiceErrors } from "../group-service.js";
 
 enum Errors {
   UNKNOWN_ERROR = "UNKNOWN_ERROR",

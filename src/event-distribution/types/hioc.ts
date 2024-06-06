@@ -1,6 +1,6 @@
-import { CommandHandler } from "./handler";
-import { EventHandlerOptions } from "../events/events";
-import { DiscordEvent } from "./base";
+import { CommandHandler } from "./handler.js";
+import { EventHandlerOptions } from "../events/events.js";
+import { DiscordEvent } from "./base.js";
 
 export type InstanceOrConstructor<T> =
   | T

@@ -4,7 +4,7 @@ import {
   DiscordEvent,
   ExtractInfoForEventFunction,
   HandlerFunctionFor,
-} from "../types/base";
+} from "../types/base.js";
 import {
   Collection,
   GuildMember,
@@ -12,8 +12,8 @@ import {
   Role,
   Snowflake,
 } from "discord.js";
-import { HIOC, StringIndexedHIOCTree } from "../types/hioc";
-import { addToTree } from "../helper";
+import { HIOC, StringIndexedHIOCTree } from "../types/hioc.js";
+import { addToTree } from "../helper.js";
 
 export interface GuildMemberUpdateEventHandlerOptions extends BaseOptions {
   event: DiscordEvent.GUILD_MEMBER_UPDATE;

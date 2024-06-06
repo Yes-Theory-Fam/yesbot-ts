@@ -1,8 +1,8 @@
 import { AutocompleteInteraction, Interaction, Snowflake } from "discord.js";
 import glob from "fast-glob";
 import path from "path";
-import { createYesBotLogger } from "../log";
-import { ErrorWithParams } from "./error-detail-replacer";
+import { createYesBotLogger } from "../log.js";
+import { ErrorWithParams } from "./error-detail-replacer.js";
 import {
   addEventHandler,
   EventHandlerOptions,
@@ -10,24 +10,24 @@ import {
   HandlerFunction,
   isMessageRelated,
   rejectWithError,
-} from "./events/events";
-import { getIocName } from "./helper";
+} from "./events/events.js";
+import { getIocName } from "./helper.js";
 import {
   DiscordEvent,
   EventLocation,
   HandlerInfo,
   HandlerRejectedReason,
-} from "./types/base";
-import { CommandHandler, HandlerClass } from "./types/handler";
+} from "./types/base.js";
+import { CommandHandler, HandlerClass } from "./types/handler.js";
 import {
   HIOC,
   InstanceOrConstructor,
   isHIOCArray,
   StringIndexedHIOCTree,
   StringIndexedHIOCTreeNode,
-} from "./types/hioc";
+} from "./types/hioc.js";
 import * as Sentry from "@sentry/node";
-import { registerApplicationCommands } from "./register-commands";
+import { registerApplicationCommands } from "./register-commands.js";
 
 const logger = createYesBotLogger("event-distribution", "event-distribution");
 

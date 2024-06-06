@@ -2,9 +2,9 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../event-distribution";
+} from "../../event-distribution/index.js";
 import { Message, TextChannel } from "discord.js";
-import { closeTicket } from "./common";
+import { closeTicket } from "./common.js";
 
 @Command({
   event: DiscordEvent.MESSAGE,

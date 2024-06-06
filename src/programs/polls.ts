@@ -6,8 +6,12 @@ import {
   PartialUser,
   User,
 } from "discord.js";
-import { unicodeEmojiRegex } from "../common/tools";
-import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
+import { unicodeEmojiRegex } from "../common/tools.js";
+import {
+  Command,
+  CommandHandler,
+  DiscordEvent,
+} from "../event-distribution/index.js";
 
 // Resolves emojis (unicode and discord) at the start of a line
 const getEmojis = (lines: string[], bot: Client): string[] => {

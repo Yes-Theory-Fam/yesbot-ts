@@ -3,10 +3,10 @@ import {
   CommandHandler,
   DiscordEvent,
   HandlerRejectedReason,
-} from "../../../../event-distribution";
+} from "../../../../event-distribution/index.js";
 import { Message } from "discord.js";
-import { maybeCreateTicket, TicketType } from "../../common";
-import { promptAndSendForApproval } from "./common";
+import { maybeCreateTicket, TicketType } from "../../common.js";
+import { promptAndSendForApproval } from "./common.js";
 
 @Command({
   event: DiscordEvent.MESSAGE,

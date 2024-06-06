@@ -4,14 +4,14 @@ import {
   ExtractInfoForEventFunction,
   HandlerFunctionFor,
   MessageRelatedOptions,
-} from "../types/base";
+} from "../types/base.js";
 import { ButtonInteraction, Message } from "discord.js";
 import {
   addToTree,
   collectChannelDefinitions,
   ensureGuildMemberOrNull,
   withMessageRelatedInfo,
-} from "../helper";
+} from "../helper.js";
 
 export interface ButtonClickedHandlerOptions extends MessageRelatedOptions {
   event: DiscordEvent.BUTTON_CLICKED;

@@ -21,6 +21,7 @@ const config: CodegenConfig = {
       await Promise.all(filePaths.map(formatFile));
     },
   },
+  emitLegacyCommonJSImports: false,
   generates: {
     "src/__generated__/types.ts": {
       plugins: ["@atmina/only-enum-types"],
@@ -37,7 +38,10 @@ const config: CodegenConfig = {
         "@atmina/local-typescript-operations",
         "typescript-graphql-request",
       ],
-      config: { preResolveTypes: true },
+      config: {
+        preResolveTypes: true,
+        gqlImport: "graphql-request#gql",
+      },
     },
   },
 };

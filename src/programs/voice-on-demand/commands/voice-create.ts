@@ -1,5 +1,4 @@
 import {
-  APIApplicationCommandBasicOption,
   APIApplicationCommandOptionChoice,
   ApplicationCommandOptionType,
   CategoryChannel,
@@ -10,21 +9,21 @@ import {
   OverwriteType,
   PermissionsBitField,
 } from "discord.js";
-import Tools from "../../../common/tools";
+import Tools from "../../../common/tools.js";
 import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../../event-distribution";
-import prisma from "../../../prisma";
+} from "../../../event-distribution/index.js";
+import prisma from "../../../prisma.js";
 import {
   ensureHasYesTheory,
   maxMembers,
   minMembers,
   permissionErrors,
   VoiceOnDemandErrors,
-} from "../common";
-import { VoiceOnDemandService } from "../voice-on-demand-service";
+} from "../common.js";
+import { VoiceOnDemandService } from "../voice-on-demand-service.js";
 
 const channelTypes = [
   {

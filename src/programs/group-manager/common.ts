@@ -1,7 +1,7 @@
 import { UserGroup, UserGroupMembersGroupMember } from "@prisma/client";
 import { APIInteractionGuildMember, TextBasedChannel } from "discord.js";
-import { createYesBotLogger } from "../../log";
-import prisma from "../../prisma";
+import { createYesBotLogger } from "../../log.js";
+import prisma from "../../prisma.js";
 
 export const logger = createYesBotLogger("program", "GroupManager");
 

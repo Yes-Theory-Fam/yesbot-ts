@@ -1,5 +1,5 @@
-import { CleanupActivity } from "../usecase/cleanup-activity";
-import { createYesBotLogger } from "../../../log";
+import { CleanupActivity } from "../usecase/cleanup-activity.js";
+import { createYesBotLogger } from "../../../log.js";
 import cron from "node-cron";
 
 export class ActivityCleanCron {

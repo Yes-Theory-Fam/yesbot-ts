@@ -34,14 +34,6 @@
     },
     {
       "matchPackageNames": [
-        "ts-jest",
-        "jest",
-        "@types/jest"
-      ],
-      "groupName": "jest packages"
-    },
-    {
-      "matchPackageNames": [
         "discord.js",
         "discord-api-types",
         "@discordjs/builders",

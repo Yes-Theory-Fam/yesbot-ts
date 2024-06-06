@@ -1,5 +1,7 @@
 import { Client, GuildMember, Message, TextBasedChannel } from "discord.js";
-import { RawMessageData } from "discord.js/typings/rawDataTypes";
+import { PrivateConstructorParameters } from "./_private-constructor-params.js";
+
+type RawMessageData = PrivateConstructorParameters<typeof Message>[1];
 
 export class MockMessage {
   static new(

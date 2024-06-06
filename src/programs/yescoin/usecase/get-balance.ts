@@ -1,4 +1,4 @@
-import prisma from "../../../prisma";
+import prisma from "../../../prisma.js";
 
 export class GetBalance {
   private static getBalanceInstance: GetBalance;

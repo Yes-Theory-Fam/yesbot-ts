@@ -1,5 +1,5 @@
 import { AutocompleteInteraction, LocalizationMap } from "discord.js";
-import { PromiseOr } from "../../types/handler";
+import { PromiseOr } from "../../types/handler.js";
 
 type HandlerResult<T> = {
   name: string;

@@ -4,9 +4,9 @@ import {
   CommandHandler,
   DiscordEvent,
   EventLocation,
-} from "../../event-distribution";
-import prisma from "../../prisma";
-import { isColorSelectionMessage } from "../nitro-colors";
+} from "../../event-distribution/index.js";
+import prisma from "../../prisma.js";
+import { isColorSelectionMessage } from "../nitro-colors/index.js";
 
 @Command({
   event: DiscordEvent.REACTION_ADD,

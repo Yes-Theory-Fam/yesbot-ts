@@ -1,6 +1,6 @@
-import prisma from "../../../prisma";
+import prisma from "../../../prisma.js";
 import { Activity, Currency } from "@prisma/client";
-import { createYesBotLogger } from "../../../log";
+import { createYesBotLogger } from "../../../log.js";
 
 export class CleanupActivity {
   private static cleanupActivityInstance: CleanupActivity;

@@ -2,7 +2,7 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../../../event-distribution";
+} from "../../../../event-distribution/index.js";
 import {
   Collection,
   Guild,
@@ -15,10 +15,10 @@ import {
   ThreadChannel,
   User,
 } from "discord.js";
-import { ChatNames } from "../../../../collections/chat-names";
-import { closeTicket, getChannelName, TicketType } from "../../common";
-import { createYesBotLogger } from "../../../../log";
-import { parseOriginMember } from "./common";
+import { ChatNames } from "../../../../collections/chat-names.js";
+import { closeTicket, getChannelName, TicketType } from "../../common.js";
+import { createYesBotLogger } from "../../../../log.js";
+import { parseOriginMember } from "./common.js";
 
 @Command({
   event: DiscordEvent.REACTION_ADD,

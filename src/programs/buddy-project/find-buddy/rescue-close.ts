@@ -2,9 +2,9 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../../event-distribution";
+} from "../../../event-distribution/index.js";
 import { ButtonInteraction, ThreadChannel } from "discord.js";
-import { ChatNames } from "../../../collections/chat-names";
+import { ChatNames } from "../../../collections/chat-names.js";
 
 export const rescueCloseButtonId = "buddy-project-rescue-close";
 

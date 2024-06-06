@@ -1,4 +1,8 @@
-import { Command, CommandHandler, DiscordEvent } from "../event-distribution";
+import {
+  Command,
+  CommandHandler,
+  DiscordEvent,
+} from "../event-distribution/index.js";
 import { MessageContextMenuCommandInteraction } from "discord.js";
 
 const metaEmojiName = "eeeh";

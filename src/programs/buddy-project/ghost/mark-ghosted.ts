@@ -6,20 +6,20 @@ import {
   GuildMember,
   Snowflake,
 } from "discord.js";
-import { MarkGhostedError } from "../../../__generated__/types";
-import { ChatNames } from "../../../collections/chat-names";
+import { MarkGhostedError } from "../../../__generated__/types.js";
+import { ChatNames } from "../../../collections/chat-names.js";
 import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../../event-distribution";
-import { BuddyProjectError, commonMessages } from "../constants";
-import { BuddyProjectService } from "../services/buddy-project.service";
+} from "../../../event-distribution/index.js";
+import { BuddyProjectError, commonMessages } from "../constants.js";
+import { BuddyProjectService } from "../services/buddy-project.service.js";
 import {
   ghostedRematchDifferenceHours,
   matchedGhostedDifferenceHours,
-} from "./constants";
-import { buddyProjectNotifyNotGhostingButtonId } from "./notify-not-ghosting";
+} from "./constants.js";
+import { buddyProjectNotifyNotGhostingButtonId } from "./notify-not-ghosting.js";
 
 export const buddyProjectMarkGhostedButtonId = "buddy-project-mark-ghosted";
 

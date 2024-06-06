@@ -3,12 +3,12 @@ import {
   DiscordEvent,
   HandlerInfo,
   MessageRelatedOptions,
-} from ".";
+} from "./index.js";
 import {
   HIOC,
   InstanceOrConstructor,
   StringIndexedHIOCTree,
-} from "./types/hioc";
+} from "./types/hioc.js";
 import {
   ChannelType,
   Client,
@@ -20,8 +20,7 @@ import {
   TextBasedChannel,
 } from "discord.js";
 import { APIGuildMember } from "discord-api-types/v10";
-import { SlashCommandHandlerOptions } from "./events/slash-commands";
-import { EventHandlerOptions } from "./events/events";
+import { EventHandlerOptions } from "./events/events.js";
 
 export const getIdFromParentName = (name: string) => `c_${name.toLowerCase()}`;
 

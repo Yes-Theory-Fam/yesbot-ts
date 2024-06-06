@@ -1,12 +1,12 @@
 import { ThreadChannel } from "discord.js";
-import { addToTree } from "../helper";
+import { addToTree } from "../helper.js";
 import {
   AddEventHandlerFunction,
   BaseOptions,
   DiscordEvent,
   ExtractInfoForEventFunction,
   HandlerFunctionFor,
-} from "../types/base";
+} from "../types/base.js";
 
 export interface ThreadCreateHandlerOptions extends BaseOptions {
   event: DiscordEvent.THREAD_CREATE;

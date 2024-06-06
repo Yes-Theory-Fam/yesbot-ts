@@ -4,9 +4,9 @@ import {
   DiscordEvent,
   ExtractInfoForEventFunction,
   HandlerFunctionFor,
-} from "../types/base";
+} from "../types/base.js";
 import { VoiceState } from "discord.js";
-import { addToTree } from "../helper";
+import { addToTree } from "../helper.js";
 
 export const enum VoiceStateChange {
   JOINED = "JOINED",

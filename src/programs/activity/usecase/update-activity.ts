@@ -1,6 +1,6 @@
-import { UpdateActivityType } from "../types/update-activity.type";
-import prisma from "../../../prisma";
-import { createYesBotLogger } from "../../../log";
+import { UpdateActivityType } from "../types/update-activity.type.js";
+import prisma from "../../../prisma.js";
+import { createYesBotLogger } from "../../../log.js";
 import { Activity } from "@prisma/client";
 
 export class UpdateActivity {

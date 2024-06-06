@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`GuildMemberUpdates should add data to the tree 1`] = `
+exports[`GuildMemberUpdates > should add data to the tree 1`] = `
 {
   "added": {
     "Test": [
@@ -37,7 +37,7 @@ exports[`GuildMemberUpdates should add data to the tree 1`] = `
 }
 `;
 
-exports[`GuildMemberUpdates should add data to the tree 2`] = `
+exports[`GuildMemberUpdates > should add data to the tree 2`] = `
 {
   "": {
     "": [
@@ -84,7 +84,7 @@ exports[`GuildMemberUpdates should add data to the tree 2`] = `
 }
 `;
 
-exports[`GuildMemberUpdates should add data to the tree 3`] = `
+exports[`GuildMemberUpdates > should add data to the tree 3`] = `
 {
   "": {
     "": [

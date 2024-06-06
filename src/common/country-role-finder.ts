@@ -1,4 +1,4 @@
-import { countries, Country } from "../collections/flagEmojis";
+import { countries, Country } from "../collections/flagEmojis.js";
 import { Guild, Role } from "discord.js";
 
 type FinderCountryProperties = Pick<Country, "name" | "emoji">;

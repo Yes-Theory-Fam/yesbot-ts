@@ -1,12 +1,11 @@
-import { channel } from "diagnostics_channel";
 import { VoiceState } from "discord.js";
 import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../../event-distribution";
-import { VoiceStateChange } from "../../../event-distribution/events/voice-state-update";
-import { VoiceOnDemandService } from "../voice-on-demand-service";
+} from "../../../event-distribution/index.js";
+import { VoiceStateChange } from "../../../event-distribution/events/voice-state-update.js";
+import { VoiceOnDemandService } from "../voice-on-demand-service.js";
 
 @Command({
   event: DiscordEvent.VOICE_STATE_UPDATE,

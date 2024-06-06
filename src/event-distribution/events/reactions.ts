@@ -4,7 +4,7 @@ import {
   ExtractInfoForEventFunction,
   HandlerFunctionFor,
   MessageRelatedOptions,
-} from "../types/base";
+} from "../types/base.js";
 import {
   ChannelType,
   MessageReaction,
@@ -16,7 +16,7 @@ import {
   addToTree,
   collectChannelDefinitions,
   withMessageRelatedInfo,
-} from "../helper";
+} from "../helper.js";
 
 export interface ReactionEventHandlerOptions extends MessageRelatedOptions {
   emoji: string;

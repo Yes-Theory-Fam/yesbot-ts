@@ -1,10 +1,10 @@
-import { graphqlClient } from "../../../graphql-client";
+import { graphqlClient } from "../../../graphql-client.js";
 import {
   BuddyProjectSignUpPayload,
   BuddyProjectStatusPayload,
   getSdk,
   MarkGhostedPayload,
-} from "./buddy-project.generated";
+} from "./buddy-project.generated.js";
 
 export class BuddyProjectService {
   private sdk = getSdk(graphqlClient);

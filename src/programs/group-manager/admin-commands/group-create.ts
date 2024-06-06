@@ -7,9 +7,9 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../../event-distribution";
-import prisma from "../../../prisma";
-import { getRequestedGroup, logger } from "../common";
+} from "../../../event-distribution/index.js";
+import prisma from "../../../prisma.js";
+import { getRequestedGroup, logger } from "../common.js";
 
 enum Errors {
   GROUP_ALREADY_EXISTS = "GROUP_ALREADY_EXISTS",

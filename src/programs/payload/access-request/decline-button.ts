@@ -2,9 +2,8 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../../event-distribution";
-import { ButtonInteraction, StringSelectMenuBuilder } from "discord.js";
-import { PayloadService } from "../services/payload-service";
+} from "../../../event-distribution/index.js";
+import { ButtonInteraction } from "discord.js";
 
 const enum Errors {
   MISSING_TARGET_USER = "MISSING_TARGET_USER",

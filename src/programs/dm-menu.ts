@@ -5,15 +5,15 @@ import {
   MessageReaction,
   User,
 } from "discord.js";
-import state from "../common/state";
+import state from "../common/state.js";
 import {
   Command,
   CommandHandler,
   DiscordEvent,
   EventLocation,
-} from "../event-distribution";
-import { getMember, textLog } from "../common/moderator";
-import { createYesBotLogger } from "../log";
+} from "../event-distribution/index.js";
+import { getMember, textLog } from "../common/moderator.js";
+import { createYesBotLogger } from "../log.js";
 
 const logger = createYesBotLogger("programs", "DmMenu");
 

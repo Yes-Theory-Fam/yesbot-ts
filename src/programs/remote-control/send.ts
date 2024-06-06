@@ -4,13 +4,13 @@ import {
   ChatInputCommandInteraction,
   TextChannel,
 } from "discord.js";
-import Tools from "../../common/tools";
+import Tools from "../../common/tools.js";
 import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../event-distribution";
-import { logger } from "./add-reaction";
+} from "../../event-distribution/index.js";
+import { logger } from "./add-reaction.js";
 
 @Command({
   event: DiscordEvent.SLASH_COMMAND,

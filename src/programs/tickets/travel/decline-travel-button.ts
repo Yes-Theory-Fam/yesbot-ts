@@ -2,7 +2,7 @@ import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../../event-distribution";
+} from "../../../event-distribution/index.js";
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -15,7 +15,7 @@ import {
 import {
   TravelDataMessageConverter,
   TripDetails,
-} from "./travel-data-message-converter";
+} from "./travel-data-message-converter.js";
 
 @Command({
   event: DiscordEvent.BUTTON_CLICKED,

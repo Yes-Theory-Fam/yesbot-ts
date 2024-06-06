@@ -11,7 +11,7 @@ import {
   APIApplicationCommandOptionChoice,
   ApplicationCommandOptionType,
 } from "discord-api-types/payloads/v10";
-import { AutocompleteHandler } from "./autocomplete";
+import { AutocompleteHandler } from "./autocomplete.js";
 
 export type SlashCommandOptionBase =
   SlashCommandSubcommandBuilder["options"][0];

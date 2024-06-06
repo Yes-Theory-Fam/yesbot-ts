@@ -1,11 +1,11 @@
-import distribution, {
+import {
   Command,
   CommandHandler,
   DiscordEvent,
-} from "../../event-distribution";
+} from "../../event-distribution/index.js";
 import { Client } from "discord.js";
-import prisma from "../../prisma";
-import { TimerService } from "./timer.service";
+import prisma from "../../prisma.js";
+import { TimerService } from "./timer.service.js";
 
 @Command({
   event: DiscordEvent.READY,
