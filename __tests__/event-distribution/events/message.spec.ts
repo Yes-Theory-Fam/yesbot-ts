@@ -3,12 +3,12 @@ import {
   addMessageHandler,
   extractMessageInfo,
   MessageEventHandlerOptions,
-} from "../../../src/event-distribution/events/message";
-import MockDiscord from "../../mocks";
+} from "../../../src/event-distribution/events/message.js";
+import MockDiscord from "../../mocks/index.js";
 import {
   InstanceOrConstructor,
   StringIndexedHIOCTree,
-} from "../../../src/event-distribution/types/hioc";
+} from "../../../src/event-distribution/types/hioc.js";
 import {
   CommandHandler,
   DiscordEvent,

@@ -1,8 +1,8 @@
-import MockDiscord from "../../mocks";
+import MockDiscord from "../../mocks/index.js";
 import {
   InstanceOrConstructor,
   StringIndexedHIOCTree,
-} from "../../../src/event-distribution/types/hioc";
+} from "../../../src/event-distribution/types/hioc.js";
 import {
   CommandHandler,
   DiscordEvent,
@@ -11,7 +11,7 @@ import {
   addMemberLeaveHandler,
   extractMemberLeaveInfo,
   MemberLeaveEventHandlerOptions,
-} from "../../../src/event-distribution/events/member-leave";
+} from "../../../src/event-distribution/events/member-leave.js";
 
 describe("Member Leave", () => {
   let mockDiscord: MockDiscord;

@@ -1,5 +1,9 @@
 import { Client, GuildMember, Message, MessageReaction } from "discord.js";
-import { RawMessageReactionData } from "discord.js/typings/rawDataTypes";
+import { PrivateConstructorParameters } from "./_private-constructor-params.js";
+
+type RawMessageReactionData = PrivateConstructorParameters<
+  typeof MessageReaction
+>[1];
 
 export class MockMessageReaction {
   static new(

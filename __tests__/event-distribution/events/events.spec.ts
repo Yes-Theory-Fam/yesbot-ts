@@ -1,11 +1,11 @@
 import {
   addEventHandler,
   extractEventInfo,
-} from "../../../src/event-distribution/events/events";
+} from "../../../src/event-distribution/events/events.js";
 import {
   addMessageHandler,
   extractMessageInfo,
-} from "../../../src/event-distribution/events/message";
+} from "../../../src/event-distribution/events/message.js";
 import {
   CommandHandler,
   DiscordEvent,
@@ -13,26 +13,26 @@ import {
 import {
   addReactionHandler,
   extractReactionInfo,
-} from "../../../src/event-distribution/events/reactions";
+} from "../../../src/event-distribution/events/reactions.js";
 import { mocked } from "jest-mock";
-import MockDiscord from "../../mocks";
+import MockDiscord from "../../mocks/index.js";
 import {
   addReadyHandler,
   extractReadyInfo,
-} from "../../../src/event-distribution/events/ready";
+} from "../../../src/event-distribution/events/ready.js";
 import {
   addGuildMemberUpdateHandler,
   extractGuildMemberUpdateInfo,
-} from "../../../src/event-distribution/events/guild-member-update";
+} from "../../../src/event-distribution/events/guild-member-update.js";
 import {
   addMemberLeaveHandler,
   extractMemberLeaveInfo,
-} from "../../../src/event-distribution/events/member-leave";
+} from "../../../src/event-distribution/events/member-leave.js";
 import {
   addVoiceStateUpdateHandler,
   extractVoiceStateUpdateInfo,
   VoiceStateChange,
-} from "../../../src/event-distribution/events/voice-state-update";
+} from "../../../src/event-distribution/events/voice-state-update.js";
 
 jest.mock("../../../src/event-distribution/events/guild-member-update");
 jest.mock("../../../src/event-distribution/events/member-leave");

@@ -1,14 +1,14 @@
 import { ChannelType } from "discord.js";
-import MockDiscord from "../../mocks";
+import MockDiscord from "../../mocks/index.js";
 import {
   addReactionHandler,
   extractReactionInfo,
   ReactionEventHandlerOptions,
-} from "../../../src/event-distribution/events/reactions";
+} from "../../../src/event-distribution/events/reactions.js";
 import {
   InstanceOrConstructor,
   StringIndexedHIOCTree,
-} from "../../../src/event-distribution/types/hioc";
+} from "../../../src/event-distribution/types/hioc.js";
 import {
   CommandHandler,
   DiscordEvent,

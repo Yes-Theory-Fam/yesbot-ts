@@ -1,5 +1,7 @@
 import { Client, Guild, GuildMember, Snowflake } from "discord.js";
-import type { RawGuildData } from "discord.js/typings/rawDataTypes";
+import { PrivateConstructorParameters } from "./_private-constructor-params.js";
+
+type RawGuildData = PrivateConstructorParameters<typeof Guild>[1];
 
 export interface GuildMock extends Guild {
   addMember(member: GuildMember): void;

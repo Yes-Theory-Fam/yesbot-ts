@@ -1,5 +1,7 @@
 import { Client, Collection, Guild, GuildMember } from "discord.js";
-import { RawGuildMemberData } from "discord.js/typings/rawDataTypes.js";
+import { PrivateConstructorParameters } from "./_private-constructor-params.js";
+
+type RawGuildMemberData = PrivateConstructorParameters<typeof GuildMember>[1];
 
 export class MockGuildMember {
   static new(

@@ -1,13 +1,12 @@
 import {
   addGuildMemberUpdateHandler,
-  extractGuildMemberUpdateInfo,
   GuildMemberUpdateEventHandlerOptions,
-} from "../../../src/event-distribution/events/guild-member-update";
-import MockDiscord from "../../mocks";
+} from "../../../src/event-distribution/events/guild-member-update.js";
+import MockDiscord from "../../mocks/index.js";
 import {
   InstanceOrConstructor,
   StringIndexedHIOCTree,
-} from "../../../src/event-distribution/types/hioc";
+} from "../../../src/event-distribution/types/hioc.js";
 import {
   CommandHandler,
   DiscordEvent,

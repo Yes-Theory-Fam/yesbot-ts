@@ -1,4 +1,4 @@
-import Discord, {
+import {
   Channel,
   Client,
   ClientUser,
@@ -18,11 +18,13 @@ import {
   ChannelType,
   MessageType,
 } from "discord-api-types/v10";
-import { MockMessage } from "./message";
-import { MockMessageReaction } from "./reaction";
-import { GuildMock, MockGuild } from "./guild";
-import { MockGuildMember } from "./guildmember";
-import { RawUserData } from "discord.js/typings/rawDataTypes";
+import { MockMessage } from "./message.js";
+import { MockMessageReaction } from "./reaction.js";
+import { GuildMock, MockGuild } from "./guild.js";
+import { MockGuildMember } from "./guildmember.js";
+import { PrivateConstructorParameters } from "./_private-constructor-params.js";
+
+type RawUserData = PrivateConstructorParameters<typeof User>[1];
 
 type Writeable<T> = { -readonly [P in keyof T]: T[P] };
 
@@ -106,7 +108,7 @@ export default class MockDiscord {
   };
 
   private mockClient(): void {
-    this.client = new Discord.Client({ intents: [] });
+    this.client = new Client({ intents: [] });
 
     this.client.users.fetch = jest.fn(() => Promise.resolve(this.getUser()));
     this.client.user = Reflect.construct(ClientUser, [
