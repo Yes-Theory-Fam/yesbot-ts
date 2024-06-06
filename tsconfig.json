@@ -14,7 +14,8 @@
     "moduleResolution": "NodeNext",
     "outDir": "build",
     "strict": true,
-    "target": "es2020"
+    "target": "es2020",
+    "types": ["vitest/globals"]
   },
   "exclude": [
     "build",

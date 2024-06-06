@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Reactions should add data to the tree 1`] = `
+exports[`Reactions > should add data to the tree 1`] = `
 {
   "bot-output": {
     "♥️": [
@@ -20,7 +20,7 @@ exports[`Reactions should add data to the tree 1`] = `
 }
 `;
 
-exports[`Reactions should add data to the tree 2`] = `
+exports[`Reactions > should add data to the tree 2`] = `
 {
   "bot-output": {
     "♥️": [
@@ -53,7 +53,7 @@ exports[`Reactions should add data to the tree 2`] = `
 }
 `;
 
-exports[`Reactions should add data to the tree 3`] = `
+exports[`Reactions > should add data to the tree 3`] = `
 {
   "bot-development": {
     "😘️": [
@@ -122,7 +122,7 @@ exports[`Reactions should add data to the tree 3`] = `
 }
 `;
 
-exports[`Reactions should extract reaction from direct message 1`] = `
+exports[`Reactions > should extract reaction from direct message 1`] = `
 [
   {
     "content": "this is the message content",
@@ -136,7 +136,7 @@ exports[`Reactions should extract reaction from direct message 1`] = `
 ]
 `;
 
-exports[`Reactions should extract reaction from public channel 1`] = `
+exports[`Reactions > should extract reaction from public channel 1`] = `
 [
   {
     "content": "this is the message content",

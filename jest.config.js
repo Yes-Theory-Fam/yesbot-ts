@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   preset: "ts-jest",
   testEnvironment: "node",
   modulePathIgnorePatterns: [
@@ -21,5 +21,4 @@ module.exports = {
   setupFilesAfterEnv: ["./jest.setup.ts"],
   verbose: true,
   clearMocks: true,
-  prettierPath: "./node_modules/@yestheoryfam/prettier-config/index.js",
 };

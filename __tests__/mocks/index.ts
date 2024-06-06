@@ -23,6 +23,7 @@ import { MockMessageReaction } from "./reaction.js";
 import { GuildMock, MockGuild } from "./guild.js";
 import { MockGuildMember } from "./guildmember.js";
 import { PrivateConstructorParameters } from "./_private-constructor-params.js";
+import { vi } from "vitest";
 
 type RawUserData = PrivateConstructorParameters<typeof User>[1];
 
@@ -110,7 +111,7 @@ export default class MockDiscord {
   private mockClient(): void {
     this.client = new Client({ intents: [] });
 
-    this.client.users.fetch = jest.fn(() => Promise.resolve(this.getUser()));
+    this.client.users.fetch = vi.fn(() => Promise.resolve(this.getUser()));
     this.client.user = Reflect.construct(ClientUser, [
       this.client,
       {
@@ -120,7 +121,7 @@ export default class MockDiscord {
     ]);
     this.client.user!.id = idString;
 
-    this.client.login = jest.fn(() => Promise.resolve("LOGIN_TOKEN"));
+    this.client.login = vi.fn(() => Promise.resolve("LOGIN_TOKEN"));
     this.client.token = process.env.BOT_TOKEN ?? null;
   }
 
