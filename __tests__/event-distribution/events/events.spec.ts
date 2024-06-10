@@ -32,6 +32,10 @@ import {
   extractVoiceStateUpdateInfo,
   VoiceStateChange,
 } from "../../../src/event-distribution/events/voice-state-update.js";
+import {
+   addThreadCreateHandler,
+   extractThreadCreateInfo 
+} from "../../../src/event-distribution/events/thread-create.js";
 
 import { beforeEach, vi } from "vitest";
 
@@ -41,6 +45,7 @@ vi.mock("../../../src/event-distribution/events/message");
 vi.mock("../../../src/event-distribution/events/reactions");
 vi.mock("../../../src/event-distribution/events/ready");
 vi.mock("../../../src/event-distribution/events/voice-state-update");
+vi.mock("../../../src/event-distribution/events/thread-create.js");
 
 describe("EventDistribution events", () => {
   const mockedDiscord = new MockDiscord();
@@ -188,6 +193,24 @@ describe("EventDistribution events", () => {
       oldState,
       newState
     );
+  });
+
+  it("should call addThreadCreateHandler on DiscordEvent.THREAD_CREATE", () => {
+    addEventHandler(
+      {
+        event: DiscordEvent.THREAD_CREATE
+      },
+      {} as CommandHandler<DiscordEvent>,
+      {}
+    );
+
+    expect(addThreadCreateHandler).toHaveBeenCalled();
+  });
+
+  it("should call extractThreadCreateInfo on from thread create", () => {
+    const threadChannel = mockedDiscord.getThreadChannel();
+    extractEventInfo(DiscordEvent.THREAD_CREATE, threadChannel, false);
+    expect(extractThreadCreateInfo).toHaveBeenCalledWith(threadChannel, false);
   });
 
   it("should throw an error no event is provided", () => {

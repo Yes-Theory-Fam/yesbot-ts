@@ -9,6 +9,7 @@ import {
   MessageReaction,
   Role,
   TextChannel,
+  ThreadChannel,
   User,
   VoiceState,
 } from "discord.js";
@@ -44,6 +45,7 @@ export default class MockDiscord {
   private guildMember!: GuildMember;
   private role!: Role;
   private voiceState!: VoiceState;
+  private threadChannel!: ThreadChannel;
 
   constructor() {
     this.mockClient();
@@ -58,6 +60,7 @@ export default class MockDiscord {
     this.mockMessageReaction();
     this.mockRole();
     this.mockVoiceState();
+    this.mockThreadChannel();
   }
 
   public getClient(): Client {
@@ -94,6 +97,10 @@ export default class MockDiscord {
 
   public getVoiceState(): Writeable<VoiceState> {
     return this.voiceState;
+  }
+
+  public getThreadChannel(): ThreadChannel {
+    return this.threadChannel;
   }
 
   private addMember = () => {
@@ -304,6 +311,14 @@ export default class MockDiscord {
         self_video: true,
         request_to_speak_timestamp: null,
       },
+    ]);
+  }
+
+  private mockThreadChannel() {
+    this.threadChannel = Reflect.construct(ThreadChannel, [
+      this.guild,
+      {},
+      this.client
     ]);
   }
 }
