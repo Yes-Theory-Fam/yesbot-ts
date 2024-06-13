@@ -36,8 +36,13 @@ import {
    addThreadCreateHandler,
    extractThreadCreateInfo 
 } from "../../../src/event-distribution/events/thread-create.js";
+import { addButtonClickedHandler, extractButtonClickedInfo } from "../../../src/event-distribution/events/button-clicked.js";
+import { addMemberJoinHandler } from "../../../src/event-distribution/events/member-join.js";
 
 import { beforeEach, vi } from "vitest";
+import { ButtonInteraction } from "discord.js";
+import { addTimerHandler } from "../../../src/event-distribution/events/timer.js";
+import { addSlashCommandHandler } from "../../../src/event-distribution/events/slash-commands/slash-commands.js";
 
 vi.mock("../../../src/event-distribution/events/guild-member-update");
 vi.mock("../../../src/event-distribution/events/member-leave");
@@ -46,6 +51,10 @@ vi.mock("../../../src/event-distribution/events/reactions");
 vi.mock("../../../src/event-distribution/events/ready");
 vi.mock("../../../src/event-distribution/events/voice-state-update");
 vi.mock("../../../src/event-distribution/events/thread-create.js");
+vi.mock("../../../src/event-distribution/events/member-join.js");
+vi.mock("../../../src/event-distribution/events/button-clicked.js");
+vi.mock("../../../src/event-distribution/events/timer.js");
+vi.mock("../../../src/event-distribution/events/slash-commands/slash-commands.js");
 
 describe("EventDistribution events", () => {
   const mockedDiscord = new MockDiscord();
@@ -211,6 +220,63 @@ describe("EventDistribution events", () => {
     const threadChannel = mockedDiscord.getThreadChannel();
     extractEventInfo(DiscordEvent.THREAD_CREATE, threadChannel, false);
     expect(extractThreadCreateInfo).toHaveBeenCalledWith(threadChannel, false);
+  });
+
+  it("should call addMemberJoinHandler on DiscordEvent.MEMBER_JOIN", () => {
+    addEventHandler(
+      {
+        event: DiscordEvent.MEMBER_JOIN
+      },
+      {} as CommandHandler<DiscordEvent>,
+      {}
+    );
+
+    expect(addMemberJoinHandler).toHaveBeenCalled();
+  });
+
+  it("should call addButtonClickedHandler on DiscordEvent.BUTTON_CLICK", () => {
+    addEventHandler(
+      {
+        event: DiscordEvent.BUTTON_CLICKED,
+        customId: "123"
+      },
+      {} as CommandHandler<DiscordEvent>,
+      {}
+    );
+
+    expect(addButtonClickedHandler).toHaveBeenCalled();
+  });
+
+  it("should call extractButtonClickedInfo on button click", () => {
+    extractEventInfo(DiscordEvent.BUTTON_CLICKED, {} as ButtonInteraction);
+    expect(extractButtonClickedInfo).toHaveBeenCalledWith({} as ButtonInteraction);
+  });
+
+  it("should call addTimerHandler on DiscordEvent.TIMER", () => {
+    addEventHandler(
+      {
+        event: DiscordEvent.TIMER,
+        handlerIdentifier: "123"
+      },
+      {} as CommandHandler<DiscordEvent>,
+      {}
+    );
+
+    expect(addTimerHandler).toHaveBeenCalled();
+  });
+
+  it("should call addSlashCommandHandler on DiscordEvent.SLASH_COMMAND", () => {
+    addEventHandler(
+      {
+        event: DiscordEvent.SLASH_COMMAND,
+        root: "",
+        description: ""
+      },
+      {} as CommandHandler<DiscordEvent>,
+      {}
+    );
+
+    expect(addSlashCommandHandler).toHaveBeenCalled();
   });
 
   it("should throw an error no event is provided", () => {
