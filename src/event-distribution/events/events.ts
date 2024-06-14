@@ -135,6 +135,9 @@ export type HandlerFunction<T extends DiscordEvent> =
 
 const logger = createYesBotLogger("event-distribution", "events");
 
+export const addEventHandlerCoverage = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+export const extractEventInfoCoverage = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
 export const isMessageRelated = (
   options: BaseOptions
 ): options is MessageRelatedOptions =>
@@ -150,36 +153,42 @@ export const addEventHandler: AddEventHandlerFunction<EventHandlerOptions> = (
 ) => {
   switch (options.event) {
     case DiscordEvent.BUTTON_CLICKED:
+      addEventHandlerCoverage[0] = 1;
       return addButtonClickedHandler(
         options,
         ioc,
         tree as StringIndexedHIOCTree<DiscordEvent.BUTTON_CLICKED>
       );
     case DiscordEvent.CONTEXT_MENU_MESSAGE:
+      addEventHandlerCoverage[1] = 1;
       return addContextMenuMessageHandler(
         options,
         ioc,
         tree as StringIndexedHIOCTree<DiscordEvent.CONTEXT_MENU_MESSAGE>
       );
     case DiscordEvent.CONTEXT_MENU_USER:
+      addEventHandlerCoverage[2] = 1;
       return addContextMenuUserHandler(
         options,
         ioc,
         tree as StringIndexedHIOCTree<DiscordEvent.CONTEXT_MENU_USER>
       );
     case DiscordEvent.MEMBER_LEAVE:
+      addEventHandlerCoverage[3] = 1;
       return addMemberLeaveHandler(
         options,
         ioc,
         tree as StringIndexedHIOCTree<DiscordEvent.MEMBER_LEAVE>
       );
     case DiscordEvent.MEMBER_JOIN:
+      addEventHandlerCoverage[4] = 1;
       return addMemberJoinHandler(
         options,
         ioc,
         tree as StringIndexedHIOCTree<DiscordEvent.MEMBER_JOIN>
       );
     case DiscordEvent.MESSAGE:
+      addEventHandlerCoverage[5] = 1;
       return addMessageHandler(
         options,
         ioc,
@@ -187,6 +196,7 @@ export const addEventHandler: AddEventHandlerFunction<EventHandlerOptions> = (
       );
     case DiscordEvent.REACTION_ADD:
     case DiscordEvent.REACTION_REMOVE:
+      addEventHandlerCoverage[6] = 1;
       return addReactionHandler(
         options,
         ioc,
@@ -195,36 +205,42 @@ export const addEventHandler: AddEventHandlerFunction<EventHandlerOptions> = (
         >
       );
     case DiscordEvent.GUILD_MEMBER_UPDATE:
+      addEventHandlerCoverage[7] = 1;
       return addGuildMemberUpdateHandler(
         options,
         ioc,
         tree as StringIndexedHIOCTree<DiscordEvent.GUILD_MEMBER_UPDATE>
       );
     case DiscordEvent.READY:
+      addEventHandlerCoverage[8] = 1;
       return addReadyHandler(
         options,
         ioc,
         tree as StringIndexedHIOCTree<DiscordEvent.READY>
       );
     case DiscordEvent.SLASH_COMMAND:
+      addEventHandlerCoverage[9] = 1;
       return addSlashCommandHandler(
         options,
         ioc,
         tree as StringIndexedHIOCTree<DiscordEvent.SLASH_COMMAND>
       );
     case DiscordEvent.THREAD_CREATE:
+      addEventHandlerCoverage[10] = 1;
       return addThreadCreateHandler(
         options,
         ioc,
         tree as StringIndexedHIOCTree<DiscordEvent.THREAD_CREATE>
       );
     case DiscordEvent.TIMER:
+      addEventHandlerCoverage[11] = 1;
       return addTimerHandler(
         options,
         ioc,
         tree as StringIndexedHIOCTree<DiscordEvent.TIMER>
       );
     case DiscordEvent.VOICE_STATE_UPDATE:
+      addEventHandlerCoverage[12] = 1;
       return addVoiceStateUpdateHandler(
         options,
         ioc,
@@ -240,41 +256,54 @@ export const extractEventInfo: ExtractInfoFunction<DiscordEvent> = (
   const getInfos = () => {
     switch (event) {
       case DiscordEvent.BUTTON_CLICKED:
+        extractEventInfoCoverage[0] = 1;
         return extractButtonClickedInfo(args[0] as ButtonInteraction);
       case DiscordEvent.CONTEXT_MENU_MESSAGE:
+        extractEventInfoCoverage[1] = 1;
         return extractContextMenuMessageInfo(
           args[0] as MessageContextMenuCommandInteraction
         );
       case DiscordEvent.CONTEXT_MENU_USER:
+        extractEventInfoCoverage[2] = 1;
         return extractContextMenuUserInfo(
           args[0] as UserContextMenuCommandInteraction
         );
       case DiscordEvent.MEMBER_LEAVE:
+        extractEventInfoCoverage[3] = 1;
         return extractMemberLeaveInfo(args[0] as MemberLeaveArgument);
       case DiscordEvent.MEMBER_JOIN:
+        extractEventInfoCoverage[4] = 1;
         return extractMemberJoinInfo(args[0] as MemberJoinArgument);
       case DiscordEvent.MESSAGE:
+        extractEventInfoCoverage[5] = 1;
         return extractMessageInfo(args[0] as Message);
       case DiscordEvent.REACTION_ADD:
       case DiscordEvent.REACTION_REMOVE:
+        extractEventInfoCoverage[6] = 1;
         return extractReactionInfo(args[0] as MessageReaction, args[1] as User);
       case DiscordEvent.GUILD_MEMBER_UPDATE:
+        extractEventInfoCoverage[7] = 1;
         return extractGuildMemberUpdateInfo(
           args[0] as GuildMemberUpdateArgument,
           args[1] as GuildMemberUpdateArgument
         );
       case DiscordEvent.READY:
+        extractEventInfoCoverage[8] = 1;
         return extractReadyInfo(args[0] as Client);
       case DiscordEvent.THREAD_CREATE:
+        extractEventInfoCoverage[9] = 1;
         return extractThreadCreateInfo(
           args[0] as ThreadChannel,
           args[1] as boolean
         );
       case DiscordEvent.TIMER:
+        extractEventInfoCoverage[10] = 1;
         return extractTimerInfo(args[0] as Timer);
       case DiscordEvent.SLASH_COMMAND:
+        extractEventInfoCoverage[11] = 1;
         return extractSlashCommandInfo(args[0] as ChatInputCommandInteraction);
       case DiscordEvent.VOICE_STATE_UPDATE:
+        extractEventInfoCoverage[12] = 1;
         return extractVoiceStateUpdateInfo(
           args[0] as VoiceState,
           args[1] as VoiceState

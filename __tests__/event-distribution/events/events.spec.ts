@@ -1,6 +1,8 @@
 import {
   addEventHandler,
   extractEventInfo,
+  addEventHandlerCoverage,
+  extractEventInfoCoverage
 } from "../../../src/event-distribution/events/events.js";
 import {
   addMessageHandler,
@@ -39,7 +41,7 @@ import {
 import { addButtonClickedHandler, extractButtonClickedInfo } from "../../../src/event-distribution/events/button-clicked.js";
 import { addMemberJoinHandler, extractMemberJoinInfo } from "../../../src/event-distribution/events/member-join.js";
 
-import { beforeEach, vi } from "vitest";
+import { beforeEach, vi, afterEach } from "vitest";
 import { ButtonInteraction, ChatInputCommandInteraction, MessageContextMenuCommandInteraction, UserContextMenuCommandInteraction } from "discord.js";
 import { addTimerHandler, extractTimerInfo } from "../../../src/event-distribution/events/timer.js";
 import { addSlashCommandHandler, extractSlashCommandInfo } from "../../../src/event-distribution/events/slash-commands/slash-commands.js";
@@ -66,6 +68,13 @@ describe("EventDistribution events", () => {
 
   beforeEach(() => {
     vi.resetAllMocks();
+  });
+
+  afterEach(() => {
+    const addEventHandlerCoverageSum = addEventHandlerCoverage.reduce((sum, x) => sum + x);
+    const extractEventInfoCoverageSum = extractEventInfoCoverage.reduce((sum, x) => sum + x);
+    console.log("Branch coverage on addEventHandler after test run: " + ((addEventHandlerCoverageSum / addEventHandlerCoverage.length) * 100).toPrecision(3) + "%");
+    console.log("Branch coverage on extractEventInfo after test run: " + ((extractEventInfoCoverageSum / extractEventInfoCoverage.length) * 100).toPrecision(3) + "%");
   });
 
   it("should call addMemberLeaveHandler on DiscordEvent.MEMBER_LEAVE", () => {
@@ -344,4 +353,6 @@ describe("EventDistribution events", () => {
       extractEventInfo(event, messageReaction, user)
     ).toThrowErrorMatchingSnapshot();
   });
+
+  
 });
