@@ -37,12 +37,15 @@ import {
    extractThreadCreateInfo 
 } from "../../../src/event-distribution/events/thread-create.js";
 import { addButtonClickedHandler, extractButtonClickedInfo } from "../../../src/event-distribution/events/button-clicked.js";
-import { addMemberJoinHandler } from "../../../src/event-distribution/events/member-join.js";
+import { addMemberJoinHandler, extractMemberJoinInfo } from "../../../src/event-distribution/events/member-join.js";
 
 import { beforeEach, vi } from "vitest";
-import { ButtonInteraction } from "discord.js";
-import { addTimerHandler } from "../../../src/event-distribution/events/timer.js";
-import { addSlashCommandHandler } from "../../../src/event-distribution/events/slash-commands/slash-commands.js";
+import { ButtonInteraction, ChatInputCommandInteraction, MessageContextMenuCommandInteraction, UserContextMenuCommandInteraction } from "discord.js";
+import { addTimerHandler, extractTimerInfo } from "../../../src/event-distribution/events/timer.js";
+import { addSlashCommandHandler, extractSlashCommandInfo } from "../../../src/event-distribution/events/slash-commands/slash-commands.js";
+import { addContextMenuMessageHandler, extractContextMenuMessageInfo } from "../../../src/event-distribution/events/context-menu/context-menu-message.js";
+import { addContextMenuUserHandler, extractContextMenuUserInfo } from "../../../src/event-distribution/events/context-menu/context-menu-user.js";
+import { Timer } from "@prisma/client";
 
 vi.mock("../../../src/event-distribution/events/guild-member-update");
 vi.mock("../../../src/event-distribution/events/member-leave");
@@ -55,6 +58,8 @@ vi.mock("../../../src/event-distribution/events/member-join.js");
 vi.mock("../../../src/event-distribution/events/button-clicked.js");
 vi.mock("../../../src/event-distribution/events/timer.js");
 vi.mock("../../../src/event-distribution/events/slash-commands/slash-commands.js");
+vi.mock("../../../src/event-distribution/events/context-menu/context-menu-message.js");
+vi.mock("../../../src/event-distribution/events/context-menu/context-menu-user.js");
 
 describe("EventDistribution events", () => {
   const mockedDiscord = new MockDiscord();
@@ -247,11 +252,6 @@ describe("EventDistribution events", () => {
     expect(addButtonClickedHandler).toHaveBeenCalled();
   });
 
-  it("should call extractButtonClickedInfo on button click", () => {
-    extractEventInfo(DiscordEvent.BUTTON_CLICKED, {} as ButtonInteraction);
-    expect(extractButtonClickedInfo).toHaveBeenCalledWith({} as ButtonInteraction);
-  });
-
   it("should call addTimerHandler on DiscordEvent.TIMER", () => {
     addEventHandler(
       {
@@ -277,6 +277,63 @@ describe("EventDistribution events", () => {
     );
 
     expect(addSlashCommandHandler).toHaveBeenCalled();
+  });
+
+  it("should call addContextMenuMessageHandler on DiscordEvent.CONTEXT_MENU_MESSAGE", () => {
+    addEventHandler(
+      {
+        event: DiscordEvent.CONTEXT_MENU_MESSAGE,
+        name: "test"
+      },
+      {} as CommandHandler<DiscordEvent>,
+      {}
+    );
+
+    expect(addContextMenuMessageHandler).toHaveBeenCalled();
+  });
+
+  it("should call addContextMenuUserHandler on DiscordEvent.CONTEXT_MENU_USER", () => {
+    addEventHandler(
+      {
+        event: DiscordEvent.CONTEXT_MENU_USER,
+        name: "test"
+      },
+      {} as CommandHandler<DiscordEvent>,
+      {}
+    );
+
+    expect(addContextMenuUserHandler).toHaveBeenCalled();
+  });
+
+  it("should call extractButtonClickedInfo on button click", () => {
+    extractEventInfo(DiscordEvent.BUTTON_CLICKED, {} as ButtonInteraction);
+    expect(extractButtonClickedInfo).toHaveBeenCalledWith({} as ButtonInteraction);
+  });
+
+  it("should call extractTimerInfo on timer", () => {
+    extractEventInfo(DiscordEvent.TIMER, {} as Timer);
+    expect(extractTimerInfo).toHaveBeenCalledWith({} as Timer);
+  });
+
+  it("should call extractSlashCommandInfo on slash command", () => {
+    extractEventInfo(DiscordEvent.SLASH_COMMAND, {} as ChatInputCommandInteraction);
+    expect(extractSlashCommandInfo).toHaveBeenCalledWith({} as ChatInputCommandInteraction);
+  });
+
+  it("should call extractMemberJoinInfo on member join", () => {
+    const member = mockedDiscord.getGuildMember();
+    extractEventInfo(DiscordEvent.MEMBER_JOIN, member);
+    expect(extractMemberJoinInfo).toHaveBeenCalledWith(member);
+  });
+
+  it("should call extractContextMenuMessageInfo on contect menu message", () => {
+    extractEventInfo(DiscordEvent.CONTEXT_MENU_MESSAGE, {} as MessageContextMenuCommandInteraction);
+    expect(extractContextMenuMessageInfo).toHaveBeenCalledWith({} as MessageContextMenuCommandInteraction);
+  });
+
+  it("should call extractContextMenuMessageInfo on contect menu message", () => {
+    extractEventInfo(DiscordEvent.CONTEXT_MENU_USER, {} as UserContextMenuCommandInteraction);
+    expect(extractContextMenuUserInfo).toHaveBeenCalledWith({} as UserContextMenuCommandInteraction);
   });
 
   it("should throw an error no event is provided", () => {
