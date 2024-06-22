@@ -25,7 +25,7 @@
   "license": "ISC",
   "dependencies": {
     "@discordjs/rest": "2.3.0",
-    "@prisma/client": "5.15.0",
+    "@prisma/client": "5.15.1",
     "@sentry/node": "8.9.2",
     "axios": "1.7.2",
     "countries-and-timezones": "3.6.0",
@@ -58,7 +58,7 @@
     "@yestheoryfam/prettier-config": "1.0.0",
     "env-cmd": "10.1.0",
     "prettier": "3.3.2",
-    "prisma": "5.15.0",
+    "prisma": "5.15.1",
     "ts-node-dev": "2.0.0",
     "typescript": "5.4.5",
     "vitest": "1.6.0"
