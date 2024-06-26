@@ -12,6 +12,8 @@ const enum MetaErrors {
   ALREADY_METAED = "ALREADY_METAED",
 }
 
+export const metaCommandCoverage = [0,0,0];
+
 @Command({
   event: DiscordEvent.CONTEXT_MENU_MESSAGE,
   name: "Meta question",
@@ -21,11 +23,12 @@ const enum MetaErrors {
       "This command was already used on this message!",
   },
 })
-class MetaCommand implements CommandHandler<DiscordEvent.CONTEXT_MENU_MESSAGE> {
+export class MetaCommand implements CommandHandler<DiscordEvent.CONTEXT_MENU_MESSAGE> {
   async handle(command: MessageContextMenuCommandInteraction): Promise<void> {
     const message = command.targetMessage;
 
     if (command.user === message.author) {
+      metaCommandCoverage[0] = 1;
       throw new Error(MetaErrors.SELF_META);
     }
 
@@ -35,6 +38,7 @@ class MetaCommand implements CommandHandler<DiscordEvent.CONTEXT_MENU_MESSAGE> {
 
     const didBotReact = message.reactions.cache.some((reaction) => reaction.me);
     if (didBotReact) {
+      metaCommandCoverage[1] = 1;
       throw new Error(MetaErrors.ALREADY_METAED);
     }
 
@@ -45,5 +49,7 @@ class MetaCommand implements CommandHandler<DiscordEvent.CONTEXT_MENU_MESSAGE> {
     await message.react(metaEmoji ?? "🦥");
 
     await command.reply({ ephemeral: true, content: "Done!" });
+
+    metaCommandCoverage[2] = 1;
   }
 }
