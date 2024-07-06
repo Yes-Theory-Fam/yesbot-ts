@@ -28,6 +28,7 @@ import {
 } from "./types/hioc.js";
 import * as Sentry from "@sentry/node";
 import { registerApplicationCommands } from "./register-commands.js";
+import { fileURLToPath } from "node:url";
 
 const logger = createYesBotLogger("event-distribution", "event-distribution");
 
@@ -247,14 +248,21 @@ export class EventDistribution {
 
     const matches = await glob(`${directory}/programs/**/*${extension}`);
 
+    const filename = fileURLToPath(import.meta.url);
+    const dirname = path.dirname(filename);
+
     const loaders = matches
       .filter((p) => !p.endsWith(`.spec${extension}`))
       .map((p) => {
         const split = p.split(".");
         split.unshift();
-        const modulePath = path.join(process.cwd(), split.join("."));
+        const moduleAbsolutePath = path.join(process.cwd(), split.join("."));
+        const moduleRelativePath = path
+          .relative(dirname, moduleAbsolutePath)
+          .replace(".ts", ".js")
+          .replace(/\\/g, "/");
 
-        return import(modulePath);
+        return import(moduleRelativePath);
       });
 
     try {
