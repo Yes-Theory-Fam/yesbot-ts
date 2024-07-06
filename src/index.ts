@@ -159,4 +159,3 @@ process.on("uncaughtException", (error) => {
 });
 
 export default bot;
-module.exports = bot; // Required for require() when lazy loading.
