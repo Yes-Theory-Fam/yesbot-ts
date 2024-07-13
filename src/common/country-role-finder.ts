@@ -107,7 +107,7 @@ export class CountryRoleFinder {
       allowRegions ? a.startsWith(b) : a === b;
 
     const emoji = useOverrides
-      ? this.emojiOverrides[country.emoji] ?? country.emoji
+      ? (this.emojiOverrides[country.emoji] ?? country.emoji)
       : country.emoji;
 
     return (
