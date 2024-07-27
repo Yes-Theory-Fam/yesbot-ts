@@ -4745,10 +4745,10 @@ vite@^5.0.0:
   optionalDependencies:
     fsevents "~2.3.3"
 
-vitest-mock-extended@1.3.2:
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/vitest-mock-extended/-/vitest-mock-extended-1.3.2.tgz#a0b10f765e4e10aaa69b4fce42365e3ffd28dd8e"
-  integrity sha512-wnpym69MFYBUbUT6vrM/E4sF0bylow+N/RBBTZWn4rO/UFLusvuCrb3CMe3K4663+iBzplrhk0hQ2O246rFrqQ==
+vitest-mock-extended@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/vitest-mock-extended/-/vitest-mock-extended-2.0.0.tgz#9e43120998946d85bf993ccc77ee75c0f065f755"
+  integrity sha512-iDV40gSKlN5RZRSfpOv5SKTdEeBvu4VMpLNNakDSHMWnUmnlfsEVGXHndWAfUD+nZBR+HDcQw7p/JO5sCWo1VQ==
   dependencies:
     ts-essentials ">=10.0.0"
 
