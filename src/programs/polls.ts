@@ -92,11 +92,11 @@ const removeSpecialCharactersFromBeginning = (content: string) => {
 })
 class Polls implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
-    if (message.author.bot) {
-      return;
-    }
+    if (message.author.bot) return;
+    // Excludes Discord's native polls and results
+    if (message.poll || message.system) return;
 
-    const lines = message.cleanContent.split("\n");
+    const lines = message.content.split("\n");
     const resolvedEmojis = resolveEmojis(
       lines.map(removeSpecialCharactersFromBeginning),
       message.client
