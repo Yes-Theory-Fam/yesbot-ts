@@ -3,6 +3,7 @@ RUN apk add --no-cache libc6-compat
 
 WORKDIR /usr/src/app
 COPY package.json yarn.lock ./
+COPY prisma/schema.prisma ./prisma/schema.prisma
 
 RUN yarn install --frozen-lockfile
 
