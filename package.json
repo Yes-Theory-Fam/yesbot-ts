@@ -40,7 +40,7 @@
     "reflect-metadata": "0.2.2",
     "uuid": "10.0.0",
     "vitest-mock-extended": "2.0.0",
-    "winston": "3.13.1"
+    "winston": "3.14.1"
   },
   "devDependencies": {
     "@atmina/local-typescript-operations": "0.9.0",
