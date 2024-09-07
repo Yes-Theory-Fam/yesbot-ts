@@ -267,6 +267,9 @@ export default class MockDiscord {
         message_id: this.message.id,
         user_id: this.user.id,
         channel_id: this.channel.id,
+        burst: false,
+        type: 0,
+        burst_colors: [],
       },
       this.message
     );

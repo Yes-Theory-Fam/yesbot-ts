@@ -46,7 +46,7 @@ export const withMessageRelatedInfo = (
   resolver: HandlerKeyFromChannelIdResolver
 ): HandlerInfo[] => {
   const getChannelIdentifier = (channel: TextBasedChannel) =>
-    channel.type === ChannelType.DM ? channel.id : channel.name;
+    channel.isDMBased() ? channel.id : channel.name;
 
   const channel = message.channel;
   const channelIdentifier = getChannelIdentifier(channel);

@@ -110,9 +110,10 @@ async function getTarget(
 
   const sdRole = Tools.getRoleByName("Seek Discomfort", message.guild);
   if (!sdRole) {
-    await message.channel?.send(
-      "There is no Seek Discomfort role in this server!"
-    );
+    await message.reply({
+      ephemeral: true,
+      content: "There is no Seek Discomfort role in this server!",
+    });
     return;
   }
 

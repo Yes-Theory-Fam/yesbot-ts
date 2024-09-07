@@ -95,6 +95,7 @@ class Polls implements CommandHandler<DiscordEvent.MESSAGE> {
     if (message.author.bot) return;
     // Excludes Discord's native polls and results
     if (message.poll || message.system) return;
+    if (message.channel.isDMBased()) return;
 
     const lines = message.content.split("\n");
     const resolvedEmojis = resolveEmojis(

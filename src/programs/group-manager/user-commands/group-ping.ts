@@ -60,7 +60,7 @@ class PingGroup implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
     const groupId = interaction.options.getInteger("group")!;
     const groupService = new GroupService();
 
-    if (!interaction.channel) return;
+    if (!interaction.channel || interaction.channel.isDMBased()) return;
 
     const group = await groupService.getGroupById(groupId);
     if (!group) throw new Error(Errors.GROUP_NOT_FOUND);
