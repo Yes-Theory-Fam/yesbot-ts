@@ -41,23 +41,23 @@ class Topics implements CommandHandler<DiscordEvent.MESSAGE> {
 
         const date = new Date().getDate() - 1;
         const question = questions[date];
-        await message.channel.send(question);
+        await message.reply(question);
         break;
 
       case "beauty-and-fashion":
-        await message.channel.send({
+        await message.reply({
           files: [new AttachmentBuilder(MAKEUP_CHALLENGE_PICTURE_URL)],
         });
         break;
 
       case "visual-design":
-        await message.channel.send({
+        await message.reply({
           files: [new AttachmentBuilder(DRAWING_CHALLENGE_PICTURE_URL)],
         });
         break;
 
       case "filmmaking":
-        await message.channel.send({
+        await message.reply({
           files: [new AttachmentBuilder(MOVIE_CHALLENGE_PICTURE_URL)],
         });
         break;

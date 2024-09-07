@@ -1,5 +1,5 @@
 import { UserGroup } from "@prisma/client";
-import { Snowflake, TextBasedChannel, userMention } from "discord.js";
+import { GuildTextBasedChannel, Snowflake, userMention } from "discord.js";
 import Tools from "../../common/tools.js";
 import prisma from "../../prisma.js";
 
@@ -68,7 +68,7 @@ export class GroupService {
     });
   }
 
-  async pingGroup(group: UserGroup, channel: TextBasedChannel) {
+  async pingGroup(group: UserGroup, channel: GuildTextBasedChannel) {
     const memberships = await prisma.userGroupMembersGroupMember.findMany({
       where: { userGroupId: group.id },
       select: { groupMemberId: true },

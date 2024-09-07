@@ -395,7 +395,7 @@ export const parseOriginMember = (message: Message): GuildMember => {
   const originMember = message.guild?.members.resolve(match?.[1] ?? "");
 
   if (!originMember) {
-    message.channel.send(
+    void message.reply(
       "Failed to parse origin member from ticket! Ping Michel, he was too lazy to implement a Developer ping in here 🦥"
     );
     throw new Error("Failed to parse origin member");
