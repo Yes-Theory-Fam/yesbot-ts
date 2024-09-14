@@ -73,7 +73,7 @@ export const extractSlashCommandInfo: ExtractInfoForEventFunction<
   return {
     member: member,
     handlerKeys,
-    isDirectMessage: command.channel?.type === ChannelType.DM ?? false,
+    isDirectMessage: command.channel?.type === ChannelType.DM,
   };
 };
 
