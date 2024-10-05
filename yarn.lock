@@ -2859,10 +2859,10 @@ cosmiconfig@^9.0.0:
     js-yaml "^4.1.0"
     parse-json "^5.2.0"
 
-countries-and-timezones@3.6.0:
-  version "3.6.0"
-  resolved "https://registry.yarnpkg.com/countries-and-timezones/-/countries-and-timezones-3.6.0.tgz#80716f05ebef270842fd72010f9b33e2848e24c7"
-  integrity sha512-8/nHBCs1eKeQ1jnsZVGdqrLYxS8nPcfJn8PnmxdJXWRLZdXsGFR8gnVhRjatGDBjqmPm7H+FtYpBYTPWd0Eiqg==
+countries-and-timezones@3.7.0:
+  version "3.7.0"
+  resolved "https://registry.yarnpkg.com/countries-and-timezones/-/countries-and-timezones-3.7.0.tgz#b3479749d6bf2aea165348575ea957464702855d"
+  integrity sha512-Ws+r+vlCVzpxIgLpsSP6m7Q12UvOwRZ5+QKcHcuAEBBd1fJH0Wc4pOYIRQSmK4bDzOHE6xmx/PtFQ8A5DMZqpg==
 
 country-code-emoji@2.3.0:
   version "2.3.0"
