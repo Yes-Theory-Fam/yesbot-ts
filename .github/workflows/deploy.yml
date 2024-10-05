@@ -14,9 +14,6 @@ on:
 jobs:
   build-and-push-image:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [ 16.20 ]
     permissions:
       contents: read
       packages: write

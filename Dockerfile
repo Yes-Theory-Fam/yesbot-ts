@@ -1,14 +1,16 @@
-FROM node:21.7.3-alpine AS deps
-RUN apk add --no-cache libc6-compat
+FROM node:21.7.3-alpine AS base
+RUN apk add --no-cache libc6-compat && \
+    corepack enable
+
+FROM base as deps
 
 WORKDIR /usr/src/app
-COPY package.json yarn.lock ./
+COPY package.json yarn.lock .yarnrc.yml ./
 COPY prisma/schema.prisma ./prisma/schema.prisma
 
 RUN yarn install --frozen-lockfile
 
-FROM node:21.7.3-alpine AS builder
-RUN apk add --no-cache libc6-compat
+FROM base as builder
 WORKDIR /usr/src/app
 
 COPY --from=deps /usr/src/app/node_modules ./node_modules
@@ -18,15 +20,14 @@ ARG YTF_GRAPHQL_SCHEMA_ENDPOINT
 
 RUN yarn prisma generate && yarn graphql-codegen && yarn run tsc
 
-FROM node:21.7.3-alpine
-RUN apk add --no-cache libc6-compat
-# Create app directory
+FROM base
 WORKDIR /usr/src/app
 
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/prisma ./prisma
 COPY --from=builder /usr/src/app/package.json ./package.json
 COPY --from=builder /usr/src/app/yarn.lock ./yarn.lock
+COPY --from=builder /usr/src/app/.yarnrc.yml ./.yarnrc.yml
 COPY --from=builder /usr/src/app/build ./build
 COPY /deployment/docker-entrypoint.sh ./docker-entrypoint.sh
 

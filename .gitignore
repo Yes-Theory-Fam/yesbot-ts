@@ -20,3 +20,5 @@ src/**/*.generated.ts
 
 # One off scripts that are not relevant to the repository.
 src/scripts/
+
+.yarn/

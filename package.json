@@ -38,6 +38,7 @@
     "node-cron": "3.0.3",
     "path": "0.12.7",
     "reflect-metadata": "0.2.2",
+    "type-fest": "^4",
     "uuid": "10.0.0",
     "vitest-mock-extended": "2.0.2",
     "winston": "3.15.0"
@@ -61,5 +62,5 @@
     "typescript": "5.6.2",
     "vitest": "2.1.2"
   },
-  "packageManager": "yarn@1.22.22"
+  "packageManager": "yarn@4.5.0+sha512.837566d24eec14ec0f5f1411adb544e892b3454255e61fdef8fd05f3429480102806bac7446bc9daff3896b01ae4b62d00096c7e989f1596f2af10b927532f39"
 }

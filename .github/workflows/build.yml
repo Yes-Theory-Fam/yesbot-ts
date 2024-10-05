@@ -20,20 +20,9 @@ jobs:
       YTF_GRAPHQL_ENDPOINT: https://staging.yestheory.family/_yesbot-schema
     steps:
       - uses: actions/checkout@v3
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-
-      - name: Cache node modules
-        uses: actions/cache@v2
+      - uses: ./.github/actions/yarn-action
+        name: 'Install and codegen'
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: install and compile
-        run: |
-          yarn install --frozen-lockfile
-          yarn graphql-codegen
-          yarn tsc --noEmit
+          command: 'graphql-codegen'
+      - name: 'Check types'
+        run: yarn tsc --noEmit
