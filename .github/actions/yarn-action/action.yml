@@ -1,0 +1,16 @@
+name: Reusable Yarn Action
+description: Runs a given yarn command after installing all dependencies including caching
+
+inputs:
+  command:
+    description: 'The command to run (excluding the yarn prefix)'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - uses: ./.github/actions/install-yarn
+
+    - name: Run command in root folder
+      shell: bash
+      run: yarn ${{ inputs.command }}

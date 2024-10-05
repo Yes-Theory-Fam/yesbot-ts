@@ -18,19 +18,7 @@ jobs:
         node-version: [ 16.20 ]
     steps:
       - uses: actions/checkout@v3
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
-
-      - name: Cache node modules
-        uses: actions/cache@v2
+      - uses: ./.github/actions/yarn-action
+        name: 'Install and lint'
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: install and lint
-        run: |
-          yarn install --frozen-lockfile
-          yarn run lint
+          command: lint
