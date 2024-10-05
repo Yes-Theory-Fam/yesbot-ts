@@ -2,7 +2,7 @@ FROM node:21.7.3-alpine AS base
 RUN apk add --no-cache libc6-compat && \
     corepack enable
 
-FROM base
+FROM base as deps
 
 WORKDIR /usr/src/app
 COPY package.json yarn.lock .yarnrc.yml ./
@@ -10,7 +10,7 @@ COPY prisma/schema.prisma ./prisma/schema.prisma
 
 RUN yarn install --frozen-lockfile
 
-FROM base
+FROM base as builder
 WORKDIR /usr/src/app
 
 COPY --from=deps /usr/src/app/node_modules ./node_modules
