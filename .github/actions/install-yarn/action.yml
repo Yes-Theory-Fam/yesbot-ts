@@ -4,18 +4,14 @@ description: Installs and caches yarn dependencies
 runs:
   using: "composite"
   steps:
-    - name: Get yarn cache directory path
-      id: yarn-cache-dir-path
+    - name: 'Enable corepack'
       shell: bash
-      run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      run: corepack enable
 
-    - uses: actions/cache@v3
-      id: yarn-cache
+    - uses: actions/setup-node@v4
       with:
-        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-yarn-
+        cache: yarn
+        node-version: 21
 
     # This step should prefer the cached dependencies and restore node_modules
     - name: Install dependencies
