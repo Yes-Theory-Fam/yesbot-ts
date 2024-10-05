@@ -1,5 +1,4 @@
 import { Timer } from "@prisma/client";
-import Axios from "axios";
 import {
   ApplicationCommandOptionType,
   ChatInputCommandInteraction,
@@ -140,8 +139,8 @@ class SaveToDB implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
     const challenges = interaction.options.getAttachment("challenges")!;
 
     try {
-      const file = await Axios.get(challenges.url);
-      const bulkChallenges: string[] = file.data.split("\n");
+      const file = await fetch(challenges.url).then((res) => res.text());
+      const bulkChallenges: string[] = file.split("\n");
       const bulkInsert = bulkChallenges.map((challenge) => ({
         result: challenge.trim(),
       }));

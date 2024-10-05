@@ -1,10 +1,10 @@
 import {
+  ApplicationCommandOptionAllowedChannelTypes,
   SlashCommandBuilder,
   SlashCommandIntegerOption,
   SlashCommandNumberOption,
   SlashCommandStringOption,
   SlashCommandSubcommandBuilder,
-  ApplicationCommandOptionAllowedChannelTypes,
 } from "@discordjs/builders";
 import {
   APIApplicationCommandBasicOption,
@@ -140,6 +140,9 @@ const addOption = (
         const withChoices = addChoices(withDefaults, option);
         return addMinMax(withChoices, option);
       });
+      break;
+    case ApplicationCommandOptionType.Attachment:
+      builder.addAttachmentOption(addDefaults);
       break;
   }
 
