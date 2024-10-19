@@ -3843,10 +3843,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"countries-and-timezones@npm:3.7.0":
-  version: 3.7.0
-  resolution: "countries-and-timezones@npm:3.7.0"
-  checksum: 10c0/ce9c524e6b8c4f02f9a27a7e3a0ed400a4ea42ee5b8001d062b2e01da0ca6a305f0d5379609b8a8494f70d96fdd94d5257316de32ef6707ec72e40c9914bae8e
+"countries-and-timezones@npm:3.7.2":
+  version: 3.7.2
+  resolution: "countries-and-timezones@npm:3.7.2"
+  checksum: 10c0/72f81bc341b9cd0d3d2f565433eb6f2d110c49157bedf1a55f9286e731fe1db56af431d0ca41de14a96a055267dea5b882e2e87f20000d3980e8c78fd09b3dcb
   languageName: node
   linkType: hard
 
@@ -6931,7 +6931,7 @@ __metadata:
     "@types/node-cron": "npm:3.0.11"
     "@types/ws": "npm:8.5.12"
     "@yestheoryfam/prettier-config": "npm:1.0.0"
-    countries-and-timezones: "npm:3.7.0"
+    countries-and-timezones: "npm:3.7.2"
     country-code-emoji: "npm:2.3.0"
     date-fns: "npm:4.1.0"
     date-fns-tz: "npm:3.2.0"

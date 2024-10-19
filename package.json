@@ -26,7 +26,7 @@
     "@discordjs/rest": "2.4.0",
     "@prisma/client": "5.20.0",
     "@sentry/node": "8.34.0",
-    "countries-and-timezones": "3.7.0",
+    "countries-and-timezones": "3.7.2",
     "country-code-emoji": "2.3.0",
     "date-fns": "4.1.0",
     "date-fns-tz": "3.2.0",
