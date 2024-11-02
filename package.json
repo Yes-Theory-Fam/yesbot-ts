@@ -38,7 +38,7 @@
     "path": "0.12.7",
     "reflect-metadata": "0.2.2",
     "type-fest": "4.26.1",
-    "uuid": "11.0.1",
+    "uuid": "11.0.2",
     "vitest-mock-extended": "2.0.2",
     "winston": "3.15.0"
   },
