@@ -40,7 +40,7 @@
     "type-fest": "4.27.0",
     "uuid": "11.0.3",
     "vitest-mock-extended": "2.0.2",
-    "winston": "3.16.0"
+    "winston": "3.17.0"
   },
   "devDependencies": {
     "@atmina/local-typescript-operations": "0.9.0",
