@@ -55,7 +55,7 @@
     "@types/ws": "8.5.13",
     "@yestheoryfam/prettier-config": "1.0.0",
     "env-cmd": "10.1.0",
-    "prettier": "3.4.1",
+    "prettier": "3.4.2",
     "prisma": "6.0.0",
     "tsx": "4.19.2",
     "typescript": "5.7.2",
