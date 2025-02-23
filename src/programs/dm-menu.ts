@@ -32,7 +32,7 @@ const removeIgnore = (channel: DMChannel) => {
 })
 class ShowMenu implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
-    const member = getMember(message.author.id);
+    const member = await getMember(message.author.id);
     const dmChannel = message.channel as DMChannel;
 
     if (!member) {
@@ -114,7 +114,7 @@ const proposeNameChange = async (name: string, botMessage: Message) => {
     const reaction = collected.first();
     switch (reaction?.emoji.toString()) {
       case "✅":
-        const member = getMember(botMessage.author.id);
+        const member = await getMember(botMessage.author.id);
         member
           ?.setNickname(name)
           .catch((error) =>
