@@ -1,5 +1,4 @@
 import {
-  Client,
   GuildMember,
   Message,
   EmbedBuilder,
@@ -40,19 +39,24 @@ export const isRegistered = (
   );
 };
 
-export const textLog = (text: string | EmbedBuilder): Promise<Message> => {
-  const bot = require("..") as Client;
+export const textLog = async (
+  text: string | EmbedBuilder
+): Promise<Message> => {
+  const bot = await import("../index.js").then((m) => m.default);
   const outputChannel = <TextChannel>(
     bot.channels.resolve(process.env.OUTPUT_CHANNEL_ID)
   );
 
   return typeof text === "string"
-    ? outputChannel.send(text)
-    : outputChannel.send({ embeds: [text] });
+    ? await outputChannel.send(text)
+    : await outputChannel.send({ embeds: [text] });
 };
 
-export const getMember = (userId: string): GuildMember | null => {
-  const bot = require("..") as Client;
+export const getMember = async (
+  userId: string
+): Promise<GuildMember | null> => {
+  const bot = await import("../index.js").then((m) => m.default);
+
   return (
     bot.guilds.resolve(process.env.GUILD_ID)?.members.resolve(userId) ?? null
   );
