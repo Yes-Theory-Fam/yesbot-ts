@@ -36,7 +36,7 @@ class Resources implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
 
 const RESOURCES_CODING = `
 
-Our own lovely Michel has written a guide tailored for this group that in his own words "gives you a good guess of what awaits you". You can find that here: https://gist.github.com/geisterfurz007/473abe140d3504bc018255597201431e
+Our own lovely Michel has written a guide tailored for this group that in his own words "gives you a good guess of what awaits you". You can find that here: https://gist.github.com/mvarendorff/473abe140d3504bc018255597201431e
 
 Our group suggest Javascript as the first language whose rabbit hole you can fall down at the start of your journey. You can read more about Javascript here:
              - CodeCademy online course: <https://www.codecademy.com/learn/javascript>
