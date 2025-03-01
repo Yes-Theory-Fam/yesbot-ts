@@ -25,7 +25,7 @@
   "dependencies": {
     "@discordjs/rest": "2.4.3",
     "@prisma/client": "6.4.1",
-    "@sentry/node": "9.1.0",
+    "@sentry/node": "9.3.0",
     "countries-and-timezones": "3.7.2",
     "country-code-emoji": "2.3.0",
     "date-fns": "4.1.0",
