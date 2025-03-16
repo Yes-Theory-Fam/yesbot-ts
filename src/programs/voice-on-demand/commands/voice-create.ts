@@ -5,6 +5,7 @@ import {
   ChannelType,
   ChatInputCommandInteraction,
   GuildMember,
+  MessageFlagsBitField,
   OverwriteResolvable,
   OverwriteType,
   PermissionsBitField,
@@ -115,7 +116,7 @@ export class VoiceCreate extends CommandHandler<DiscordEvent.SLASH_COMMAND> {
 
     await interaction.reply({
       content: `Your room was created with a limit of ${limit}, have fun! Don't forget, this channel will be deleted if there is noone in it. :smile:`,
-      ephemeral: true,
+      flags: [MessageFlagsBitField.Flags.Ephemeral],
     });
 
     await this.vodService.resetDeleteIfEmptyTimer(createdChannel.id);
@@ -150,6 +151,7 @@ export class VoiceCreate extends CommandHandler<DiscordEvent.SLASH_COMMAND> {
 
     const timeoutRole = Tools.getRoleByName("Time Out", guild);
     const breakRole = Tools.getRoleByName("Break", guild);
+    const supportRole = Tools.getRoleByName("Support", guild);
     const overwrites: OverwriteResolvable[] = [
       {
         id: guild.roles.everyone,
@@ -177,6 +179,16 @@ export class VoiceCreate extends CommandHandler<DiscordEvent.SLASH_COMMAND> {
       overwrites.push({
         id: breakRole.id,
         deny: [PermissionsBitField.Flags.ViewChannel],
+        type: OverwriteType.Role,
+      });
+    }
+
+    // Support needs to be able to connect to have Manage Channel permissions in effect
+    if (supportRole) {
+      overwrites.push({
+        id: supportRole.id,
+        allow: [PermissionsBitField.Flags.Connect],
+        deny: [],
         type: OverwriteType.Role,
       });
     }
