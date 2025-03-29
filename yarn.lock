@@ -2833,12 +2833,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:22.13.11":
+"@types/node@npm:*":
   version: 22.13.11
   resolution: "@types/node@npm:22.13.11"
   dependencies:
     undici-types: "npm:~6.20.0"
   checksum: 10c0/f6ee33d36372242535c38640fe7550a6640d8a775ec19b55bfc11775b521cba072d892ca92a912332ce01b317293d645c1bf767f3f882ec719f2404a3d2a5b96
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:22.13.14":
+  version: 22.13.14
+  resolution: "@types/node@npm:22.13.14"
+  dependencies:
+    undici-types: "npm:~6.20.0"
+  checksum: 10c0/fa2ab5b8277bfbcc86c42e46a3ea9871b0d559894cc9d955685d17178c9499f0b1bf03d1d1ea8d92ef2dda818988f4035acb8abf9dc15423a998fa56173ab804
   languageName: node
   linkType: hard
 
@@ -6665,7 +6674,7 @@ __metadata:
     "@prisma/client": "npm:6.5.0"
     "@sentry/node": "npm:9.8.0"
     "@types/glob": "npm:8.1.0"
-    "@types/node": "npm:22.13.11"
+    "@types/node": "npm:22.13.14"
     "@types/node-cron": "npm:3.0.11"
     "@types/ws": "npm:8.18.0"
     "@yestheoryfam/prettier-config": "npm:1.0.0"
