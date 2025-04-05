@@ -2906,7 +2906,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ws@npm:8.18.0, @types/ws@npm:^8.0.0, @types/ws@npm:^8.5.10":
+"@types/ws@npm:8.18.1":
+  version: 8.18.1
+  resolution: "@types/ws@npm:8.18.1"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/61aff1129143fcc4312f083bc9e9e168aa3026b7dd6e70796276dcfb2c8211c4292603f9c4864fae702f2ed86e4abd4d38aa421831c2fd7f856c931a481afbab
+  languageName: node
+  linkType: hard
+
+"@types/ws@npm:^8.0.0, @types/ws@npm:^8.5.10":
   version: 8.18.0
   resolution: "@types/ws@npm:8.18.0"
   dependencies:
@@ -6677,7 +6686,7 @@ __metadata:
     "@types/glob": "npm:8.1.0"
     "@types/node": "npm:22.13.14"
     "@types/node-cron": "npm:3.0.11"
-    "@types/ws": "npm:8.18.0"
+    "@types/ws": "npm:8.18.1"
     "@yestheoryfam/prettier-config": "npm:1.0.0"
     countries-and-timezones: "npm:3.7.2"
     country-code-emoji: "npm:2.3.0"
