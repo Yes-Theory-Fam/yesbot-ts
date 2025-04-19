@@ -6711,7 +6711,7 @@ __metadata:
     prisma: "npm:6.6.0"
     reflect-metadata: "npm:0.2.2"
     tsx: "npm:4.19.3"
-    type-fest: "npm:4.39.1"
+    type-fest: "npm:4.40.0"
     typescript: "npm:5.8.3"
     uuid: "npm:11.1.0"
     vitest: "npm:3.1.1"
@@ -6757,10 +6757,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:4.39.1":
-  version: 4.39.1
-  resolution: "type-fest@npm:4.39.1"
-  checksum: 10c0/f5bf302eb2e2f70658be1757aa578f4a09da3f65699b0b12b7ae5502ccea76e5124521a6e6b69540f442c3dc924c394202a2ab58718d0582725c7ac23c072594
+"type-fest@npm:4.40.0":
+  version: 4.40.0
+  resolution: "type-fest@npm:4.40.0"
+  checksum: 10c0/b39d4da6f9a154e3db7e714cd05ccf56b53f4f0bbf74dd294cb6be4921b16ecca5cb00cb81b53ab621a31c8e8509c74b5101895ada47af9de368a317d24538a3
   languageName: node
   linkType: hard
 
