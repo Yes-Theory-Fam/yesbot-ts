@@ -5441,12 +5441,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-cron@npm:3.0.3":
-  version: 3.0.3
-  resolution: "node-cron@npm:3.0.3"
-  dependencies:
-    uuid: "npm:8.3.2"
-  checksum: 10c0/e6e817c5bf28cca69f256ecc1a2cb737cf895cb0fe22f8ec58ce614cb74dcc22e93f495984a26ece51322473238ccc0ef53b4f373035697017b8c28bddacb9b9
+"node-cron@npm:4.0.2":
+  version: 4.0.2
+  resolution: "node-cron@npm:4.0.2"
+  checksum: 10c0/58f05376fdd0f39e33f192023db8605a5f87167e352cc4e48ff75c5a95017083dbf10d272e93ab9008365a9d2c494a67a2b2ef5e97c9303e295124e0a58035ef
   languageName: node
   linkType: hard
 
@@ -6836,7 +6834,7 @@ __metadata:
     fast-glob: "npm:3.3.3"
     graphql: "npm:16.11.0"
     graphql-request: "npm:7.1.2"
-    node-cron: "npm:3.0.3"
+    node-cron: "npm:4.0.2"
     path: "npm:0.12.7"
     prettier: "npm:3.5.3"
     prisma: "npm:6.7.0"
@@ -7040,15 +7038,6 @@ __metadata:
   bin:
     uuid: dist/esm/bin/uuid
   checksum: 10c0/34aa51b9874ae398c2b799c88a127701408cd581ee89ec3baa53509dd8728cbb25826f2a038f9465f8b7be446f0fbf11558862965b18d21c993684297628d4d3
-  languageName: node
-  linkType: hard
-
-"uuid@npm:8.3.2":
-  version: 8.3.2
-  resolution: "uuid@npm:8.3.2"
-  bin:
-    uuid: dist/bin/uuid
-  checksum: 10c0/bcbb807a917d374a49f475fae2e87fdca7da5e5530820ef53f65ba1d12131bd81a92ecf259cc7ce317cbe0f289e7d79fdfebcef9bfa3087c8c8a2fa304c9be54
   languageName: node
   linkType: hard
 
