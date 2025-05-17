@@ -5429,10 +5429,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-cron@npm:4.0.2":
-  version: 4.0.2
-  resolution: "node-cron@npm:4.0.2"
-  checksum: 10c0/58f05376fdd0f39e33f192023db8605a5f87167e352cc4e48ff75c5a95017083dbf10d272e93ab9008365a9d2c494a67a2b2ef5e97c9303e295124e0a58035ef
+"node-cron@npm:4.0.5":
+  version: 4.0.5
+  resolution: "node-cron@npm:4.0.5"
+  checksum: 10c0/ca658f6c02ac0276c6fa1c65324c1f847be62e1953096c677c73430d38e2109c40dde9285612cf9af59b60eac5250a5f595eeeb769a725c6f78ddae878151849
   languageName: node
   linkType: hard
 
@@ -6818,7 +6818,7 @@ __metadata:
     fast-glob: "npm:3.3.3"
     graphql: "npm:16.11.0"
     graphql-request: "npm:7.1.2"
-    node-cron: "npm:4.0.2"
+    node-cron: "npm:4.0.5"
     path: "npm:0.12.7"
     prettier: "npm:3.5.3"
     prisma: "npm:6.8.2"

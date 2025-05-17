@@ -34,7 +34,7 @@
     "fast-glob": "3.3.3",
     "graphql": "16.11.0",
     "graphql-request": "7.1.2",
-    "node-cron": "4.0.2",
+    "node-cron": "4.0.5",
     "path": "0.12.7",
     "reflect-metadata": "0.2.2",
     "type-fest": "4.41.0",
