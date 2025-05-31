@@ -2831,14 +2831,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/pg@npm:8.15.1":
-  version: 8.15.1
-  resolution: "@types/pg@npm:8.15.1"
+"@types/pg@npm:8.15.2":
+  version: 8.15.2
+  resolution: "@types/pg@npm:8.15.2"
   dependencies:
     "@types/node": "npm:*"
     pg-protocol: "npm:*"
     pg-types: "npm:^4.0.1"
-  checksum: 10c0/68ab3b2ae56a9ef891fcefe814b4a4eb6da4f4f3860b56d2821de8fe024eb093895ffe152414c708d889f7110cd5b3839392d2955b07d38f111df8e6186c7e8c
+  checksum: 10c0/e3bc75f02af897ed960e83d1af9bd0cba1ff41cd0cbae0eaee323eae84f55e6d433f620aa1c72f7bd5107c80b018185c0e47de553cfc5439514c3da98768ef6c
   languageName: node
   linkType: hard
 
