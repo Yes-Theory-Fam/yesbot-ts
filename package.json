@@ -33,7 +33,7 @@
     "discord.js": "14.19.3",
     "fast-glob": "3.3.3",
     "graphql": "16.11.0",
-    "graphql-request": "7.1.2",
+    "graphql-request": "7.2.0",
     "node-cron": "4.0.7",
     "path": "0.12.7",
     "reflect-metadata": "0.2.2",
