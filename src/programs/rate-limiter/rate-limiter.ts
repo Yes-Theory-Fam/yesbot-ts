@@ -6,6 +6,7 @@ import {
 } from "../../event-distribution/index.js";
 import { cleanupSpamTracker, registerMessage } from "./spam-tracker.js";
 import { Client, Message } from "discord.js";
+import Tools from "../../common/tools.js";
 
 @Command({
   event: DiscordEvent.READY,
@@ -27,9 +28,15 @@ class AntiSpamHandler implements CommandHandler<DiscordEvent.MESSAGE> {
     if (message.author.bot) return;
 
     const isSpamming = registerMessage(message.author.id, message.channel.id);
+    if (!isSpamming) return;
 
-    if (isSpamming) {
-      console.log("wooooo detected spam");
-    }
+    const botDev = message.guild?.channels.cache.find(
+      (c) => c.name === "bot-development"
+    );
+    if (!botDev?.isSendable()) return;
+
+    await botDev.send(
+      `Detected ${message.url} as potential spam. Give it a quick once over if that seems right.`
+    );
   }
 }
