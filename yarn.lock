@@ -721,9 +721,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@discordjs/rest@npm:2.5.0, @discordjs/rest@npm:^2.5.0":
-  version: 2.5.0
-  resolution: "@discordjs/rest@npm:2.5.0"
+"@discordjs/rest@npm:2.5.1, @discordjs/rest@npm:^2.5.1":
+  version: 2.5.1
+  resolution: "@discordjs/rest@npm:2.5.1"
   dependencies:
     "@discordjs/collection": "npm:^2.1.1"
     "@discordjs/util": "npm:^1.1.1"
@@ -733,8 +733,8 @@ __metadata:
     discord-api-types: "npm:^0.38.1"
     magic-bytes.js: "npm:^1.10.0"
     tslib: "npm:^2.6.3"
-    undici: "npm:6.21.1"
-  checksum: 10c0/9bfafd34c684240395d3ce1ae7a930de426f379940ae526466714e8066bf06c6a6a4f45e76a39f32d85fee7eb74bcb6ff7b72669cec722f9c3e1828a96ec3ad6
+    undici: "npm:6.21.3"
+  checksum: 10c0/5eb7c97e8c731ae36c73de502e27d6fe660656bc3c457a6bc2a444c13d650c2ac613744b436dbf43c67104f9e9426e3c306d917b29109e19672c3e394cf70be2
   languageName: node
   linkType: hard
 
@@ -745,12 +745,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@discordjs/ws@npm:^1.2.2":
-  version: 1.2.2
-  resolution: "@discordjs/ws@npm:1.2.2"
+"@discordjs/ws@npm:^1.2.3":
+  version: 1.2.3
+  resolution: "@discordjs/ws@npm:1.2.3"
   dependencies:
     "@discordjs/collection": "npm:^2.1.0"
-    "@discordjs/rest": "npm:^2.5.0"
+    "@discordjs/rest": "npm:^2.5.1"
     "@discordjs/util": "npm:^1.1.0"
     "@sapphire/async-queue": "npm:^1.5.2"
     "@types/ws": "npm:^8.5.10"
@@ -758,7 +758,7 @@ __metadata:
     discord-api-types: "npm:^0.38.1"
     tslib: "npm:^2.6.2"
     ws: "npm:^8.17.0"
-  checksum: 10c0/de76890d1497bde76b2f33d936bc2cf13273679833b9d7b768ad3ee156bb80f642499217b52db1367243dc5a3279f9536fc98de29f99826d9b4efd3210497be1
+  checksum: 10c0/3add9b8e24174617149b515ad3a470b64d7286023d96b85c8387b40b3aaf3975f15b121fc1b49841e85b55c519f2b6e9050d1711f34fd65f33652fdde42a4752
   languageName: node
   linkType: hard
 
@@ -3810,24 +3810,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"discord.js@npm:14.19.3":
-  version: 14.19.3
-  resolution: "discord.js@npm:14.19.3"
+"discord.js@npm:14.20.0":
+  version: 14.20.0
+  resolution: "discord.js@npm:14.20.0"
   dependencies:
     "@discordjs/builders": "npm:^1.11.2"
     "@discordjs/collection": "npm:1.5.3"
     "@discordjs/formatters": "npm:^0.6.1"
-    "@discordjs/rest": "npm:^2.5.0"
+    "@discordjs/rest": "npm:^2.5.1"
     "@discordjs/util": "npm:^1.1.1"
-    "@discordjs/ws": "npm:^1.2.2"
+    "@discordjs/ws": "npm:^1.2.3"
     "@sapphire/snowflake": "npm:3.5.3"
     discord-api-types: "npm:^0.38.1"
     fast-deep-equal: "npm:3.1.3"
     lodash.snakecase: "npm:4.1.1"
     magic-bytes.js: "npm:^1.10.0"
     tslib: "npm:^2.6.3"
-    undici: "npm:6.21.1"
-  checksum: 10c0/5d1fb95682fe1c9750cd4b610013351b8f2baeb9c63c2005b5c5ec45a2a18e53a1d382fbf74e56d9d640e376bc844bc8f9219e4a0bec242b8ef860486dd3fb7e
+    undici: "npm:6.21.3"
+  checksum: 10c0/78c847f5cc86579a881be73d9d7642aee0ece6c17157dbc13efbd89c5e42ed82fabb4468a55afb723a7e269104929dd57da2d40846fb0d8159ceff986f7baffe
   languageName: node
   linkType: hard
 
@@ -6580,7 +6580,7 @@ __metadata:
   dependencies:
     "@atmina/local-typescript-operations": "npm:0.9.0"
     "@atmina/only-enum-types": "npm:0.8.0"
-    "@discordjs/rest": "npm:2.5.0"
+    "@discordjs/rest": "npm:2.5.1"
     "@graphql-codegen/cli": "npm:5.0.7"
     "@graphql-codegen/near-operation-file-preset": "npm:3.0.1"
     "@graphql-codegen/typescript-graphql-request": "npm:6.3.0"
@@ -6596,7 +6596,7 @@ __metadata:
     country-code-emoji: "npm:2.3.0"
     date-fns: "npm:4.1.0"
     date-fns-tz: "npm:3.2.0"
-    discord.js: "npm:14.19.3"
+    discord.js: "npm:14.20.0"
     env-cmd: "npm:10.1.0"
     fast-glob: "npm:3.3.3"
     graphql: "npm:16.11.0"
@@ -6717,10 +6717,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici@npm:6.21.1":
-  version: 6.21.1
-  resolution: "undici@npm:6.21.1"
-  checksum: 10c0/d604080e4f8db89b35a63b483b5f96a5f8b19ec9f716e934639345449405809d2997e1dd7212d67048f210e54534143384d712bd9075e4394f0788895ef9ca8e
+"undici@npm:6.21.3":
+  version: 6.21.3
+  resolution: "undici@npm:6.21.3"
+  checksum: 10c0/294da109853fad7a6ef5a172ad0ca3fb3f1f60cf34703d062a5ec967daf69ad8c03b52e6d536c5cba3bb65615769bf08e5b30798915cbccdddaca01045173dda
   languageName: node
   linkType: hard
 
