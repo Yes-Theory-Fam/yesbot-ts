@@ -1110,9 +1110,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/near-operation-file-preset@npm:3.0.1":
-  version: 3.0.1
-  resolution: "@graphql-codegen/near-operation-file-preset@npm:3.0.1"
+"@graphql-codegen/near-operation-file-preset@npm:3.1.0":
+  version: 3.1.0
+  resolution: "@graphql-codegen/near-operation-file-preset@npm:3.1.0"
   dependencies:
     "@graphql-codegen/add": "npm:^3.2.1"
     "@graphql-codegen/plugin-helpers": "npm:^3.0.0"
@@ -1122,7 +1122,7 @@ __metadata:
     tslib: "npm:^2.8.1"
   peerDependencies:
     graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: 10c0/cc442f700db7c33ecd62f9f26c745ad4d5d8fc226d11c8c862d66466d941f10088df4e12bcaea0b6f6e06956e7ffa6afec6fd8fc07ab1edf6d2b2007722ac127
+  checksum: 10c0/bcd595258051663adda0928c584fbff23acd76f3c584245d3669f1a6c82ddaea6d62523c1a3e05a3731bcb5e5a5c1798f0ca898f81694a2d612951971fada1e3
   languageName: node
   linkType: hard
 
@@ -6582,7 +6582,7 @@ __metadata:
     "@atmina/only-enum-types": "npm:0.8.0"
     "@discordjs/rest": "npm:2.5.1"
     "@graphql-codegen/cli": "npm:5.0.7"
-    "@graphql-codegen/near-operation-file-preset": "npm:3.0.1"
+    "@graphql-codegen/near-operation-file-preset": "npm:3.1.0"
     "@graphql-codegen/typescript-graphql-request": "npm:6.3.0"
     "@parcel/watcher": "npm:2.5.1"
     "@prisma/client": "npm:6.10.1"
