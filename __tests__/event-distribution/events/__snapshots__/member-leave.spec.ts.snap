@@ -21,6 +21,8 @@ exports[`Member Leave > should extract member from leaving member 1`] = `
   "isDirectMessage": false,
   "member": {
     "avatar": null,
+    "avatarDecorationData": null,
+    "avatarDecorationURL": null,
     "avatarURL": null,
     "banner": null,
     "bannerURL": null,
