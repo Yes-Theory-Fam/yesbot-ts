@@ -151,6 +151,8 @@ exports[`Messages > should extract messages from direct message 1`] = `
     "isDirectMessage": true,
     "member": {
       "avatar": null,
+      "avatarDecorationData": null,
+      "avatarDecorationURL": null,
       "avatarURL": null,
       "banner": null,
       "bannerURL": null,
@@ -185,6 +187,8 @@ exports[`Messages > should extract messages from public channel 1`] = `
     "isDirectMessage": false,
     "member": {
       "avatar": null,
+      "avatarDecorationData": null,
+      "avatarDecorationURL": null,
       "avatarURL": null,
       "banner": null,
       "bannerURL": null,
