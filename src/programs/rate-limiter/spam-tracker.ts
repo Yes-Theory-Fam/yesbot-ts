@@ -1,14 +1,20 @@
+import { Message, Snowflake } from "discord.js";
+
 interface SpamRecord {
-  messages: { channelId: string; timestamp: number }[];
+  messages: { channelId: Snowflake; timestamp: number; messageId: Snowflake }[];
 }
 
-const userSpamActivity = new Map<string, SpamRecord>();
+const userSpamActivity = new Map<Snowflake, SpamRecord>();
 
 const TIME_WINDOW = 15 * 1000;
 const CHANNEL_THRESHOLD = 5;
 
-export function registerMessage(userId: string, channelId: string): boolean {
+export function registerMessage(message: Message): boolean {
   const now = Date.now();
+
+  const userId = message.author.id;
+  const channelId = message.channelId;
+  const messageId = message.id;
 
   let record = userSpamActivity.get(userId);
   if (!record) {
@@ -20,16 +26,19 @@ export function registerMessage(userId: string, channelId: string): boolean {
     (msg) => now - msg.timestamp <= TIME_WINDOW
   );
 
-  record.messages.push({ channelId, timestamp: now });
+  record.messages.push({ channelId, messageId, timestamp: now });
 
   const uniqueChannels = new Set(record.messages.map((msg) => msg.channelId));
 
-  if (uniqueChannels.size >= CHANNEL_THRESHOLD) {
-    userSpamActivity.delete(userId);
-    return true;
-  }
+  return uniqueChannels.size >= CHANNEL_THRESHOLD;
+}
 
-  return false;
+export function getSpamActivity(userId: Snowflake) {
+  return userSpamActivity.get(userId)?.messages ?? [];
+}
+
+export function resetSpam(userId: Snowflake) {
+  userSpamActivity.delete(userId);
 }
 
 export function cleanupSpamTracker(): void {
