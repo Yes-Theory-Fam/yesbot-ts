@@ -1032,9 +1032,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/cli@npm:6.0.0":
-  version: 6.0.0
-  resolution: "@graphql-codegen/cli@npm:6.0.0"
+"@graphql-codegen/cli@npm:6.0.1":
+  version: 6.0.1
+  resolution: "@graphql-codegen/cli@npm:6.0.1"
   dependencies:
     "@babel/generator": "npm:^7.18.13"
     "@babel/template": "npm:^7.18.10"
@@ -1081,7 +1081,7 @@ __metadata:
     graphql-code-generator: cjs/bin.js
     graphql-codegen: cjs/bin.js
     graphql-codegen-esm: esm/bin.js
-  checksum: 10c0/8da7cc70c781f04b1d48e142d7b4e07fbf352b205c9b19bdb0a9ed3d3bc86ec97c0aaeb3391b7d7c2718473411136b179a458e90a97e174ba62c1d410a3c342d
+  checksum: 10c0/3b8c1ea4f1751a68ea51dde2a022dde8183e4f0ad781f35d42c2b29481f80bdd9fd404233a7109614335a1d47f5b77c406509765046268e9fb3d359e7fe67b41
   languageName: node
   linkType: hard
 
@@ -7026,7 +7026,7 @@ __metadata:
     "@atmina/local-typescript-operations": "npm:0.9.0"
     "@atmina/only-enum-types": "npm:0.8.0"
     "@discordjs/rest": "npm:2.6.0"
-    "@graphql-codegen/cli": "npm:6.0.0"
+    "@graphql-codegen/cli": "npm:6.0.1"
     "@graphql-codegen/near-operation-file-preset": "npm:3.1.0"
     "@graphql-codegen/typescript-graphql-request": "npm:6.3.0"
     "@parcel/watcher": "npm:2.5.1"
