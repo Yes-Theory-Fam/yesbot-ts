@@ -4225,9 +4225,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"discord.js@npm:14.24.0":
-  version: 14.24.0
-  resolution: "discord.js@npm:14.24.0"
+"discord.js@npm:14.24.2":
+  version: 14.24.2
+  resolution: "discord.js@npm:14.24.2"
   dependencies:
     "@discordjs/builders": "npm:^1.13.0"
     "@discordjs/collection": "npm:1.5.3"
@@ -4242,7 +4242,7 @@ __metadata:
     magic-bytes.js: "npm:^1.10.0"
     tslib: "npm:^2.6.3"
     undici: "npm:6.21.3"
-  checksum: 10c0/a749df63d0ef0ebc3dcb4b5055b4dec21485694576b82323785a5a649043c1664eca48b1b18ac2be25a937f2d9943973585da53c29729841dcac3f3e2266c3a7
+  checksum: 10c0/473cae88b3a49434a16a7a43e4ed398864883c923c0419c132378a333ae9777ce01c8a703716f9ad93e42ba2454429e89497c03538364e12efaf36fc27278748
   languageName: node
   linkType: hard
 
@@ -6967,7 +6967,7 @@ __metadata:
     country-code-emoji: "npm:2.3.0"
     date-fns: "npm:4.1.0"
     date-fns-tz: "npm:3.2.0"
-    discord.js: "npm:14.24.0"
+    discord.js: "npm:14.24.2"
     env-cmd: "npm:11.0.0"
     fast-glob: "npm:3.3.3"
     graphql: "npm:16.11.0"
