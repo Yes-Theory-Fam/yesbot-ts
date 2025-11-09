@@ -6,7 +6,7 @@
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "lib": [
-      "ES2020",
+      "ES2023",
       // More or less required by graphql-request; otherwise typing error missing WebSocket
       "dom"
     ],
@@ -15,7 +15,9 @@
     "outDir": "build",
     "strict": true,
     "target": "es2020",
-    "types": ["vitest/globals"]
+    "types": [
+      "vitest/globals"
+    ]
   },
   "exclude": [
     "build",
