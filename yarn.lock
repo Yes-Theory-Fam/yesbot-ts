@@ -5067,14 +5067,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-request@npm:7.3.1":
-  version: 7.3.1
-  resolution: "graphql-request@npm:7.3.1"
+"graphql-request@npm:7.3.3":
+  version: 7.3.3
+  resolution: "graphql-request@npm:7.3.3"
   dependencies:
     "@graphql-typed-document-node/core": "npm:^3.2.0"
   peerDependencies:
     graphql: 14 - 16
-  checksum: 10c0/7764cdd965a17d102c1730f627396bf1e57337a4cd6a149d7c24cf0c3a753b79027bfc2f6f592ac655567d650faa954f2272f5bccb05bec84aea9e70a298ac69
+  checksum: 10c0/ca723d387f54b6d713f82b9640d44f474b9f21433b6a649ddd3bbc797b2abc014f7f912b3abe5285da91aabb263f1eeb373c35c92d25537ff92f1c55bb062cca
   languageName: node
   linkType: hard
 
@@ -7187,7 +7187,7 @@ __metadata:
     env-cmd: "npm:11.0.0"
     fast-glob: "npm:3.3.3"
     graphql: "npm:16.12.0"
-    graphql-request: "npm:7.3.1"
+    graphql-request: "npm:7.3.3"
     node-cron: "npm:4.2.1"
     path: "npm:0.12.7"
     prettier: "npm:3.6.2"
