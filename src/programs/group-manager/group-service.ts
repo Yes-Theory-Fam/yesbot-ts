@@ -1,4 +1,4 @@
-import { UserGroup } from "@prisma/client";
+import { UserGroup } from "../../__generated__/prisma/client.js";
 import { GuildTextBasedChannel, Snowflake, userMention } from "discord.js";
 import Tools from "../../common/tools.js";
 import prisma from "../../prisma.js";

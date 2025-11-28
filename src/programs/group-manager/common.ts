@@ -1,4 +1,7 @@
-import { UserGroup, UserGroupMembersGroupMember } from "@prisma/client";
+import {
+  UserGroup,
+  UserGroupMembersGroupMember,
+} from "../../__generated__/prisma/client.js";
 import { APIInteractionGuildMember, TextBasedChannel } from "discord.js";
 import { createYesBotLogger } from "../../log.js";
 import prisma from "../../prisma.js";

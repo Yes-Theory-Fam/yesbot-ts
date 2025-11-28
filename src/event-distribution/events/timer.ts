@@ -6,7 +6,7 @@ import {
   HandlerFunctionFor,
 } from "../index.js";
 import { createYesBotLogger } from "../../log.js";
-import { Timer } from "@prisma/client";
+import { Timer } from "../../__generated__/prisma/client.js";
 import { addToTree } from "../helper.js";
 
 export interface TimerEventHandlerOptions extends BaseOptions {

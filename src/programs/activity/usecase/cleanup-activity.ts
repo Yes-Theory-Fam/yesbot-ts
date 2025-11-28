@@ -1,5 +1,5 @@
 import prisma from "../../../prisma.js";
-import { Activity, Currency } from "@prisma/client";
+import { Activity, Currency } from "../../../__generated__/prisma/client.js";
 import { createYesBotLogger } from "../../../log.js";
 
 export class CleanupActivity {

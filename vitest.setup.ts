@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "./src/__generated__/prisma/client.js";
 import prisma from "./src/prisma.js";
 import { mockReset } from "vitest-mock-extended";
 import { vi } from "vitest";

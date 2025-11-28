@@ -1,4 +1,4 @@
-import { ReactionRole } from "@prisma/client";
+import { ReactionRole } from "../../__generated__/prisma/client.js";
 import { Guild } from "discord.js";
 import { AutocompleteHandler } from "../../event-distribution/events/slash-commands/autocomplete.js";
 import prisma from "../../prisma.js";

@@ -1,4 +1,4 @@
-import { Timer } from "@prisma/client";
+import { Timer } from "../../__generated__/prisma/client.js";
 import {
   ButtonInteraction,
   ChatInputCommandInteraction,
