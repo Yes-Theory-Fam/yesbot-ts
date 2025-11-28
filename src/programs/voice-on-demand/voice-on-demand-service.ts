@@ -1,4 +1,4 @@
-import { VoiceOnDemandMapping } from "@prisma/client";
+import { VoiceOnDemandMapping } from "../../__generated__/prisma/client.js";
 import {
   ChatInputCommandInteraction,
   GuildMember,

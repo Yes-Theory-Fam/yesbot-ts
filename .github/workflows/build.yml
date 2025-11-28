@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [ 16.20 ]
+        node-version: [ 24 ]
     env:
       YTF_GRAPHQL_ENDPOINT: https://staging.yestheory.family/_yesbot-schema
     steps:

@@ -14,20 +14,15 @@
     "moduleResolution": "NodeNext",
     "outDir": "build",
     "strict": true,
-    "target": "es2020",
-    "types": [
-      "vitest/globals"
-    ]
+    "target": "es2023",
+    "types": ["vitest/globals"]
   },
-  "exclude": [
-    "build",
-    "node_modules"
-  ],
+  "exclude": ["build", "node_modules"],
   "include": [
     "./environment.d.ts",
     "./index.d.ts",
-    "./environment.d.ts",
     "./src",
-    "./__tests__"
+    "./__tests__",
+    "prisma.config.ts"
   ]
 }

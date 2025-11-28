@@ -15,7 +15,7 @@ import {
 } from "discord.js";
 import bot from "../index.js";
 import { ChatNames } from "../collections/chat-names.js";
-import { Timer } from "@prisma/client";
+import { Timer } from "../__generated__/prisma/client.js";
 import { TimerService } from "./timer/timer.service.js";
 
 interface ShoutoutPermsData {

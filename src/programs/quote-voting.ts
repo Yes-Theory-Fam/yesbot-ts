@@ -5,7 +5,7 @@ import {
 } from "../event-distribution/index.js";
 import { DiscordAPIError, Message, Snowflake, TextChannel } from "discord.js";
 import { TimerService } from "./timer/timer.service.js";
-import { Timer } from "@prisma/client";
+import { Timer } from "../__generated__/prisma/client.js";
 import bot from "../index.js";
 import { RESTJSONErrorCodes } from "discord-api-types/v10";
 

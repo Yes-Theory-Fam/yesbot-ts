@@ -1,4 +1,4 @@
-import { Birthday } from "@prisma/client";
+import { Birthday } from "../__generated__/prisma/client.js";
 import {
   getAllCountries,
   getCountry,

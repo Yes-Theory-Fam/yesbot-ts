@@ -1,5 +1,5 @@
 import distribution, { DiscordEvent } from "../../event-distribution/index.js";
-import { Timer, Prisma } from "@prisma/client";
+import { Timer, Prisma } from "../../__generated__/prisma/client.js";
 import prisma from "../../prisma.js";
 import { createYesBotLogger } from "../../log.js";
 

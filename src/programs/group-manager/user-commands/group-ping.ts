@@ -1,4 +1,4 @@
-import { GroupPingSetting } from "@prisma/client";
+import { GroupPingSetting } from "../../../__generated__/prisma/client.js";
 import {
   ApplicationCommandOptionType,
   ChatInputCommandInteraction,
