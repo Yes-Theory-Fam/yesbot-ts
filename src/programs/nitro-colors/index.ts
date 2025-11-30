@@ -68,9 +68,7 @@ class CacheNitroColors implements CommandHandler<DiscordEvent.READY> {
   description:
     "This handler is to remove Nitro color role if the user has lost one of the two roles.",
 })
-class RemoveNitroColorIfNotAllowed
-  implements CommandHandler<DiscordEvent.GUILD_MEMBER_UPDATE>
-{
+class RemoveNitroColorIfNotAllowed implements CommandHandler<DiscordEvent.GUILD_MEMBER_UPDATE> {
   async handle(member: GuildMember) {
     const nitroColor = member.roles.cache.find((r) =>
       nitroRolesCache.some((role) => role.id === r.id)

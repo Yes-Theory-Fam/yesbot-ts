@@ -17,9 +17,7 @@ import {
   subCommand: "list",
   description: "List the available reaction-roles",
 })
-class ListReactRoleObjects
-  implements CommandHandler<DiscordEvent.SLASH_COMMAND>
-{
+class ListReactRoleObjects implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
   async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     const guild = interaction.guild;
     if (!guild) return;

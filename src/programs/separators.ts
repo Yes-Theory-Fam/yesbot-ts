@@ -11,9 +11,7 @@ const separatorStart = "\u2063";
   event: DiscordEvent.GUILD_MEMBER_UPDATE,
   description: "This handler is to add the separator role if necessary",
 })
-class SeparatorOnRoleAdd
-  implements CommandHandler<DiscordEvent.GUILD_MEMBER_UPDATE>
-{
+class SeparatorOnRoleAdd implements CommandHandler<DiscordEvent.GUILD_MEMBER_UPDATE> {
   async handle(
     oldMember: GuildMember | PartialGuildMember,
     newMember: GuildMember | PartialGuildMember
@@ -60,9 +58,7 @@ class SeparatorOnRoleAdd
   event: DiscordEvent.GUILD_MEMBER_UPDATE,
   description: "This handler is to remove the separator role if necessary",
 })
-class SeparatorOnRoleRemove
-  implements CommandHandler<DiscordEvent.GUILD_MEMBER_UPDATE>
-{
+class SeparatorOnRoleRemove implements CommandHandler<DiscordEvent.GUILD_MEMBER_UPDATE> {
   async handle(
     oldMember: GuildMember | PartialGuildMember,
     newMember: GuildMember | PartialGuildMember

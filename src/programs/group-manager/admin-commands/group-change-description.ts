@@ -42,9 +42,7 @@ enum Errors {
     [Errors.UNKNOWN_ERROR]: "Failed to update description!",
   },
 })
-class GroupChangeDescription
-  implements CommandHandler<DiscordEvent.SLASH_COMMAND>
-{
+class GroupChangeDescription implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
   async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     const groupId = interaction.options.getInteger("group")!;
     const description = interaction.options.getString("description")!;

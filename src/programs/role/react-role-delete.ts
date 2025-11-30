@@ -38,9 +38,7 @@ enum Errors {
     [Errors.ENTRY_NOT_FOUND]: "Could not find that reaction-role",
   },
 })
-class DeleteReactRoleObjects
-  implements CommandHandler<DiscordEvent.SLASH_COMMAND>
-{
+class DeleteReactRoleObjects implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
   async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     const reactionRoleId = interaction.options.getInteger("reaction-role")!;
 

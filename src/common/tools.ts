@@ -297,8 +297,8 @@ class Tools {
     const filter = (reaction: MessageReaction, user: User) =>
       Boolean(
         reaction.emoji.name &&
-          pickOptions.includes(reaction.emoji.name) &&
-          allowedVoterIds.includes(user.id)
+        pickOptions.includes(reaction.emoji.name) &&
+        allowedVoterIds.includes(user.id)
       );
 
     // Using a wrapped object allows cancelling adding the reactions from the outside

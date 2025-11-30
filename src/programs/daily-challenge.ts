@@ -30,9 +30,7 @@ const UTC_HOUR_POSTED = 8;
   root: "challenge",
   description: "Have a look at the current challenge!",
 })
-class DailyChallengeCommand
-  implements CommandHandler<DiscordEvent.SLASH_COMMAND>
-{
+class DailyChallengeCommand implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
   async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     const compare = new Date();
     compare.setUTCHours(compare.getUTCHours() - 48 - UTC_HOUR_POSTED);
@@ -55,9 +53,7 @@ class DailyChallengeCommand
   event: DiscordEvent.READY,
   description: "This handler is to kickstart the Daily Challenge timer.",
 })
-class DailyChallengeTimerKickStart
-  implements CommandHandler<DiscordEvent.READY>
-{
+class DailyChallengeTimerKickStart implements CommandHandler<DiscordEvent.READY> {
   async handle(bot: Client): Promise<void> {
     const hasDailyChallengeStarted = await prisma.timer.findFirst({
       where: {

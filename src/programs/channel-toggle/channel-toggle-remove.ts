@@ -45,9 +45,7 @@ enum Errors {
       "I could not find the requested toggle. Are you sure the emoji is correct?",
   },
 })
-class ChannelReactionRemove
-  implements CommandHandler<DiscordEvent.SLASH_COMMAND>
-{
+class ChannelReactionRemove implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
   async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     await interaction.deferReply();
 

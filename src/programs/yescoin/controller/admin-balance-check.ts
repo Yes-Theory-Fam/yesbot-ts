@@ -22,9 +22,7 @@ import { GetBalance } from "../usecase/get-balance.js";
     },
   ],
 })
-export class AdminBalanceCheck
-  implements CommandHandler<DiscordEvent.SLASH_COMMAND>
-{
+export class AdminBalanceCheck implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
   public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     const user = interaction.options.getUser("user");
     const userId = user?.id ?? interaction.user.id;
