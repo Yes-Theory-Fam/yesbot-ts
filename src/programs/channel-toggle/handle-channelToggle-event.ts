@@ -17,9 +17,7 @@ import { backfillReactions } from "./common.js";
   description:
     "This handler is to remove user permissions from the channel toggle",
 })
-class HandleChannelToggleReactionAdd
-  implements CommandHandler<DiscordEvent.REACTION_ADD>
-{
+class HandleChannelToggleReactionAdd implements CommandHandler<DiscordEvent.REACTION_ADD> {
   async handle(reaction: MessageReaction, user: User): Promise<void> {
     if (user.bot) return;
 
@@ -75,9 +73,7 @@ class HandleChannelToggleReactionAdd
   description:
     "This handler is to remove user permissions from the channel toggle",
 })
-class HandleChannelToggleReactionRemove
-  implements CommandHandler<DiscordEvent.REACTION_REMOVE>
-{
+class HandleChannelToggleReactionRemove implements CommandHandler<DiscordEvent.REACTION_REMOVE> {
   async handle(reaction: MessageReaction, user: User): Promise<void> {
     if (user.bot) return;
 

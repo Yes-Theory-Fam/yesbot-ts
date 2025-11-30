@@ -39,9 +39,7 @@ const getShoutoutsChannel = (guild: Guild) => {
   description: "Manage who can post in the #shoutout channel!",
   subCommand: "toggle",
 })
-class ShoutoutPermsToggleCommand
-  implements CommandHandler<DiscordEvent.SLASH_COMMAND>
-{
+class ShoutoutPermsToggleCommand implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
   async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     if (!interaction.guild) return;
     const channel = interaction.channel;
@@ -124,9 +122,7 @@ class ShoutoutPermsToggleCommand
     "This handler removes the user's permission to send messages in the shoutout channel once used",
   channelNames: [ChatNames.SHOUTOUTS],
 })
-class ShoutoutMessageHandlerCommand
-  implements CommandHandler<DiscordEvent.MESSAGE>
-{
+class ShoutoutMessageHandlerCommand implements CommandHandler<DiscordEvent.MESSAGE> {
   async handle(message: Message): Promise<void> {
     const sender = message.member?.user;
     const channel = message.channel;

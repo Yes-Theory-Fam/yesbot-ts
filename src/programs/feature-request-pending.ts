@@ -11,9 +11,7 @@ import { ChannelType, ThreadChannel } from "discord.js";
   newlyCreated: true,
   parentName: ChatNames.FEATURE_REQUEST,
 })
-class FeatureRequestPending
-  implements CommandHandler<DiscordEvent.THREAD_CREATE>
-{
+class FeatureRequestPending implements CommandHandler<DiscordEvent.THREAD_CREATE> {
   async handle(channel: ThreadChannel, _unused: boolean): Promise<void> {
     const parent = channel.parent;
     if (!parent || parent.type !== ChannelType.GuildForum) return;

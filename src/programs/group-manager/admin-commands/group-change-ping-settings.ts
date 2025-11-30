@@ -54,9 +54,7 @@ enum Errors {
     [Errors.UNKNOWN_ERROR]: "Failed to update ping setting!",
   },
 })
-class ChangeGroupPingSettings
-  implements CommandHandler<DiscordEvent.SLASH_COMMAND>
-{
+class ChangeGroupPingSettings implements CommandHandler<DiscordEvent.SLASH_COMMAND> {
   async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     const groupId = interaction.options.getInteger("group")!;
     const pingSetting = interaction.options.getString(

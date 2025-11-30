@@ -15,9 +15,7 @@ import { isColorSelectionMessage } from "../nitro-colors/index.js";
   description:
     "This handler is to give the specified role of the roleReaction to the user",
 })
-class AddRolesFromReaction
-  implements CommandHandler<DiscordEvent.REACTION_ADD>
-{
+class AddRolesFromReaction implements CommandHandler<DiscordEvent.REACTION_ADD> {
   async handle(reaction: MessageReaction, user: User): Promise<void> {
     if (isColorSelectionMessage(reaction.message.id) || user.bot) return;
 
@@ -55,9 +53,7 @@ class AddRolesFromReaction
   description:
     "This handler is to remove the specified role of the roleReaction to the user",
 })
-class RemoveRolesFromReaction
-  implements CommandHandler<DiscordEvent.REACTION_REMOVE>
-{
+class RemoveRolesFromReaction implements CommandHandler<DiscordEvent.REACTION_REMOVE> {
   async handle(reaction: MessageReaction, user: User): Promise<void> {
     if (isColorSelectionMessage(reaction.message.id) || user.bot) return;
 

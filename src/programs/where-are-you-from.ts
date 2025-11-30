@@ -180,9 +180,7 @@ class WhereAreYouFrom implements CommandHandler<DiscordEvent.MESSAGE> {
   description:
     "This handler checks if the user has selected his region after dropping his flag",
 })
-class UpdateAfterRegionSelect
-  implements CommandHandler<DiscordEvent.GUILD_MEMBER_UPDATE>
-{
+class UpdateAfterRegionSelect implements CommandHandler<DiscordEvent.GUILD_MEMBER_UPDATE> {
   async handle(
     oldMember: GuildMember | PartialGuildMember,
     newMember: GuildMember | PartialGuildMember
