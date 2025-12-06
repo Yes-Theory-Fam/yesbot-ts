@@ -3131,14 +3131,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prisma/adapter-pg@npm:7.0.1":
-  version: 7.0.1
-  resolution: "@prisma/adapter-pg@npm:7.0.1"
+"@prisma/adapter-pg@npm:7.1.0":
+  version: 7.1.0
+  resolution: "@prisma/adapter-pg@npm:7.1.0"
   dependencies:
-    "@prisma/driver-adapter-utils": "npm:7.0.1"
+    "@prisma/driver-adapter-utils": "npm:7.1.0"
     pg: "npm:^8.16.3"
     postgres-array: "npm:3.0.4"
-  checksum: 10c0/cff271c0b3f741515acc101e778780ce4d3be5040f29270d6b1b9f357a3a47cd47c24ff9040938d668931da4b81d2babcadb735603d6f1c988dc85408472c619
+  checksum: 10c0/57f4bb9529fa9df002e5ab739ff542325983429afb23a10d291d2716679bbfafee75e9a7481a56327fc41b56f959beb8d4aa87b49e22c9b115c15f0cca1896f8
   languageName: node
   linkType: hard
 
@@ -3192,6 +3192,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@prisma/debug@npm:7.1.0":
+  version: 7.1.0
+  resolution: "@prisma/debug@npm:7.1.0"
+  checksum: 10c0/482791f6c82d28ec87985f00badf8ffbcf3b0f583adf8e8d16fbe89162c006f1a48b09892af283b2c8e6ab32a2e6ee916247f5ba9da2ef9319d83f8fde2e9704
+  languageName: node
+  linkType: hard
+
 "@prisma/dev@npm:0.13.0":
   version: 0.13.0
   resolution: "@prisma/dev@npm:0.13.0"
@@ -3217,12 +3224,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prisma/driver-adapter-utils@npm:7.0.1":
-  version: 7.0.1
-  resolution: "@prisma/driver-adapter-utils@npm:7.0.1"
+"@prisma/driver-adapter-utils@npm:7.1.0":
+  version: 7.1.0
+  resolution: "@prisma/driver-adapter-utils@npm:7.1.0"
   dependencies:
-    "@prisma/debug": "npm:7.0.1"
-  checksum: 10c0/90cae427db248c6ef1c3c036b84108bed58505468417dfeb859ae593e43ca89c39c5a65b8d420162480a267063533d7a73930339c2bbde41d659e10aecf14aae
+    "@prisma/debug": "npm:7.1.0"
+  checksum: 10c0/1ea60ff05b5f03f484f509a53ca0051d50a1905de802bf7fd8394526d2a4157488b726631ff09bc036727518d46ef9b1d0e71f8e69e7cc3f630a1cb2cbaa5a73
   languageName: node
   linkType: hard
 
@@ -7549,7 +7556,7 @@ __metadata:
     "@graphql-codegen/near-operation-file-preset": "npm:3.1.0"
     "@graphql-codegen/typescript-graphql-request": "npm:6.3.0"
     "@parcel/watcher": "npm:2.5.1"
-    "@prisma/adapter-pg": "npm:7.0.1"
+    "@prisma/adapter-pg": "npm:7.1.0"
     "@prisma/client": "npm:7.0.1"
     "@sentry/node": "npm:10.27.0"
     "@types/glob": "npm:9.0.0"
