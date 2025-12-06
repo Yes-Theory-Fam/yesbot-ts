@@ -60,7 +60,7 @@
     "prisma": "7.0.1",
     "tsx": "4.21.0",
     "typescript": "5.9.3",
-    "vitest": "4.0.14"
+    "vitest": "4.0.15"
   },
   "resolutions": {
     "@types/pg": "8.15.6"
