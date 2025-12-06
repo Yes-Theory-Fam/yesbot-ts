@@ -1254,18 +1254,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/add@npm:^3.2.1":
-  version: 3.2.3
-  resolution: "@graphql-codegen/add@npm:3.2.3"
-  dependencies:
-    "@graphql-codegen/plugin-helpers": "npm:^3.1.1"
-    tslib: "npm:~2.4.0"
-  peerDependencies:
-    graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: 10c0/4aa9a5b591505c7174465dee58276ce3b84f34aefcb0b1f2d6744ff4c9cb541a2b66ee9851503f40afd227c4d7a5a90cf19e904733c1a3b07f32e8fdcd56121b
-  languageName: node
-  linkType: hard
-
 "@graphql-codegen/add@npm:^6.0.0":
   version: 6.0.0
   resolution: "@graphql-codegen/add@npm:6.0.0"
@@ -1387,19 +1375,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/near-operation-file-preset@npm:3.1.0":
-  version: 3.1.0
-  resolution: "@graphql-codegen/near-operation-file-preset@npm:3.1.0"
+"@graphql-codegen/near-operation-file-preset@npm:4.0.0":
+  version: 4.0.0
+  resolution: "@graphql-codegen/near-operation-file-preset@npm:4.0.0"
   dependencies:
-    "@graphql-codegen/add": "npm:^3.2.1"
-    "@graphql-codegen/plugin-helpers": "npm:^3.0.0"
-    "@graphql-codegen/visitor-plugin-common": "npm:2.13.8"
+    "@graphql-codegen/add": "npm:^6.0.0"
+    "@graphql-codegen/plugin-helpers": "npm:^6.1.0"
+    "@graphql-codegen/visitor-plugin-common": "npm:^6.2.1"
     "@graphql-tools/utils": "npm:^10.0.0"
     parse-filepath: "npm:^1.0.2"
     tslib: "npm:^2.8.1"
   peerDependencies:
     graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: 10c0/bcd595258051663adda0928c584fbff23acd76f3c584245d3669f1a6c82ddaea6d62523c1a3e05a3731bcb5e5a5c1798f0ca898f81694a2d612951971fada1e3
+  checksum: 10c0/dcc71c9ce43d64aa5a79076439a47989a429ccb414c36997d937db568dec25874f88fe81f3ebaf5568a8bea904c6d8b278d5cfacc4d056418748a3df235cec87
   languageName: node
   linkType: hard
 
@@ -1419,7 +1407,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/plugin-helpers@npm:^3.0.0, @graphql-codegen/plugin-helpers@npm:^3.1.1, @graphql-codegen/plugin-helpers@npm:^3.1.2":
+"@graphql-codegen/plugin-helpers@npm:^3.0.0, @graphql-codegen/plugin-helpers@npm:^3.1.2":
   version: 3.1.2
   resolution: "@graphql-codegen/plugin-helpers@npm:3.1.2"
   dependencies:
@@ -7546,7 +7534,7 @@ __metadata:
     "@atmina/only-enum-types": "npm:0.8.0"
     "@discordjs/rest": "npm:2.6.0"
     "@graphql-codegen/cli": "npm:6.1.0"
-    "@graphql-codegen/near-operation-file-preset": "npm:3.1.0"
+    "@graphql-codegen/near-operation-file-preset": "npm:4.0.0"
     "@graphql-codegen/typescript-graphql-request": "npm:6.3.0"
     "@parcel/watcher": "npm:2.5.1"
     "@prisma/adapter-pg": "npm:7.1.0"
