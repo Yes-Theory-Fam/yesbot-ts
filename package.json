@@ -38,7 +38,7 @@
     "node-cron": "4.2.1",
     "path": "0.12.7",
     "reflect-metadata": "0.2.2",
-    "type-fest": "5.3.0",
+    "type-fest": "5.3.1",
     "uuid": "13.0.0",
     "vitest-mock-extended": "3.1.0",
     "winston": "3.19.0"
