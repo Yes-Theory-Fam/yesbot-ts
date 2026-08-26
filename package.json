@@ -49,7 +49,7 @@
     "@graphql-codegen/cli": "6.1.0",
     "@graphql-codegen/near-operation-file-preset": "4.0.0",
     "@graphql-codegen/typescript-graphql-request": "6.3.0",
-    "@parcel/watcher": "2.5.1",
+    "@parcel/watcher": "2.6.0",
     "@types/glob": "9.0.0",
     "@types/node": "^24.10.1",
     "@types/node-cron": "3.0.11",
