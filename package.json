@@ -26,7 +26,7 @@
     "@discordjs/rest": "2.6.0",
     "@prisma/adapter-pg": "7.1.0",
     "@prisma/client": "7.1.0",
-    "@sentry/node": "10.29.0",
+    "@sentry/node": "10.73.0",
     "countries-and-timezones": "3.8.0",
     "country-code-emoji": "2.3.0",
     "date-fns": "4.1.0",
