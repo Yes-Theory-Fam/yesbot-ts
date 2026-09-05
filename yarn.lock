@@ -7557,7 +7557,7 @@ __metadata:
     typescript: "npm:5.9.3"
     uuid: "npm:13.0.0"
     vitest: "npm:4.0.15"
-    vitest-mock-extended: "npm:3.1.0"
+    vitest-mock-extended: "npm:3.1.1"
     winston: "npm:3.19.0"
   languageName: unknown
   linkType: soft
@@ -7823,15 +7823,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vitest-mock-extended@npm:3.1.0":
-  version: 3.1.0
-  resolution: "vitest-mock-extended@npm:3.1.0"
+"vitest-mock-extended@npm:3.1.1":
+  version: 3.1.1
+  resolution: "vitest-mock-extended@npm:3.1.1"
   dependencies:
     ts-essentials: "npm:>=10.0.0"
   peerDependencies:
-    typescript: 3.x || 4.x || 5.x
+    typescript: 3.x || 4.x || 5.x || 6.x
     vitest: ">=3.0.0"
-  checksum: 10c0/1d73c15b26c11f06ec8d1e8d3c9c2c727725fe2238e936dc260f1be919e0be67b90c92cab3ce67c79536264c0ffe77ce14d66bce60244429cf6d2e6c8273e36b
+  checksum: 10c0/cef557cc98ef2d2a7926d0bc1fdd6f2b89dca1a879a6397e9d8afd36a5e39ef4b931e430ca56de6b7cf2f71f725f2a2d858c9974e70aa5ddd6b1680994ef8048
   languageName: node
   linkType: hard
 
